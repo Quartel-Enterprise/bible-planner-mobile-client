@@ -13,7 +13,7 @@ internal class HighlightPaletteRepositoryImplTest {
     private lateinit var dao: FakeHighlightPaletteColorDao
 
     @Test
-    fun `observes the custom colours from the oldest to the newest`() = runTest {
+    fun `GIVEN stored custom colors WHEN observing them THEN emits them from the oldest to the newest`() = runTest {
         // Given
         prepareScenario(
             initialColors = listOf(
@@ -48,7 +48,7 @@ internal class HighlightPaletteRepositoryImplTest {
     }
 
     @Test
-    fun `adds a colour stamped with the current time`() = runTest {
+    fun `GIVEN an empty palette WHEN adding a color THEN stores it stamped with the current time`() = runTest {
         // Given
         prepareScenario()
 
@@ -73,7 +73,7 @@ internal class HighlightPaletteRepositoryImplTest {
     }
 
     @Test
-    fun `keeps only the four most recent colours`() = runTest {
+    fun `GIVEN four stored colors WHEN adding a fifth THEN keeps only the four most recent`() = runTest {
         // Given
         prepareScenario(
             initialColors = (1..4).map { index ->
@@ -100,7 +100,7 @@ internal class HighlightPaletteRepositoryImplTest {
     }
 
     @Test
-    fun `removes a colour by its key`() = runTest {
+    fun `GIVEN two stored colors WHEN removing one by its key THEN keeps only the other`() = runTest {
         // Given
         prepareScenario(
             initialColors = listOf(

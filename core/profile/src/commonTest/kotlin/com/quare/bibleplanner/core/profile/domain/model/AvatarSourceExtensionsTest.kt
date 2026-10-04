@@ -7,7 +7,7 @@ import kotlin.test.assertNull
 
 class AvatarSourceExtensionsTest {
     @Test
-    fun `exposes the url of a remote avatar and no bytes`() {
+    fun `GIVEN a remote avatar WHEN reading its photo THEN exposes the url and no bytes`() {
         // Given
         val avatar = AvatarSource.Remote("https://storage.example/avatar.jpg")
 
@@ -24,7 +24,7 @@ class AvatarSourceExtensionsTest {
     }
 
     @Test
-    fun `exposes the bytes of a pending avatar and no url`() {
+    fun `GIVEN a pending avatar WHEN reading its photo THEN exposes the bytes and no url`() {
         // Given
         val avatar = AvatarSource.Pending(byteArrayOf(1, 2))
 
@@ -41,10 +41,14 @@ class AvatarSourceExtensionsTest {
     }
 
     @Test
-    fun `pending avatars are equal when they hold the same bytes`() {
-        // When
+    fun `GIVEN two pending avatars with the same bytes WHEN comparing them THEN they are equal`() {
+        // Given
         val first = AvatarSource.Pending(byteArrayOf(1, 2))
         val second = AvatarSource.Pending(byteArrayOf(1, 2))
+
+        // When
+        val firstHashCode = first.hashCode()
+        val secondHashCode = second.hashCode()
 
         // Then
         assertEquals(
@@ -52,8 +56,8 @@ class AvatarSourceExtensionsTest {
             actual = second,
         )
         assertEquals(
-            expected = first.hashCode(),
-            actual = second.hashCode(),
+            expected = firstHashCode,
+            actual = secondHashCode,
         )
     }
 }

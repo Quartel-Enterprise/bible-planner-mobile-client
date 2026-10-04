@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.domain.usecase.impl
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.Milestone
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,12 +15,20 @@ internal class ResolveMilestoneMotivationUseCaseTest {
     private val outsideWindow = nowMillis - 25L * 60 * 60 * 1000L
 
     @Test
-    fun `empty plan returns null`() {
-        assertNull(useCase(emptyList(), nowMillis))
+    fun `GIVEN an empty plan WHEN resolving THEN returns null`() {
+        // Given
+        val days = emptyList<DayModel>()
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertNull(milestone)
     }
 
     @Test
-    fun `EnteredNewTestament triggers when crossing from OT to NT within 24h`() {
+    fun `GIVEN a crossing from OT to NT within 24h WHEN resolving THEN returns EnteredNewTestament`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -34,11 +43,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.MAT, isRead = true)),
             ),
         )
-        assertEquals(Milestone.EnteredNewTestament, useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.EnteredNewTestament, milestone)
     }
 
     @Test
-    fun `EnteredNewTestament does not trigger without prior OT activity`() {
+    fun `GIVEN NT reads without prior OT activity WHEN resolving THEN returns FirstBookCompleted`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -57,11 +72,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.LUK, isRead = false)),
             ),
         )
-        assertEquals(Milestone.FirstBookCompleted, useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.FirstBookCompleted, milestone)
     }
 
     @Test
-    fun `EnteredNewTestament does not trigger when earlier read already had NT`() {
+    fun `GIVEN an earlier read already in the NT WHEN resolving THEN returns BookCompleted`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -86,11 +107,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.EXO, isRead = false)),
             ),
         )
-        assertEquals(Milestone.BookCompleted(BookId.MRK), useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.BookCompleted(BookId.MRK), milestone)
     }
 
     @Test
-    fun `OnlyOneBookLeft triggers when exactly one unread book remains`() {
+    fun `GIVEN exactly one unread book remaining WHEN resolving THEN returns OnlyOneBookLeft`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -104,11 +131,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.EXO, isRead = false)),
             ),
         )
-        assertEquals(Milestone.OnlyOneBookLeft(BookId.EXO), useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.OnlyOneBookLeft(BookId.EXO), milestone)
     }
 
     @Test
-    fun `OnlyOneBookLeft does not trigger in single-book plan`() {
+    fun `GIVEN a single-book plan WHEN resolving THEN returns null instead of OnlyOneBookLeft`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -116,11 +149,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.GEN, isRead = false)),
             ),
         )
-        assertNull(useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertNull(milestone)
     }
 
     @Test
-    fun `OnlyOneBookLeft does not trigger when multiple books still have unread passages`() {
+    fun `GIVEN several books with unread passages WHEN resolving THEN returns null instead of OnlyOneBookLeft`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -131,11 +170,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 ),
             ),
         )
-        assertNull(useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertNull(milestone)
     }
 
     @Test
-    fun `FirstBookCompleted triggers when first book just closed within 24h`() {
+    fun `GIVEN the first book closed within 24h WHEN resolving THEN returns FirstBookCompleted`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -154,11 +199,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.LEV, isRead = false)),
             ),
         )
-        assertEquals(Milestone.FirstBookCompleted, useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.FirstBookCompleted, milestone)
     }
 
     @Test
-    fun `BookCompleted triggers when a non-first book closes within 24h`() {
+    fun `GIVEN a non-first book closed within 24h WHEN resolving THEN returns BookCompleted`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -183,11 +234,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.NUM, isRead = false)),
             ),
         )
-        assertEquals(Milestone.BookCompleted(BookId.EXO), useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.BookCompleted(BookId.EXO), milestone)
     }
 
     @Test
-    fun `BookCompleted does not trigger outside 24h window`() {
+    fun `GIVEN a book closed outside the 24h window WHEN resolving THEN returns null`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -212,11 +269,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.NUM, isRead = false)),
             ),
         )
-        assertNull(useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertNull(milestone)
     }
 
     @Test
-    fun `NT entry beats OnlyOneBookLeft when both apply`() {
+    fun `GIVEN both an NT entry and one book left WHEN resolving THEN returns EnteredNewTestament`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -236,11 +299,17 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.EXO, isRead = false)),
             ),
         )
-        assertEquals(Milestone.EnteredNewTestament, useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.EnteredNewTestament, milestone)
     }
 
     @Test
-    fun `BookCompleted picks the canonical-last book when multiple close on the same day`() {
+    fun `GIVEN several books closed on one day WHEN resolving THEN returns BookCompleted for the canonical-last one`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -262,6 +331,11 @@ internal class ResolveMilestoneMotivationUseCaseTest {
                 passages = listOf(passage(BookId.NUM, isRead = false)),
             ),
         )
-        assertEquals(Milestone.BookCompleted(BookId.EXO), useCase(days, nowMillis))
+
+        // When
+        val milestone = useCase(days, nowMillis)
+
+        // Then
+        assertEquals(Milestone.BookCompleted(BookId.EXO), milestone)
     }
 }

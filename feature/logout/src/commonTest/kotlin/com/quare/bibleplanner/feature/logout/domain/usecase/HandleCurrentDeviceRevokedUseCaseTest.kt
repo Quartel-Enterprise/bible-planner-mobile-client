@@ -132,17 +132,16 @@ class HandleCurrentDeviceRevokedUseCaseTest {
     }
 
     @Test
-    fun `WHEN invoked THEN marks the intent before probing so a probe-driven clear is never a spontaneous loss`() =
-        runTest {
-            // Given
-            remoteState = RemoteSessionState.REVOKED
+    fun `GIVEN a revoked session WHEN invoked THEN marks the intent before probing the session state`() = runTest {
+        // Given
+        remoteState = RemoteSessionState.REVOKED
 
-            // When
-            useCase()
+        // When
+        useCase()
 
-            // Then
-            assertTrue(order.first() == "mark")
-        }
+        // Then
+        assertTrue(order.first() == "mark")
+    }
 
     private class RecordingIntentionalLogoutMarker(
         private val order: MutableList<String>,

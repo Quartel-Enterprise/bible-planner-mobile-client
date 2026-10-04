@@ -21,7 +21,7 @@ internal class SubscriptionStatusMapperTest {
     private lateinit var mapper: SubscriptionStatusMapper
 
     @Test
-    fun `should map an active entitlement to Pro`() {
+    fun `GIVEN an active entitlement WHEN mapping THEN returns Pro`() {
         // When
         val status = mapper.map(proSubscriberResponse())
 
@@ -38,7 +38,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map an expired entitlement to Free`() {
+    fun `GIVEN an expired entitlement WHEN mapping THEN returns Free`() {
         // When
         val status = mapper.map(proSubscriberResponse(expiresDate = "2026-01-06T22:23:11Z"))
 
@@ -50,7 +50,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should keep Pro while the grace period is still running`() {
+    fun `GIVEN an expired entitlement with a running grace period WHEN mapping THEN returns Pro`() {
         // When
         val status = mapper.map(
             proSubscriberResponse(
@@ -64,7 +64,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map an entitlement without expiration to Pro`() {
+    fun `GIVEN an entitlement without expiration WHEN mapping THEN returns Pro`() {
         // When
         val status = mapper.map(proSubscriberResponse(expiresDate = null))
 
@@ -73,7 +73,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should not renew when the subscription was unsubscribed`() {
+    fun `GIVEN an unsubscribed subscription WHEN mapping THEN returns Pro that does not renew`() {
         // When
         val status = mapper.map(proSubscriberResponse(unsubscribeDetectedAt = "2026-01-06T18:24:02Z"))
 
@@ -86,7 +86,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map a subscriber without entitlements to Free`() {
+    fun `GIVEN a subscriber without entitlements WHEN mapping THEN returns Free`() {
         // When
         val status = mapper.map(freeSubscriberResponse())
 
@@ -98,7 +98,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map a missing subscriber to Free`() {
+    fun `GIVEN a missing subscriber WHEN mapping THEN returns Free`() {
         // When
         val status = mapper.map(null)
 
@@ -110,7 +110,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map the purchase date of an active entitlement`() {
+    fun `GIVEN an active entitlement WHEN mapping THEN maps its purchase date`() {
         // When
         val status = mapper.map(proSubscriberResponse())
 
@@ -123,7 +123,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map the store that granted the entitlement`() {
+    fun `GIVEN an entitlement granted by the Play Store WHEN mapping THEN maps that store`() {
         // When
         val status = mapper.map(proSubscriberResponse(store = "play_store"))
 
@@ -133,7 +133,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map the web billing store as web`() {
+    fun `GIVEN an entitlement granted by web billing WHEN mapping THEN maps the store as web`() {
         // When
         val status = mapper.map(proSubscriberResponse(store = "rc_billing"))
 
@@ -143,7 +143,7 @@ internal class SubscriptionStatusMapperTest {
     }
 
     @Test
-    fun `should map an entitlement without a purchase store as null`() {
+    fun `GIVEN an entitlement without a purchase store WHEN mapping THEN maps the store as null`() {
         // When
         val status = mapper.map(proSubscriberResponse(store = "promotional"))
 

@@ -7,8 +7,11 @@ import kotlin.test.assertEquals
 internal class GetConfirmationKeywordImplTest {
     @Test
     fun `GIVEN the default language WHEN reading the confirmation keyword THEN returns DELETE`() = runTest {
+        // Given
+        val getConfirmationKeyword = GetConfirmationKeywordImpl()
+
         // When
-        val keyword = GetConfirmationKeywordImpl().invoke()
+        val keyword = getConfirmationKeyword.invoke()
 
         // Then
         assertEquals("DELETE", keyword)

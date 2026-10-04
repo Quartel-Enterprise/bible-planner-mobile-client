@@ -8,25 +8,21 @@ internal class DownloadStatusMapperTest {
 
     @Test
     fun `GIVEN each stored status WHEN mapping it THEN picks the matching download state`() {
-        // When
-        val states = listOf(
-            mapper.map(
-                status = DownloadStatus.NOT_STARTED,
-                progress = 0f,
-            ),
-            mapper.map(
-                status = DownloadStatus.IN_PROGRESS,
-                progress = 0.4f,
-            ),
-            mapper.map(
-                status = DownloadStatus.PAUSED,
-                progress = 0.6f,
-            ),
-            mapper.map(
-                status = DownloadStatus.DONE,
-                progress = 0.2f,
-            ),
+        // Given
+        val storedStatuses = listOf(
+            DownloadStatus.NOT_STARTED to 0f,
+            DownloadStatus.IN_PROGRESS to 0.4f,
+            DownloadStatus.PAUSED to 0.6f,
+            DownloadStatus.DONE to 0.2f,
         )
+
+        // When
+        val states = storedStatuses.map { (status, progress) ->
+            mapper.map(
+                status = status,
+                progress = progress,
+            )
+        }
 
         // Then
         assertEquals(
@@ -42,10 +38,14 @@ internal class DownloadStatusMapperTest {
 
     @Test
     fun `GIVEN an in progress download that reached every chapter WHEN mapping it THEN reports it downloaded`() {
+        // Given
+        val status = DownloadStatus.IN_PROGRESS
+        val progress = 1f
+
         // When
         val state = mapper.map(
-            status = DownloadStatus.IN_PROGRESS,
-            progress = 1f,
+            status = status,
+            progress = progress,
         )
 
         // Then
@@ -54,8 +54,11 @@ internal class DownloadStatusMapperTest {
 
     @Test
     fun `GIVEN progress values WHEN formatting them THEN shows a percentage with at most two decimals`() {
+        // Given
+        val progressValues = listOf(0f, 0.9f, 0.9025f, 0.12345f, 0.0105f)
+
         // When
-        val labels = listOf(0f, 0.9f, 0.9025f, 0.12345f, 0.0105f).map(::formatDownloadProgress)
+        val labels = progressValues.map(::formatDownloadProgress)
 
         // Then
         assertEquals(listOf("0", "90", "90.25", "12.35", "1.05"), labels)
@@ -63,8 +66,11 @@ internal class DownloadStatusMapperTest {
 
     @Test
     fun `GIVEN an in progress download WHEN reading its label THEN formats its progress`() {
+        // Given
+        val download = DownloadStatusModel.InProgress.Paused(0.5f)
+
         // When
-        val label = DownloadStatusModel.InProgress.Paused(0.5f).progressStr
+        val label = download.progressStr
 
         // Then
         assertEquals("50", label)

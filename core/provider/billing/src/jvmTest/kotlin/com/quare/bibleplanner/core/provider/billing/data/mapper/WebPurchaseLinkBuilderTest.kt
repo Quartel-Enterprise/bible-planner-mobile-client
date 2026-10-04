@@ -8,7 +8,7 @@ internal class WebPurchaseLinkBuilderTest {
     private lateinit var builder: WebPurchaseLinkBuilder
 
     @Test
-    fun `should append the app user id and preselect the package`() {
+    fun `GIVEN a purchase link WHEN building THEN appends the app user id and preselects the package`() {
         // Given
         prepareScenario("https://pay.rev.cat/token")
 
@@ -26,7 +26,7 @@ internal class WebPurchaseLinkBuilderTest {
     }
 
     @Test
-    fun `should not duplicate the separator when the link ends with a slash`() {
+    fun `GIVEN a link ending with a slash WHEN building THEN does not duplicate the separator`() {
         // Given
         prepareScenario("https://pay.rev.cat/token/")
 
@@ -44,7 +44,7 @@ internal class WebPurchaseLinkBuilderTest {
     }
 
     @Test
-    fun `should encode an anonymous app user id`() {
+    fun `GIVEN an anonymous app user id WHEN building THEN encodes it`() {
         // Given
         prepareScenario("https://pay.rev.cat/token")
 

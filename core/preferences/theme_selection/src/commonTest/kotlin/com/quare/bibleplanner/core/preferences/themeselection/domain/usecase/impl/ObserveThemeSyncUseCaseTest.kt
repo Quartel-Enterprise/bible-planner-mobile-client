@@ -16,7 +16,7 @@ internal class ObserveThemeSyncUseCaseTest {
     private lateinit var repository: FakeThemeSelectionRepository
 
     @Test
-    fun `applies synced theme and contrast when sync is enabled`() = runTest {
+    fun `GIVEN sync enabled WHEN observing the theme sync THEN applies the synced theme and contrast`() = runTest {
         // Given
         prepareScenario(
             syncEnabled = true,
@@ -34,7 +34,7 @@ internal class ObserveThemeSyncUseCaseTest {
     }
 
     @Test
-    fun `applies nothing when sync is disabled`() = runTest {
+    fun `GIVEN sync disabled WHEN observing the theme sync THEN applies nothing`() = runTest {
         // Given
         prepareScenario(
             syncEnabled = false,
@@ -52,7 +52,7 @@ internal class ObserveThemeSyncUseCaseTest {
     }
 
     @Test
-    fun `skips a missing synced value`() = runTest {
+    fun `GIVEN a missing synced theme WHEN observing the theme sync THEN skips it`() = runTest {
         // Given
         prepareScenario(
             syncEnabled = true,

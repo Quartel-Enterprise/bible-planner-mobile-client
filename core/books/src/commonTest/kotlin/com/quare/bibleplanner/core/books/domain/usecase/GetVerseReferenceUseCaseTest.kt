@@ -7,15 +7,19 @@ import kotlin.test.assertTrue
 
 internal class GetVerseReferenceUseCaseTest {
     @Test
-    fun `formats the passage as chapter and compacted verse numbers after the book name`() = runTest {
-        // When
-        val reference = GetVerseReferenceUseCase()(
-            bookId = BookId.PRO,
-            chapterNumber = 3,
-            verseNumbers = listOf(6, 5),
-        )
+    fun `GIVEN a passage WHEN getting its reference THEN puts the chapter and compacted verses after the book name`() =
+        runTest {
+            // Given
+            val getVerseReference = GetVerseReferenceUseCase()
 
-        // Then
-        assertTrue(reference.endsWith(" 3:5-6"), reference)
-    }
+            // When
+            val reference = getVerseReference(
+                bookId = BookId.PRO,
+                chapterNumber = 3,
+                verseNumbers = listOf(6, 5),
+            )
+
+            // Then
+            assertTrue(reference.endsWith(" 3:5-6"), reference)
+        }
 }

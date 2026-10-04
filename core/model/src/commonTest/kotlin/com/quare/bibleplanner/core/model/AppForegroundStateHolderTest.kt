@@ -15,8 +15,11 @@ internal class AppForegroundStateHolderTest {
 
     @Test
     fun `GIVEN a fresh holder WHEN reading it THEN the app starts in the background`() {
+        // When
+        val isForeground = holder.isForeground.value
+
         // Then
-        assertFalse(holder.isForeground.value)
+        assertFalse(isForeground)
     }
 
     @Test

@@ -27,29 +27,36 @@ internal class ShowUpdatePromptUseCaseTest {
     private val preferences = FakeUpdatePromptPreferences(lastPromptedAt = null)
     private var didStartUpdate = false
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private lateinit var useCase: ShowUpdatePromptUseCase
 
     @Test
     fun `GIVEN android WHEN showing the prompt THEN starts the native update flow without navigating`() = runTest {
-        val useCase = prepareScenario(platform = Platform.Android)
+        // Given
+        prepareScenario(platform = Platform.Android)
 
+        // When
         useCase(
             availability = UpdateAvailability.Available(versionName = null),
             source = UpdatePromptSource.STARTUP,
         )
 
+        // Then
         assertTrue(didStartUpdate)
         assertTrue(commands.isEmpty())
     }
 
     @Test
     fun `GIVEN android WHEN showing the prompt THEN tracks the prompt shown event with its source`() = runTest {
-        val useCase = prepareScenario(platform = Platform.Android)
+        // Given
+        prepareScenario(platform = Platform.Android)
 
+        // When
         useCase(
             availability = UpdateAvailability.Available(versionName = null),
             source = UpdatePromptSource.MANUAL,
         )
 
+        // Then
         assertEquals(
             listOf(
                 AnalyticsEventNames.UPDATE_PROMPT_SHOWN to
@@ -62,13 +69,16 @@ internal class ShowUpdatePromptUseCaseTest {
     @Test
     fun `GIVEN ios WHEN showing the prompt THEN navigates to the update dialog without starting the update`() =
         runTest {
-            val useCase = prepareScenario(platform = Platform.Ios)
+            // Given
+            prepareScenario(platform = Platform.Ios)
 
+            // When
             useCase(
                 availability = UpdateAvailability.Available(versionName = "2.0.0"),
                 source = UpdatePromptSource.STARTUP,
             )
 
+            // Then
             assertEquals(
                 listOf<NavigationCommand>(
                     NavigationCommand.Navigate(
@@ -83,13 +93,16 @@ internal class ShowUpdatePromptUseCaseTest {
     @Test
     fun `GIVEN a downloaded update WHEN showing the prompt THEN opens the restart sheet without starting it`() =
         runTest {
-            val useCase = prepareScenario(platform = Platform.Android)
+            // Given
+            prepareScenario(platform = Platform.Android)
 
+            // When
             useCase(
                 availability = UpdateAvailability.Downloaded,
                 source = UpdatePromptSource.STARTUP,
             )
 
+            // Then
             assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(UpdateDownloadedNavRoute)), commands)
             assertFalse(didStartUpdate)
             assertTrue(trackedEvents.isEmpty())
@@ -97,33 +110,39 @@ internal class ShowUpdatePromptUseCaseTest {
 
     @Test
     fun `GIVEN a downloaded update WHEN showing the prompt THEN records it so the cooldown also covers it`() = runTest {
-        val useCase = prepareScenario(platform = Platform.Android)
+        // Given
+        prepareScenario(platform = Platform.Android)
 
+        // When
         useCase(
             availability = UpdateAvailability.Downloaded,
             source = UpdatePromptSource.STARTUP,
         )
 
+        // Then
         assertEquals(NOW, preferences.getLastPromptedAt())
     }
 
     @Test
     fun `GIVEN a manual check WHEN showing the prompt THEN records it so the cooldown also covers it`() = runTest {
-        val useCase = prepareScenario(platform = Platform.Ios)
+        // Given
+        prepareScenario(platform = Platform.Ios)
 
+        // When
         useCase(
             availability = UpdateAvailability.Available(versionName = "2.0.0"),
             source = UpdatePromptSource.MANUAL,
         )
 
+        // Then
         assertEquals(NOW, preferences.getLastPromptedAt())
     }
 
-    private fun TestScope.prepareScenario(platform: Platform): ShowUpdatePromptUseCase {
+    private fun TestScope.prepareScenario(platform: Platform) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             navigator.commands.collect { commands += it }
         }
-        return ShowUpdatePromptUseCase(
+        useCase = ShowUpdatePromptUseCase(
             platform = platform,
             startUpdate = { didStartUpdate = true },
             navigator = navigator,

@@ -34,7 +34,7 @@ internal class PendingBibleUpdatesPromptViewModelTest {
     }
 
     @Test
-    fun `prompts when a version has a pending update`() = runTest(testDispatcher) {
+    fun `GIVEN a version with a pending update WHEN reading the prompt state THEN prompts`() = runTest(testDispatcher) {
         // Given
         prepareScenario(hasPendingUpdate = true)
 
@@ -46,19 +46,20 @@ internal class PendingBibleUpdatesPromptViewModelTest {
     }
 
     @Test
-    fun `does not prompt when every version is up to date`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(hasPendingUpdate = false)
+    fun `GIVEN every version up to date WHEN reading the prompt state THEN does not prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(hasPendingUpdate = false)
 
-        // When
-        val shouldPrompt = viewModel.shouldPrompt.value
+            // When
+            val shouldPrompt = viewModel.shouldPrompt.value
 
-        // Then
-        assertFalse(shouldPrompt)
-    }
+            // Then
+            assertFalse(shouldPrompt)
+        }
 
     @Test
-    fun `stops prompting once the prompt is consumed`() = runTest(testDispatcher) {
+    fun `GIVEN a pending prompt WHEN consuming it THEN stops prompting`() = runTest(testDispatcher) {
         // Given
         prepareScenario(hasPendingUpdate = true)
 

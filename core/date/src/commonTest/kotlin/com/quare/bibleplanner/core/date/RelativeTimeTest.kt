@@ -14,21 +14,49 @@ class RelativeTimeTest {
 
     @Test
     fun `GIVEN less than a minute WHEN mapping THEN JustNow`() {
-        assertEquals(RelativeTime.JustNow, (now - 30.seconds).toRelativeTime(now))
+        // Given
+        val instant = now - 30.seconds
+
+        // When
+        val relativeTime = instant.toRelativeTime(now)
+
+        // Then
+        assertEquals(RelativeTime.JustNow, relativeTime)
     }
 
     @Test
     fun `GIVEN minutes ago WHEN mapping THEN MinutesAgo`() {
-        assertEquals(RelativeTime.MinutesAgo(5), (now - 5.minutes).toRelativeTime(now))
+        // Given
+        val instant = now - 5.minutes
+
+        // When
+        val relativeTime = instant.toRelativeTime(now)
+
+        // Then
+        assertEquals(RelativeTime.MinutesAgo(5), relativeTime)
     }
 
     @Test
     fun `GIVEN hours ago WHEN mapping THEN HoursAgo`() {
-        assertEquals(RelativeTime.HoursAgo(3), (now - 3.hours).toRelativeTime(now))
+        // Given
+        val instant = now - 3.hours
+
+        // When
+        val relativeTime = instant.toRelativeTime(now)
+
+        // Then
+        assertEquals(RelativeTime.HoursAgo(3), relativeTime)
     }
 
     @Test
     fun `GIVEN more than a day ago WHEN mapping THEN OlderThanADay`() {
-        assertIs<RelativeTime.OlderThanADay>((now - 3.days).toRelativeTime(now))
+        // Given
+        val instant = now - 3.days
+
+        // When
+        val relativeTime = instant.toRelativeTime(now)
+
+        // Then
+        assertIs<RelativeTime.OlderThanADay>(relativeTime)
     }
 }

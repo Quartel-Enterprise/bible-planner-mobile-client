@@ -28,7 +28,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.time.Instant
@@ -43,30 +42,31 @@ internal class DesktopBillingRepositoryImplTest {
     private lateinit var revenueCatRestDataSource: FakeRevenueCatRestDataSource
 
     @Test
-    fun `should map the current offering packages to store packages`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN a current offering with packages WHEN getting the store packages THEN maps them to store packages`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val storePackages = repository.getStorePackages()
+            // When
+            val storePackages = repository.getStorePackages()
 
-        // Then
-        assertEquals(
-            expected = listOf(MONTHLY_PACKAGE_IDENTIFIER, ANNUAL_PACKAGE_IDENTIFIER),
-            actual = storePackages.map { storePackage -> storePackage.identifier },
-        )
-        assertEquals(
-            expected = listOf(5_900_000L, 49_900_000L),
-            actual = storePackages.map { storePackage -> storePackage.priceMicros },
-        )
-        assertEquals(
-            expected = "Bible Planner Pro (Monthly)",
-            actual = storePackages.first().title,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(MONTHLY_PACKAGE_IDENTIFIER, ANNUAL_PACKAGE_IDENTIFIER),
+                actual = storePackages.map { storePackage -> storePackage.identifier },
+            )
+            assertEquals(
+                expected = listOf(5_900_000L, 49_900_000L),
+                actual = storePackages.map { storePackage -> storePackage.priceMicros },
+            )
+            assertEquals(
+                expected = "Bible Planner Pro (Monthly)",
+                actual = storePackages.first().title,
+            )
+        }
 
     @Test
-    fun `should ignore packages without a matching product`() = runTest {
+    fun `GIVEN a package without a matching product WHEN getting the store packages THEN ignores it`() = runTest {
         // Given
         prepareScenario(availableProductIds = listOf(MONTHLY_PRODUCT_ID))
 
@@ -81,7 +81,7 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should return no store packages when the current offering is unknown`() = runTest {
+    fun `GIVEN an unknown current offering WHEN getting the store packages THEN returns no store packages`() = runTest {
         // Given
         prepareScenario(currentOfferingId = "unknown")
 
@@ -96,16 +96,19 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should not expose store packages when the purchase link is missing`() = runTest {
+    fun `GIVEN a missing purchase link WHEN getting the store packages THEN fails as billing unavailable`() = runTest {
         // Given
         prepareScenario(purchaseLink = "")
 
-        // When & Then
-        assertFailsWith<BillingUnavailableException> { repository.getStorePackages() }
+        // When
+        val result = runCatching { repository.getStorePackages() }
+
+        // Then
+        assertIs<BillingUnavailableException>(result.exceptionOrNull())
     }
 
     @Test
-    fun `should build the checkout url for the given app user id`() = runTest {
+    fun `GIVEN an app user id WHEN getting the checkout url THEN builds it for that app user id`() = runTest {
         // Given
         prepareScenario()
 
@@ -123,7 +126,7 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should cache the subscription status of an active subscriber`() = runTest {
+    fun `GIVEN an active subscriber WHEN refreshing the subscription status THEN caches it`() = runTest {
         // Given
         prepareScenario(subscriber = proSubscriberResponse())
 
@@ -139,39 +142,41 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should report Free without calling the api when the api key is missing`() = runTest {
-        // Given
-        prepareScenario(
-            apiKey = "",
-            subscriber = null,
-        )
+    fun `GIVEN a missing api key WHEN refreshing the subscription status THEN reports Free without calling the api`() =
+        runTest {
+            // Given
+            prepareScenario(
+                apiKey = "",
+                subscriber = null,
+            )
 
-        // When
-        val status = repository.refreshSubscriptionStatus()
+            // When
+            val status = repository.refreshSubscriptionStatus()
 
-        // Then
-        assertEquals(
-            expected = SubscriptionStatus.Free,
-            actual = status,
-        )
-    }
-
-    @Test
-    fun `should keep the last known status when the request fails`() = runTest {
-        // Given
-        prepareScenario(subscriber = proSubscriberResponse())
-        repository.refreshSubscriptionStatus()
-        revenueCatRestDataSource.subscriber = null
-
-        // When
-        val status = repository.refreshSubscriptionStatus()
-
-        // Then
-        assertIs<SubscriptionStatus.Pro>(status)
-    }
+            // Then
+            assertEquals(
+                expected = SubscriptionStatus.Free,
+                actual = status,
+            )
+        }
 
     @Test
-    fun `should report Free when the first request fails`() = runTest {
+    fun `GIVEN a known Pro status and a failing request WHEN refreshing the subscription status THEN keeps Pro`() =
+        runTest {
+            // Given
+            prepareScenario(subscriber = proSubscriberResponse())
+            repository.refreshSubscriptionStatus()
+            revenueCatRestDataSource.subscriber = null
+
+            // When
+            val status = repository.refreshSubscriptionStatus()
+
+            // Then
+            assertIs<SubscriptionStatus.Pro>(status)
+        }
+
+    @Test
+    fun `GIVEN a failing first request WHEN refreshing the subscription status THEN reports Free`() = runTest {
         // Given
         prepareScenario(subscriber = null)
 
@@ -186,7 +191,7 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should drop the cached status on clear`() = runTest {
+    fun `GIVEN a cached status WHEN clearing the subscription status THEN drops it`() = runTest {
         // Given
         prepareScenario(subscriber = freeSubscriberResponse())
         repository.refreshSubscriptionStatus()

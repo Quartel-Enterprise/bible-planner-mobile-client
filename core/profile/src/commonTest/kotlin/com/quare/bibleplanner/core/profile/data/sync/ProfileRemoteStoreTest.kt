@@ -45,7 +45,7 @@ class ProfileRemoteStoreTest {
     private lateinit var realtime: FakeRealtime
 
     @Test
-    fun `sends only the dirty display name`() = runTest {
+    fun `GIVEN a dirty display name WHEN upserting THEN sends only the display name`() = runTest {
         // Given
         prepareScenario()
 
@@ -87,7 +87,7 @@ class ProfileRemoteStoreTest {
     }
 
     @Test
-    fun `sends only the dirty avatar url`() = runTest {
+    fun `GIVEN a dirty avatar url WHEN upserting THEN sends only the avatar url`() = runTest {
         // Given
         prepareScenario()
 
@@ -124,7 +124,7 @@ class ProfileRemoteStoreTest {
     }
 
     @Test
-    fun `sends nothing for a profile with no dirty field`() = runTest {
+    fun `GIVEN a profile with no dirty field WHEN upserting THEN sends nothing`() = runTest {
         // Given
         prepareScenario()
 
@@ -144,7 +144,7 @@ class ProfileRemoteStoreTest {
     }
 
     @Test
-    fun `fetches the profile row of the user`() = runTest {
+    fun `GIVEN a remote profile row WHEN fetching THEN returns the profile row of the user`() = runTest {
         // Given
         prepareScenario(responseBody = Json.encodeToString(listOf(row)))
 
@@ -165,7 +165,7 @@ class ProfileRemoteStoreTest {
     }
 
     @Test
-    fun `emits inserted and updated rows and ignores deletions`() = runTest {
+    fun `GIVEN inserted updated and deleted rows WHEN observing remote THEN ignores the deletions`() = runTest {
         // Given
         val record = Json.encodeToJsonElement(row).jsonObject
         prepareScenario(

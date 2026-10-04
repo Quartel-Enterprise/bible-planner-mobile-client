@@ -19,7 +19,7 @@ internal class SetReaderFontSizeUseCaseTest {
     }
 
     @Test
-    fun `stores a size inside the slider bounds as it is`() = runTest {
+    fun `GIVEN a size inside the slider bounds WHEN setting the font size THEN stores it as it is`() = runTest {
         // When
         useCase(20f)
 
@@ -31,7 +31,7 @@ internal class SetReaderFontSizeUseCaseTest {
     }
 
     @Test
-    fun `clamps a size below the minimum`() = runTest {
+    fun `GIVEN a size below the minimum WHEN setting the font size THEN clamps it to the minimum`() = runTest {
         // When
         useCase(8f)
 
@@ -43,7 +43,7 @@ internal class SetReaderFontSizeUseCaseTest {
     }
 
     @Test
-    fun `clamps a size above the maximum`() = runTest {
+    fun `GIVEN a size above the maximum WHEN setting the font size THEN clamps it to the maximum`() = runTest {
         // When
         useCase(64f)
 

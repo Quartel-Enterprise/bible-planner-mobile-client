@@ -66,25 +66,26 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     private lateinit var repository: FakeChapterStudyRepository
 
     @Test
-    fun `WHEN starting THEN a generating job without a phase appears right away`() = runTest {
-        // Given
-        prepareScenario(neverCompletes = true)
+    fun `GIVEN a never completing generation WHEN starting THEN a phaseless generating job appears right away`() =
+        runTest {
+            // Given
+            prepareScenario(neverCompletes = true)
 
-        // When
-        coordinator.start(target, isRewarded = false)
+            // When
+            coordinator.start(target, isRewarded = false)
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                ChapterStudyGenerationJob(
-                    target = target,
-                    phase = null,
-                    status = ChapterStudyGenerationStatus.Generating,
+            // Then
+            assertEquals(
+                expected = listOf(
+                    ChapterStudyGenerationJob(
+                        target = target,
+                        phase = null,
+                        status = ChapterStudyGenerationStatus.Generating,
+                    ),
                 ),
-            ),
-            actual = coordinator.jobs.value,
-        )
-    }
+                actual = coordinator.jobs.value,
+            )
+        }
 
     @Test
     fun `GIVEN a rewarded unlock WHEN it completes THEN asks for a rewarded study and leaves no reward unserved`() =

@@ -27,7 +27,7 @@ internal class ApplyHighlightColorUseCaseTest {
     private lateinit var repository: FakeVerseHighlightRepository
 
     @Test
-    fun `applies the color to every selected verse when none of them has it`() = runTest {
+    fun `GIVEN no selected verse has the color WHEN applying it THEN colors every selected verse`() = runTest {
         // Given
         prepareScenario()
 
@@ -46,7 +46,7 @@ internal class ApplyHighlightColorUseCaseTest {
     }
 
     @Test
-    fun `applies the color when only part of the selection already has it`() = runTest {
+    fun `GIVEN part of the selection has the color WHEN applying it THEN colors the whole selection`() = runTest {
         // Given
         prepareScenario(initialColors = mapOf(verseRef(1) to yellow))
 
@@ -65,7 +65,7 @@ internal class ApplyHighlightColorUseCaseTest {
     }
 
     @Test
-    fun `clears the highlight when every selected verse already has that exact color`() = runTest {
+    fun `GIVEN every selected verse has the color WHEN applying it THEN clears the highlight`() = runTest {
         // Given
         prepareScenario(initialColors = refs.associateWith { yellow })
 
@@ -81,7 +81,7 @@ internal class ApplyHighlightColorUseCaseTest {
     }
 
     @Test
-    fun `replaces a different color instead of clearing it`() = runTest {
+    fun `GIVEN the selection has another color WHEN applying a color THEN replaces it instead of clearing`() = runTest {
         // Given
         prepareScenario(initialColors = refs.associateWith { green })
 

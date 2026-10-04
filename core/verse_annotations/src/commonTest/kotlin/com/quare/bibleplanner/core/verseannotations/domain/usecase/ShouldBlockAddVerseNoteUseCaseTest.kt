@@ -86,6 +86,19 @@ internal class ShouldBlockAddVerseNoteUseCaseTest {
         assertFalse(shouldBlock)
     }
 
+    private fun note(index: Int): VerseNote = VerseNote(
+        id = "note-$index",
+        chapter = ChapterRef(
+            bibleVersionId = "ACF",
+            bookId = BookId.GEN,
+            chapterNumber = 1,
+        ),
+        verseNumbers = listOf(index + 1),
+        text = "Note $index",
+        createdAtEpochMillis = 1L,
+        updatedAtEpochMillis = 1L,
+    )
+
     private fun prepareScenario(
         isLimitEnabled: Boolean,
         isFreeUser: Boolean,
@@ -102,19 +115,6 @@ internal class ShouldBlockAddVerseNoteUseCaseTest {
             isFreeUser = { isFreeUser },
         )
     }
-
-    private fun note(index: Int): VerseNote = VerseNote(
-        id = "note-$index",
-        chapter = ChapterRef(
-            bibleVersionId = "ACF",
-            bookId = BookId.GEN,
-            chapterNumber = 1,
-        ),
-        verseNumbers = listOf(index + 1),
-        text = "Note $index",
-        createdAtEpochMillis = 1L,
-        updatedAtEpochMillis = 1L,
-    )
 }
 
 private class FixedIntRemoteConfig(

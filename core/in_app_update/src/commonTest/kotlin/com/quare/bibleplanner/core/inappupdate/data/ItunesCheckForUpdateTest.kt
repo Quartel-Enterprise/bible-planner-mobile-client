@@ -89,7 +89,7 @@ internal class ItunesCheckForUpdateTest {
         }
 
     @Test
-    fun `GIVEN a device region WHEN checking THEN looks up that region's store`() = runTest {
+    fun `GIVEN a device region WHEN checking THEN looks up the store of that region`() = runTest {
         // Given
         prepareScenario(
             regionCode = REGION_CODE,
@@ -116,7 +116,7 @@ internal class ItunesCheckForUpdateTest {
     }
 
     @Test
-    fun `GIVEN the region's store does not list the app WHEN checking THEN falls back to the default store`() =
+    fun `GIVEN the store of the region does not list the app WHEN checking THEN falls back to the default store`() =
         runTest {
             // Given
             prepareScenario(
@@ -138,7 +138,7 @@ internal class ItunesCheckForUpdateTest {
         }
 
     @Test
-    fun `GIVEN the region's lookup fails WHEN checking THEN the check failed without retrying`() = runTest {
+    fun `GIVEN the lookup of the region fails WHEN checking THEN the check failed without retrying`() = runTest {
         // Given
         prepareScenario(
             regionCode = REGION_CODE,

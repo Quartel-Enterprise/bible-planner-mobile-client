@@ -79,63 +79,136 @@ internal class BookIdTestamentExtensionsTest {
     )
 
     @Test
-    fun `there are 39 Old Testament books`() {
-        assertEquals(39, oldTestamentBooks.size)
+    fun `GIVEN the Old Testament books WHEN counting them THEN there are 39`() {
+        // Given
+        val books = oldTestamentBooks
+
+        // When
+        val count = books.size
+
+        // Then
+        assertEquals(39, count)
     }
 
     @Test
-    fun `there are 27 New Testament books`() {
-        assertEquals(27, newTestamentBooks.size)
+    fun `GIVEN the New Testament books WHEN counting them THEN there are 27`() {
+        // Given
+        val books = newTestamentBooks
+
+        // When
+        val count = books.size
+
+        // Then
+        assertEquals(27, count)
     }
 
     @Test
-    fun `OT and NT lists together cover every BookId`() {
-        assertEquals(BookId.entries.toSet(), (oldTestamentBooks + newTestamentBooks).toSet())
+    fun `GIVEN the Old and New Testament books WHEN joining them THEN they cover every BookId`() {
+        // Given
+        val books = oldTestamentBooks + newTestamentBooks
+
+        // When
+        val coveredBooks = books.toSet()
+
+        // Then
+        assertEquals(BookId.entries.toSet(), coveredBooks)
     }
 
     @Test
-    fun `every Old Testament book returns false for isNewTestament`() {
-        oldTestamentBooks.forEach { book ->
-            assertFalse(book.isNewTestament(), "$book should not be in the New Testament")
+    fun `GIVEN every Old Testament book WHEN checking isNewTestament THEN returns false`() {
+        // Given
+        val books = oldTestamentBooks
+
+        // When
+        val isNewTestamentByBook = books.associateWith(BookId::isNewTestament)
+
+        // Then
+        isNewTestamentByBook.forEach { (book, isNewTestament) ->
+            assertFalse(isNewTestament, "$book should not be in the New Testament")
         }
     }
 
     @Test
-    fun `every New Testament book returns true for isNewTestament`() {
-        newTestamentBooks.forEach { book ->
-            assertTrue(book.isNewTestament(), "$book should be in the New Testament")
+    fun `GIVEN every New Testament book WHEN checking isNewTestament THEN returns true`() {
+        // Given
+        val books = newTestamentBooks
+
+        // When
+        val isNewTestamentByBook = books.associateWith(BookId::isNewTestament)
+
+        // Then
+        isNewTestamentByBook.forEach { (book, isNewTestament) ->
+            assertTrue(isNewTestament, "$book should be in the New Testament")
         }
     }
 
     @Test
-    fun `every Old Testament book returns true for isOldTestament`() {
-        oldTestamentBooks.forEach { book ->
-            assertTrue(book.isOldTestament(), "$book should be in the Old Testament")
+    fun `GIVEN every Old Testament book WHEN checking isOldTestament THEN returns true`() {
+        // Given
+        val books = oldTestamentBooks
+
+        // When
+        val isOldTestamentByBook = books.associateWith(BookId::isOldTestament)
+
+        // Then
+        isOldTestamentByBook.forEach { (book, isOldTestament) ->
+            assertTrue(isOldTestament, "$book should be in the Old Testament")
         }
     }
 
     @Test
-    fun `every New Testament book returns false for isOldTestament`() {
-        newTestamentBooks.forEach { book ->
-            assertFalse(book.isOldTestament(), "$book should not be in the Old Testament")
+    fun `GIVEN every New Testament book WHEN checking isOldTestament THEN returns false`() {
+        // Given
+        val books = newTestamentBooks
+
+        // When
+        val isOldTestamentByBook = books.associateWith(BookId::isOldTestament)
+
+        // Then
+        isOldTestamentByBook.forEach { (book, isOldTestament) ->
+            assertFalse(isOldTestament, "$book should not be in the Old Testament")
         }
     }
 
     @Test
-    fun `Malachi is the last Old Testament book`() {
-        assertTrue(BookId.MAL.isOldTestament())
-        assertFalse(BookId.MAL.isNewTestament())
+    fun `GIVEN Malachi WHEN checking its testament THEN it is the last Old Testament book`() {
+        // Given
+        val book = BookId.MAL
+
+        // When
+        val isOldTestament = book.isOldTestament()
+        val isNewTestament = book.isNewTestament()
+
+        // Then
+        assertTrue(isOldTestament)
+        assertFalse(isNewTestament)
     }
 
     @Test
-    fun `Matthew is the first New Testament book`() {
-        assertTrue(BookId.MAT.isNewTestament())
-        assertFalse(BookId.MAT.isOldTestament())
+    fun `GIVEN Matthew WHEN checking its testament THEN it is the first New Testament book`() {
+        // Given
+        val book = BookId.MAT
+
+        // When
+        val isNewTestament = book.isNewTestament()
+        val isOldTestament = book.isOldTestament()
+
+        // Then
+        assertTrue(isNewTestament)
+        assertFalse(isOldTestament)
     }
 
     @Test
-    fun `Revelation is in the New Testament`() {
-        assertTrue(BookId.REV.isNewTestament())
-        assertFalse(BookId.REV.isOldTestament())
+    fun `GIVEN Revelation WHEN checking its testament THEN it is in the New Testament`() {
+        // Given
+        val book = BookId.REV
+
+        // When
+        val isNewTestament = book.isNewTestament()
+        val isOldTestament = book.isOldTestament()
+
+        // Then
+        assertTrue(isNewTestament)
+        assertFalse(isOldTestament)
     }
 }

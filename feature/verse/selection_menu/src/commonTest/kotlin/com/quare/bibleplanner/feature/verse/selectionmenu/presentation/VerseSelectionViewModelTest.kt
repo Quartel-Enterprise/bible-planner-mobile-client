@@ -76,22 +76,23 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `describes the selection the reader made`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a selection made by the reader WHEN the state settles THEN describes the selected verses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        runCurrent()
+            // When
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf(1, 2),
-            actual = viewModel.uiState.value?.verseNumbers,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(1, 2),
+                actual = viewModel.uiState.value?.verseNumbers,
+            )
+        }
 
     @Test
-    fun `follows the reader as the selection grows`() = runTest(testDispatcher) {
+    fun `GIVEN a selection WHEN the reader grows it THEN follows the new verses`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -107,7 +108,7 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `has nothing to show once the reader empties the selection`() = runTest(testDispatcher) {
+    fun `GIVEN a selection WHEN the reader empties it THEN has nothing to show`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -120,29 +121,30 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `applies the tapped color to the whole selection`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a selection WHEN tapping a highlight color THEN applies it to the whole selection`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnHighlightColorClick(yellow))
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnHighlightColorClick(yellow))
+            runCurrent()
 
-        // Then
-        val (refs, color) = appliedHighlights.single()
-        assertEquals(
-            expected = listOf(1, 2),
-            actual = refs.map { it.verseNumber },
-        )
-        assertEquals(
-            expected = yellow,
-            actual = color,
-        )
-        assertTrue(trackedEvents.contains("verse_highlight_applied"))
-    }
+            // Then
+            val (refs, color) = appliedHighlights.single()
+            assertEquals(
+                expected = listOf(1, 2),
+                actual = refs.map { it.verseNumber },
+            )
+            assertEquals(
+                expected = yellow,
+                actual = color,
+            )
+            assertTrue(trackedEvents.contains("verse_highlight_applied"))
+        }
 
     @Test
-    fun `opens the custom color picker for a pro user`() = runTest(testDispatcher) {
+    fun `GIVEN a pro user WHEN opening the custom color picker THEN opens it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isPro = true)
 
@@ -158,27 +160,28 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `sends a free user to the paywall instead of opening the custom color picker`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isPro = false)
+    fun `GIVEN a free user WHEN opening the custom color picker THEN sends them to the paywall instead`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPro = false)
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+            runCurrent()
 
-        // Then
-        assertNull(viewModel.uiState.value?.customColorPicker)
-        assertEquals(
-            expected = NavigationCommand.Navigate(
-                PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
-            ),
-            actual = commands.single(),
-        )
-        assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
-    }
+            // Then
+            assertNull(viewModel.uiState.value?.customColorPicker)
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+                ),
+                actual = commands.single(),
+            )
+            assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
+        }
 
     @Test
-    fun `sends a free user to the paywall when a locked preset is tapped`() = runTest(testDispatcher) {
+    fun `GIVEN a free user WHEN tapping a locked preset THEN sends them to the paywall`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isPro = false)
 
@@ -198,27 +201,28 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `closing clears the selection and pops itself`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a selection WHEN closing the menu THEN clears the selection and pops itself`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = 1,
-            actual = clearedCount.size,
-        )
-        assertEquals(
-            expected = NavigationCommand.NavigateBack,
-            actual = commands.single(),
-        )
-    }
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = clearedCount.size,
+            )
+            assertEquals(
+                expected = NavigationCommand.NavigateBack,
+                actual = commands.single(),
+            )
+        }
 
     @Test
-    fun `does not navigate when the reader empties the selection`() = runTest(testDispatcher) {
+    fun `GIVEN a selection WHEN the reader empties it THEN does not navigate`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -297,7 +301,7 @@ internal class VerseSelectionViewModelTest {
         }
 
     @Test
-    fun `copies the passage as it is shared`() = runTest(testDispatcher) {
+    fun `GIVEN a selection WHEN copying it THEN copies the passage as it is shared`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -313,31 +317,32 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `opens the note editor for the selected passage`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a selection WHEN tapping note THEN opens the note editor for the selected passage`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = NavigationCommand.Navigate(
-                VerseNoteNavRoute(
-                    bibleVersionId = testChapter.bibleVersionId,
-                    bookId = testChapter.bookId.name,
-                    chapterNumber = testChapter.chapterNumber,
-                    verseNumbers = listOf(1, 2),
-                    noteId = null,
+            // Then
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    VerseNoteNavRoute(
+                        bibleVersionId = testChapter.bibleVersionId,
+                        bookId = testChapter.bookId.name,
+                        chapterNumber = testChapter.chapterNumber,
+                        verseNumbers = listOf(1, 2),
+                        noteId = null,
+                    ),
                 ),
-            ),
-            actual = commands.single(),
-        )
-    }
+                actual = commands.single(),
+            )
+        }
 
     @Test
-    fun `sends a free user at the verse notes limit to the free warning instead of a new note`() =
+    fun `GIVEN a free user at the verse notes limit WHEN tapping note THEN sends them to the free warning`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(isAddVerseNoteBlocked = true)
@@ -366,7 +371,7 @@ internal class VerseSelectionViewModelTest {
         }
 
     @Test
-    fun `opens a note the selection touches over the verses of the note even at the verse notes limit`() =
+    fun `GIVEN a selection touching a note at the verse notes limit WHEN tapping note THEN opens that note`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -397,7 +402,7 @@ internal class VerseSelectionViewModelTest {
         }
 
     @Test
-    fun `exposes the note the selection touches so the panel offers to view it`() = runTest(testDispatcher) {
+    fun `GIVEN a selection touching a note WHEN the state settles THEN exposes that note`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             noteIdByVerse = mapOf(
@@ -420,7 +425,7 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `opens sharing for the selected passage`() = runTest(testDispatcher) {
+    fun `GIVEN a selection WHEN tapping share THEN opens sharing for the selected passage`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -442,68 +447,71 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `tapping the color already on the selection removes the highlight`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isColorApplied = false)
+    fun `GIVEN the color already on the selection WHEN tapping it THEN removes the highlight`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isColorApplied = false)
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnHighlightColorClick(yellow))
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnHighlightColorClick(yellow))
+            runCurrent()
 
-        // Then
-        assertTrue(trackedEvents.contains("verse_highlight_removed"))
-    }
+            // Then
+            assertTrue(trackedEvents.contains("verse_highlight_removed"))
+        }
 
     @Test
-    fun `saves the custom color and applies it to the selection`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isPro = true)
-        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
-        viewModel.onEvent(
-            VerseSelectionUiEvent.OnCustomColorChange(
+    fun `GIVEN an edited custom color WHEN applying it THEN saves it and applies it to the selection`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPro = true)
+            viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+            viewModel.onEvent(
+                VerseSelectionUiEvent.OnCustomColorChange(
+                    hue = 120,
+                    lightness = 60,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorApplyClick)
+            runCurrent()
+
+            // Then
+            val customColor = HighlightColor.Custom(
                 hue = 120,
                 lightness = 60,
-            ),
-        )
-
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorApplyClick)
-        runCurrent()
-
-        // Then
-        val customColor = HighlightColor.Custom(
-            hue = 120,
-            lightness = 60,
-        )
-        assertEquals(
-            expected = listOf(customColor),
-            actual = addedCustomColors,
-        )
-        assertEquals(
-            expected = customColor,
-            actual = appliedHighlights.single().second,
-        )
-        assertNull(viewModel.uiState.value?.customColorPicker)
-        assertTrue(trackedEvents.contains("highlight_custom_color_created"))
-    }
+            )
+            assertEquals(
+                expected = listOf(customColor),
+                actual = addedCustomColors,
+            )
+            assertEquals(
+                expected = customColor,
+                actual = appliedHighlights.single().second,
+            )
+            assertNull(viewModel.uiState.value?.customColorPicker)
+            assertTrue(trackedEvents.contains("highlight_custom_color_created"))
+        }
 
     @Test
-    fun `cancelling the custom color picker closes it without saving`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isPro = true)
-        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+    fun `GIVEN an open custom color picker WHEN cancelling it THEN closes it without saving`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPro = true)
+            viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorCancelClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorCancelClick)
+            runCurrent()
 
-        // Then
-        assertNull(viewModel.uiState.value?.customColorPicker)
-        assertTrue(addedCustomColors.isEmpty())
-    }
+            // Then
+            assertNull(viewModel.uiState.value?.customColorPicker)
+            assertTrue(addedCustomColors.isEmpty())
+        }
 
     @Test
-    fun `long pressing a custom color opens its delete confirmation`() = runTest(testDispatcher) {
+    fun `GIVEN a custom color WHEN long pressing it THEN opens its delete confirmation`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val customColor = HighlightColor.Custom(
@@ -522,21 +530,22 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
-    fun `toggles the saved state of the whole selection`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a selection WHEN tapping save THEN toggles the saved state of the whole selection`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnToggleSavedClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnToggleSavedClick)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf(1, 2),
-            actual = toggledSavedRefs.single().map { it.verseNumber },
-        )
-        assertTrue(trackedEvents.contains("verse_saved_toggled"))
-    }
+            // Then
+            assertEquals(
+                expected = listOf(1, 2),
+                actual = toggledSavedRefs.single().map { it.verseNumber },
+            )
+            assertTrue(trackedEvents.contains("verse_saved_toggled"))
+        }
 
     private fun verseSelection(verseNumbers: List<Int>): VerseSelection = VerseSelection(
         chapter = testChapter,

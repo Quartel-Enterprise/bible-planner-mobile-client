@@ -30,7 +30,7 @@ internal class HighlightPaletteUseCasesTest {
     }
 
     @Test
-    fun `observes the custom colours of the palette`() = runTest {
+    fun `GIVEN a palette with a custom color WHEN observing it THEN emits its custom colors`() = runTest {
         // When
         val palette = observeHighlightPalette().first()
 
@@ -42,7 +42,7 @@ internal class HighlightPaletteUseCasesTest {
     }
 
     @Test
-    fun `an added colour shows up in the palette`() = runTest {
+    fun `GIVEN a palette with a custom color WHEN adding a new color THEN the palette shows both`() = runTest {
         // When
         addCustomHighlightColor(newColor)
 

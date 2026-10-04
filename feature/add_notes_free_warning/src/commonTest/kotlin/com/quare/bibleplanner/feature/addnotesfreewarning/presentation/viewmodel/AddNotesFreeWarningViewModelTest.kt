@@ -23,13 +23,17 @@ internal class AddNotesFreeWarningViewModelTest {
     private lateinit var trackedEvents: MutableList<String>
 
     @Test
-    fun `GIVEN the notes limit route WHEN the warning opens THEN exposes the free notes limit`() = runTest {
-        // When
-        prepareScenario()
+    fun `GIVEN an opened notes limit warning WHEN reading its free notes limit THEN exposes the limit of the route`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // Then
-        assertEquals(MAX_FREE_NOTES, viewModel.maxFreeNotesAmount)
-    }
+            // When
+            val maxFreeNotesAmount = viewModel.maxFreeNotesAmount
+
+            // Then
+            assertEquals(MAX_FREE_NOTES, maxFreeNotesAmount)
+        }
 
     @Test
     fun `GIVEN the warning WHEN subscribing to pro THEN replaces it with the notes limit paywall`() = runTest {

@@ -32,8 +32,11 @@ internal class DayStudyCardUiModelFactoryTest {
 
     @Test
     fun `GIVEN a locally cached study WHEN creating from cache THEN mode is view with loading quota`() = runTest {
+        // Given
+        val isPro = false
+
         // When
-        val card = factory.createFromCache(isPro = false)
+        val card = factory.createFromCache(isPro = isPro)
 
         // Then
         assertEquals(DayStudyCardMode.VIEW, card.mode)
@@ -43,8 +46,11 @@ internal class DayStudyCardUiModelFactoryTest {
 
     @Test
     fun `GIVEN a pro user with a locally cached study WHEN creating from cache THEN pro flag is kept`() = runTest {
+        // Given
+        val isPro = true
+
         // When
-        val card = factory.createFromCache(isPro = true)
+        val card = factory.createFromCache(isPro = isPro)
 
         // Then
         assertEquals(DayStudyCardMode.VIEW, card.mode)

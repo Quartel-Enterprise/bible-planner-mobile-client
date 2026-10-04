@@ -23,7 +23,7 @@ internal class SavedVerseRepositoryImplTest {
     private lateinit var dao: FakeSavedVerseDao
 
     @Test
-    fun `observes the saved verse numbers of the chapter`() = runTest {
+    fun `GIVEN stored saved verse rows WHEN observing a chapter THEN emits its saved verse numbers`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -54,7 +54,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `reports all saved only when every requested verse is saved`() = runTest {
+    fun `GIVEN every requested verse saved WHEN checking if all are saved THEN reports true`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -77,7 +77,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `reports not all saved when one verse was unsaved or never saved`() = runTest {
+    fun `GIVEN an unsaved and a never saved verse WHEN checking if all are saved THEN reports false`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -100,7 +100,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `reports not all saved for an empty selection`() = runTest {
+    fun `GIVEN an empty selection WHEN checking if all are saved THEN reports false`() = runTest {
         // Given
         prepareScenario()
 
@@ -112,7 +112,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `writes only the verses whose saved state changes as pending`() = runTest {
+    fun `GIVEN a saved verse WHEN saving it with another THEN writes only the changed verse as pending`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -148,7 +148,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `unsaving keeps the row as a pending unsaved tombstone`() = runTest {
+    fun `GIVEN a saved verse WHEN unsaving it THEN keeps the row as a pending unsaved tombstone`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -180,7 +180,7 @@ internal class SavedVerseRepositoryImplTest {
     }
 
     @Test
-    fun `writes nothing when the verses are already in the requested state`() = runTest {
+    fun `GIVEN verses already in the requested state WHEN setting it THEN writes nothing`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -210,51 +210,52 @@ internal class SavedVerseRepositoryImplTest {
     )
 
     @Test
-    fun `observes every saved verse of the version with its timestamp`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    isSaved = true,
-                ),
-                entity(
-                    verseNumber = 2,
-                    isSaved = false,
-                ),
-                entity(
-                    verseNumber = 3,
-                    isSaved = true,
-                    chapterNumber = 7,
-                    updatedAt = NOW,
-                ),
-            ),
-        )
-
-        // When
-        val savedVerses = repository.observeVersionSavedVerses(testChapter.bibleVersionId).first()
-
-        // Then
-        assertEquals(
-            expected = setOf(
-                SavedVerse(
-                    ref = VerseRef(
-                        chapter = testChapter,
+    fun `GIVEN stored saved verse rows WHEN observing a version THEN emits each saved verse with its timestamp`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
                         verseNumber = 1,
+                        isSaved = true,
                     ),
-                    updatedAtEpochMillis = OLD_TIMESTAMP,
-                ),
-                SavedVerse(
-                    ref = VerseRef(
-                        chapter = testChapter.copy(chapterNumber = 7),
+                    entity(
+                        verseNumber = 2,
+                        isSaved = false,
+                    ),
+                    entity(
                         verseNumber = 3,
+                        isSaved = true,
+                        chapterNumber = 7,
+                        updatedAt = NOW,
                     ),
-                    updatedAtEpochMillis = NOW,
                 ),
-            ),
-            actual = savedVerses.toSet(),
-        )
-    }
+            )
+
+            // When
+            val savedVerses = repository.observeVersionSavedVerses(testChapter.bibleVersionId).first()
+
+            // Then
+            assertEquals(
+                expected = setOf(
+                    SavedVerse(
+                        ref = VerseRef(
+                            chapter = testChapter,
+                            verseNumber = 1,
+                        ),
+                        updatedAtEpochMillis = OLD_TIMESTAMP,
+                    ),
+                    SavedVerse(
+                        ref = VerseRef(
+                            chapter = testChapter.copy(chapterNumber = 7),
+                            verseNumber = 3,
+                        ),
+                        updatedAtEpochMillis = NOW,
+                    ),
+                ),
+                actual = savedVerses.toSet(),
+            )
+        }
 
     private fun entity(
         verseNumber: Int,

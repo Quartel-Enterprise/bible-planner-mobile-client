@@ -8,7 +8,8 @@ class DataClassOwnFileRuleTest {
     private val dataClassOwnFileRuleAssertThat = assertThatRule { DataClassOwnFileRule() }
 
     @Test
-    fun `flags each data class grouped with another one`() {
+    fun `GIVEN two data classes grouped in one file WHEN linting THEN reports each of them`() {
+        // Given
         val code =
             """
             data class DayStudy(val id: Long)
@@ -16,15 +17,19 @@ class DataClassOwnFileRuleTest {
             data class DayStudyFact(val text: String)
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(1, 12, buildViolationMessage("DayStudy", "DayStudyFact")),
-                LintViolation(3, 12, buildViolationMessage("DayStudyFact", "DayStudy")),
-            )
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(1, 12, buildViolationMessage("DayStudy", "DayStudyFact")),
+            LintViolation(3, 12, buildViolationMessage("DayStudyFact", "DayStudy")),
+        )
     }
 
     @Test
-    fun `flags an enum declared next to the class that uses it`() {
+    fun `GIVEN an enum declared next to the class that uses it WHEN linting THEN reports both`() {
+        // Given
         val code =
             """
             data class SettingsUiState(val theme: ThemeOption)
@@ -32,15 +37,19 @@ class DataClassOwnFileRuleTest {
             enum class ThemeOption { LIGHT, DARK }
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(1, 12, buildViolationMessage("SettingsUiState", "ThemeOption")),
-                LintViolation(3, 12, buildViolationMessage("ThemeOption", "SettingsUiState")),
-            )
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(1, 12, buildViolationMessage("SettingsUiState", "ThemeOption")),
+            LintViolation(3, 12, buildViolationMessage("ThemeOption", "SettingsUiState")),
+        )
     }
 
     @Test
-    fun `flags a private data class next to a regular class`() {
+    fun `GIVEN a private data class next to a regular class WHEN linting THEN reports the data class`() {
+        // Given
         val code =
             """
             class RecordingLogWriter
@@ -48,12 +57,16 @@ class DataClassOwnFileRuleTest {
             private data class LogEntry(val tag: String)
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 20, buildViolationMessage("LogEntry", "RecordingLogWriter"))
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 20, buildViolationMessage("LogEntry", "RecordingLogWriter"))
     }
 
     @Test
-    fun `allows a data class alone in its file, next to top-level functions`() {
+    fun `GIVEN a data class alone in its file next to top-level functions WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class BookDataModel(val id: String)
@@ -61,11 +74,16 @@ class DataClassOwnFileRuleTest {
             fun BookDataModel.isEmpty(): Boolean = id.isEmpty()
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows data classes nested in a sealed hierarchy`() {
+    fun `GIVEN data classes nested in a sealed hierarchy WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             sealed interface LoginUiEvent {
@@ -75,11 +93,16 @@ class DataClassOwnFileRuleTest {
             }
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a data class nested in the class that owns it`() {
+    fun `GIVEN a data class nested in the class that owns it WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class ProfileUiStateFactory {
@@ -87,11 +110,16 @@ class DataClassOwnFileRuleTest {
             }
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a file of regular classes`() {
+    fun `GIVEN a file of regular classes WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class FakeClock
@@ -99,7 +127,11 @@ class DataClassOwnFileRuleTest {
             class FakeLogger
             """.trimIndent()
 
-        dataClassOwnFileRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassOwnFileRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

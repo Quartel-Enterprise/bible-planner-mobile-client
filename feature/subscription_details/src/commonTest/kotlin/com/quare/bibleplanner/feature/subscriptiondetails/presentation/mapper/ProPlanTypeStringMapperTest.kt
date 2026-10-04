@@ -11,8 +11,11 @@ import kotlin.test.assertEquals
 internal class ProPlanTypeStringMapperTest {
     @Test
     fun `GIVEN a monthly plan WHEN mapping it THEN names the monthly pro plan`() {
+        // Given
+        val plan = ProPlanType.MONTHLY
+
         // When
-        val label = ProPlanType.MONTHLY.toStringResource()
+        val label = plan.toStringResource()
 
         // Then
         assertEquals(Res.string.plan_value_pro_monthly, label)
@@ -20,8 +23,11 @@ internal class ProPlanTypeStringMapperTest {
 
     @Test
     fun `GIVEN an annual plan WHEN mapping it THEN names the annual pro plan`() {
+        // Given
+        val plan = ProPlanType.ANNUAL
+
         // When
-        val label = ProPlanType.ANNUAL.toStringResource()
+        val label = plan.toStringResource()
 
         // Then
         assertEquals(Res.string.plan_value_pro_annual, label)
@@ -29,8 +35,11 @@ internal class ProPlanTypeStringMapperTest {
 
     @Test
     fun `GIVEN an unknown plan WHEN mapping it THEN names the generic pro plan`() {
+        // Given
+        val plan = ProPlanType.UNKNOWN
+
         // When
-        val label = ProPlanType.UNKNOWN.toStringResource()
+        val label = plan.toStringResource()
 
         // Then
         assertEquals(Res.string.plan_value_pro, label)

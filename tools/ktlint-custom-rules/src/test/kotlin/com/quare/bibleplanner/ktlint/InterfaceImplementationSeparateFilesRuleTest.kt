@@ -7,7 +7,8 @@ class InterfaceImplementationSeparateFilesRuleTest {
     private val separateFilesRuleAssertThat = assertThatRule { InterfaceImplementationSeparateFilesRule() }
 
     @Test
-    fun `flags a class implementing an interface declared in the same file`() {
+    fun `GIVEN a class implementing an interface declared in the same file WHEN linting THEN reports the class`() {
+        // Given
         val code =
             """
             internal fun interface MediaItemFactory {
@@ -19,16 +20,20 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(
-                5,
-                16,
-                buildViolationMessage("AndroidMediaItemFactory", "MediaItemFactory"),
-            )
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
+            5,
+            16,
+            buildViolationMessage("AndroidMediaItemFactory", "MediaItemFactory"),
+        )
     }
 
     @Test
-    fun `flags an object implementing an interface declared in the same file`() {
+    fun `GIVEN an object implementing an interface declared in the same file WHEN linting THEN reports the object`() {
+        // Given
         val code =
             """
             interface Greeter {
@@ -40,12 +45,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(5, 8, buildViolationMessage("LoudGreeter", "Greeter"))
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(5, 8, buildViolationMessage("LoudGreeter", "Greeter"))
     }
 
     @Test
-    fun `flags the implementation even when the interface comes after a superclass`() {
+    fun `GIVEN an implementation listing the interface after a superclass WHEN linting THEN reports the class`() {
+        // Given
         val code =
             """
             interface Launcher {
@@ -57,12 +66,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(5, 7, buildViolationMessage("ServiceLauncher", "Launcher"))
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(5, 7, buildViolationMessage("ServiceLauncher", "Launcher"))
     }
 
     @Test
-    fun `allows a sealed interface with its cases in the same file`() {
+    fun `GIVEN a sealed interface with its cases in the same file WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             sealed interface AlbumUiState {
@@ -72,11 +85,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private interface next to its only implementation`() {
+    fun `GIVEN a private interface next to its only implementation WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private interface Step {
@@ -88,11 +106,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a default implementation nested inside the interface`() {
+    fun `GIVEN a default implementation nested inside the interface WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             interface Clock {
@@ -104,11 +127,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a class implementing an interface from another file`() {
+    fun `GIVEN a class implementing an interface from another file WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class ForegroundPlaybackServiceLauncher : PlaybackServiceLauncher {
@@ -116,11 +144,16 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an interface on its own`() {
+    fun `GIVEN an interface on its own WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun interface PlaybackServiceLauncher {
@@ -128,7 +161,11 @@ class InterfaceImplementationSeparateFilesRuleTest {
             }
             """.trimIndent()
 
-        separateFilesRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = separateFilesRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

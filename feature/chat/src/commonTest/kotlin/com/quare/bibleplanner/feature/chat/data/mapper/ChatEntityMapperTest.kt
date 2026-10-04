@@ -15,6 +15,7 @@ internal class ChatEntityMapperTest {
 
     @Test
     fun `GIVEN a conversation WHEN caching and reading it back THEN nothing is lost`() {
+        // Given
         val conversation = ChatConversationModel(
             id = "conversation-1",
             title = "Caim e Abel",
@@ -28,11 +29,16 @@ internal class ChatEntityMapperTest {
             updatedAt = updatedAt,
         )
 
-        assertEquals(conversation, mapper.mapConversation(mapper.mapConversation(conversation)))
+        // When
+        val cached = mapper.mapConversation(conversation)
+
+        // Then
+        assertEquals(conversation, mapper.mapConversation(cached))
     }
 
     @Test
     fun `GIVEN a context-free conversation WHEN caching it THEN the empty fields survive`() {
+        // Given
         val conversation = ChatConversationModel(
             id = "conversation-2",
             title = "Uma dúvida",
@@ -42,11 +48,16 @@ internal class ChatEntityMapperTest {
             updatedAt = updatedAt,
         )
 
-        assertEquals(conversation, mapper.mapConversation(mapper.mapConversation(conversation)))
+        // When
+        val cached = mapper.mapConversation(conversation)
+
+        // Then
+        assertEquals(conversation, mapper.mapConversation(cached))
     }
 
     @Test
     fun `GIVEN a streamed answer WHEN caching it THEN it comes back as a settled message`() {
+        // Given
         val message = ChatMessageModel(
             id = "message-1",
             role = ChatRoleModel.ASSISTANT,
@@ -56,17 +67,20 @@ internal class ChatEntityMapperTest {
             createdAt = updatedAt,
         )
 
+        // When
         val cached = mapper.mapMessage(
             conversationId = "conversation-1",
             model = message,
         )
 
+        // Then
         assertEquals(message.copy(isStreaming = false), mapper.mapMessage(cached))
         assertFalse(mapper.mapMessage(cached).isStreaming)
     }
 
     @Test
     fun `GIVEN a question WHEN caching it THEN its author survives the round trip`() {
+        // Given
         val message = ChatMessageModel(
             id = "message-2",
             role = ChatRoleModel.USER,
@@ -76,11 +90,13 @@ internal class ChatEntityMapperTest {
             createdAt = updatedAt,
         )
 
+        // When
         val cached = mapper.mapMessage(
             conversationId = "conversation-1",
             model = message,
         )
 
+        // Then
         assertEquals("conversation-1", cached.conversationId)
         assertEquals(message, mapper.mapMessage(cached))
     }

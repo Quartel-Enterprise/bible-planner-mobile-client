@@ -13,11 +13,12 @@ import kotlin.test.assertTrue
 internal class SnapshotPullerTest {
     private val trackedEvents = mutableListOf<String>()
     private val appliedNames = mutableListOf<String>()
+    private lateinit var puller: SnapshotPuller
 
     @Test
     fun `GIVEN all pulls succeed WHEN pulling THEN tracks a single sync_completed`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(name = "first"),
             FakeSynchronizer(name = "second"),
         )
@@ -32,7 +33,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN one fetch fails WHEN pulling THEN tracks a single sync_failed`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(name = "first"),
             FakeSynchronizer(
                 name = "second",
@@ -50,7 +51,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN one apply fails WHEN pulling THEN tracks a single sync_failed`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "first",
                 shouldFailApply = true,
@@ -68,7 +69,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN every fetch fails WHEN pulling THEN tracks a single sync_failed`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "first",
                 shouldFailFetch = true,
@@ -89,7 +90,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN an early fetch failure WHEN pulling THEN the remaining snapshots are still applied`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "failing",
                 shouldFailFetch = true,
@@ -107,7 +108,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN an early apply failure WHEN pulling THEN the remaining snapshots are still applied`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "failing",
                 shouldFailApply = true,
@@ -125,7 +126,7 @@ internal class SnapshotPullerTest {
     @Test
     fun `GIVEN slow fetches WHEN pulling THEN they run concurrently`() = runTest {
         // Given
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "first",
                 fetchDelayMillis = FETCH_DELAY_MILLIS,
@@ -152,7 +153,7 @@ internal class SnapshotPullerTest {
     fun `GIVEN fetches finishing out of order WHEN pulling THEN snapshots are applied in registration order`() =
         runTest {
             // Given
-            val puller = prepareScenario(
+            prepareScenario(
                 FakeSynchronizer(
                     name = "chapters",
                     fetchDelayMillis = FETCH_DELAY_MILLIS * 2,
@@ -174,7 +175,7 @@ internal class SnapshotPullerTest {
     fun `GIVEN a pull WHEN applying THEN every fetch completes before the first apply`() = runTest {
         // Given
         val events = mutableListOf<String>()
-        val puller = prepareScenario(
+        prepareScenario(
             FakeSynchronizer(
                 name = "first",
                 events = events,
@@ -193,9 +194,9 @@ internal class SnapshotPullerTest {
         assertTrue(events.indexOf("fetched:second") < events.indexOf("applied:first"))
     }
 
-    private fun prepareScenario(vararg synchronizers: FakeSynchronizer): SnapshotPuller {
+    private fun prepareScenario(vararg synchronizers: FakeSynchronizer) {
         synchronizers.forEach { it.appliedNames = appliedNames }
-        return SnapshotPuller(
+        puller = SnapshotPuller(
             synchronizers = synchronizers.toList(),
             trackEvent = { name, _ -> trackedEvents += name },
         )

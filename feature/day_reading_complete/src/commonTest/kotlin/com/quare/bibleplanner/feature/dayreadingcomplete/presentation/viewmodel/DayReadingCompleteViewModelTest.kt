@@ -105,10 +105,14 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
-    fun `loads a free user with quota as free with quota`() = runTest(testDispatcher) {
+    fun `GIVEN a free user with quota WHEN loading THEN shows free with quota`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+
+        // When
         runCurrent()
 
+        // Then
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
         assertEquals(DayTimingState.ON_TIME, state.timing)
@@ -116,10 +120,14 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
-    fun `loads a free user with no quota left as free exhausted`() = runTest(testDispatcher) {
+    fun `GIVEN a free user with no quota left WHEN loading THEN shows free exhausted`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+
+        // When
         runCurrent()
 
+        // Then
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
         assertEquals(
@@ -133,33 +141,44 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
-    fun `loads a pro user as pro regardless of quota`() = runTest(testDispatcher) {
+    fun `GIVEN a pro user with no quota left WHEN loading THEN shows pro`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = true, freeLimit = 3, usedCount = 3)
+
+        // When
         runCurrent()
 
+        // Then
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
         assertEquals(StudyCtaState.Pro, state.ctaState.valueOrNull())
     }
 
     @Test
-    fun `stays loading when the day cannot be found`() = runTest(testDispatcher) {
+    fun `GIVEN a day that cannot be found WHEN loading THEN stays loading`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 0, day = null)
+
+        // When
         runCurrent()
 
+        // Then
         assertEquals(DayReadingCompleteUiState.Loading, viewModel.uiState.value)
         assertTrue(actions.isEmpty())
         assertTrue(commands.isEmpty())
     }
 
     @Test
-    fun `tapping the cta while exhausted opens the paywall`() = runTest(testDispatcher) {
+    fun `GIVEN an exhausted quota WHEN tapping the cta THEN opens the paywall`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
         runCurrent()
 
+        // When
         viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
         runCurrent()
 
+        // Then
         assertEquals(
             expected = NavigationCommand.Navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY)),
             actual = commands.last(),
@@ -167,62 +186,77 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
-    fun `tapping the cta while exhausted with a video on offer opens the unlock sheet`() = runTest(testDispatcher) {
-        isRewardedUnlockOffered = true
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
-        runCurrent()
+    fun `GIVEN an exhausted quota with a video on offer WHEN tapping the cta THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            runCurrent()
 
-        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
-        runCurrent()
+            // When
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+            runCurrent()
 
-        assertEquals(
-            expected = NavigationCommand.Navigate(
-                StudyUnlockNavRoute(
-                    surface = StudyUnlockSurface.DAY_READING_COMPLETE,
-                    paywallSource = PaywallEntrySource.DAY_STUDY,
-                    requestKey = SHEET_REQUEST_KEY,
-                    rewardedRemainingToday = 2,
+            // Then
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    StudyUnlockNavRoute(
+                        surface = StudyUnlockSurface.DAY_READING_COMPLETE,
+                        paywallSource = PaywallEntrySource.DAY_STUDY,
+                        requestKey = SHEET_REQUEST_KEY,
+                        rewardedRemainingToday = 2,
+                    ),
                 ),
-            ),
-            actual = commands.last(),
-        )
-    }
+                actual = commands.last(),
+            )
+        }
 
     @Test
-    fun `an earned reward starts a rewarded generation and opens the study`() = runTest(testDispatcher) {
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
-        runCurrent()
-        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
-        runCurrent()
+    fun `GIVEN the unlock sheet open WHEN a reward is earned THEN starts a rewarded generation and opens the study`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            runCurrent()
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+            runCurrent()
 
-        studyUnlockResultStore.publishEarned(SHEET_REQUEST_KEY)
-        runCurrent()
+            // When
+            studyUnlockResultStore.publishEarned(SHEET_REQUEST_KEY)
+            runCurrent()
 
-        assertEquals(listOf(true), coordinator.startedRewardFlags)
-        assertEquals("Gênesis 1-3", coordinator.startedJobs.single().third)
-        assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
-    }
-
-    @Test
-    fun `tapping the cta with an unserved reward retries it without another video`() = runTest(testDispatcher) {
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
-        runCurrent()
-        coordinator.unservedRewardKeys += SHEET_GENERATION_KEY
-
-        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
-        runCurrent()
-
-        assertEquals(listOf(true), coordinator.startedRewardFlags)
-    }
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
+            assertEquals("Gênesis 1-3", coordinator.startedJobs.single().third)
+            assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
+        }
 
     @Test
-    fun `tapping the cta with quota left starts generation and opens the study`() = runTest(testDispatcher) {
+    fun `GIVEN an unserved reward WHEN tapping the cta THEN retries it without another video`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            runCurrent()
+            coordinator.unservedRewardKeys += SHEET_GENERATION_KEY
+
+            // When
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
+        }
+
+    @Test
+    fun `GIVEN quota left WHEN tapping the cta THEN starts generation and opens the study`() = runTest(testDispatcher) {
+        // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
         runCurrent()
 
+        // When
         viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
         runCurrent()
 
+        // Then
         assertEquals(1, coordinator.startedJobs.size)
         assertEquals(
             expected = NavigationCommand.NavigateReplacingTop(
@@ -237,147 +271,188 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
-    fun `tapping the cta while logged out asks the reader to sign in first`() = runTest(testDispatcher) {
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, isLoggedIn = false)
-        runCurrent()
+    fun `GIVEN a logged out reader WHEN tapping the cta THEN asks the reader to sign in first`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, isLoggedIn = false)
+            runCurrent()
 
-        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
-        runCurrent()
+            // When
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+            runCurrent()
 
-        assertTrue(coordinator.startedJobs.isEmpty())
-        assertEquals(
-            expected = NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
-            actual = commands.last(),
-        )
-    }
-
-    @Test
-    fun `shows the celebration while the quota is still loading`() = runTest(testDispatcher) {
-        // Given
-        val quotaGate = CompletableDeferred<Unit>()
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
-
-        // When
-        runCurrent()
-
-        // Then
-        val state = viewModel.uiState.value
-        assertIs<DayReadingCompleteUiState.Loaded>(state)
-        assertEquals(DayTimingState.ON_TIME, state.timing)
-        assertEquals(Loadable.Loading, state.ctaState)
-        assertTrue(trackedEvents.isEmpty())
-
-        // When
-        quotaGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        val loadedState = viewModel.uiState.value
-        assertIs<DayReadingCompleteUiState.Loaded>(loadedState)
-        assertEquals(
-            expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
-            actual = loadedState.ctaState.valueOrNull(),
-        )
-    }
+            // Then
+            assertTrue(coordinator.startedJobs.isEmpty())
+            assertEquals(
+                expected = NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
+                actual = commands.last(),
+            )
+        }
 
     @Test
-    fun `shows a prefetched quota before the fresh one answers`() = runTest(testDispatcher) {
-        // Given
-        val quotaGate = CompletableDeferred<Unit>()
-        val viewModel = viewModel(
-            isPro = false,
-            freeLimit = 3,
-            usedCount = 3,
-            quotaGate = quotaGate,
-            prefetchedQuota = DayStudyQuotaModel(
+    fun `GIVEN the quota still loading WHEN loading THEN shows the celebration without tracking`() =
+        runTest(testDispatcher) {
+            // Given
+            val quotaGate = CompletableDeferred<Unit>()
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
+
+            // When
+            runCurrent()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertIs<DayReadingCompleteUiState.Loaded>(state)
+            assertEquals(DayTimingState.ON_TIME, state.timing)
+            assertEquals(Loadable.Loading, state.ctaState)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the celebration shown while the quota loads WHEN the quota answers THEN shows free with quota`() =
+        runTest(testDispatcher) {
+            // Given
+            val quotaGate = CompletableDeferred<Unit>()
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
+            runCurrent()
+
+            // When
+            quotaGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            val loadedState = viewModel.uiState.value
+            assertIs<DayReadingCompleteUiState.Loaded>(loadedState)
+            assertEquals(
+                expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+                actual = loadedState.ctaState.valueOrNull(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a prefetched quota and a fresh one pending WHEN loading THEN shows the prefetched quota`() =
+        runTest(testDispatcher) {
+            // Given
+            val quotaGate = CompletableDeferred<Unit>()
+            val viewModel = viewModel(
+                isPro = false,
                 freeLimit = 3,
-                remainingFree = 2,
-                isUnlockedForDay = false,
-                hasLocalStudy = false,
-                rewardedRemainingToday = 0,
-            ),
-        )
+                usedCount = 3,
+                quotaGate = quotaGate,
+                prefetchedQuota = DayStudyQuotaModel(
+                    freeLimit = 3,
+                    remainingFree = 2,
+                    isUnlockedForDay = false,
+                    hasLocalStudy = false,
+                    rewardedRemainingToday = 0,
+                ),
+            )
 
-        // When
-        runCurrent()
+            // When
+            runCurrent()
 
-        // Then
-        val state = viewModel.uiState.value
-        assertIs<DayReadingCompleteUiState.Loaded>(state)
-        assertEquals(
-            expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
-            actual = state.ctaState.valueOrNull(),
-        )
-
-        // When
-        quotaGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        val refreshedState = viewModel.uiState.value
-        assertIs<DayReadingCompleteUiState.Loaded>(refreshedState)
-        assertEquals(
-            expected = StudyCtaState.FreeExhausted(
-                limit = 3,
-                isRewardedUnlockOffered = false,
-                rewardedRemainingToday = 2,
-            ),
-            actual = refreshedState.ctaState.valueOrNull(),
-        )
-    }
+            // Then
+            val state = viewModel.uiState.value
+            assertIs<DayReadingCompleteUiState.Loaded>(state)
+            assertEquals(
+                expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+                actual = state.ctaState.valueOrNull(),
+            )
+        }
 
     @Test
-    fun `tracks the shown event with the day, timing and account state`() = runTest(testDispatcher) {
-        // Given
-        viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+    fun `GIVEN a prefetched quota shown WHEN the fresh quota answers THEN shows the fresh quota`() =
+        runTest(testDispatcher) {
+            // Given
+            val quotaGate = CompletableDeferred<Unit>()
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 3,
+                quotaGate = quotaGate,
+                prefetchedQuota = DayStudyQuotaModel(
+                    freeLimit = 3,
+                    remainingFree = 2,
+                    isUnlockedForDay = false,
+                    hasLocalStudy = false,
+                    rewardedRemainingToday = 0,
+                ),
+            )
+            runCurrent()
 
-        // When
-        runCurrent()
+            // When
+            quotaGate.complete(Unit)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = "day_reading_complete_shown" to mapOf<String, Any>(
-                "plan_type" to "chronological",
-                "week_number" to 1,
-                "day_number" to 1,
-                "timing" to "on_time",
-                "account_state" to "free",
-                "chapter_count" to 3,
-            ),
-            actual = trackedEvents.single { (name, _) -> name == "day_reading_complete_shown" },
-        )
-    }
+            // Then
+            val refreshedState = viewModel.uiState.value
+            assertIs<DayReadingCompleteUiState.Loaded>(refreshedState)
+            assertEquals(
+                expected = StudyCtaState.FreeExhausted(
+                    limit = 3,
+                    isRewardedUnlockOffered = false,
+                    rewardedRemainingToday = 2,
+                ),
+                actual = refreshedState.ctaState.valueOrNull(),
+            )
+        }
 
     @Test
-    fun `never show again disables the suggestion, confirms it and closes the sheet`() = runTest(testDispatcher) {
+    fun `GIVEN a free user on time WHEN loading THEN tracks the shown event with the day timing and account state`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+
+            // When
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = "day_reading_complete_shown" to mapOf<String, Any>(
+                    "plan_type" to "chronological",
+                    "week_number" to 1,
+                    "day_number" to 1,
+                    "timing" to "on_time",
+                    "account_state" to "free",
+                    "chapter_count" to 3,
+                ),
+                actual = trackedEvents.single { (name, _) -> name == "day_reading_complete_shown" },
+            )
+        }
+
+    @Test
+    fun `GIVEN the loaded sheet WHEN tapping never show again THEN disables the suggestion confirms and closes`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+            runCurrent()
+
+            // When
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnNeverShowAgainClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(false),
+                actual = disabledSuggestions,
+            )
+            assertIs<DayReadingCompleteUiAction.ShowSnackBar>(actions.last())
+            assertEquals(
+                expected = NavigationCommand.NavigateBack,
+                actual = commands.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the loaded sheet WHEN dismissing THEN navigates back`() = runTest(testDispatcher) {
         // Given
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
         runCurrent()
 
         // When
-        viewModel.onEvent(DayReadingCompleteUiEvent.OnNeverShowAgainClick)
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = listOf(false),
-            actual = disabledSuggestions,
-        )
-        assertIs<DayReadingCompleteUiAction.ShowSnackBar>(actions.last())
-        assertEquals(
-            expected = NavigationCommand.NavigateBack,
-            actual = commands.last(),
-        )
-    }
-
-    @Test
-    fun `dismissing navigates back`() = runTest(testDispatcher) {
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
-        runCurrent()
-
         viewModel.onEvent(DayReadingCompleteUiEvent.OnDismiss)
         runCurrent()
 
+        // Then
         assertEquals(
             expected = NavigationCommand.NavigateBack,
             actual = commands.last(),

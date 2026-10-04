@@ -19,8 +19,13 @@ internal class ChatDraftLocalStoreTest {
 
     @Test
     fun `GIVEN no local row WHEN a remote draft arrives THEN it is inserted as synced`() = runTest {
-        store.applyRemote(remoteDraft(content = "Por que"))
+        // Given
+        val remote = remoteDraft(content = "Por que")
 
+        // When
+        store.applyRemote(remote)
+
+        // Then
         val row = dao.rows.value[THREAD_KEY]
         assertEquals("Por que", row?.content)
         assertEquals(false, row?.isPendingSync)
@@ -28,6 +33,7 @@ internal class ChatDraftLocalStoreTest {
 
     @Test
     fun `GIVEN a pending local row WHEN an older remote arrives THEN the local edit survives`() = runTest {
+        // Given
         dao.rows.value = mapOf(
             THREAD_KEY to ChatDraftEntity(
                 threadKey = THREAD_KEY,
@@ -37,6 +43,7 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // When
         store.applyRemote(
             remoteDraft(
                 content = "Por",
@@ -44,12 +51,14 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // Then
         assertEquals("Por que Caim", dao.rows.value[THREAD_KEY]?.content)
         assertEquals(true, dao.rows.value[THREAD_KEY]?.isPendingSync)
     }
 
     @Test
     fun `GIVEN a synced local row WHEN a newer remote arrives THEN it wins`() = runTest {
+        // Given
         dao.rows.value = mapOf(
             THREAD_KEY to ChatDraftEntity(
                 threadKey = THREAD_KEY,
@@ -59,6 +68,7 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // When
         store.applyRemote(
             remoteDraft(
                 content = "Por que",
@@ -66,11 +76,13 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // Then
         assertEquals("Por que", dao.rows.value[THREAD_KEY]?.content)
     }
 
     @Test
     fun `GIVEN a re-touched row WHEN marking the old push synced THEN the pending flag survives`() = runTest {
+        // Given
         dao.rows.value = mapOf(
             THREAD_KEY to ChatDraftEntity(
                 threadKey = THREAD_KEY,
@@ -80,6 +92,7 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // When
         store.markSynced(
             ChatDraftEntity(
                 threadKey = THREAD_KEY,
@@ -89,11 +102,13 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // Then
         assertEquals(true, dao.rows.value[THREAD_KEY]?.isPendingSync)
     }
 
     @Test
     fun `GIVEN local state WHEN clearing THEN nothing is left`() = runTest {
+        // Given
         dao.rows.value = mapOf(
             THREAD_KEY to ChatDraftEntity(
                 threadKey = THREAD_KEY,
@@ -103,8 +118,10 @@ internal class ChatDraftLocalStoreTest {
             ),
         )
 
+        // When
         store.clearLocal()
 
+        // Then
         assertTrue(dao.rows.value.isEmpty())
         assertNull(dao.rows.value[THREAD_KEY])
     }
@@ -133,10 +150,13 @@ internal class ChatDraftLocalStoreTest {
 
     @Test
     fun `GIVEN a local row WHEN preparing it for the server THEN it carries the user and its text`() {
+        // Given
+        val entity = draftRow(isPendingSync = true)
+
         // When
         val dto = store.toDto(
             userId = "user-1",
-            entity = draftRow(isPendingSync = true),
+            entity = entity,
         )
 
         // Then

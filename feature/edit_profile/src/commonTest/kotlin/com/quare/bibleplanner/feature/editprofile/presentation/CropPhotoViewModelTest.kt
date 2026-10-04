@@ -48,7 +48,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `keeps the zoom within its bounds`() = runTest {
+    fun `GIVEN the crop screen WHEN zooming beyond the maximum THEN keeps the zoom within its bounds`() = runTest {
         // Given
         val viewModel = viewModel()
 
@@ -61,7 +61,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `mirrors the photo when the user flips it`() = runTest {
+    fun `GIVEN the crop screen WHEN flipping horizontally THEN mirrors the photo`() = runTest {
         // Given
         val viewModel = viewModel()
 
@@ -73,7 +73,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `turns the photo a quarter clockwise on each rotate tap`() = runTest {
+    fun `GIVEN an unrotated photo WHEN tapping rotate twice THEN turns it a quarter clockwise on each tap`() = runTest {
         // Given
         val viewModel = viewModel()
 
@@ -86,20 +86,22 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `ignores confirm until the image has loaded`() = runTest {
-        // Given — the decoder never completes, so no image is ready
+    fun `GIVEN an image that has not loaded WHEN confirming THEN ignores the confirm`() = runTest {
+        // Given
+        // The decoder never completes, so no image is ready
         val viewModel = viewModel()
 
         // When
         viewModel.onEvent(CropPhotoUiEvent.OnConfirmClick)
         advanceUntilIdle()
 
-        // Then — nothing is cropped or saved before the image loads
+        // Then
+        // Nothing is cropped or saved before the image loads
         assertTrue(savedPhotos.isEmpty())
     }
 
     @Test
-    fun `navigates back when the user cancels`() = runTest {
+    fun `GIVEN the crop screen WHEN cancelling THEN navigates back`() = runTest {
         // When
         val actions = actionsAfter(CropPhotoUiEvent.OnCancelClick)
 
@@ -109,8 +111,9 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `navigates back and warns when the image cannot be decoded`() = runTest {
-        // Given — a decoder that returns null (unreadable image)
+    fun `GIVEN an image that cannot be decoded WHEN loading it THEN navigates back and warns`() = runTest {
+        // Given
+        // A decoder that returns null (unreadable image)
         val viewModel = viewModel(decode = { Result.failure(IllegalStateException("boom")) })
         val actions = mutableListOf<CropPhotoUiAction>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -130,7 +133,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `shows the photo once it is decoded`() = runTest {
+    fun `GIVEN a decodable image WHEN loading it THEN shows the photo`() = runTest {
         // Given
         val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
 
@@ -142,7 +145,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `keeps the pan inside the photo edges`() = runTest {
+    fun `GIVEN a measured viewport WHEN panning beyond the photo edges THEN keeps the pan inside them`() = runTest {
         // Given
         val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
         advanceUntilIdle()
@@ -170,7 +173,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `lets the photo pan further when the user pinches to zoom in`() = runTest {
+    fun `GIVEN a measured viewport WHEN pinching to zoom in THEN lets the photo pan further`() = runTest {
         // Given
         val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
         advanceUntilIdle()
@@ -199,7 +202,7 @@ class CropPhotoViewModelTest {
     }
 
     @Test
-    fun `turns the photo upside down when the user flips it vertically`() = runTest {
+    fun `GIVEN the crop screen WHEN flipping vertically THEN turns the photo upside down`() = runTest {
         // Given
         val viewModel = viewModel()
 

@@ -50,19 +50,20 @@ internal class BibleRepositoryImplTest {
     private lateinit var repository: BibleRepositoryImpl
 
     @Test
-    fun `defaults to the Portuguese version when the app is in Portuguese`() = runTest {
-        // Given
-        prepareScenario(appLanguage = Language.PORTUGUESE_BRAZIL)
+    fun `GIVEN the app in Portuguese WHEN reading the selected version THEN defaults to the Portuguese version`() =
+        runTest {
+            // Given
+            prepareScenario(appLanguage = Language.PORTUGUESE_BRAZIL)
 
-        // When
-        val selectedVersionId = repository.getSelectedVersionIdFlow().first()
+            // When
+            val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
-        // Then
-        assertEquals(expected = "ACF", actual = selectedVersionId)
-    }
+            // Then
+            assertEquals(expected = "ACF", actual = selectedVersionId)
+        }
 
     @Test
-    fun `defaults to the Spanish version when the app is in Spanish`() = runTest {
+    fun `GIVEN the app in Spanish WHEN reading the selected version THEN defaults to the Spanish version`() = runTest {
         // Given
         prepareScenario(appLanguage = Language.SPANISH)
 
@@ -74,7 +75,7 @@ internal class BibleRepositoryImplTest {
     }
 
     @Test
-    fun `defaults to the English version when the app is in English`() = runTest {
+    fun `GIVEN the app in English WHEN reading the selected version THEN defaults to the English version`() = runTest {
         // Given
         prepareScenario(appLanguage = Language.ENGLISH)
 
@@ -86,19 +87,20 @@ internal class BibleRepositoryImplTest {
     }
 
     @Test
-    fun `keeps the stored selection instead of the language default`() = runTest {
-        // Given
-        prepareScenario(
-            appLanguage = Language.SPANISH,
-            storedVersionId = "KJV",
-        )
+    fun `GIVEN a stored selection WHEN reading the selected version THEN keeps it instead of the language default`() =
+        runTest {
+            // Given
+            prepareScenario(
+                appLanguage = Language.SPANISH,
+                storedVersionId = "KJV",
+            )
 
-        // When
-        val selectedVersionId = repository.getSelectedVersionIdFlow().first()
+            // When
+            val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
-        // Then
-        assertEquals(expected = "KJV", actual = selectedVersionId)
-    }
+            // Then
+            assertEquals(expected = "KJV", actual = selectedVersionId)
+        }
 
     @Test
     fun `GIVEN a new selection WHEN storing it THEN the selected version flow emits it`() = runTest {

@@ -32,36 +32,37 @@ internal class DownloadBibleUseCaseTest {
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
 
     @Test
-    fun `completes the download and stores the remote content version`() = runTest {
-        // Given
-        prepareScenario(status = DownloadStatus.IN_PROGRESS)
+    fun `GIVEN a version in progress WHEN downloading it THEN completes and stores the remote content version`() =
+        runTest {
+            // Given
+            prepareScenario(status = DownloadStatus.IN_PROGRESS)
 
-        // When
-        val result = useCase(VERSION_ID)
+            // When
+            val result = useCase(VERSION_ID)
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(
-            expected = BibleVersionEntity(
-                id = VERSION_ID,
-                status = DownloadStatus.DONE,
-                totalChapters = TOTAL_CHAPTERS,
-                contentVersion = REMOTE_CONTENT_VERSION,
-            ),
-            actual = bibleVersionDao.versions[VERSION_ID],
-        )
-        assertEquals(
-            expected = listOf(
-                AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED to mapOf<String, Any>(
-                    AnalyticsParams.VERSION_ID to VERSION_ID,
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                expected = BibleVersionEntity(
+                    id = VERSION_ID,
+                    status = DownloadStatus.DONE,
+                    totalChapters = TOTAL_CHAPTERS,
+                    contentVersion = REMOTE_CONTENT_VERSION,
                 ),
-            ),
-            actual = trackedEvents,
-        )
-    }
+                actual = bibleVersionDao.versions[VERSION_ID],
+            )
+            assertEquals(
+                expected = listOf(
+                    AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED to mapOf<String, Any>(
+                        AnalyticsParams.VERSION_ID to VERSION_ID,
+                    ),
+                ),
+                actual = trackedEvents,
+            )
+        }
 
     @Test
-    fun `keeps the local content version when the remote one is unknown`() = runTest {
+    fun `GIVEN an unknown remote content version WHEN downloading THEN keeps the local content version`() = runTest {
         // Given
         prepareScenario(
             status = DownloadStatus.IN_PROGRESS,
@@ -79,7 +80,7 @@ internal class DownloadBibleUseCaseTest {
     }
 
     @Test
-    fun `skips a version that is already fully downloaded`() = runTest {
+    fun `GIVEN a fully downloaded version WHEN downloading it THEN skips it`() = runTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
@@ -96,7 +97,7 @@ internal class DownloadBibleUseCaseTest {
     }
 
     @Test
-    fun `resumes a version marked done that is missing chapters`() = runTest {
+    fun `GIVEN a version marked done missing chapters WHEN downloading it THEN resumes it`() = runTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
@@ -114,7 +115,7 @@ internal class DownloadBibleUseCaseTest {
     }
 
     @Test
-    fun `fails and tracks the reason when the version is unknown`() = runTest {
+    fun `GIVEN an unknown version WHEN downloading it THEN fails and tracks the reason`() = runTest {
         // Given
         prepareScenario(status = DownloadStatus.IN_PROGRESS)
 
@@ -138,7 +139,7 @@ internal class DownloadBibleUseCaseTest {
     }
 
     @Test
-    fun `fails and tracks the reason when a book fails to download`() = runTest {
+    fun `GIVEN a book that fails to download WHEN downloading THEN fails and tracks the reason`() = runTest {
         // Given
         prepareScenario(
             status = DownloadStatus.IN_PROGRESS,

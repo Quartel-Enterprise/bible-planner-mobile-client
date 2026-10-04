@@ -62,7 +62,7 @@ internal class VerseSelectionSceneStrategyTest {
     }
 
     @Test
-    fun `GIVEN a selection over a chapter study beside the reader WHEN calculating THEN takes the study's place`() {
+    fun `GIVEN a selection over a chapter study beside the reader WHEN calculating THEN replaces the study`() {
         // Given
         prepareScenario(isWide = true)
 

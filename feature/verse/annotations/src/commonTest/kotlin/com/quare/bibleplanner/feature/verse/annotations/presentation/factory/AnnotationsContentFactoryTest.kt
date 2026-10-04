@@ -63,19 +63,22 @@ internal class AnnotationsContentFactoryTest {
 
     @Test
     fun `GIVEN marks in other versions WHEN creating the content THEN offers them from the most marked`() {
+        // Given
+        val otherVersionCounts = listOf(
+            VersionAnnotationCount(
+                bibleVersionId = "a21",
+                count = 1,
+            ),
+            VersionAnnotationCount(
+                bibleVersionId = "nvi",
+                count = 2,
+            ),
+        )
+
         // When
         val content = factory.create(
             entries = emptyList(),
-            otherVersionCounts = listOf(
-                VersionAnnotationCount(
-                    bibleVersionId = "a21",
-                    count = 1,
-                ),
-                VersionAnnotationCount(
-                    bibleVersionId = "nvi",
-                    count = 2,
-                ),
-            ),
+            otherVersionCounts = otherVersionCounts,
             filters = AnnotationsContentFactory.noFilters,
         )
 
@@ -102,12 +105,15 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `groups passages into today and yesterday and the months before`() {
+    fun `GIVEN passages of different dates WHEN creating the content THEN groups them by day and month`() {
+        // Given
+        val filters = AnnotationsContentFactory.noFilters
+
         // When
         val content = factory.create(
             entries = entries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters,
+            filters = filters,
         )
 
         // Then
@@ -142,12 +148,15 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `counts every type and keeps only the selected one`() {
+    fun `GIVEN a type filter WHEN creating the content THEN counts every type and keeps only the selected one`() {
+        // Given
+        val filters = AnnotationsContentFactory.noFilters.copy(type = AnnotationTypeFilter.NOTES)
+
         // When
         val content = factory.create(
             entries = entries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters.copy(type = AnnotationTypeFilter.NOTES),
+            filters = filters,
         )
 
         // Then
@@ -168,7 +177,7 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `filters by colour and counts colours within the other filters`() {
+    fun `GIVEN a colour and a period filter WHEN creating the content THEN counts colours within the other filters`() {
         // Given
         val custom = HighlightColor.Custom(
             hue = 200,
@@ -211,12 +220,15 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `lists the annotated books in canonical order after all books`() {
+    fun `GIVEN a book filter WHEN creating the content THEN lists the annotated books in canonical order after all`() {
+        // Given
+        val filters = AnnotationsContentFactory.noFilters.copy(bookId = BookId.PSA)
+
         // When
         val content = factory.create(
             entries = entries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters.copy(bookId = BookId.PSA),
+            filters = filters,
         )
 
         // Then
@@ -239,12 +251,15 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `counts and keeps what was marked within the chosen period`() {
+    fun `GIVEN a period filter WHEN creating the content THEN counts and keeps what was marked within it`() {
+        // Given
+        val filters = AnnotationsContentFactory.noFilters.copy(period = AnnotationPeriod.LAST_7_DAYS)
+
         // When
         val content = factory.create(
             entries = entries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters.copy(period = AnnotationPeriod.LAST_7_DAYS),
+            filters = filters,
         )
 
         // Then
@@ -269,26 +284,29 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `keeps what was marked within the custom range with both ends included`() {
+    fun `GIVEN a custom range WHEN creating the content THEN keeps what was marked within it with both ends`() {
+        // Given
+        val filters = AnnotationsContentFactory.noFilters.copy(
+            period = AnnotationPeriod.CUSTOM,
+            customRange = AnnotationDateRange(
+                start = LocalDate(
+                    year = 2026,
+                    month = 9,
+                    day = 16,
+                ),
+                end = LocalDate(
+                    year = 2026,
+                    month = 9,
+                    day = 25,
+                ),
+            ),
+        )
+
         // When
         val content = factory.create(
             entries = entries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters.copy(
-                period = AnnotationPeriod.CUSTOM,
-                customRange = AnnotationDateRange(
-                    start = LocalDate(
-                        year = 2026,
-                        month = 9,
-                        day = 16,
-                    ),
-                    end = LocalDate(
-                        year = 2026,
-                        month = 9,
-                        day = 25,
-                    ),
-                ),
-            ),
+            filters = filters,
         )
 
         // Then
@@ -311,7 +329,7 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `orders colours by how many passages use them and keeps the palette order on ties`() {
+    fun `GIVEN colours used by different counts WHEN creating the content THEN orders them by use then palette`() {
         // Given
         val pink = HighlightColor.Preset(PresetHighlightColor.PINK)
         val pinkEntries = listOf(1, 2).map { verseNumber ->
@@ -345,7 +363,7 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `searches the reference and the verse text and the note ignoring accents and case`() {
+    fun `GIVEN a search query WHEN searching THEN matches reference text and note ignoring accents and case`() {
         // Given
         val reference = highlighted.copy(reference = "João 3:16")
         val text = saved.copy(text = "O Senhor é o meu pastor")
@@ -389,18 +407,22 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `combines the search with the other filters`() {
+    fun `GIVEN a search and a type filter WHEN creating the content THEN combines them`() {
+        // Given
+        val searchableEntries = listOf(
+            highlighted.copy(text = "light"),
+            noted.copy(text = "light"),
+        )
+        val filters = AnnotationsContentFactory.noFilters.copy(
+            query = "light",
+            type = AnnotationTypeFilter.NOTES,
+        )
+
         // When
         val content = factory.create(
-            entries = listOf(
-                highlighted.copy(text = "light"),
-                noted.copy(text = "light"),
-            ),
+            entries = searchableEntries,
             otherVersionCounts = emptyList(),
-            filters = AnnotationsContentFactory.noFilters.copy(
-                query = "light",
-                type = AnnotationTypeFilter.NOTES,
-            ),
+            filters = filters,
         )
 
         // Then
@@ -412,7 +434,7 @@ internal class AnnotationsContentFactoryTest {
     }
 
     @Test
-    fun `gives each passage a distinct key`() {
+    fun `GIVEN two passages on the same verses WHEN creating the content THEN gives each a distinct key`() {
         // Given
         val sameVersesWithNote: AnnotationEntry = samplePassage(
             bookId = BookId.JHN,

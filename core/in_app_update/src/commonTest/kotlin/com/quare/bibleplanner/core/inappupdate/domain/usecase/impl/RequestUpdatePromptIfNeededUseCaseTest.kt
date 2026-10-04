@@ -16,86 +16,108 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
     private var shownAvailability: UpdateAvailability.Pending? = null
     private var shownSource: String? = null
     private var checked = false
+    private lateinit var useCase: RequestUpdatePromptIfNeededUseCase
 
     @Test
     fun `GIVEN no previous prompt AND an available update WHEN requesting THEN shows it with the startup source`() =
         runTest {
-            val useCase = prepareScenario(
+            // Given
+            prepareScenario(
                 availability = UpdateAvailability.Available(versionName = "2.0.0"),
                 lastPromptedAt = null,
             )
 
+            // When
             useCase()
 
+            // Then
             assertEquals(UpdateAvailability.Available(versionName = "2.0.0"), shownAvailability)
             assertEquals(UpdatePromptSource.STARTUP, shownSource)
         }
 
     @Test
     fun `GIVEN a downloaded update WHEN requesting THEN shows it with the startup source`() = runTest {
-        val useCase = prepareScenario(availability = UpdateAvailability.Downloaded)
+        // Given
+        prepareScenario(availability = UpdateAvailability.Downloaded)
 
+        // When
         useCase()
 
+        // Then
         assertEquals(UpdateAvailability.Downloaded, shownAvailability)
         assertEquals(UpdatePromptSource.STARTUP, shownSource)
     }
 
     @Test
     fun `GIVEN no available update WHEN requesting THEN shows nothing`() = runTest {
-        val useCase = prepareScenario(availability = UpdateAvailability.NotAvailable)
+        // Given
+        prepareScenario(availability = UpdateAvailability.NotAvailable)
 
+        // When
         useCase()
 
+        // Then
         assertNull(shownAvailability)
     }
 
     @Test
     fun `GIVEN the last prompt was less than 15 minutes ago WHEN requesting THEN does not check again`() = runTest {
-        val useCase = prepareScenario(
+        // Given
+        prepareScenario(
             availability = UpdateAvailability.Downloaded,
             lastPromptedAt = NOW - 14.minutes.inWholeMilliseconds,
         )
 
+        // When
         useCase()
 
+        // Then
         assertFalse(checked)
         assertNull(shownAvailability)
     }
 
     @Test
     fun `GIVEN an available update prompted less than an hour ago WHEN requesting THEN shows nothing`() = runTest {
-        val useCase = prepareScenario(
+        // Given
+        prepareScenario(
             availability = UpdateAvailability.Available(versionName = "2.0.0"),
             lastPromptedAt = NOW - 59.minutes.inWholeMilliseconds,
         )
 
+        // When
         useCase()
 
+        // Then
         assertNull(shownAvailability)
     }
 
     @Test
     fun `GIVEN a downloaded update prompted 15 minutes ago WHEN requesting THEN shows it again`() = runTest {
-        val useCase = prepareScenario(
+        // Given
+        prepareScenario(
             availability = UpdateAvailability.Downloaded,
             lastPromptedAt = NOW - 15.minutes.inWholeMilliseconds,
         )
 
+        // When
         useCase()
 
+        // Then
         assertEquals(UpdateAvailability.Downloaded, shownAvailability)
     }
 
     @Test
     fun `GIVEN the last prompt was over an hour ago WHEN requesting THEN shows the prompt again`() = runTest {
-        val useCase = prepareScenario(
+        // Given
+        prepareScenario(
             availability = UpdateAvailability.Available(versionName = "2.0.0"),
             lastPromptedAt = NOW - 1.hours.inWholeMilliseconds,
         )
 
+        // When
         useCase()
 
+        // Then
         assertEquals(UpdateAvailability.Available(versionName = "2.0.0"), shownAvailability)
     }
 
@@ -110,15 +132,17 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
     private fun prepareScenario(
         availability: UpdateAvailability,
         lastPromptedAt: Long? = null,
-    ): RequestUpdatePromptIfNeededUseCase = RequestUpdatePromptIfNeededUseCase(
-        checkForUpdate = {
-            checked = true
-            availability
-        },
-        updatePromptPreferences = FakeUpdatePromptPreferences(lastPromptedAt = lastPromptedAt),
-        hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
-        showUpdatePrompt = ::onShowUpdatePrompt,
-    )
+    ) {
+        useCase = RequestUpdatePromptIfNeededUseCase(
+            checkForUpdate = {
+                checked = true
+                availability
+            },
+            updatePromptPreferences = FakeUpdatePromptPreferences(lastPromptedAt = lastPromptedAt),
+            hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
+            showUpdatePrompt = ::onShowUpdatePrompt,
+        )
+    }
 
     private companion object {
         const val NOW = 1_700_000_000_000L

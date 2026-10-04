@@ -7,7 +7,8 @@ class ExplicitBackingFieldRuleTest {
     private val explicitBackingFieldRuleAssertThat = assertThatRule { ExplicitBackingFieldRule() }
 
     @Test
-    fun `flags a backing property exposed through asStateFlow`() {
+    fun `GIVEN a backing property exposed through asStateFlow WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             class Holder {
@@ -16,12 +17,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 17, buildViolationMessage("_uiState", "uiState"))
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 17, buildViolationMessage("_uiState", "uiState"))
     }
 
     @Test
-    fun `flags a backing property exposed through asSharedFlow`() {
+    fun `GIVEN a backing property exposed through asSharedFlow WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             class Holder {
@@ -30,12 +35,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 17, buildViolationMessage("_uiAction", "uiAction"))
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 17, buildViolationMessage("_uiAction", "uiAction"))
     }
 
     @Test
-    fun `flags a backing property assigned directly to an overriding property declared before it`() {
+    fun `GIVEN a backing property assigned directly to an earlier override WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             class Repository : Source {
@@ -45,12 +54,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(4, 17, buildViolationMessage("_selection", "selection"))
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(4, 17, buildViolationMessage("_selection", "selection"))
     }
 
     @Test
-    fun `does not flag a channel exposed through receiveAsFlow`() {
+    fun `GIVEN a channel exposed through receiveAsFlow WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Navigator {
@@ -59,11 +72,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag an explicit backing field`() {
+    fun `GIVEN an explicit backing field WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Holder {
@@ -72,11 +90,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a property exposing a backing property under a different name`() {
+    fun `GIVEN a property exposing a backing property under a different name WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Holder {
@@ -85,11 +108,16 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a mutable backing var`() {
+    fun `GIVEN a mutable backing var WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Holder {
@@ -98,18 +126,27 @@ class ExplicitBackingFieldRuleTest {
             }
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag top level properties`() {
+    fun `GIVEN top level backing properties WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private val _uiState = MutableStateFlow(0)
             val uiState: StateFlow<Int> = _uiState.asStateFlow()
             """.trimIndent()
 
-        explicitBackingFieldRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = explicitBackingFieldRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private fun buildViolationMessage(

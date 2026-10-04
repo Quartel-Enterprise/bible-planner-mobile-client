@@ -17,8 +17,11 @@ import kotlin.test.assertNotNull
 internal class HttpClientTest {
     @Test
     fun `GIVEN the app http client WHEN creating it THEN installs the timeout and json content negotiation`() {
+        // Given
+        val createClient = ::getHttpClient
+
         // When
-        val client = getHttpClient()
+        val client = createClient()
 
         // Then
         assertNotNull(client.plugin(HttpTimeout))

@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.model.loginwarning
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 internal class LoginWarningReasonTest {
     private val reasons = listOf(
@@ -17,8 +17,11 @@ internal class LoginWarningReasonTest {
 
     @Test
     fun `GIVEN every reason WHEN carrying it by key THEN restores the same reason`() {
+        // Given
+        val keys = reasons.map(LoginWarningReason::key)
+
         // When
-        val restored = reasons.map { LoginWarningReason.fromKey(it.key) }
+        val restored = keys.map(LoginWarningReason.Companion::fromKey)
 
         // Then
         assertEquals(reasons, restored)
@@ -26,8 +29,11 @@ internal class LoginWarningReasonTest {
 
     @Test
     fun `GIVEN every reason WHEN reading its key THEN each key is stable and unique`() {
+        // Given
+        val everyReason = reasons
+
         // When
-        val keys = reasons.map(LoginWarningReason::key)
+        val keys = everyReason.map(LoginWarningReason::key)
 
         // Then
         assertEquals(
@@ -46,7 +52,13 @@ internal class LoginWarningReasonTest {
 
     @Test
     fun `GIVEN an unknown key WHEN restoring the reason THEN fails`() {
-        // When / Then
-        assertFailsWith<NoSuchElementException> { LoginWarningReason.fromKey("unknown") }
+        // Given
+        val key = "unknown"
+
+        // When
+        val result = runCatching { LoginWarningReason.fromKey(key) }
+
+        // Then
+        assertIs<NoSuchElementException>(result.exceptionOrNull())
     }
 }

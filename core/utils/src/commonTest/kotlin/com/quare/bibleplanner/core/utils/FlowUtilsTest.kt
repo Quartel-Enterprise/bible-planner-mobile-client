@@ -17,23 +17,24 @@ class FlowUtilsTest {
     private val window = 1.seconds
 
     @Test
-    fun `emits the first value without waiting for the window`() = runTest {
-        // Given
-        val source = MutableSharedFlow<Int>()
-        val emissions = mutableListOf<Int>()
-        backgroundScope.launch { source.throttleLatest(window).toList(emissions) }
-        runCurrent()
+    fun `GIVEN a throttled flow WHEN the first value is emitted THEN emits it without waiting for the window`() =
+        runTest {
+            // Given
+            val source = MutableSharedFlow<Int>()
+            val emissions = mutableListOf<Int>()
+            backgroundScope.launch { source.throttleLatest(window).toList(emissions) }
+            runCurrent()
 
-        // When
-        source.emit(1)
-        runCurrent()
+            // When
+            source.emit(1)
+            runCurrent()
 
-        // Then
-        assertEquals(expected = listOf(1), actual = emissions)
-    }
+            // Then
+            assertEquals(expected = listOf(1), actual = emissions)
+        }
 
     @Test
-    fun `drops every value but the latest one produced inside the window`() = runTest {
+    fun `GIVEN a throttled flow WHEN several values arrive inside the window THEN keeps only the latest`() = runTest {
         // Given
         val source = MutableSharedFlow<Int>(extraBufferCapacity = 8)
         val emissions = mutableListOf<Int>()
@@ -54,7 +55,7 @@ class FlowUtilsTest {
     }
 
     @Test
-    fun `keeps every value when they are further apart than the window`() = runTest {
+    fun `GIVEN values further apart than the window WHEN throttling THEN keeps every value`() = runTest {
         // Given
         val source = flow {
             repeat(3) { index ->
@@ -72,7 +73,7 @@ class FlowUtilsTest {
     }
 
     @Test
-    fun `replaces the state flow value`() {
+    fun `GIVEN a state flow WHEN updating its value THEN replaces the value`() {
         // Given
         val state = MutableStateFlow(0)
 

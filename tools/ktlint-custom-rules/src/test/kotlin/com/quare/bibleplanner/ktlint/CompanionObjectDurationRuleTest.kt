@@ -8,7 +8,8 @@ class CompanionObjectDurationRuleTest {
     private val companionObjectDurationRuleAssertThat = assertThatRule { CompanionObjectDurationRule() }
 
     @Test
-    fun `flags a public Duration built from a number`() {
+    fun `GIVEN a public companion Duration built from a number WHEN linting THEN reports the property`() {
+        // Given
         val code =
             """
             class DevicesSynchronizer {
@@ -18,12 +19,16 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("INITIAL_BACKOFF"))
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("INITIAL_BACKOFF"))
     }
 
     @Test
-    fun `flags a property typed as Duration`() {
+    fun `GIVEN a companion property typed as Duration WHEN linting THEN reports the property`() {
+        // Given
         val code =
             """
             class Poller {
@@ -33,12 +38,16 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("pollInterval"))
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("pollInterval"))
     }
 
     @Test
-    fun `flags a Duration from a factory`() {
+    fun `GIVEN companion Durations built from factories WHEN linting THEN reports each property`() {
+        // Given
         val code =
             """
             class Poller {
@@ -49,15 +58,19 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(3, 22, buildViolationMessage("timeout")),
-                LintViolation(4, 13, buildViolationMessage("idle")),
-            )
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(3, 22, buildViolationMessage("timeout")),
+            LintViolation(4, 13, buildViolationMessage("idle")),
+        )
     }
 
     @Test
-    fun `leaves private Durations to the companion-object-constants rule`() {
+    fun `GIVEN a Duration in a private companion object WHEN linting THEN leaves it to the constants rule`() {
+        // Given
         val code =
             """
             class Poller {
@@ -67,11 +80,16 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a Duration as a private val in the class body`() {
+    fun `GIVEN a Duration as a private val in the class body WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class DevicesSynchronizer {
@@ -79,11 +97,16 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows other constants in a companion object`() {
+    fun `GIVEN other constants in a companion object WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class RewardedAd {
@@ -94,7 +117,11 @@ class CompanionObjectDurationRuleTest {
             }
             """.trimIndent()
 
-        companionObjectDurationRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectDurationRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

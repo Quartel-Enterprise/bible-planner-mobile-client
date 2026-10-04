@@ -9,8 +9,11 @@ internal class ReadingPlanPreferenceMapperImplTest {
 
     @Test
     fun `GIVEN every plan type WHEN storing and reading it back THEN round-trips`() {
+        // Given
+        val planTypes = ReadingPlanType.entries
+
         // When
-        val roundTripped = ReadingPlanType.entries.map { mapper.mapPreferenceToModel(mapper.mapModelToPreference(it)) }
+        val roundTripped = planTypes.map { mapper.mapPreferenceToModel(mapper.mapModelToPreference(it)) }
 
         // Then
         assertEquals(ReadingPlanType.entries, roundTripped)
@@ -18,8 +21,11 @@ internal class ReadingPlanPreferenceMapperImplTest {
 
     @Test
     fun `GIVEN every plan type WHEN storing it THEN uses the legacy preference values`() {
+        // Given
+        val planTypes = ReadingPlanType.entries
+
         // When
-        val preferences = ReadingPlanType.entries.map(mapper::mapModelToPreference)
+        val preferences = planTypes.map(mapper::mapModelToPreference)
 
         // Then
         assertEquals(listOf("chronological", "books"), preferences)
@@ -27,9 +33,13 @@ internal class ReadingPlanPreferenceMapperImplTest {
 
     @Test
     fun `GIVEN a missing or unknown preference WHEN reading it THEN defaults to the chronological plan`() {
+        // Given
+        val missingPreference: String? = null
+        val unknownPreference = "yearly"
+
         // When
-        val fromMissing = mapper.mapPreferenceToModel(null)
-        val fromUnknown = mapper.mapPreferenceToModel("yearly")
+        val fromMissing = mapper.mapPreferenceToModel(missingPreference)
+        val fromUnknown = mapper.mapPreferenceToModel(unknownPreference)
 
         // Then
         assertEquals(ReadingPlanType.CHRONOLOGICAL, fromMissing)

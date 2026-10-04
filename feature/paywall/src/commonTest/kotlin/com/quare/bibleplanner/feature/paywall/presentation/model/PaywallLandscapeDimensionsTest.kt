@@ -9,23 +9,31 @@ import kotlin.test.assertTrue
 internal class PaywallLandscapeDimensionsTest {
     @Test
     fun `GIVEN a phone in landscape WHEN reading the compact dimensions THEN opens the panel without the hero icon`() {
-        // When
+        // Given
         val dimensions = PaywallLandscapeDimensions.Compact
 
+        // When
+        val heroIcon = dimensions.heroIcon
+        val centersPlanBlock = dimensions.centersPlanBlock
+
         // Then
-        assertNull(dimensions.heroIcon)
-        assertFalse(dimensions.centersPlanBlock)
+        assertNull(heroIcon)
+        assertFalse(centersPlanBlock)
     }
 
     @Test
     fun `GIVEN a large landscape screen WHEN reading the regular dimensions THEN shows the hero icon`() {
-        // When
+        // Given
         val dimensions = PaywallLandscapeDimensions.Regular
 
+        // When
+        val heroIcon = dimensions.heroIcon
+        val centersPlanBlock = dimensions.centersPlanBlock
+
         // Then
-        val heroIcon = assertNotNull(dimensions.heroIcon)
-        assertTrue(heroIcon.iconSize < heroIcon.boxSize)
-        assertTrue(dimensions.centersPlanBlock)
+        val shownHeroIcon = assertNotNull(heroIcon)
+        assertTrue(shownHeroIcon.iconSize < shownHeroIcon.boxSize)
+        assertTrue(centersPlanBlock)
     }
 
     @Test

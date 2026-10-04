@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 internal class BibleVersionsUiStateFactoryTest {
     @Test
-    fun `shows the versions grouped by language`() = runTest {
+    fun `GIVEN an available version WHEN creating the state THEN shows the versions grouped by language`() = runTest {
         // Given
         val acf = bibleModel("ACF")
         val factory = createFactory(
@@ -34,7 +34,7 @@ internal class BibleVersionsUiStateFactoryTest {
     }
 
     @Test
-    fun `shows an error when no version is available`() = runTest {
+    fun `GIVEN no version available WHEN creating the state THEN shows an error`() = runTest {
         // Given
         val factory = createFactory(
             FakeBibleRepository(

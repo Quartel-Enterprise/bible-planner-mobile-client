@@ -12,43 +12,52 @@ import kotlin.test.assertNull
 
 internal class ObserveStudySuggestionSyncUseCaseTest {
     @Test
-    fun `applies synced values when sync is enabled`() = runTest {
+    fun `GIVEN sync enabled with synced values WHEN observing THEN applies them`() = runTest {
+        // Given
         val repository = FakeStudySuggestionSettingsRepository(
             syncEnabled = true,
             syncedEnabled = false,
             syncedMode = StudySuggestionMode.BANNER,
         )
 
+        // When
         ObserveStudySuggestionSyncUseCase(repository).invoke()
 
+        // Then
         assertEquals(false, repository.appliedEnabled)
         assertEquals(StudySuggestionMode.BANNER, repository.appliedMode)
     }
 
     @Test
-    fun `applies nothing when sync is disabled`() = runTest {
+    fun `GIVEN sync disabled WHEN observing THEN applies nothing`() = runTest {
+        // Given
         val repository = FakeStudySuggestionSettingsRepository(
             syncEnabled = false,
             syncedEnabled = false,
             syncedMode = StudySuggestionMode.BANNER,
         )
 
+        // When
         ObserveStudySuggestionSyncUseCase(repository).invoke()
 
+        // Then
         assertNull(repository.appliedEnabled)
         assertNull(repository.appliedMode)
     }
 
     @Test
-    fun `skips missing synced values`() = runTest {
+    fun `GIVEN sync enabled without synced values WHEN observing THEN skips them`() = runTest {
+        // Given
         val repository = FakeStudySuggestionSettingsRepository(
             syncEnabled = true,
             syncedEnabled = null,
             syncedMode = null,
         )
 
+        // When
         ObserveStudySuggestionSyncUseCase(repository).invoke()
 
+        // Then
         assertNull(repository.appliedEnabled)
         assertNull(repository.appliedMode)
     }

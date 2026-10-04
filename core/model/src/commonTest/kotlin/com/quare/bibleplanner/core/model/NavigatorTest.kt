@@ -80,7 +80,7 @@ internal class NavigatorTest {
             navigator.navigate(LogoutNavRoute)
 
             // When
-            prepareScenario()
+            collectCommands()
 
             // Then
             assertEquals(
@@ -92,9 +92,13 @@ internal class NavigatorTest {
             )
         }
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.collectCommands() {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             navigator.commands.collect { commands += it }
         }
+    }
+
+    private fun TestScope.prepareScenario() {
+        collectCommands()
     }
 }

@@ -17,35 +17,36 @@ class ProfileLocalStoreTest {
     private lateinit var dao: FakeProfileDao
 
     @Test
-    fun `observes and reads only the profiles with a pending change`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    id = "pending",
-                    displayNamePendingSync = true,
+    fun `GIVEN a pending and a synced profile WHEN observing and reading pending THEN returns only the pending one`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        id = "pending",
+                        displayNamePendingSync = true,
+                    ),
+                    entity(id = "synced"),
                 ),
-                entity(id = "synced"),
-            ),
-        )
+            )
 
-        // When
-        val observed = localStore.observePending().first()
-        val read = localStore.getPending()
+            // When
+            val observed = localStore.observePending().first()
+            val read = localStore.getPending()
 
-        // Then
-        assertEquals(
-            expected = listOf("pending"),
-            actual = observed.map { it.id },
-        )
-        assertEquals(
-            expected = observed,
-            actual = read,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf("pending"),
+                actual = observed.map { it.id },
+            )
+            assertEquals(
+                expected = observed,
+                actual = read,
+            )
+        }
 
     @Test
-    fun `clears the pushed name flag but keeps the avatar pending while its bytes wait for upload`() = runTest {
+    fun `GIVEN avatar bytes waiting for upload WHEN marking synced THEN clears only the name flag`() = runTest {
         // Given
         val pending = entity(
             id = USER_ID,
@@ -66,7 +67,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `clears the avatar flag once its uploaded url was pushed`() = runTest {
+    fun `GIVEN an uploaded avatar url WHEN marking synced THEN clears the avatar flag`() = runTest {
         // Given
         val pending = entity(
             id = USER_ID,
@@ -86,7 +87,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `inserts a remote profile this device has never seen`() = runTest {
+    fun `GIVEN no local profile WHEN applying a remote one THEN inserts it`() = runTest {
         // Given
         prepareScenario()
 
@@ -107,7 +108,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `overwrites an older synced profile with a newer remote one`() = runTest {
+    fun `GIVEN an older synced profile WHEN applying a newer remote one THEN overwrites it`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -131,7 +132,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `keeps a pending local edit over a remote one`() = runTest {
+    fun `GIVEN a pending local edit WHEN applying a remote one THEN keeps the local edit`() = runTest {
         // Given
         val pending = entity(
             id = USER_ID,
@@ -151,7 +152,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `builds the remote payload for the signed in user`() {
+    fun `GIVEN a local profile WHEN converting it to a dto THEN builds the remote payload for the signed in user`() {
         // Given
         prepareScenario()
 
@@ -181,7 +182,7 @@ class ProfileLocalStoreTest {
     }
 
     @Test
-    fun `clears every local profile`() = runTest {
+    fun `GIVEN a local profile WHEN clearing local THEN removes every local profile`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(entity(id = USER_ID)))
 

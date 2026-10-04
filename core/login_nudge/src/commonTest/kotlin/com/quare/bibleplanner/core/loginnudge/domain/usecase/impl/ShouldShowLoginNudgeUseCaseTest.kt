@@ -10,60 +10,127 @@ import kotlin.test.assertTrue
 
 internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
-    fun `returns false when the user is authenticated`() = runTest {
-        assertFalse(useCase(userId = "user-1")())
+    fun `GIVEN an authenticated user WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(userId = "user-1")
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `returns false when permanently dismissed`() = runTest {
-        assertFalse(useCase(dontShowAgain = true)())
+    fun `GIVEN a permanently dismissed nudge WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(dontShowAgain = true)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `returns false when offline`() = runTest {
-        assertFalse(useCase(isOnline = false)())
+    fun `GIVEN the device offline WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(isOnline = false)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `returns true when never snoozed`() = runTest {
-        assertTrue(useCase(snoozedAt = null)())
+    fun `GIVEN a nudge never snoozed WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(snoozedAt = null)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     @Test
-    fun `returns false within the snooze window`() = runTest {
-        assertFalse(useCase(snoozedAt = NOW - SNOOZE_MILLIS + 1)())
+    fun `GIVEN a nudge within the snooze window WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW - SNOOZE_MILLIS + 1)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `returns true once the snooze window elapsed`() = runTest {
-        assertTrue(useCase(snoozedAt = NOW - SNOOZE_MILLIS)())
+    fun `GIVEN an elapsed snooze window WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW - SNOOZE_MILLIS)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     @Test
-    fun `returns true when the snooze timestamp is in the future`() = runTest {
-        assertTrue(useCase(snoozedAt = NOW + SNOOZE_MILLIS)())
+    fun `GIVEN a snooze timestamp in the future WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW + SNOOZE_MILLIS)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     @Test
-    fun `returns true when the first action timestamp is in the future`() = runTest {
-        assertTrue(useCase(firstActionAt = NOW + GRACE_MILLIS)())
+    fun `GIVEN a first action timestamp in the future WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(firstActionAt = NOW + GRACE_MILLIS)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     @Test
-    fun `returns false within the first action grace period`() = runTest {
-        assertFalse(useCase(firstActionAt = NOW - GRACE_MILLIS + 1)())
+    fun `GIVEN a nudge within the first action grace period WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldShowLoginNudge = useCase(firstActionAt = NOW - GRACE_MILLIS + 1)
+
+        // When
+        val shouldShow = shouldShowLoginNudge()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `stamps the first action and suppresses on the very first evaluation`() = runTest {
+    fun `GIVEN no first action yet WHEN evaluating THEN stamps the first action and returns false`() = runTest {
+        // Given
         val preferences = FakeLoginNudgePreferences(
             snoozedAt = null,
             dontShowAgain = false,
             firstActionAt = null,
         )
+        val shouldShowLoginNudge = useCase(preferences)
 
-        val result = useCase(preferences)()
+        // When
+        val result = shouldShowLoginNudge()
 
+        // Then
         assertFalse(result)
         assertEquals(NOW, preferences.getFirstActionAt())
     }

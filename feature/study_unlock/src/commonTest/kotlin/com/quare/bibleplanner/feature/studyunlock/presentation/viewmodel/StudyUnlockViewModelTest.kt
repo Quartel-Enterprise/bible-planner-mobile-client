@@ -57,26 +57,30 @@ internal class StudyUnlockViewModelTest {
     }
 
     @Test
-    fun `GIVEN the sheet opens WHEN starting THEN tracks the view and preloads the video`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(availability = RewardedAdAvailability.LOADING)
+    fun `GIVEN an opened sheet WHEN reading its state THEN it tracked the view and preloaded the video`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(availability = RewardedAdAvailability.LOADING)
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                "unlock_sheet_viewed" to surfaceParams + mapOf("rewarded_remaining_today" to 2),
-            ),
-            actual = trackedEvents,
-        )
-        assertEquals(1, rewardedAdService.preloadCount)
-        assertEquals(
-            expected = StudyUnlockUiState(
-                rewardedRemainingToday = 2,
-                videoState = StudyUnlockVideoState.LOADING,
-            ),
-            actual = viewModel.uiState.value,
-        )
-    }
+            // When
+            val uiState = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    "unlock_sheet_viewed" to surfaceParams + mapOf("rewarded_remaining_today" to 2),
+                ),
+                actual = trackedEvents,
+            )
+            assertEquals(1, rewardedAdService.preloadCount)
+            assertEquals(
+                expected = StudyUnlockUiState(
+                    rewardedRemainingToday = 2,
+                    videoState = StudyUnlockVideoState.LOADING,
+                ),
+                actual = uiState,
+            )
+        }
 
     @Test
     fun `GIVEN the video loads WHEN it is ready THEN the watch option is enabled`() = runTest(testDispatcher) {

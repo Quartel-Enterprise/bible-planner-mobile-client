@@ -9,6 +9,7 @@ internal class ChatDraftMapperTest {
 
     @Test
     fun `GIVEN a local draft WHEN mapping to the wire THEN the timestamp round-trips`() {
+        // Given
         val entity = ChatDraftEntity(
             threadKey = "day:CHRONOLOGICAL:1:2",
             content = "Por que",
@@ -16,11 +17,13 @@ internal class ChatDraftMapperTest {
             isPendingSync = true,
         )
 
+        // When
         val dto = mapper.toDto(
             userId = "user-1",
             entity = entity,
         )
 
+        // Then
         assertEquals("user-1", dto.userId)
         assertEquals("day:CHRONOLOGICAL:1:2", dto.threadKey)
         assertEquals("Por que", dto.content)

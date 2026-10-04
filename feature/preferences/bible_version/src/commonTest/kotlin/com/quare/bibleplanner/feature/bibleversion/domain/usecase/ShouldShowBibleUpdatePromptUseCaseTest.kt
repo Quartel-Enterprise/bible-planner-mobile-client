@@ -17,51 +17,63 @@ internal class ShouldShowBibleUpdatePromptUseCaseTest {
     private lateinit var useCase: ShouldShowBibleUpdatePromptUseCase
 
     @Test
-    fun `shows the prompt when there are pending updates and no previous dismissal`() = runTest {
+    fun `GIVEN pending updates and no previous dismissal WHEN checking THEN shows the prompt`() = runTest {
         // Given
         prepareScenario(
             hasPendingUpdate = true,
             lastDismissedAt = null,
         )
 
-        // When / Then
-        assertTrue(useCase())
+        // When
+        val shouldShow = useCase()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     @Test
-    fun `does not show the prompt when there are no pending updates`() = runTest {
+    fun `GIVEN no pending updates WHEN checking THEN does not show the prompt`() = runTest {
         // Given
         prepareScenario(
             hasPendingUpdate = false,
             lastDismissedAt = null,
         )
 
-        // When / Then
-        assertFalse(useCase())
+        // When
+        val shouldShow = useCase()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `does not show the prompt within the dismissal cooldown`() = runTest {
+    fun `GIVEN a dismissal within the cooldown WHEN checking THEN does not show the prompt`() = runTest {
         // Given
         prepareScenario(
             hasPendingUpdate = true,
             lastDismissedAt = NOW - 4.hours.inWholeMilliseconds + 1,
         )
 
-        // When / Then
-        assertFalse(useCase())
+        // When
+        val shouldShow = useCase()
+
+        // Then
+        assertFalse(shouldShow)
     }
 
     @Test
-    fun `shows the prompt again after the dismissal cooldown`() = runTest {
+    fun `GIVEN a dismissal past the cooldown WHEN checking THEN shows the prompt again`() = runTest {
         // Given
         prepareScenario(
             hasPendingUpdate = true,
             lastDismissedAt = NOW - 4.hours.inWholeMilliseconds,
         )
 
-        // When / Then
-        assertTrue(useCase())
+        // When
+        val shouldShow = useCase()
+
+        // Then
+        assertTrue(shouldShow)
     }
 
     private fun prepareScenario(

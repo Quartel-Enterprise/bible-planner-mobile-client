@@ -16,7 +16,7 @@ internal class ObserveBibleVersionsUseCaseImplTest {
     private lateinit var bibleVersionDao: RecordingBibleVersionDao
 
     @Test
-    fun `inserts a version published after the first emission`() = runTest {
+    fun `GIVEN a version published after the first emission WHEN observing the versions THEN inserts it`() = runTest {
         // Given
         prepareScenario(
             emissions = listOf(
@@ -39,24 +39,25 @@ internal class ObserveBibleVersionsUseCaseImplTest {
     }
 
     @Test
-    fun `does not insert a version twice when the list is emitted again`() = runTest {
-        // Given
-        prepareScenario(
-            emissions = listOf(
-                listOf(versionModel(id = "ACF")),
-                listOf(versionModel(id = "ACF")),
-            ),
-        )
+    fun `GIVEN the same list emitted twice WHEN observing the versions THEN does not insert a version twice`() =
+        runTest {
+            // Given
+            prepareScenario(
+                emissions = listOf(
+                    listOf(versionModel(id = "ACF")),
+                    listOf(versionModel(id = "ACF")),
+                ),
+            )
 
-        // When
-        useCase()
+            // When
+            useCase()
 
-        // Then
-        assertEquals(
-            expected = listOf("ACF"),
-            actual = bibleVersionDao.insertedVersions.map { it.id },
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf("ACF"),
+                actual = bibleVersionDao.insertedVersions.map { it.id },
+            )
+        }
 
     private fun versionModel(id: String): VersionModel = VersionModel(
         id = id,

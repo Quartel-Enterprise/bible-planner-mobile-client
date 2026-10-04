@@ -7,7 +7,8 @@ class UnitFunctionBlockBodyRuleTest {
     private val unitFunctionBlockBodyRuleAssertThat = assertThatRule { UnitFunctionBlockBodyRule() }
 
     @Test
-    fun `flags an expression body delegating to a function from another class`() {
+    fun `GIVEN an expression body delegating to another class WHEN linting THEN reports the missing return type`() {
+        // Given
         val code =
             """
             class ReaderSettingsRepositoryImpl(private val dataStore: DataStore) {
@@ -18,7 +19,11 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             2,
             17,
             buildMissingReturnTypeMessage("setNoteIconEnabled"),
@@ -26,7 +31,8 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `flags an override assigned to Unit`() {
+    fun `GIVEN an override assigned to Unit WHEN linting THEN reports the missing return type`() {
+        // Given
         val code =
             """
             class FakeRepository : Repository {
@@ -34,7 +40,11 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             2,
             26,
             buildMissingReturnTypeMessage("setEnabled"),
@@ -42,13 +52,18 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `flags an explicit Unit return type with an expression body`() {
+    fun `GIVEN an explicit Unit return type with an expression body WHEN linting THEN reports the expression body`() {
+        // Given
         val code =
             """
             fun logEvent(name: String): Unit = analytics.log(name)
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             1,
             5,
             "Function 'logEvent' returns 'Unit' but uses an expression body; open a block body ({ … }) " +
@@ -57,13 +72,18 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `flags a fully qualified Unit return type with an expression body`() {
+    fun `GIVEN a qualified Unit return type with an expression body WHEN linting THEN reports the expression body`() {
+        // Given
         val code =
             """
             fun logEvent(name: String): kotlin.Unit = analytics.log(name)
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             1,
             5,
             "Function 'logEvent' returns 'Unit' but uses an expression body; open a block body ({ … }) " +
@@ -72,13 +92,18 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `flags an expression body calling an error function of another receiver`() {
+    fun `GIVEN an expression body calling logger error WHEN linting THEN reports the missing return type`() {
+        // Given
         val code =
             """
             fun report(message: String) = logger.error(message)
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             1,
             5,
             buildMissingReturnTypeMessage("report"),
@@ -86,13 +111,18 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `flags a non-Unit expression body without a return type`() {
+    fun `GIVEN a non-Unit expression body without a return type WHEN linting THEN reports the missing return type`() {
+        // Given
         val code =
             """
             fun buildGreeting(name: String) = "Hello, ${'$'}name"
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
             1,
             5,
             buildMissingReturnTypeMessage("buildGreeting"),
@@ -100,17 +130,23 @@ class UnitFunctionBlockBodyRuleTest {
     }
 
     @Test
-    fun `allows an expression body with a non-Unit return type`() {
+    fun `GIVEN an expression body with a non-Unit return type WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun buildGreeting(name: String): String = "Hello, ${'$'}name"
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a block body without a return type`() {
+    fun `GIVEN a block body without a return type WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun logEvent(name: String) {
@@ -118,11 +154,16 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a test assigned to runTest`() {
+    fun `GIVEN a test assigned to runTest WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class RepositoryTest {
@@ -133,11 +174,16 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a setup or teardown assigned to runTest`() {
+    fun `GIVEN a setup and a teardown assigned to runTest WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class RepositoryTest {
@@ -153,11 +199,16 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an expression body that never returns`() {
+    fun `GIVEN expression bodies that never return WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class FakeRepository : Repository {
@@ -171,7 +222,11 @@ class UnitFunctionBlockBodyRuleTest {
             }
             """.trimIndent()
 
-        unitFunctionBlockBodyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unitFunctionBlockBodyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private fun buildMissingReturnTypeMessage(name: String): String =

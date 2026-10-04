@@ -11,38 +11,50 @@ import kotlin.test.assertNull
 
 internal class ObserveLanguageSyncUseCaseTest {
     @Test
-    fun `applies synced language when sync is enabled`() = runTest {
+    fun `GIVEN sync enabled and a synced language WHEN observing THEN applies the synced language`() = runTest {
+        // Given
         val repository = FakeAppLanguageRepository(
             syncEnabled = true,
             syncedLanguage = Language.SPANISH,
         )
+        val useCase = ObserveLanguageSyncUseCase(repository)
 
-        ObserveLanguageSyncUseCase(repository).invoke()
+        // When
+        useCase()
 
+        // Then
         assertEquals(Language.SPANISH, repository.appliedLanguage)
     }
 
     @Test
-    fun `applies nothing when sync is disabled`() = runTest {
+    fun `GIVEN sync disabled WHEN observing THEN applies nothing`() = runTest {
+        // Given
         val repository = FakeAppLanguageRepository(
             syncEnabled = false,
             syncedLanguage = Language.SPANISH,
         )
+        val useCase = ObserveLanguageSyncUseCase(repository)
 
-        ObserveLanguageSyncUseCase(repository).invoke()
+        // When
+        useCase()
 
+        // Then
         assertNull(repository.appliedLanguage)
     }
 
     @Test
-    fun `skips a missing synced language`() = runTest {
+    fun `GIVEN a missing synced language WHEN observing THEN applies nothing`() = runTest {
+        // Given
         val repository = FakeAppLanguageRepository(
             syncEnabled = true,
             syncedLanguage = null,
         )
+        val useCase = ObserveLanguageSyncUseCase(repository)
 
-        ObserveLanguageSyncUseCase(repository).invoke()
+        // When
+        useCase()
 
+        // Then
         assertNull(repository.appliedLanguage)
     }
 

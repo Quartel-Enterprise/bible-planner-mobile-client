@@ -11,8 +11,11 @@ import kotlin.test.assertIs
 class BillingExceptionMapperTest {
     @Test
     fun `GIVEN a cancelled purchase error WHEN mapping THEN returns UserCancelled`() {
+        // Given
+        val exception = purchasesException(PurchasesErrorCode.PurchaseCancelledError)
+
         // When
-        val result = purchasesException(PurchasesErrorCode.PurchaseCancelledError).toBillingException()
+        val result = exception.toBillingException()
 
         // Then
         assertIs<BillingException.UserCancelled>(result)
@@ -20,8 +23,11 @@ class BillingExceptionMapperTest {
 
     @Test
     fun `GIVEN a network error WHEN mapping THEN returns NetworkError`() {
+        // Given
+        val exception = purchasesException(PurchasesErrorCode.NetworkError)
+
         // When
-        val result = purchasesException(PurchasesErrorCode.NetworkError).toBillingException()
+        val result = exception.toBillingException()
 
         // Then
         assertIs<BillingException.NetworkError>(result)
@@ -29,8 +35,11 @@ class BillingExceptionMapperTest {
 
     @Test
     fun `GIVEN a payment pending error WHEN mapping THEN returns PaymentPending`() {
+        // Given
+        val exception = purchasesException(PurchasesErrorCode.PaymentPendingError)
+
         // When
-        val result = purchasesException(PurchasesErrorCode.PaymentPendingError).toBillingException()
+        val result = exception.toBillingException()
 
         // Then
         assertIs<BillingException.PaymentPending>(result)
@@ -38,8 +47,11 @@ class BillingExceptionMapperTest {
 
     @Test
     fun `GIVEN any other purchases error WHEN mapping THEN returns Unknown`() {
+        // Given
+        val exception = purchasesException(PurchasesErrorCode.StoreProblemError)
+
         // When
-        val result = purchasesException(PurchasesErrorCode.StoreProblemError).toBillingException()
+        val result = exception.toBillingException()
 
         // Then
         assertIs<BillingException.Unknown>(result)
@@ -47,8 +59,11 @@ class BillingExceptionMapperTest {
 
     @Test
     fun `GIVEN a non-purchases throwable WHEN mapping THEN returns Unknown with the message`() {
+        // Given
+        val exception = IllegalStateException("boom")
+
         // When
-        val result = IllegalStateException("boom").toBillingException()
+        val result = exception.toBillingException()
 
         // Then
         assertIs<BillingException.Unknown>(result)

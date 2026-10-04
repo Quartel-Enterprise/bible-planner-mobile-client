@@ -6,12 +6,17 @@ import kotlin.test.assertTrue
 
 class CropGeometryTest {
     @Test
-    fun `fits the shorter side of the image exactly into the circle at rest`() {
+    fun `GIVEN a portrait image WHEN getting the cover scale THEN fits its shorter side exactly into the circle`() {
+        // Given
+        val imageWidth = 1000
+        val imageHeight = 2000
+        val circleDiameter = 900f
+
         // When
         val scale = getCircleCoverScale(
-            imageWidth = 1000,
-            imageHeight = 2000,
-            circleDiameter = 900f,
+            imageWidth = imageWidth,
+            imageHeight = imageHeight,
+            circleDiameter = circleDiameter,
         )
 
         // Then
@@ -19,9 +24,12 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `selects the full image width at minimum zoom on a portrait image`() {
+    fun `GIVEN a portrait image at minimum zoom WHEN computing the crop rect THEN selects the full image width`() {
+        // Given
+        val cropParams = params(zoom = 1f)
+
         // When
-        val crop = computeCropRect(params(zoom = 1f))
+        val crop = computeCropRect(cropParams)
 
         // Then
         assertEquals(1f, crop.size, TOLERANCE)
@@ -30,9 +38,12 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `shrinks the selection as the user zooms in`() {
+    fun `GIVEN a zoomed in image WHEN computing the crop rect THEN shrinks the selection`() {
+        // Given
+        val cropParams = params(zoom = 2f)
+
         // When
-        val crop = computeCropRect(params(zoom = 2f))
+        val crop = computeCropRect(cropParams)
 
         // Then
         assertEquals(0.5f, crop.size, TOLERANCE)
@@ -41,9 +52,12 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `never lets the selection escape the image`() {
+    fun `GIVEN a huge pan offset WHEN computing the crop rect THEN keeps the selection inside the image`() {
+        // Given
+        val cropParams = params(zoom = 1.5f, offsetX = 100_000f, offsetY = -100_000f)
+
         // When
-        val crop = computeCropRect(params(zoom = 1.5f, offsetX = 100_000f, offsetY = -100_000f))
+        val crop = computeCropRect(cropParams)
 
         // Then
         assertEquals(0f, crop.left, TOLERANCE)
@@ -52,9 +66,12 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `selects the full image height once the portrait photo is turned sideways`() {
+    fun `GIVEN a portrait photo turned sideways WHEN computing the crop rect THEN selects the full image height`() {
+        // Given
+        val cropParams = params(zoom = 1f, orientation = quarterTurned())
+
         // When
-        val crop = computeCropRect(params(zoom = 1f, orientation = quarterTurned()))
+        val crop = computeCropRect(cropParams)
 
         // Then
         assertEquals(1f, crop.size, TOLERANCE)
@@ -63,14 +80,18 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `blocks sideways panning at minimum zoom so the image never leaves the circle`() {
+    fun `GIVEN minimum zoom WHEN getting the max pan offset THEN blocks sideways panning`() {
+        // Given
+        val zoom = 1f
+        val orientation = original()
+
         // When
         val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
-            zoom = 1f,
-            orientation = original(),
+            zoom = zoom,
+            orientation = orientation,
         )
 
         // Then
@@ -79,14 +100,18 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `unlocks sideways panning once the user zooms in`() {
+    fun `GIVEN a zoomed in image WHEN getting the max pan offset THEN unlocks sideways panning`() {
+        // Given
+        val zoom = 1.5f
+        val orientation = original()
+
         // When
         val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
-            zoom = 1.5f,
-            orientation = original(),
+            zoom = zoom,
+            orientation = orientation,
         )
 
         // Then
@@ -95,14 +120,18 @@ class CropGeometryTest {
     }
 
     @Test
-    fun `swaps the panning axes when the photo is turned sideways`() {
+    fun `GIVEN a photo turned sideways WHEN getting the max pan offset THEN swaps the panning axes`() {
+        // Given
+        val zoom = 1f
+        val orientation = quarterTurned()
+
         // When
         val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
-            zoom = 1f,
-            orientation = quarterTurned(),
+            zoom = zoom,
+            orientation = orientation,
         )
 
         // Then

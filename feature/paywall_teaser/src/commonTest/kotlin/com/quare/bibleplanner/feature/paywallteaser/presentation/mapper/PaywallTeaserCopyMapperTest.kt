@@ -15,8 +15,11 @@ import kotlin.test.assertEquals
 internal class PaywallTeaserCopyMapperTest {
     @Test
     fun `GIVEN the custom highlight color reason WHEN mapping it to the copy THEN explains the custom colors`() {
+        // Given
+        val reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR
+
         // When
-        val copy = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR.toCopy()
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(
@@ -31,8 +34,11 @@ internal class PaywallTeaserCopyMapperTest {
 
     @Test
     fun `GIVEN the chapter study limit reason WHEN mapping it to the copy THEN explains the used up studies`() {
+        // Given
+        val reason = PaywallTeaserReason.CHAPTER_STUDY_LIMIT
+
         // When
-        val copy = PaywallTeaserReason.CHAPTER_STUDY_LIMIT.toCopy()
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(

@@ -12,38 +12,47 @@ import kotlin.test.assertEquals
 
 internal class CalculateBibleProgressUseCaseTest {
     @Test
-    fun `a chapter flagged read counts all its verses even when verse flags are incomplete`() = runTest {
-        val book = BookDataModel(
-            id = BookId.GEN,
-            isRead = false,
-            chapters = listOf(
-                BookChapterModel(
-                    number = 1,
-                    isRead = true,
-                    verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
-                    readUpdatedAt = null,
+    fun `GIVEN a read chapter with incomplete verse flags WHEN calculating the progress THEN counts all its verses`() =
+        runTest {
+            // Given
+            val book = BookDataModel(
+                id = BookId.GEN,
+                isRead = false,
+                chapters = listOf(
+                    BookChapterModel(
+                        number = 1,
+                        isRead = true,
+                        verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
+                        readUpdatedAt = null,
+                    ),
+                    BookChapterModel(
+                        number = 2,
+                        isRead = false,
+                        verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
+                        readUpdatedAt = null,
+                    ),
                 ),
-                BookChapterModel(
-                    number = 2,
-                    isRead = false,
-                    verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
-                    readUpdatedAt = null,
-                ),
-            ),
-            isFavorite = false,
-        )
-        val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(listOf(book)))
+                isFavorite = false,
+            )
+            val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(listOf(book)))
 
-        val progress = useCase().first()
+            // When
+            val progress = useCase().first()
 
-        assertEquals(75f, progress)
-    }
+            // Then
+            assertEquals(75f, progress)
+        }
 
     @Test
-    fun `progress is zero when there are no books`() = runTest {
+    fun `GIVEN no books WHEN calculating the progress THEN is zero`() = runTest {
+        // Given
         val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(emptyList()))
 
-        assertEquals(0f, useCase().first())
+        // When
+        val progress = useCase().first()
+
+        // Then
+        assertEquals(0f, progress)
     }
 
     private fun verse(

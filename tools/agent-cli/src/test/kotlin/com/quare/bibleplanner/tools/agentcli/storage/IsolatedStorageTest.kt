@@ -29,11 +29,14 @@ internal class IsolatedStorageTest {
 
     @Test
     fun `GIVEN a data directory WHEN isolating storage THEN every place the app keeps data points inside it`() {
+        // Given
+        val environment = mapOf("XDG_DATA_HOME" to File(directory, "home/.local/share").path)
+
         // When
         isolateStorage(
             dataDirectory = directory,
             isFresh = false,
-            environment = mapOf("XDG_DATA_HOME" to File(directory, "home/.local/share").path),
+            environment = environment,
         )
 
         // Then
@@ -113,12 +116,15 @@ internal class IsolatedStorageTest {
 
     @Test
     fun `GIVEN a data root outside the data directory WHEN isolating storage THEN refuses to start`() {
+        // Given
+        val environment = mapOf("APPDATA" to "/Users/someone/AppData/Roaming")
+
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             isolateStorage(
                 dataDirectory = directory,
                 isFresh = false,
-                environment = mapOf("APPDATA" to "/Users/someone/AppData/Roaming"),
+                environment = environment,
             )
         }
 

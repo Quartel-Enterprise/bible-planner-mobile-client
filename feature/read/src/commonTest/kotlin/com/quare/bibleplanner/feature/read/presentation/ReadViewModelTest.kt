@@ -193,7 +193,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `marks the tapped verse as selected in the chapter`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter WHEN tapping a verse THEN marks it as selected in the chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -210,7 +210,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `opens the selection panel the moment the first verse is picked`() = runTest(testDispatcher) {
+    fun `GIVEN no selection WHEN picking the first verse THEN opens the selection panel`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -226,7 +226,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `does not reopen the panel while the selection grows`() = runTest(testDispatcher) {
+    fun `GIVEN a selected verse WHEN tapping another verse THEN does not reopen the panel`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(verseClick(1))
@@ -243,7 +243,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `tapping a selected verse again drops it from the selection`() = runTest(testDispatcher) {
+    fun `GIVEN a selected verse WHEN tapping it again THEN drops it from the selection`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(verseClick(1))
@@ -258,7 +258,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `closes the panel when the last selected verse is dropped`() = runTest(testDispatcher) {
+    fun `GIVEN a single selected verse WHEN tapping it again THEN closes the panel`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(verseClick(1))
@@ -275,7 +275,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `opens the appearance sheet`() = runTest(testDispatcher) {
+    fun `GIVEN an open chapter WHEN tapping appearance THEN opens the appearance sheet`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -291,43 +291,44 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `opens the note editor over every verse of the note when its icon is tapped`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a note mark WHEN tapping its icon THEN opens the note editor over every verse of the note`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(
-            ReadUiEvent.OnNoteIconClick(
-                chapter = testChapter,
-                noteMark = VerseNoteMarkUiModel(
-                    noteId = "note-1",
-                    noteVerseNumbers = listOf(2, 3, 5),
-                    position = VerseNoteMarkPosition.MIDDLE,
-                ),
-            ),
-        )
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = listOf<NavigationCommand>(
-                NavigationCommand.Navigate(
-                    VerseNoteNavRoute(
-                        bibleVersionId = testChapter.bibleVersionId,
-                        bookId = testChapter.bookId.name,
-                        chapterNumber = testChapter.chapterNumber,
-                        verseNumbers = listOf(2, 3, 5),
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnNoteIconClick(
+                    chapter = testChapter,
+                    noteMark = VerseNoteMarkUiModel(
                         noteId = "note-1",
+                        noteVerseNumbers = listOf(2, 3, 5),
+                        position = VerseNoteMarkPosition.MIDDLE,
                     ),
                 ),
-            ),
-            actual = commands,
-        )
-        assertTrue(trackedEventParams.contains("verse_note_icon_clicked" to mapOf<String, Any>("verse_count" to 3)))
-    }
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        VerseNoteNavRoute(
+                            bibleVersionId = testChapter.bibleVersionId,
+                            bookId = testChapter.bookId.name,
+                            chapterNumber = testChapter.chapterNumber,
+                            verseNumbers = listOf(2, 3, 5),
+                            noteId = "note-1",
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+            assertTrue(trackedEventParams.contains("verse_note_icon_clicked" to mapOf<String, Any>("verse_count" to 3)))
+        }
 
     @Test
-    fun `opens the day-complete sheet when the last unread chapter of the day is marked read`() =
+    fun `GIVEN the last unread chapter of the day WHEN marking it read THEN opens the day-complete sheet`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -347,74 +348,77 @@ internal class ReadViewModelTest {
         }
 
     @Test
-    fun `shows the banner instead of the sheet when the suggestion is set to banner mode`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            toggleWholeChapterReadStatus = { _, _ -> true },
-            getCompletedDayForChapter = { _, _ -> completedDay },
-            studySuggestionSettings = StudySuggestionSettingsModel(
-                isEnabled = true,
-                mode = StudySuggestionMode.BANNER,
-            ),
-        )
+    fun `GIVEN the suggestion in banner mode WHEN finishing the day THEN shows the banner instead of the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getCompletedDayForChapter = { _, _ -> completedDay },
+                studySuggestionSettings = StudySuggestionSettingsModel(
+                    isEnabled = true,
+                    mode = StudySuggestionMode.BANNER,
+                ),
+            )
 
-        // When
-        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
 
-        // Then
-        assertTrue(commands.none { it == dayReadingCompleteCommand })
-        assertEquals(
-            expected = completedDay,
-            actual = viewModel.uiState.value.dayCompletionBanner,
-        )
-    }
-
-    @Test
-    fun `dismissing the banner clears it from the state`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            toggleWholeChapterReadStatus = { _, _ -> true },
-            getCompletedDayForChapter = { _, _ -> completedDay },
-            studySuggestionSettings = StudySuggestionSettingsModel(
-                isEnabled = true,
-                mode = StudySuggestionMode.BANNER,
-            ),
-        )
-        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
-        runCurrent()
-
-        // When
-        viewModel.onEvent(ReadUiEvent.OnDayCompletionBannerDismissed)
-        runCurrent()
-
-        // Then
-        assertNull(viewModel.uiState.value.dayCompletionBanner)
-    }
+            // Then
+            assertTrue(commands.none { it == dayReadingCompleteCommand })
+            assertEquals(
+                expected = completedDay,
+                actual = viewModel.uiState.value.dayCompletionBanner,
+            )
+        }
 
     @Test
-    fun `keeps quiet about the finished day when the suggestion is disabled`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            toggleWholeChapterReadStatus = { _, _ -> true },
-            getCompletedDayForChapter = { _, _ -> completedDay },
-            studySuggestionSettings = StudySuggestionSettingsModel(
-                isEnabled = false,
-                mode = StudySuggestionMode.DIALOG,
-            ),
-        )
+    fun `GIVEN a shown day completion banner WHEN dismissing it THEN clears it from the state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getCompletedDayForChapter = { _, _ -> completedDay },
+                studySuggestionSettings = StudySuggestionSettingsModel(
+                    isEnabled = true,
+                    mode = StudySuggestionMode.BANNER,
+                ),
+            )
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
 
-        // When
-        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnDayCompletionBannerDismissed)
+            runCurrent()
 
-        // Then
-        assertTrue(commands.none { it == dayReadingCompleteCommand })
-        assertNull(viewModel.uiState.value.dayCompletionBanner)
-    }
+            // Then
+            assertNull(viewModel.uiState.value.dayCompletionBanner)
+        }
 
     @Test
-    fun `opens the day-complete sheet on the tap itself when the chapter is a known candidate`() =
+    fun `GIVEN the suggestion disabled WHEN finishing the day THEN keeps quiet about the finished day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getCompletedDayForChapter = { _, _ -> completedDay },
+                studySuggestionSettings = StudySuggestionSettingsModel(
+                    isEnabled = false,
+                    mode = StudySuggestionMode.DIALOG,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
+
+            // Then
+            assertTrue(commands.none { it == dayReadingCompleteCommand })
+            assertNull(viewModel.uiState.value.dayCompletionBanner)
+        }
+
+    @Test
+    fun `GIVEN a known candidate chapter WHEN marking it read THEN opens the day-complete sheet on the tap itself`() =
         runTest(testDispatcher) {
             // Given
             val writeGate = CompletableDeferred<Unit>()
@@ -438,6 +442,25 @@ internal class ReadViewModelTest {
                 expected = listOf(dayReadingCompleteCommand),
                 actual = commands,
             )
+        }
+
+    @Test
+    fun `GIVEN the sheet opened on the tap WHEN the read write completes THEN does not open it again`() =
+        runTest(testDispatcher) {
+            // Given
+            val writeGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ ->
+                    writeGate.await()
+                    true
+                },
+                getCompletedDayForChapter = { _, _ -> error("unused") },
+                dayCompletionCandidates = mapOf(
+                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                ),
+            )
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
 
             // When
             writeGate.complete(Unit)
@@ -451,26 +474,27 @@ internal class ReadViewModelTest {
         }
 
     @Test
-    fun `prefetches the study quota of a day the reader is about to finish`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            dayCompletionCandidates = mapOf(
-                ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
-            ),
-        )
+    fun `GIVEN a day the reader is about to finish WHEN opening THEN prefetches its study quota`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                dayCompletionCandidates = mapOf(
+                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                ),
+            )
 
-        // When
-        runCurrent()
+            // When
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf(completedDay),
-            actual = prefetchedDays,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(completedDay),
+                actual = prefetchedDays,
+            )
+        }
 
     @Test
-    fun `looks the day up by the chapter that was marked read`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter WHEN marking it read THEN looks the day up by that chapter`() = runTest(testDispatcher) {
         // Given
         var lookedUpChapter: Pair<BookId, Int>? = null
         prepareScenario(
@@ -493,23 +517,24 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `does not open the sheet while the day still has unread chapters`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            toggleWholeChapterReadStatus = { _, _ -> true },
-            getCompletedDayForChapter = { _, _ -> null },
-        )
+    fun `GIVEN a day with unread chapters left WHEN marking a chapter read THEN does not open the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getCompletedDayForChapter = { _, _ -> null },
+            )
 
-        // When
-        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
 
-        // Then
-        assertTrue(commands.none { it is NavigationCommand.Navigate && it.route is DayReadingCompleteNavRoute })
-    }
+            // Then
+            assertTrue(commands.none { it is NavigationCommand.Navigate && it.route is DayReadingCompleteNavRoute })
+        }
 
     @Test
-    fun `does not open the sheet when the chapter is unmarked instead of marked read`() = runTest(testDispatcher) {
+    fun `GIVEN a read chapter WHEN unmarking it THEN does not open the sheet`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             toggleWholeChapterReadStatus = { _, _ -> false },
@@ -537,7 +562,7 @@ internal class ReadViewModelTest {
     )
 
     @Test
-    fun `shows the next chapter placeholder while vertical reading looks the next chapter up`() =
+    fun `GIVEN vertical reading on WHEN reaching the end THEN shows the next chapter placeholder`() =
         runTest(testDispatcher) {
             // Given
             val nextChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
@@ -555,31 +580,32 @@ internal class ReadViewModelTest {
         }
 
     @Test
-    fun `drops the placeholder once the next chapter is appended`() = runTest(testDispatcher) {
-        // Given
-        val nextChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
-        prepareScenario(
-            isVerticalReadingEnabled = true,
-            getNextChapter = { _, _, _ -> nextChapter.await() },
-        )
-        viewModel.onEvent(ReadUiEvent.OnReachedEnd)
-        runCurrent()
+    fun `GIVEN a next chapter lookup in progress WHEN the next chapter is appended THEN drops the placeholder`() =
+        runTest(testDispatcher) {
+            // Given
+            val nextChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+            prepareScenario(
+                isVerticalReadingEnabled = true,
+                getNextChapter = { _, _, _ -> nextChapter.await() },
+            )
+            viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+            runCurrent()
 
-        // When
-        nextChapter.complete(
-            ReadNavigationSuggestionModel(
-                bookId = BookId.GEN,
-                chapterNumber = 4,
-            ),
-        )
-        runCurrent()
+            // When
+            nextChapter.complete(
+                ReadNavigationSuggestionModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = 4,
+                ),
+            )
+            runCurrent()
 
-        // Then
-        assertFalse(viewModel.uiState.value.isLoadingNextChapter)
-    }
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingNextChapter)
+        }
 
     @Test
-    fun `keeps the placeholder away while vertical reading is off`() = runTest(testDispatcher) {
+    fun `GIVEN vertical reading off WHEN reaching the end THEN keeps the placeholder away`() = runTest(testDispatcher) {
         // Given
         prepareScenario(getNextChapter = { _, _, _ -> error("unused") })
 
@@ -592,191 +618,200 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `keeps the placeholder away at the end of the reading order`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isVerticalReadingEnabled = true)
+    fun `GIVEN the end of the reading order WHEN reaching the end THEN keeps the placeholder away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isVerticalReadingEnabled = true)
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnReachedEnd)
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+            runCurrent()
 
-        // Then
-        assertFalse(viewModel.uiState.value.isLoadingNextChapter)
-    }
-
-    @Test
-    fun `shows the previous chapter placeholder while vertical reading looks it up`() = runTest(testDispatcher) {
-        // Given
-        val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
-        prepareScenario(
-            isVerticalReadingEnabled = true,
-            getPreviousChapter = { _, _, _ -> previousChapter.await() },
-        )
-
-        // When
-        viewModel.onEvent(ReadUiEvent.OnReachedStart)
-        runCurrent()
-
-        // Then
-        assertTrue(viewModel.uiState.value.isLoadingPreviousChapter)
-    }
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingNextChapter)
+        }
 
     @Test
-    fun `drops the placeholder once the previous chapter is prepended`() = runTest(testDispatcher) {
-        // Given
-        val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
-        prepareScenario(
-            isVerticalReadingEnabled = true,
-            getPreviousChapter = { _, _, _ -> previousChapter.await() },
-        )
-        viewModel.onEvent(ReadUiEvent.OnReachedStart)
-        runCurrent()
+    fun `GIVEN vertical reading on WHEN reaching the start THEN shows the previous chapter placeholder`() =
+        runTest(testDispatcher) {
+            // Given
+            val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+            prepareScenario(
+                isVerticalReadingEnabled = true,
+                getPreviousChapter = { _, _, _ -> previousChapter.await() },
+            )
 
-        // When
-        previousChapter.complete(
-            ReadNavigationSuggestionModel(
-                bookId = BookId.GEN,
-                chapterNumber = 2,
-            ),
-        )
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedStart)
+            runCurrent()
 
-        // Then
-        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
-    }
+            // Then
+            assertTrue(viewModel.uiState.value.isLoadingPreviousChapter)
+        }
 
     @Test
-    fun `asks for the chapter before the earliest one already prepended`() = runTest(testDispatcher) {
-        // Given
-        val requestedChapters = mutableListOf<Int>()
-        prepareScenario(
-            isVerticalReadingEnabled = true,
-            getPreviousChapter = { _, chapterNumber, _ ->
-                requestedChapters += chapterNumber
+    fun `GIVEN a previous chapter lookup in progress WHEN it is prepended THEN drops the placeholder`() =
+        runTest(testDispatcher) {
+            // Given
+            val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+            prepareScenario(
+                isVerticalReadingEnabled = true,
+                getPreviousChapter = { _, _, _ -> previousChapter.await() },
+            )
+            viewModel.onEvent(ReadUiEvent.OnReachedStart)
+            runCurrent()
+
+            // When
+            previousChapter.complete(
                 ReadNavigationSuggestionModel(
                     bookId = BookId.GEN,
-                    chapterNumber = chapterNumber - 1,
-                )
-            },
-        )
+                    chapterNumber = 2,
+                ),
+            )
+            runCurrent()
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnReachedStart)
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = listOf(3, 2),
-            actual = requestedChapters,
-        )
-    }
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+        }
 
     @Test
-    fun `keeps the previous chapter placeholder away while vertical reading is off`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(getPreviousChapter = { _, _, _ -> error("unused") })
+    fun `GIVEN prepended chapters WHEN reaching the start THEN asks for the chapter before the earliest one`() =
+        runTest(testDispatcher) {
+            // Given
+            val requestedChapters = mutableListOf<Int>()
+            prepareScenario(
+                isVerticalReadingEnabled = true,
+                getPreviousChapter = { _, chapterNumber, _ ->
+                    requestedChapters += chapterNumber
+                    ReadNavigationSuggestionModel(
+                        bookId = BookId.GEN,
+                        chapterNumber = chapterNumber - 1,
+                    )
+                },
+            )
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnReachedStart)
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedStart)
+            runCurrent()
 
-        // Then
-        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
-    }
+            // Then
+            assertEquals(
+                expected = listOf(3, 2),
+                actual = requestedChapters,
+            )
+        }
 
     @Test
-    fun `keeps the previous chapter placeholder away at the start of the reading order`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isVerticalReadingEnabled = true)
+    fun `GIVEN vertical reading off WHEN reaching the start THEN keeps the previous chapter placeholder away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getPreviousChapter = { _, _, _ -> error("unused") })
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnReachedStart)
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedStart)
+            runCurrent()
 
-        // Then
-        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
-    }
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+        }
 
     @Test
-    fun `opens the suggested next chapter in place of the current one`() = runTest(testDispatcher) {
-        // Given
-        val next = ReadNavigationSuggestionModel(
-            bookId = BookId.GEN,
-            chapterNumber = 4,
-        )
-        prepareScenario(
-            navigationSuggestions = ReadNavigationSuggestionsModel(
-                previous = null,
-                next = next,
-            ),
-            isWholeChapterRead = { chapterNumber, _ -> chapterNumber == 4 },
-        )
+    fun `GIVEN the start of the reading order WHEN reaching it THEN keeps the previous chapter placeholder away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isVerticalReadingEnabled = true)
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedStart)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf<NavigationCommand>(
-                NavigationCommand.NavigateReplacingTop(
-                    ReadNavRoute(
-                        bookId = BookId.GEN.name,
-                        chapterNumber = 4,
-                        isChapterRead = true,
-                        isFromBookDetails = false,
-                        targetVerseNumbers = emptyList(),
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+        }
+
+    @Test
+    fun `GIVEN a next chapter suggestion WHEN tapping it THEN opens it in place of the current chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            val next = ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = 4,
+            )
+            prepareScenario(
+                navigationSuggestions = ReadNavigationSuggestionsModel(
+                    previous = null,
+                    next = next,
+                ),
+                isWholeChapterRead = { chapterNumber, _ -> chapterNumber == 4 },
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.NavigateReplacingTop(
+                        ReadNavRoute(
+                            bookId = BookId.GEN.name,
+                            chapterNumber = 4,
+                            isChapterRead = true,
+                            isFromBookDetails = false,
+                            targetVerseNumbers = emptyList(),
+                        ),
                     ),
                 ),
-            ),
-            actual = commands,
-        )
-        assertTrue(trackedEvents.contains("reading_suggestion_clicked"))
-    }
+                actual = commands,
+            )
+            assertTrue(trackedEvents.contains("reading_suggestion_clicked"))
+        }
 
     @Test
-    fun `drops the selection before opening a suggested chapter`() = runTest(testDispatcher) {
-        // Given
-        val next = ReadNavigationSuggestionModel(
-            bookId = BookId.GEN,
-            chapterNumber = 4,
-        )
-        prepareScenario(
-            navigationSuggestions = ReadNavigationSuggestionsModel(
-                previous = null,
-                next = next,
-            ),
-            isWholeChapterRead = { _, _ -> false },
-        )
-        viewModel.onEvent(verseClick(2))
+    fun `GIVEN a selected verse WHEN opening a suggested chapter THEN drops the selection first`() =
+        runTest(testDispatcher) {
+            // Given
+            val next = ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = 4,
+            )
+            prepareScenario(
+                navigationSuggestions = ReadNavigationSuggestionsModel(
+                    previous = null,
+                    next = next,
+                ),
+                isWholeChapterRead = { _, _ -> false },
+            )
+            viewModel.onEvent(verseClick(2))
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
+            runCurrent()
 
-        // Then
-        assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
-        assertNull(selectionsAtCommands.last())
-    }
-
-    @Test
-    fun `does not open the panel for a selection made in another chapter`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        selectionStore.toggle(
-            chapter = testChapter.copy(chapterNumber = 4),
-            verseNumber = 1,
-        )
-        runCurrent()
-
-        // Then
-        assertTrue(commands.isEmpty())
-    }
+            // Then
+            assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
+            assertNull(selectionsAtCommands.last())
+        }
 
     @Test
-    fun `keeps a selection made in another chapter when the reader is cleared`() = runTest(testDispatcher) {
+    fun `GIVEN an open chapter WHEN a verse of another chapter is selected THEN does not open the panel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            selectionStore.toggle(
+                chapter = testChapter.copy(chapterNumber = 4),
+                verseNumber = 1,
+            )
+            runCurrent()
+
+            // Then
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a selection made in another chapter WHEN clearing the reader THEN keeps it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         selectionStore.toggle(
@@ -795,7 +830,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `drops its own selection when the reader is cleared`() = runTest(testDispatcher) {
+    fun `GIVEN a selection made in the reader WHEN clearing the reader THEN drops it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(verseClick(2))
@@ -808,41 +843,42 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `tracks a tap on the previous chapter suggestion as going back`() = runTest(testDispatcher) {
-        // Given
-        val previous = ReadNavigationSuggestionModel(
-            bookId = BookId.GEN,
-            chapterNumber = 2,
-        )
-        prepareScenario(
-            navigationSuggestions = ReadNavigationSuggestionsModel(
-                previous = previous,
-                next = null,
-            ),
-            isWholeChapterRead = { _, _ -> false },
-        )
-
-        // When
-        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(previous))
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = listOf<Map<String, Any>>(
-                mapOf(
-                    "direction" to "previous",
-                    "book_id" to "gen",
-                    "chapter_number" to 2,
+    fun `GIVEN a previous chapter suggestion WHEN tapping it THEN tracks the tap as going back`() =
+        runTest(testDispatcher) {
+            // Given
+            val previous = ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = 2,
+            )
+            prepareScenario(
+                navigationSuggestions = ReadNavigationSuggestionsModel(
+                    previous = previous,
+                    next = null,
                 ),
-            ),
-            actual = trackedEventParams
-                .filter { (name, _) -> name == "reading_suggestion_clicked" }
-                .map { (_, params) -> params },
-        )
-    }
+                isWholeChapterRead = { _, _ -> false },
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(previous))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<Map<String, Any>>(
+                    mapOf(
+                        "direction" to "previous",
+                        "book_id" to "gen",
+                        "chapter_number" to 2,
+                    ),
+                ),
+                actual = trackedEventParams
+                    .filter { (name, _) -> name == "reading_suggestion_clicked" }
+                    .map { (_, params) -> params },
+            )
+        }
 
     @Test
-    fun `turns the focus aids off when the ruler is dismissed`() = runTest(testDispatcher) {
+    fun `GIVEN an open chapter WHEN dismissing the ruler THEN turns the focus aids off`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -859,51 +895,53 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `resumes the download of a paused version and asks to notify its progress`() = runTest(testDispatcher) {
-        // Given
-        val downloader = RecordingBibleVersionDownloaderFacade()
-        prepareScenario(
-            content = ReadContentUiState.Error.ChapterNotFound(
-                errorUiEvent = ReadUiEvent.ManageBibleVersions,
-                selectedBibleVersionName = "Almeida",
-                downloadStatus = DownloadStatusModel.InProgress.Paused(progress = 0.5f),
-                versionSizeInBytes = null,
-            ),
-            downloaderFacade = downloader,
-            getSelectedVersionIdFlow = { flowOf("ACF") },
-        )
+    fun `GIVEN a paused version download WHEN tapping download THEN resumes it and asks to notify its progress`() =
+        runTest(testDispatcher) {
+            // Given
+            val downloader = RecordingBibleVersionDownloaderFacade()
+            prepareScenario(
+                content = ReadContentUiState.Error.ChapterNotFound(
+                    errorUiEvent = ReadUiEvent.ManageBibleVersions,
+                    selectedBibleVersionName = "Almeida",
+                    downloadStatus = DownloadStatusModel.InProgress.Paused(progress = 0.5f),
+                    versionSizeInBytes = null,
+                ),
+                downloaderFacade = downloader,
+                getSelectedVersionIdFlow = { flowOf("ACF") },
+            )
 
-        // When
-        viewModel.onEvent(ReadUiEvent.OnDownloadSelectedVersionClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.OnDownloadSelectedVersionClick)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf("ACF"),
-            actual = downloader.downloadedVersionIds,
-        )
-        assertEquals(
-            expected = 1,
-            actual = notificationPermissionRequests,
-        )
-        assertTrue(trackedEvents.contains("bible_version_download_started"))
-    }
+            // Then
+            assertEquals(
+                expected = listOf("ACF"),
+                actual = downloader.downloadedVersionIds,
+            )
+            assertEquals(
+                expected = 1,
+                actual = notificationPermissionRequests,
+            )
+            assertTrue(trackedEvents.contains("bible_version_download_started"))
+        }
 
     @Test
-    fun `opens the version manager from the missing chapter error`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the missing chapter error WHEN managing versions THEN opens the version manager`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(ReadUiEvent.ManageBibleVersions)
-        runCurrent()
+            // When
+            viewModel.onEvent(ReadUiEvent.ManageBibleVersions)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf<NavigationCommand>(NavigationCommand.Navigate(BibleVersionSelectorRoute)),
-            actual = commands,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.Navigate(BibleVersionSelectorRoute)),
+                actual = commands,
+            )
+        }
 
     @Test
     fun `GIVEN a wide window WHEN a chapter comes into view THEN shows its study beside the text`() =

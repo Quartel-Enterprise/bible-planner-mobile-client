@@ -44,9 +44,13 @@ internal class SupabaseClientProviderTest {
 
     @Test
     fun `GIVEN the project credentials WHEN creating the client THEN points it at the project`() {
+        // When
+        val supabaseUrl = client.supabaseUrl
+        val supabaseKey = client.supabaseKey
+
         // Then
-        assertEquals("project.supabase.co", client.supabaseUrl)
-        assertEquals(SUPABASE_KEY, client.supabaseKey)
+        assertEquals("project.supabase.co", supabaseUrl)
+        assertEquals(SUPABASE_KEY, supabaseKey)
     }
 
     @Test

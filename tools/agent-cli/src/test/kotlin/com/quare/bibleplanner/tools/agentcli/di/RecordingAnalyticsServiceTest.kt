@@ -16,10 +16,13 @@ internal class RecordingAnalyticsServiceTest {
     @Test
     fun `GIVEN the recording service WHEN tracking events and user properties THEN records them in the session log`() =
         runTest {
+            // Given
+            val eventParams = mapOf("day_number" to 1, "is_read" to true, "source" to "day_screen")
+
             // When
             service.logEvent(
                 name = "day_read_toggled",
-                params = mapOf("day_number" to 1, "is_read" to true, "source" to "day_screen"),
+                params = eventParams,
             )
             service.setUserProperty(
                 name = "is_tester",

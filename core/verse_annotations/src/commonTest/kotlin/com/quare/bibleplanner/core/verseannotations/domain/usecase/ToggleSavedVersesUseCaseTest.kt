@@ -22,7 +22,7 @@ internal class ToggleSavedVersesUseCaseTest {
     private lateinit var repository: FakeSavedVerseRepository
 
     @Test
-    fun `saves the selection when it is not saved yet`() = runTest {
+    fun `GIVEN an unsaved selection WHEN toggling it THEN saves it`() = runTest {
         // Given
         prepareScenario()
 
@@ -38,7 +38,7 @@ internal class ToggleSavedVersesUseCaseTest {
     }
 
     @Test
-    fun `saves the whole selection when only part of it was saved`() = runTest {
+    fun `GIVEN a partly saved selection WHEN toggling it THEN saves the whole selection`() = runTest {
         // Given
         prepareScenario(initialSavedRefs = setOf(verseRef(1)))
 
@@ -54,7 +54,7 @@ internal class ToggleSavedVersesUseCaseTest {
     }
 
     @Test
-    fun `unsaves the selection when all of it was already saved`() = runTest {
+    fun `GIVEN a fully saved selection WHEN toggling it THEN unsaves it`() = runTest {
         // Given
         prepareScenario(initialSavedRefs = refs.toSet())
 

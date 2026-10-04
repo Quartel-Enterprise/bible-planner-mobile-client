@@ -9,7 +9,7 @@ internal class ProPlanTypeMapperTest {
     private lateinit var mapper: ProPlanTypeMapper
 
     @Test
-    fun `should map the monthly product of every store`() {
+    fun `GIVEN the monthly product of every store WHEN mapping THEN returns monthly`() {
         // Given
         val monthlyProductIds = listOf(
             "com.quare.bibleplanner.premium.monthly",
@@ -29,7 +29,7 @@ internal class ProPlanTypeMapperTest {
     }
 
     @Test
-    fun `should map the annual product of every store`() {
+    fun `GIVEN the annual product of every store WHEN mapping THEN returns annual`() {
         // Given
         val annualProductIds = listOf(
             "com.quare.bibleplanner.premium.annual",
@@ -49,7 +49,7 @@ internal class ProPlanTypeMapperTest {
     }
 
     @Test
-    fun `should map an unrecognized product to unknown`() {
+    fun `GIVEN an unrecognized product WHEN mapping THEN returns unknown`() {
         // When
         val planType = mapper.map("rc_promo_bible_planner_pro")
 

@@ -31,7 +31,7 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `replaces the sheet with the name dialog`() = runTest {
+    fun `GIVEN the edit profile sheet WHEN changing the name THEN replaces the sheet with the name dialog`() = runTest {
         // When
         val actions = actionsAfter(EditProfileUiEvent.OnChangeNameClick)
 
@@ -40,13 +40,14 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `replaces the sheet with the photo sheet`() = runTest {
-        // When
-        val actions = actionsAfter(EditProfileUiEvent.OnChangeImageClick)
+    fun `GIVEN the edit profile sheet WHEN changing the image THEN replaces the sheet with the photo sheet`() =
+        runTest {
+            // When
+            val actions = actionsAfter(EditProfileUiEvent.OnChangeImageClick)
 
-        // Then
-        assertEquals(listOf(EditProfileUiAction(EditPhotoSourceNavRoute)), actions)
-    }
+            // Then
+            assertEquals(listOf(EditProfileUiAction(EditPhotoSourceNavRoute)), actions)
+        }
 
     private suspend fun TestScope.actionsAfter(event: EditProfileUiEvent): List<EditProfileUiAction> {
         val viewModel = EditProfileViewModel(trackEvent = { _, _ -> })

@@ -20,7 +20,7 @@ internal class ObserveSelectedVersionUseCaseTest {
     private lateinit var useCase: ObserveSelectedVersionUseCase
 
     @Test
-    fun `resumes the selected version when its download was interrupted`() = runTest {
+    fun `GIVEN an interrupted download of the selected version WHEN observing THEN resumes it`() = runTest {
         // Given
         prepareScenario(status = DownloadStatus.IN_PROGRESS)
 
@@ -33,7 +33,7 @@ internal class ObserveSelectedVersionUseCaseTest {
     }
 
     @Test
-    fun `does not download the selected version that was never downloaded`() = runTest {
+    fun `GIVEN a selected version never downloaded WHEN observing THEN does not download it`() = runTest {
         // Given
         prepareScenario(status = DownloadStatus.NOT_STARTED)
 
@@ -46,7 +46,7 @@ internal class ObserveSelectedVersionUseCaseTest {
     }
 
     @Test
-    fun `does not download the selected version that is paused`() = runTest {
+    fun `GIVEN a paused selected version WHEN observing THEN does not download it`() = runTest {
         // Given
         prepareScenario(status = DownloadStatus.PAUSED)
 
@@ -59,7 +59,7 @@ internal class ObserveSelectedVersionUseCaseTest {
     }
 
     @Test
-    fun `does not download the selected version that is already downloaded`() = runTest {
+    fun `GIVEN a downloaded selected version WHEN observing THEN does not download it`() = runTest {
         // Given
         prepareScenario(status = DownloadStatus.DONE)
 

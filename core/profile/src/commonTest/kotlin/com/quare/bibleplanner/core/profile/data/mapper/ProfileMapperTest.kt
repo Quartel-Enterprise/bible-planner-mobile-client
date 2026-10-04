@@ -16,7 +16,7 @@ class ProfileMapperTest {
     }
 
     @Test
-    fun `marks only the display name dirty when just the name changed`() {
+    fun `GIVEN only the name changed WHEN mapping to a dto THEN marks only the display name dirty`() {
         // When
         val dto = mapper.toDto(
             userId = USER_ID,
@@ -32,7 +32,7 @@ class ProfileMapperTest {
     }
 
     @Test
-    fun `marks only the avatar dirty when just the photo changed`() {
+    fun `GIVEN only the photo changed WHEN mapping to a dto THEN marks only the avatar dirty`() {
         // When
         val dto = mapper.toDto(
             userId = USER_ID,
@@ -48,7 +48,7 @@ class ProfileMapperTest {
     }
 
     @Test
-    fun `holds the avatar back while its bytes are still waiting to be uploaded`() {
+    fun `GIVEN avatar bytes waiting for upload WHEN mapping to a dto THEN holds the avatar back`() {
         // When
         val dto = mapper.toDto(
             userId = USER_ID,
@@ -63,7 +63,7 @@ class ProfileMapperTest {
     }
 
     @Test
-    fun `converts the timestamp to an ISO-8601 instant`() {
+    fun `GIVEN an epoch timestamp WHEN mapping to a dto THEN converts it to an ISO-8601 instant`() {
         // When
         val dto = mapper.toDto(
             userId = USER_ID,

@@ -18,43 +18,44 @@ internal class SavedVerseLocalStoreTest {
     private lateinit var dao: FakeSavedVerseDao
 
     @Test
-    fun `observes and reads only the pending rows`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    isPendingSync = true,
+    fun `GIVEN pending and synced rows WHEN observing and reading the pending ones THEN returns only those`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        verseNumber = 1,
+                        isPendingSync = true,
+                    ),
+                    entity(
+                        verseNumber = 2,
+                        isPendingSync = false,
+                    ),
                 ),
-                entity(
-                    verseNumber = 2,
-                    isPendingSync = false,
-                ),
-            ),
-        )
+            )
 
-        // When
-        val observed = localStore.observePending().first()
-        val read = localStore.getPending()
+            // When
+            val observed = localStore.observePending().first()
+            val read = localStore.getPending()
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                entity(
-                    verseNumber = 1,
-                    isPendingSync = true,
+            // Then
+            assertEquals(
+                expected = listOf(
+                    entity(
+                        verseNumber = 1,
+                        isPendingSync = true,
+                    ),
                 ),
-            ),
-            actual = observed,
-        )
-        assertEquals(
-            expected = observed,
-            actual = read,
-        )
-    }
+                actual = observed,
+            )
+            assertEquals(
+                expected = observed,
+                actual = read,
+            )
+        }
 
     @Test
-    fun `marks a pushed row synced when it was not touched meanwhile`() = runTest {
+    fun `GIVEN a pushed row untouched meanwhile WHEN marking it synced THEN clears its pending flag`() = runTest {
         // Given
         val pending = entity(
             verseNumber = 1,
@@ -73,7 +74,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `keeps a row pending when it was edited again during the push`() = runTest {
+    fun `GIVEN a row edited again during the push WHEN marking it synced THEN keeps it pending`() = runTest {
         // Given
         val pushed = entity(
             verseNumber = 1,
@@ -93,7 +94,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `inserts a remote row this device has never seen`() = runTest {
+    fun `GIVEN no local row WHEN applying a remote row THEN inserts it`() = runTest {
         // Given
         prepareScenario()
 
@@ -119,7 +120,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `overwrites an older synced row with a newer remote change`() = runTest {
+    fun `GIVEN an older synced row WHEN applying a newer remote change THEN overwrites it`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -147,7 +148,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `keeps a pending local change over a remote one`() = runTest {
+    fun `GIVEN a pending local change WHEN applying a remote one THEN keeps the local change`() = runTest {
         // Given
         val pending = entity(
             verseNumber = 1,
@@ -172,7 +173,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `builds the remote payload with an ISO timestamp`() {
+    fun `GIVEN a local row WHEN building the remote payload THEN uses an ISO timestamp`() {
         // Given
         prepareScenario()
 
@@ -197,7 +198,7 @@ internal class SavedVerseLocalStoreTest {
     }
 
     @Test
-    fun `clears every local row`() = runTest {
+    fun `GIVEN local rows WHEN clearing the local store THEN removes every row`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(

@@ -18,7 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 internal class GenerateChapterStudyUseCaseTest {
     private val target = ChapterStudyTargetModel(
@@ -49,28 +49,29 @@ internal class GenerateChapterStudyUseCaseTest {
     }
 
     @Test
-    fun `WHEN generating THEN asks the repository for the selected version and the app language`() = runTest {
-        // When
-        useCase(
-            target = target,
-            isRewarded = false,
-        ).toList()
+    fun `GIVEN the selected version and the app language WHEN generating THEN asks the repository for both`() =
+        runTest {
+            // When
+            useCase(
+                target = target,
+                isRewarded = false,
+            ).toList()
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                ChapterStudyRequest(
-                    chapter = ChapterRef(
-                        bibleVersionId = "ACF",
-                        bookId = BookId.GEN,
-                        chapterNumber = 3,
+            // Then
+            assertEquals(
+                expected = listOf(
+                    ChapterStudyRequest(
+                        chapter = ChapterRef(
+                            bibleVersionId = "ACF",
+                            bookId = BookId.GEN,
+                            chapterNumber = 3,
+                        ),
+                        languageCode = "pt-BR",
                     ),
-                    languageCode = "pt-BR",
                 ),
-            ),
-            actual = repository.generationRequests,
-        )
-    }
+                actual = repository.generationRequests,
+            )
+        }
 
     @Test
     fun `GIVEN a rewarded unlock WHEN generating THEN asks the repository for a rewarded study`() = runTest {
@@ -114,12 +115,15 @@ internal class GenerateChapterStudyUseCaseTest {
         // Given
         repository.eventsError = LimitReachedException()
 
-        // When & Then
-        assertFailsWith<LimitReachedException> {
+        // When
+        val result = runCatching {
             useCase(
                 target = target,
                 isRewarded = false,
             ).toList()
         }
+
+        // Then
+        assertIs<LimitReachedException>(result.exceptionOrNull())
     }
 }

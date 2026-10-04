@@ -96,8 +96,12 @@ internal class DayStudyCacheKeyTest {
             passage("PSALMS", chapter(32), chapter(122)),
         )
 
-        // When & Then
-        assertEquals(first.asStorageKey(), second.asStorageKey())
+        // When
+        val firstStorageKey = first.asStorageKey()
+        val secondStorageKey = second.asStorageKey()
+
+        // Then
+        assertEquals(firstStorageKey, secondStorageKey)
     }
 
     @Test
@@ -110,18 +114,29 @@ internal class DayStudyCacheKeyTest {
             passage("SECOND_SAMUEL", chapter(number = 5, startVerse = 11, endVerse = 25)),
         )
 
-        // When & Then
-        assertNotEquals(firstHalf.asStorageKey(), secondHalf.asStorageKey())
+        // When
+        val firstHalfStorageKey = firstHalf.asStorageKey()
+        val secondHalfStorageKey = secondHalf.asStorageKey()
+
+        // Then
+        assertNotEquals(firstHalfStorageKey, secondHalfStorageKey)
     }
 
     @Test
     fun `GIVEN a different version or language WHEN asStorageKey THEN keys differ`() {
         // Given
         val base = cacheKey(passage("GENESIS", chapter(1)))
+        val otherVersion = base.copy(version = "WEB")
+        val otherLanguage = base.copy(language = "en")
 
-        // When & Then
-        assertNotEquals(base.asStorageKey(), base.copy(version = "WEB").asStorageKey())
-        assertNotEquals(base.asStorageKey(), base.copy(language = "en").asStorageKey())
+        // When
+        val baseStorageKey = base.asStorageKey()
+        val otherVersionStorageKey = otherVersion.asStorageKey()
+        val otherLanguageStorageKey = otherLanguage.asStorageKey()
+
+        // Then
+        assertNotEquals(baseStorageKey, otherVersionStorageKey)
+        assertNotEquals(baseStorageKey, otherLanguageStorageKey)
     }
 
     private fun cacheKey(vararg passages: PassageRequestDto): DayStudyCacheKey = DayStudyCacheKey(

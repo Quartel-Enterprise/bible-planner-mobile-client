@@ -66,11 +66,19 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN MainNavRoute WHEN mapping THEN returns null`() {
-        assertNull(mapper.map(MainNavRoute))
+        // Given
+        val route = MainNavRoute
+
+        // When
+        val destination = mapper.map(route)
+
+        // Then
+        assertNull(destination)
     }
 
     @Test
     fun `GIVEN every other route WHEN mapping THEN returns the expected screen_name and screen_class`() {
+        // Given
         val expectations: List<Pair<NavRoute, Pair<String, DestinationType>>> = listOf(
             MainNavRouteDestination.Plans to ("plans" to DestinationType.SCREEN),
             MainNavRouteDestination.Books to ("books" to DestinationType.SCREEN),
@@ -127,9 +135,13 @@ class NavRouteToDestinationMapperImplTest {
             UpdateDownloadedNavRoute to ("update_downloaded" to DestinationType.DIALOG),
         )
 
-        expectations.forEach { (route, expected) ->
+        // When
+        val destinations = expectations.map { (route, _) -> mapper.map(route) }
+
+        // Then
+        expectations.zip(destinations).forEach { (expectation, destination) ->
+            val (route, expected) = expectation
             val (expectedName, expectedType) = expected
-            val destination = mapper.map(route)
             assertEquals(expectedName, destination?.name, "screen_name mismatch for $route")
             assertEquals(expectedType, destination?.type, "screen_class mismatch for $route")
         }
@@ -137,13 +149,16 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN AddNotesFreeWarningNavRoute WHEN mapping THEN carries max_free_notes and type params`() {
-        val destination = mapper.map(
-            AddNotesFreeWarningNavRoute(
-                maxFreeNotesAmount = 5,
-                type = AddNotesFreeWarningType.VERSE,
-            ),
+        // Given
+        val route = AddNotesFreeWarningNavRoute(
+            maxFreeNotesAmount = 5,
+            type = AddNotesFreeWarningType.VERSE,
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(
                 AnalyticsParams.MAX_FREE_NOTES to 5,
@@ -155,21 +170,29 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN BookDetailsNavRoute WHEN mapping THEN carries book_id param`() {
-        val destination = mapper.map(BookDetailsNavRoute(bookId = "genesis"))
+        // Given
+        val route = BookDetailsNavRoute(bookId = "genesis")
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(mapOf(AnalyticsParams.BOOK_ID to "genesis"), destination?.params)
     }
 
     @Test
     fun `GIVEN DayNavRoute WHEN mapping THEN lowercases the plan_type carried by the route`() {
-        val destination = mapper.map(
-            DayNavRoute(
-                dayNumber = 3,
-                weekNumber = 2,
-                readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
-            ),
+        // Given
+        val route = DayNavRoute(
+            dayNumber = 3,
+            weekNumber = 2,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(
                 AnalyticsParams.PLAN_TYPE to "chronological",
@@ -182,17 +205,20 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN ChatNavRoute opened from a reading WHEN mapping THEN lowercases the plan_type carried by the route`() {
-        val destination = mapper.map(
-            ChatNavRoute(
-                source = ChatEntrySource.DAY_FAB,
-                dayNumber = 3,
-                weekNumber = 2,
-                readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
-                bookId = null,
-                chapterNumber = null,
-            ),
+        // Given
+        val route = ChatNavRoute(
+            source = ChatEntrySource.DAY_FAB,
+            dayNumber = 3,
+            weekNumber = 2,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+            bookId = null,
+            chapterNumber = null,
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(
                 AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key,
@@ -206,17 +232,20 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN ChatNavRoute opened outside a reading WHEN mapping THEN omits the plan_type param`() {
-        val destination = mapper.map(
-            ChatNavRoute(
-                source = ChatEntrySource.DAY_FAB,
-                dayNumber = null,
-                weekNumber = null,
-                readingPlanType = null,
-                bookId = null,
-                chapterNumber = null,
-            ),
+        // Given
+        val route = ChatNavRoute(
+            source = ChatEntrySource.DAY_FAB,
+            dayNumber = null,
+            weekNumber = null,
+            readingPlanType = null,
+            bookId = null,
+            chapterNumber = null,
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
             destination?.params,
@@ -225,17 +254,18 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN ChatNavRoute opened from a chapter study WHEN mapping THEN carries book_id and chapter_number`() {
-        // When
-        val destination = mapper.map(
-            ChatNavRoute(
-                source = ChatEntrySource.CHAPTER_STUDY,
-                dayNumber = null,
-                weekNumber = null,
-                readingPlanType = null,
-                bookId = "GEN",
-                chapterNumber = 3,
-            ),
+        // Given
+        val route = ChatNavRoute(
+            source = ChatEntrySource.CHAPTER_STUDY,
+            dayNumber = null,
+            weekNumber = null,
+            readingPlanType = null,
+            bookId = "GEN",
+            chapterNumber = 3,
         )
+
+        // When
+        val destination = mapper.map(route)
 
         // Then
         assertEquals(
@@ -250,14 +280,15 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN ChapterStudyNavRoute WHEN mapping THEN is a screen carrying book_id and chapter_number`() {
-        // When
-        val destination = mapper.map(
-            ChapterStudyNavRoute(
-                bookId = "GEN",
-                chapterNumber = 3,
-                isCompanion = false,
-            ),
+        // Given
+        val route = ChapterStudyNavRoute(
+            bookId = "GEN",
+            chapterNumber = 3,
+            isCompanion = false,
         )
+
+        // When
+        val destination = mapper.map(route)
 
         // Then
         assertEquals(
@@ -275,14 +306,17 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN DeleteNotesRoute WHEN mapping THEN lowercases the plan_type carried by the route`() {
-        val destination = mapper.map(
-            DeleteNotesRoute(
-                readingPlanType = ReadingPlanType.BOOKS.name,
-                week = 4,
-                day = 5,
-            ),
+        // Given
+        val route = DeleteNotesRoute(
+            readingPlanType = ReadingPlanType.BOOKS.name,
+            week = 4,
+            day = 5,
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(
                 AnalyticsParams.PLAN_TYPE to "books",
@@ -295,30 +329,43 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN DeleteVersionNavRoute WHEN mapping THEN carries version_id param`() {
-        val destination = mapper.map(DeleteVersionNavRoute(versionId = "kjv"))
+        // Given
+        val route = DeleteVersionNavRoute(versionId = "kjv")
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(mapOf(AnalyticsParams.VERSION_ID to "kjv"), destination?.params)
     }
 
     @Test
     fun `GIVEN LoginWarningNavRoute WHEN mapping THEN carries reason param`() {
-        val destination = mapper.map(LoginWarningNavRoute(reason = "sync_setting"))
+        // Given
+        val route = LoginWarningNavRoute(reason = "sync_setting")
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(mapOf(AnalyticsParams.REASON to "sync_setting"), destination?.params)
     }
 
     @Test
     fun `GIVEN ReadNavRoute WHEN mapping THEN carries book_id and chapter_number params`() {
-        val destination = mapper.map(
-            ReadNavRoute(
-                bookId = "exodus",
-                chapterNumber = 4,
-                isChapterRead = true,
-                isFromBookDetails = false,
-                targetVerseNumbers = emptyList(),
-            ),
+        // Given
+        val route = ReadNavRoute(
+            bookId = "exodus",
+            chapterNumber = 4,
+            isChapterRead = true,
+            isFromBookDetails = false,
+            targetVerseNumbers = emptyList(),
         )
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(
             mapOf(
                 AnalyticsParams.BOOK_ID to "exodus",
@@ -330,15 +377,25 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN PaywallNavRoute WHEN mapping THEN carries the entry source as a lowercase param`() {
-        val destination = mapper.map(PaywallNavRoute(source = PaywallEntrySource.DAY_STUDY_DETAIL))
+        // Given
+        val route = PaywallNavRoute(source = PaywallEntrySource.DAY_STUDY_DETAIL)
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(mapOf(AnalyticsParams.SOURCE to "day_study_detail"), destination?.params)
     }
 
     @Test
     fun `GIVEN a route with no args WHEN mapping THEN params are empty`() {
-        val destination = mapper.map(LogoutNavRoute)
+        // Given
+        val route = LogoutNavRoute
 
+        // When
+        val destination = mapper.map(route)
+
+        // Then
         assertEquals(emptyMap(), destination?.params)
     }
 
@@ -406,14 +463,15 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN DayStudyNavRoute WHEN mapping THEN is a screen carrying the lowercase plan_type week and day`() {
-        // When
-        val destination = mapper.map(
-            DayStudyNavRoute(
-                dayNumber = 3,
-                weekNumber = 2,
-                readingPlanType = "CHRONOLOGICAL",
-            ),
+        // Given
+        val route = DayStudyNavRoute(
+            dayNumber = 3,
+            weekNumber = 2,
+            readingPlanType = "CHRONOLOGICAL",
         )
+
+        // When
+        val destination = mapper.map(route)
 
         // Then
         assertEquals(
@@ -432,14 +490,15 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN DayReadingCompleteNavRoute WHEN mapping THEN is responsive carrying the plan_type week and day`() {
-        // When
-        val destination = mapper.map(
-            DayReadingCompleteNavRoute(
-                dayNumber = 5,
-                weekNumber = 1,
-                readingPlanType = "BOOKS",
-            ),
+        // Given
+        val route = DayReadingCompleteNavRoute(
+            dayNumber = 5,
+            weekNumber = 1,
+            readingPlanType = "BOOKS",
         )
+
+        // When
+        val destination = mapper.map(route)
 
         // Then
         assertEquals(
@@ -458,8 +517,11 @@ class NavRouteToDestinationMapperImplTest {
 
     @Test
     fun `GIVEN PaywallTeaserNavRoute WHEN mapping THEN carries the teaser reason as a lowercase param`() {
+        // Given
+        val route = PaywallTeaserNavRoute(reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR)
+
         // When
-        val destination = mapper.map(PaywallTeaserNavRoute(reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR))
+        val destination = mapper.map(route)
 
         // Then
         assertEquals(

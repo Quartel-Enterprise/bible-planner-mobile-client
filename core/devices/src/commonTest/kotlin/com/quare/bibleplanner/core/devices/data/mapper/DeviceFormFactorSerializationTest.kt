@@ -22,8 +22,11 @@ class DeviceFormFactorSerializationTest {
 
     @Test
     fun `GIVEN every form factor WHEN serializing THEN uses the backend raw values`() {
+        // Given
+        val formFactors = DeviceFormFactor.entries
+
         // When
-        val raw = DeviceFormFactor.entries.map { it.toRaw() }
+        val raw = formFactors.map { it.toRaw() }
 
         // Then
         assertEquals(
@@ -34,8 +37,11 @@ class DeviceFormFactorSerializationTest {
 
     @Test
     fun `GIVEN an unrecognised raw value WHEN parsing THEN falls back to unknown`() {
+        // Given
+        val raw = "watch"
+
         // When
-        val formFactor = "watch".toDeviceFormFactor()
+        val formFactor = raw.toDeviceFormFactor()
 
         // Then
         assertEquals(

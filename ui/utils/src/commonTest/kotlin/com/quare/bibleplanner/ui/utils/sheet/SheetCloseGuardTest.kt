@@ -14,9 +14,11 @@ internal class SheetCloseGuardTest {
     private val sheetCloseGuard = SheetCloseGuard(sheetExitAnimation)
 
     @Test
-    fun `GIVEN an open sheet WHEN closing twice before its route is popped THEN closes once`() {
-        // When
+    fun `GIVEN a sheet already closing WHEN closing again before its route is popped THEN closes once`() {
+        // Given
         sheetCloseGuard.close { closes++ }
+
+        // When
         sheetCloseGuard.close { closes++ }
 
         // Then

@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 
 internal class DesktopBillingConfigProviderTest {
     @Test
-    fun `should provide the sandbox credentials on a debug build`() {
+    fun `GIVEN a debug build WHEN getting the config THEN provides the sandbox credentials`() {
         // Given
         val provider = DesktopBillingConfigProvider(isDebugBuild = true)
 
@@ -25,7 +25,7 @@ internal class DesktopBillingConfigProviderTest {
     }
 
     @Test
-    fun `should provide the production credentials on a packaged build`() {
+    fun `GIVEN a packaged build WHEN getting the config THEN provides the production credentials`() {
         // Given
         val provider = DesktopBillingConfigProvider(isDebugBuild = false)
 

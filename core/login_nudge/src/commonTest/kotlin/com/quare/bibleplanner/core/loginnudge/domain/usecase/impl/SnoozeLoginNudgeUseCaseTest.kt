@@ -7,20 +7,24 @@ import kotlin.test.assertEquals
 
 internal class SnoozeLoginNudgeUseCaseTest {
     @Test
-    fun `stores the current timestamp as the snooze start`() = runTest {
-        val now = 555L
-        val preferences = FakeLoginNudgePreferences(
-            snoozedAt = null,
-            dontShowAgain = false,
-            firstActionAt = null,
-        )
-        val useCase = SnoozeLoginNudgeUseCase(
-            loginNudgePreferences = preferences,
-            currentTimestampProvider = { now },
-        )
+    fun `GIVEN a nudge never snoozed WHEN snoozing it THEN stores the current timestamp as the snooze start`() =
+        runTest {
+            // Given
+            val now = 555L
+            val preferences = FakeLoginNudgePreferences(
+                snoozedAt = null,
+                dontShowAgain = false,
+                firstActionAt = null,
+            )
+            val useCase = SnoozeLoginNudgeUseCase(
+                loginNudgePreferences = preferences,
+                currentTimestampProvider = { now },
+            )
 
-        useCase()
+            // When
+            useCase()
 
-        assertEquals(now, preferences.getSnoozedAt())
-    }
+            // Then
+            assertEquals(now, preferences.getSnoozedAt())
+        }
 }

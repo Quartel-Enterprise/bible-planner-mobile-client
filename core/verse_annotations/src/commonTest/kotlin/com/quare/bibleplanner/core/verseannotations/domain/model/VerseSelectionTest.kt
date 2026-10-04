@@ -13,7 +13,7 @@ internal class VerseSelectionTest {
     )
 
     @Test
-    fun `addresses every selected verse within its chapter`() {
+    fun `GIVEN a two-verse selection WHEN reading its refs THEN addresses each verse within its chapter`() {
         // Given
         val selection = VerseSelection(
             chapter = testChapter,

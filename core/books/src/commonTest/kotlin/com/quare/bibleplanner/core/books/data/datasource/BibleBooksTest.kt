@@ -12,19 +12,25 @@ internal class BibleBooksTest {
     private val fileNameToBookIdMapper = FileNameToBookIdMapper(BookMapsProvider())
 
     @Test
-    fun `WHEN listing the book files THEN names one json file per book`() {
+    fun `GIVEN every book WHEN listing the book files THEN names one json file per book`() {
+        // Given
+        val bookCount = BookId.entries.size
+
         // When
         val fileNames = BibleBooks.fileNames
 
         // Then
-        assertEquals(BookId.entries.size, fileNames.size)
+        assertEquals(bookCount, fileNames.size)
         assertTrue(fileNames.all { it.endsWith(".json") })
     }
 
     @Test
-    fun `WHEN resolving each book file THEN maps them to every book in canonical order`() {
+    fun `GIVEN the book files WHEN resolving each book file THEN maps them to every book in canonical order`() {
+        // Given
+        val fileNames = BibleBooks.fileNames
+
         // When
-        val bookIds = BibleBooks.fileNames.map { fileNameToBookIdMapper.map(it.removeSuffix(".json")) }
+        val bookIds = fileNames.map { fileNameToBookIdMapper.map(it.removeSuffix(".json")) }
 
         // Then
         assertEquals(BookId.entries, bookIds)
@@ -32,8 +38,11 @@ internal class BibleBooksTest {
 
     @Test
     fun `GIVEN an unknown book code WHEN resolving it THEN returns null`() {
+        // Given
+        val unknownBookCode = "XYZ"
+
         // When
-        val bookId = fileNameToBookIdMapper.map("XYZ")
+        val bookId = fileNameToBookIdMapper.map(unknownBookCode)
 
         // Then
         assertNull(bookId)

@@ -7,7 +7,8 @@ class PreferMethodReferenceRuleTest {
     private val preferMethodReferenceRuleAssertThat = assertThatRule { PreferMethodReferenceRule() }
 
     @Test
-    fun `flags a lambda forwarding its parameter to a top level function in the same file`() {
+    fun `GIVEN a lambda forwarding its parameter to a same-file top level function WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -15,12 +16,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<String>) = days.map { day -> mapDay(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 43, VIOLATION_MESSAGE)
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 43, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a lambda forwarding the implicit parameter`() {
+    fun `GIVEN a lambda forwarding the implicit parameter WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -28,12 +33,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<String>) = days.map { mapDay(it) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 43, VIOLATION_MESSAGE)
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 43, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a lambda forwarding to a member function of the class it sits in`() {
+    fun `GIVEN a lambda forwarding to a member function of its own class WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             class Mapper {
@@ -43,12 +52,16 @@ class PreferMethodReferenceRuleTest {
             }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 47, VIOLATION_MESSAGE)
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 47, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `does not flag a suspend function, whose reference does not fit a plain function type`() {
+    fun `GIVEN a lambda forwarding to a suspend function WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             suspend fun mapDay(day: String): String = day
@@ -56,11 +69,16 @@ class PreferMethodReferenceRuleTest {
             suspend fun mapAll(days: List<String>) = days.map { day -> mapDay(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a composable function, which cannot be referenced`() {
+    fun `GIVEN a lambda forwarding to a composable function WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Composable
@@ -69,11 +87,16 @@ class PreferMethodReferenceRuleTest {
             fun render(days: List<String>) = days.forEach { day -> DayRow(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a lambda inside a composable function`() {
+    fun `GIVEN a forwarding lambda inside a composable function WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -84,21 +107,31 @@ class PreferMethodReferenceRuleTest {
             }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a function it cannot see, declared in another file`() {
+    fun `GIVEN a lambda forwarding to a function declared in another file WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapAll(days: List<String>) = days.map { day -> mapDay(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a call reached through a receiver`() {
+    fun `GIVEN a lambda forwarding to a call reached through a receiver WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun delete(id: String) = Unit
@@ -108,11 +141,16 @@ class PreferMethodReferenceRuleTest {
             }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a member function of a different class in the same file`() {
+    fun `GIVEN a lambda forwarding to a member function of another class WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Mapper {
@@ -124,11 +162,16 @@ class PreferMethodReferenceRuleTest {
             }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a lambda taking more than one parameter`() {
+    fun `GIVEN a lambda taking more than one parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -136,11 +179,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: Map<String, String>) = days.map { key, _ -> mapDay(key) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a lambda destructuring its parameter`() {
+    fun `GIVEN a lambda destructuring its parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -148,11 +196,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<Pair<String, String>>) = days.map { (day, _) -> mapDay(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a call that adds arguments of its own`() {
+    fun `GIVEN a lambda whose call adds arguments of its own WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String, uppercase: Boolean): String = day
@@ -160,11 +213,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<String>) = days.map { day -> mapDay(day, true) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a call naming its argument, which a reference cannot carry`() {
+    fun `GIVEN a lambda whose call names its argument WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -172,11 +230,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<String>) = days.map { day -> mapDay(day = day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a call carrying type arguments`() {
+    fun `GIVEN a lambda whose call carries type arguments WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun <T> mapDay(day: T): T = day
@@ -184,11 +247,16 @@ class PreferMethodReferenceRuleTest {
             fun mapAll(days: List<String>) = days.map { day -> mapDay<String>(day) }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `does not flag a lambda that does more than forward`() {
+    fun `GIVEN a lambda that does more than forward WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun mapDay(day: String): String = day
@@ -199,7 +267,11 @@ class PreferMethodReferenceRuleTest {
             }
             """.trimIndent()
 
-        preferMethodReferenceRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = preferMethodReferenceRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private companion object {

@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class GetSubscriptionStatusFlowUseCaseImplTest {
     @Test
-    fun `WHEN observing THEN emits store status`() = runTest {
+    fun `GIVEN a store status WHEN observing THEN emits the store status`() = runTest {
         // Given
         val useCase = createUseCase(storeStatus = SubscriptionStatus.Free)
 

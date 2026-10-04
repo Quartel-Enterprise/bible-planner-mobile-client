@@ -20,60 +20,61 @@ internal class VerseNoteLocalStoreTest {
     private lateinit var dao: FakeVerseNoteDao
 
     @Test
-    fun `observes and reads only the pending notes with their verses`() = runTest {
-        // Given
-        prepareScenario(
-            initialNotes = listOf(
-                noteEntity(
-                    id = "note-1",
-                    isPendingSync = true,
+    fun `GIVEN pending and synced notes WHEN observing and reading the pending ones THEN returns them with verses`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialNotes = listOf(
+                    noteEntity(
+                        id = "note-1",
+                        isPendingSync = true,
+                    ),
+                    noteEntity(
+                        id = "note-2",
+                        isPendingSync = false,
+                    ),
                 ),
-                noteEntity(
-                    id = "note-2",
-                    isPendingSync = false,
-                ),
-            ),
-            initialVerses = listOf(
-                verse(
-                    noteId = "note-1",
-                    verseNumber = 3,
-                    position = 0,
-                ),
-            ),
-        )
-
-        // When
-        val observed = localStore.observePending().first()
-        val read = localStore.getPending()
-
-        // Then
-        val expected = listOf(
-            VerseNoteWithVerses(
-                note = noteEntity(
-                    id = "note-1",
-                    isPendingSync = true,
-                ),
-                verses = listOf(
+                initialVerses = listOf(
                     verse(
                         noteId = "note-1",
                         verseNumber = 3,
                         position = 0,
                     ),
                 ),
-            ),
-        )
-        assertEquals(
-            expected = expected,
-            actual = observed,
-        )
-        assertEquals(
-            expected = expected,
-            actual = read,
-        )
-    }
+            )
+
+            // When
+            val observed = localStore.observePending().first()
+            val read = localStore.getPending()
+
+            // Then
+            val expected = listOf(
+                VerseNoteWithVerses(
+                    note = noteEntity(
+                        id = "note-1",
+                        isPendingSync = true,
+                    ),
+                    verses = listOf(
+                        verse(
+                            noteId = "note-1",
+                            verseNumber = 3,
+                            position = 0,
+                        ),
+                    ),
+                ),
+            )
+            assertEquals(
+                expected = expected,
+                actual = observed,
+            )
+            assertEquals(
+                expected = expected,
+                actual = read,
+            )
+        }
 
     @Test
-    fun `marks a pushed note synced when it was not touched meanwhile`() = runTest {
+    fun `GIVEN a pushed note untouched meanwhile WHEN marking it synced THEN clears its pending flag`() = runTest {
         // Given
         val pending = noteEntity(
             id = "note-1",
@@ -97,7 +98,7 @@ internal class VerseNoteLocalStoreTest {
     }
 
     @Test
-    fun `creates a note this device has never seen with the remote passage`() = runTest {
+    fun `GIVEN no local note WHEN applying a remote note THEN creates it with the remote passage`() = runTest {
         // Given
         prepareScenario()
 
@@ -133,7 +134,7 @@ internal class VerseNoteLocalStoreTest {
     }
 
     @Test
-    fun `replaces the passage when a newer remote edit moves the note`() = runTest {
+    fun `GIVEN a synced note WHEN applying a newer remote edit that moves it THEN replaces the passage`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(noteEntity(id = "note-1")),
@@ -169,38 +170,39 @@ internal class VerseNoteLocalStoreTest {
     }
 
     @Test
-    fun `keeps the local passage when the remote edit is rejected`() = runTest {
-        // Given
-        val pending = noteEntity(
-            id = "note-1",
-            isPendingSync = true,
-        )
-        val localVerse = verse(
-            noteId = "note-1",
-            verseNumber = 1,
-            position = 0,
-        )
-        prepareScenario(
-            initialNotes = listOf(pending),
-            initialVerses = listOf(localVerse),
-        )
+    fun `GIVEN a pending local note WHEN applying a remote edit THEN rejects it and keeps the local passage`() =
+        runTest {
+            // Given
+            val pending = noteEntity(
+                id = "note-1",
+                isPendingSync = true,
+            )
+            val localVerse = verse(
+                noteId = "note-1",
+                verseNumber = 1,
+                position = 0,
+            )
+            prepareScenario(
+                initialNotes = listOf(pending),
+                initialVerses = listOf(localVerse),
+            )
 
-        // When
-        localStore.applyRemote(dto(verseNumbers = listOf(2)))
+            // When
+            localStore.applyRemote(dto(verseNumbers = listOf(2)))
 
-        // Then
-        assertEquals(
-            expected = listOf(pending),
-            actual = dao.notes.value,
-        )
-        assertEquals(
-            expected = listOf(localVerse),
-            actual = dao.verses.value,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(pending),
+                actual = dao.notes.value,
+            )
+            assertEquals(
+                expected = listOf(localVerse),
+                actual = dao.verses.value,
+            )
+        }
 
     @Test
-    fun `builds the remote payload with the verses in their stored order`() {
+    fun `GIVEN a local note WHEN building the remote payload THEN lists the verses in their stored order`() {
         // Given
         prepareScenario()
 
@@ -235,7 +237,7 @@ internal class VerseNoteLocalStoreTest {
     }
 
     @Test
-    fun `clears every local note`() = runTest {
+    fun `GIVEN a local note WHEN clearing the local store THEN removes every note`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(noteEntity(id = "note-1")),

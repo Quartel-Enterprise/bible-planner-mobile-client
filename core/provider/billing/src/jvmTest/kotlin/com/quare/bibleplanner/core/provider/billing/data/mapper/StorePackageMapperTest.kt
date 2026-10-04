@@ -12,7 +12,7 @@ internal class StorePackageMapperTest {
     private lateinit var mapper: StorePackageMapper
 
     @Test
-    fun `should map a monthly package with its product details`() {
+    fun `GIVEN a monthly package and its product WHEN mapping THEN maps the package with its product details`() {
         // When
         val storePackage = mapper.map(
             packageDto = packageDto($$"$rc_monthly"),
@@ -39,7 +39,7 @@ internal class StorePackageMapperTest {
     }
 
     @Test
-    fun `should map an annual package`() {
+    fun `GIVEN an annual package WHEN mapping THEN maps the annual type`() {
         // When
         val storePackage = mapper.map(
             packageDto = packageDto($$"$rc_annual"),
@@ -54,7 +54,7 @@ internal class StorePackageMapperTest {
     }
 
     @Test
-    fun `should map an unknown package identifier to the unknown type`() {
+    fun `GIVEN an unknown package identifier WHEN mapping THEN maps the unknown type`() {
         // When
         val storePackage = mapper.map(
             packageDto = packageDto($$"$rc_weekly"),
@@ -69,7 +69,7 @@ internal class StorePackageMapperTest {
     }
 
     @Test
-    fun `should map a missing product description to an empty description`() {
+    fun `GIVEN a missing product description WHEN mapping THEN maps an empty description`() {
         // When
         val storePackage = mapper.map(
             packageDto = packageDto($$"$rc_monthly"),

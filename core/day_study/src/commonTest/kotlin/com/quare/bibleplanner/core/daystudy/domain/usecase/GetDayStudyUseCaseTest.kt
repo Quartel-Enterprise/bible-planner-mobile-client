@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 internal class GetDayStudyUseCaseTest {
     private lateinit var dayStudyRepository: FakeDayStudyRepository
@@ -43,25 +43,26 @@ internal class GetDayStudyUseCaseTest {
     }
 
     @Test
-    fun `WHEN invoking THEN forwards the selected version and mapped language to the repository`() = runTest {
-        // When
-        useCase(
-            passages = passages,
-            isRewarded = false,
-        ).toList()
+    fun `GIVEN a selected version and app language WHEN invoking THEN forwards them mapped to the repository`() =
+        runTest {
+            // When
+            useCase(
+                passages = passages,
+                isRewarded = false,
+            ).toList()
 
-        // Then
-        assertEquals(
-            listOf(
-                DayStudyRequest(
-                    passages = passages,
-                    version = "ACF",
-                    languageCode = "pt-BR",
+            // Then
+            assertEquals(
+                listOf(
+                    DayStudyRequest(
+                        passages = passages,
+                        version = "ACF",
+                        languageCode = "pt-BR",
+                    ),
                 ),
-            ),
-            dayStudyRepository.studyRequests,
-        )
-    }
+                dayStudyRepository.studyRequests,
+            )
+        }
 
     @Test
     fun `GIVEN a rewarded unlock WHEN invoking THEN asks the repository for a rewarded study`() = runTest {
@@ -76,7 +77,7 @@ internal class GetDayStudyUseCaseTest {
     }
 
     @Test
-    fun `WHEN invoking THEN emits the repository events`() = runTest {
+    fun `GIVEN repository events WHEN invoking THEN emits them`() = runTest {
         // Given
         dayStudyRepository.events = listOf(
             DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
@@ -98,13 +99,16 @@ internal class GetDayStudyUseCaseTest {
         // Given
         dayStudyRepository.eventsError = LimitReachedException()
 
-        // When & Then
-        assertFailsWith<LimitReachedException> {
+        // When
+        val result = runCatching {
             useCase(
                 passages = passages,
                 isRewarded = false,
             ).toList()
         }
+
+        // Then
+        assertIs<LimitReachedException>(result.exceptionOrNull())
     }
 
     private val passages = listOf(

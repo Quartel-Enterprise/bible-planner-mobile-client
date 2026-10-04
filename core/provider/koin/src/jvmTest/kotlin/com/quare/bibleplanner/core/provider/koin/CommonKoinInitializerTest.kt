@@ -20,8 +20,11 @@ internal class CommonKoinInitializerTest {
 
     @Test
     fun `GIVEN platform modules WHEN starting koin THEN loads them alongside the common modules`() {
+        // Given
+        val platformModules = listOf(platformModule)
+
         // When
-        commonKoinInitializer(platformModules = listOf(platformModule))
+        commonKoinInitializer(platformModules = platformModules)
 
         // Then
         assertEquals(PLATFORM_NAME, GlobalContext.get().get<String>(named(PLATFORM_QUALIFIER)))
@@ -29,10 +32,13 @@ internal class CommonKoinInitializerTest {
 
     @Test
     fun `GIVEN an app config WHEN starting koin THEN applies it to the koin application`() {
+        // Given
+        val appProperties = mapOf(PROPERTY_KEY to PROPERTY_VALUE)
+
         // When
         commonKoinInitializer(
             platformModules = listOf(platformModule),
-            config = { properties(mapOf(PROPERTY_KEY to PROPERTY_VALUE)) },
+            config = { properties(appProperties) },
         )
 
         // Then

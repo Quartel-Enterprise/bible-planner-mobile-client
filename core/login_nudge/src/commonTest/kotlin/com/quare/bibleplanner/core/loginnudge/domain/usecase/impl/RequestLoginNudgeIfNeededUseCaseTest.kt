@@ -18,48 +18,61 @@ internal class RequestLoginNudgeIfNeededUseCaseTest {
     private val navigator = Navigator()
     private val commands = mutableListOf<NavigationCommand>()
     private val trackedEvents = mutableListOf<String>()
+    private lateinit var useCase: RequestLoginNudgeIfNeededUseCase
 
     @Test
-    fun `sends the nudge route when the nudge should be shown`() = runTest {
-        val useCase = prepareScenario(shouldShow = true)
+    fun `GIVEN the nudge should be shown WHEN requesting it THEN sends the nudge route`() = runTest {
+        // Given
+        prepareScenario(shouldShow = true)
 
+        // When
         useCase()
 
+        // Then
         assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(LoginSyncNudgeNavRoute)), commands)
     }
 
     @Test
-    fun `tracks the nudge impression when the nudge should be shown`() = runTest {
-        val useCase = prepareScenario(shouldShow = true)
+    fun `GIVEN the nudge should be shown WHEN requesting it THEN tracks the nudge impression`() = runTest {
+        // Given
+        prepareScenario(shouldShow = true)
 
+        // When
         useCase()
 
+        // Then
         assertEquals(listOf(AnalyticsEventNames.LOGIN_NUDGE_SHOWN), trackedEvents)
     }
 
     @Test
-    fun `sends nothing when the nudge should not be shown`() = runTest {
-        val useCase = prepareScenario(shouldShow = false)
+    fun `GIVEN the nudge should not be shown WHEN requesting it THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(shouldShow = false)
 
+        // When
         useCase()
 
+        // Then
         assertTrue(commands.isEmpty())
     }
 
     @Test
-    fun `tracks nothing when the nudge should not be shown`() = runTest {
-        val useCase = prepareScenario(shouldShow = false)
+    fun `GIVEN the nudge should not be shown WHEN requesting it THEN tracks nothing`() = runTest {
+        // Given
+        prepareScenario(shouldShow = false)
 
+        // When
         useCase()
 
+        // Then
         assertTrue(trackedEvents.isEmpty())
     }
 
-    private fun TestScope.prepareScenario(shouldShow: Boolean): RequestLoginNudgeIfNeededUseCase {
+    private fun TestScope.prepareScenario(shouldShow: Boolean) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             navigator.commands.collect { commands += it }
         }
-        return RequestLoginNudgeIfNeededUseCase(
+        useCase = RequestLoginNudgeIfNeededUseCase(
             shouldShowLoginNudge = { shouldShow },
             navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },

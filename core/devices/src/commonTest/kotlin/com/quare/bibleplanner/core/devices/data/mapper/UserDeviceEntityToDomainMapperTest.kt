@@ -12,16 +12,32 @@ class UserDeviceEntityToDomainMapperTest {
 
     @Test
     fun `GIVEN an entity matching the current device id WHEN mapping THEN marks it as current`() {
-        val model = mapper.map(entity(deviceId = "device-1"), currentDeviceId = "device-1")
+        // Given
+        val deviceEntity = entity(deviceId = "device-1")
 
+        // When
+        val model = mapper.map(
+            entity = deviceEntity,
+            currentDeviceId = "device-1",
+        )
+
+        // Then
         assertTrue(model.isCurrentDevice)
         assertEquals(DeviceFormFactor.TABLET, model.formFactor)
     }
 
     @Test
     fun `GIVEN an entity not matching the current device id WHEN mapping THEN is not current`() {
-        val model = mapper.map(entity(deviceId = "device-2"), currentDeviceId = "device-1")
+        // Given
+        val deviceEntity = entity(deviceId = "device-2")
 
+        // When
+        val model = mapper.map(
+            entity = deviceEntity,
+            currentDeviceId = "device-1",
+        )
+
+        // Then
         assertFalse(model.isCurrentDevice)
     }
 

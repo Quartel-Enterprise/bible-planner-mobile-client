@@ -18,7 +18,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `falls back to the provider photo when there is no local row`() {
+    fun `GIVEN no local row WHEN mapping THEN falls back to the provider photo`() {
         // When
         val profile = mapper.map(
             user = user(photo = PROVIDER_PHOTO),
@@ -32,7 +32,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `falls back to the provider photo when the custom url is null`() {
+    fun `GIVEN a null custom url WHEN mapping THEN falls back to the provider photo`() {
         // When
         val profile = mapper.map(
             user = user(photo = PROVIDER_PHOTO),
@@ -44,7 +44,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `keeps the photo removed instead of falling back to the provider`() {
+    fun `GIVEN a removed photo WHEN mapping THEN keeps it removed instead of falling back to the provider`() {
         // When
         val profile = mapper.map(
             user = user(photo = PROVIDER_PHOTO),
@@ -57,7 +57,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `prefers the custom photo over the provider one`() {
+    fun `GIVEN a custom and a provider photo WHEN mapping THEN prefers the custom photo`() {
         // When
         val profile = mapper.map(
             user = user(photo = PROVIDER_PHOTO),
@@ -70,7 +70,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `prefers the not yet uploaded photo over everything else`() {
+    fun `GIVEN a not yet uploaded photo WHEN mapping THEN prefers it over everything else`() {
         // Given
         val bytes = byteArrayOf(1, 2, 3)
 
@@ -89,7 +89,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `has no avatar when neither the provider nor the user supplied one`() {
+    fun `GIVEN no provider nor user photo WHEN mapping THEN has no avatar`() {
         // When
         val profile = mapper.map(
             user = user(photo = null),
@@ -102,7 +102,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `prefers the custom display name over the provider one`() {
+    fun `GIVEN a custom and a provider name WHEN mapping THEN prefers the custom display name`() {
         // When
         val profile = mapper.map(
             user = user(name = "Provider Name"),
@@ -114,7 +114,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `falls back to the provider name when there is no custom one`() {
+    fun `GIVEN no custom name WHEN mapping THEN falls back to the provider name`() {
         // When
         val profile = mapper.map(
             user = user(name = "Provider Name"),
@@ -126,7 +126,7 @@ class UserProfileMapperTest {
     }
 
     @Test
-    fun `has no display name when neither the provider nor the user supplied one`() {
+    fun `GIVEN no provider nor user name WHEN mapping THEN has no display name`() {
         // When
         val profile = mapper.map(
             user = user(name = null),

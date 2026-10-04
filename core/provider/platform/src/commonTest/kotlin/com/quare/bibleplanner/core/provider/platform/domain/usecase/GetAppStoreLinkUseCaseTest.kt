@@ -8,15 +8,16 @@ import kotlin.test.assertEquals
 
 internal class GetAppStoreLinkUseCaseTest {
     private lateinit var useCase: GetAppStoreLinkUseCase
+    private lateinit var languageProvider: MutableLanguageProvider
 
     @Test
     fun `GIVEN an iPhone in each language WHEN getting the store link THEN points to the matching App Store`() {
+        // Given
+        prepareScenario(platform = Platform.Ios)
+
         // When
         val links = Language.entries.associateWith { language ->
-            prepareScenario(
-                platform = Platform.Ios,
-                language = language,
-            )
+            languageProvider.language = language
             useCase()
         }
 
@@ -33,12 +34,12 @@ internal class GetAppStoreLinkUseCaseTest {
 
     @Test
     fun `GIVEN an Android phone in each language WHEN getting the store link THEN opens Google Play in it`() {
+        // Given
+        prepareScenario(platform = Platform.Android)
+
         // When
         val links = Language.entries.associateWith { language ->
-            prepareScenario(
-                platform = Platform.Android,
-                language = language,
-            )
+            languageProvider.language = language
             useCase()
         }
 
@@ -57,10 +58,7 @@ internal class GetAppStoreLinkUseCaseTest {
     @Test
     fun `GIVEN a desktop WHEN getting the store link THEN points to the website`() {
         // Given
-        prepareScenario(
-            platform = Platform.Desktop.Windows,
-            language = Language.ENGLISH,
-        )
+        prepareScenario(platform = Platform.Desktop.Windows)
 
         // When
         val link = useCase()
@@ -69,21 +67,19 @@ internal class GetAppStoreLinkUseCaseTest {
         assertEquals("https://bibleplanner.app", link)
     }
 
-    private fun prepareScenario(
-        platform: Platform,
-        language: Language,
-    ) {
+    private fun prepareScenario(platform: Platform) {
+        languageProvider = MutableLanguageProvider(language = Language.ENGLISH)
         useCase = GetAppStoreLinkUseCase(
             platform = platform,
-            languageProvider = FixedLanguageProvider(language),
+            languageProvider = languageProvider,
         )
     }
 }
 
-private class FixedLanguageProvider(
-    private val appLanguage: Language,
+private class MutableLanguageProvider(
+    var language: Language,
 ) : LanguageProvider {
     override fun getDeviceLanguage(): Language = error("unused")
 
-    override fun getAppLanguage(): Language = appLanguage
+    override fun getAppLanguage(): Language = language
 }

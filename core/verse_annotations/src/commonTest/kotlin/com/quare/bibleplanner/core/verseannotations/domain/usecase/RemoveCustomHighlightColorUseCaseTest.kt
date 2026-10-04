@@ -32,43 +32,45 @@ internal class RemoveCustomHighlightColorUseCaseTest {
     private lateinit var highlightRepository: FakeVerseHighlightRepository
 
     @Test
-    fun `drops the color from the palette but keeps the highlights made with it`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN highlights made with a custom color WHEN removing it keeping them THEN drops only the color`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        useCase(
-            colorKey = customColor.key,
-            shouldKeepHighlights = true,
-        )
+            // When
+            useCase(
+                colorKey = customColor.key,
+                shouldKeepHighlights = true,
+            )
 
-        // Then
-        assertTrue(paletteRepository.customColors.value.isEmpty())
-        assertEquals(
-            expected = mapOf(highlightedRef to customColor),
-            actual = highlightRepository.colors.value,
-        )
-    }
+            // Then
+            assertTrue(paletteRepository.customColors.value.isEmpty())
+            assertEquals(
+                expected = mapOf(highlightedRef to customColor),
+                actual = highlightRepository.colors.value,
+            )
+        }
 
     @Test
-    fun `clears the highlights made with the color when the user asks for it`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN highlights made with a custom color WHEN removing it with them THEN clears the highlights too`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        useCase(
-            colorKey = customColor.key,
-            shouldKeepHighlights = false,
-        )
+            // When
+            useCase(
+                colorKey = customColor.key,
+                shouldKeepHighlights = false,
+            )
 
-        // Then
-        assertTrue(paletteRepository.customColors.value.isEmpty())
-        assertEquals(
-            expected = listOf(customColor.key),
-            actual = highlightRepository.removedColorKeys,
-        )
-        assertTrue(highlightRepository.colors.value.isEmpty())
-    }
+            // Then
+            assertTrue(paletteRepository.customColors.value.isEmpty())
+            assertEquals(
+                expected = listOf(customColor.key),
+                actual = highlightRepository.removedColorKeys,
+            )
+            assertTrue(highlightRepository.colors.value.isEmpty())
+        }
 
     private fun prepareScenario() {
         paletteRepository = FakeHighlightPaletteRepository(initialColors = listOf(customColor))

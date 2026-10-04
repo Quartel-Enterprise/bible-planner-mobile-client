@@ -11,7 +11,7 @@ internal class GetRestorePurchaseResultDesktopUseCaseTest {
     private lateinit var useCase: GetRestorePurchaseResultDesktopUseCase
 
     @Test
-    fun `should succeed when the account has an active entitlement`() = runTest {
+    fun `GIVEN an account with an active entitlement WHEN restoring THEN succeeds`() = runTest {
         // Given
         prepareScenario(refreshesBeforePro = 0)
 
@@ -23,7 +23,7 @@ internal class GetRestorePurchaseResultDesktopUseCaseTest {
     }
 
     @Test
-    fun `should fail when the account has no active entitlement`() = runTest {
+    fun `GIVEN an account without an active entitlement WHEN restoring THEN fails`() = runTest {
         // Given
         prepareScenario(refreshesBeforePro = Int.MAX_VALUE)
 

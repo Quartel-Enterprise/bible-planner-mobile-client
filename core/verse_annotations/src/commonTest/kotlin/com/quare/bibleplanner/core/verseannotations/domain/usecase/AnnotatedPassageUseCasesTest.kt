@@ -52,115 +52,118 @@ internal class AnnotatedPassageUseCasesTest {
     }
 
     @Test
-    fun `observes the passages of the requested version`() = runTest {
-        // Given
-        val useCase = ObserveAnnotatedPassagesUseCase(
-            verseHighlightRepository = highlightRepository,
-            savedVerseRepository = savedVerseRepository,
-            verseNoteRepository = noteRepository,
-            annotatedPassageFactory = AnnotatedPassageFactory(),
-        )
+    fun `GIVEN annotations in two versions WHEN observing the passages of one THEN emits only its passages`() =
+        runTest {
+            // Given
+            val useCase = ObserveAnnotatedPassagesUseCase(
+                verseHighlightRepository = highlightRepository,
+                savedVerseRepository = savedVerseRepository,
+                verseNoteRepository = noteRepository,
+                annotatedPassageFactory = AnnotatedPassageFactory(),
+            )
 
-        // When
-        val passages = useCase(testChapter.bibleVersionId).first()
+            // When
+            val passages = useCase(testChapter.bibleVersionId).first()
 
-        // Then
-        assertEquals(
-            expected = setOf(
+            // Then
+            assertEquals(
+                expected = setOf(
+                    AnnotatedPassage(
+                        chapter = testChapter,
+                        verseNumbers = listOf(16),
+                        highlightColor = yellow,
+                        isSaved = false,
+                        note = testNote,
+                        updatedAtEpochMillis = 0L,
+                    ),
+                    AnnotatedPassage(
+                        chapter = testChapter,
+                        verseNumbers = listOf(17),
+                        highlightColor = yellow,
+                        isSaved = true,
+                        note = null,
+                        updatedAtEpochMillis = 0L,
+                    ),
+                ),
+                actual = passages.toSet(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a fully annotated passage WHEN removing its annotations THEN removes highlight bookmark and note`() =
+        runTest {
+            // Given
+            val useCase = RemovePassageAnnotationsUseCase(
+                verseHighlightRepository = highlightRepository,
+                savedVerseRepository = savedVerseRepository,
+                verseNoteRepository = noteRepository,
+            )
+
+            // When
+            useCase(
                 AnnotatedPassage(
                     chapter = testChapter,
-                    verseNumbers = listOf(16),
+                    verseNumbers = listOf(16, 17),
                     highlightColor = yellow,
-                    isSaved = false,
+                    isSaved = true,
                     note = testNote,
                     updatedAtEpochMillis = 0L,
                 ),
+            )
+
+            // Then
+            assertEquals(
+                expected = setOf(testChapter.copy(bibleVersionId = "WEB")),
+                actual = highlightRepository.colors.value.keys
+                    .map { it.chapter }
+                    .toSet(),
+            )
+            assertEquals(
+                expected = emptySet(),
+                actual = savedVerseRepository.savedRefs.value,
+            )
+            assertEquals(
+                expected = listOf("note-1"),
+                actual = noteRepository.deletedNoteIds,
+            )
+        }
+
+    @Test
+    fun `GIVEN a passage carrying only a bookmark WHEN removing its annotations THEN leaves the rest untouched`() =
+        runTest {
+            // Given
+            val useCase = RemovePassageAnnotationsUseCase(
+                verseHighlightRepository = highlightRepository,
+                savedVerseRepository = savedVerseRepository,
+                verseNoteRepository = noteRepository,
+            )
+
+            // When
+            useCase(
                 AnnotatedPassage(
                     chapter = testChapter,
                     verseNumbers = listOf(17),
-                    highlightColor = yellow,
+                    highlightColor = null,
                     isSaved = true,
                     note = null,
                     updatedAtEpochMillis = 0L,
                 ),
-            ),
-            actual = passages.toSet(),
-        )
-    }
+            )
 
-    @Test
-    fun `removes the highlight and the bookmark and the note of a passage`() = runTest {
-        // Given
-        val useCase = RemovePassageAnnotationsUseCase(
-            verseHighlightRepository = highlightRepository,
-            savedVerseRepository = savedVerseRepository,
-            verseNoteRepository = noteRepository,
-        )
-
-        // When
-        useCase(
-            AnnotatedPassage(
-                chapter = testChapter,
-                verseNumbers = listOf(16, 17),
-                highlightColor = yellow,
-                isSaved = true,
-                note = testNote,
-                updatedAtEpochMillis = 0L,
-            ),
-        )
-
-        // Then
-        assertEquals(
-            expected = setOf(testChapter.copy(bibleVersionId = "WEB")),
-            actual = highlightRepository.colors.value.keys
-                .map { it.chapter }
-                .toSet(),
-        )
-        assertEquals(
-            expected = emptySet(),
-            actual = savedVerseRepository.savedRefs.value,
-        )
-        assertEquals(
-            expected = listOf("note-1"),
-            actual = noteRepository.deletedNoteIds,
-        )
-    }
-
-    @Test
-    fun `leaves untouched what the passage does not carry`() = runTest {
-        // Given
-        val useCase = RemovePassageAnnotationsUseCase(
-            verseHighlightRepository = highlightRepository,
-            savedVerseRepository = savedVerseRepository,
-            verseNoteRepository = noteRepository,
-        )
-
-        // When
-        useCase(
-            AnnotatedPassage(
-                chapter = testChapter,
-                verseNumbers = listOf(17),
-                highlightColor = null,
-                isSaved = true,
-                note = null,
-                updatedAtEpochMillis = 0L,
-            ),
-        )
-
-        // Then
-        assertEquals(
-            expected = yellow,
-            actual = highlightRepository.colors.value[verseRef(17)],
-        )
-        assertEquals(
-            expected = emptySet(),
-            actual = savedVerseRepository.savedRefs.value,
-        )
-        assertEquals(
-            expected = emptyList(),
-            actual = noteRepository.deletedNoteIds,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = yellow,
+                actual = highlightRepository.colors.value[verseRef(17)],
+            )
+            assertEquals(
+                expected = emptySet(),
+                actual = savedVerseRepository.savedRefs.value,
+            )
+            assertEquals(
+                expected = emptyList(),
+                actual = noteRepository.deletedNoteIds,
+            )
+        }
 
     private fun verseRef(verseNumber: Int): VerseRef = VerseRef(
         chapter = testChapter,

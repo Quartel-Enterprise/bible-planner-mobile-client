@@ -11,8 +11,11 @@ internal class AgentCliOptionsParserTest {
 
     @Test
     fun `GIVEN no options WHEN parsing THEN runs the REPL on the default data directory`() {
+        // Given
+        val arguments = emptyList<String>()
+
         // When
-        val options = parser.parse(emptyList())
+        val options = parser.parse(arguments)
 
         // Then
         assertEquals(
@@ -69,8 +72,11 @@ internal class AgentCliOptionsParserTest {
 
     @Test
     fun `GIVEN an unknown option WHEN parsing THEN lists the known ones`() {
+        // Given
+        val arguments = listOf("--verbose")
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse(listOf("--verbose")) }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(arguments) }
 
         // Then
         assertEquals(
@@ -82,8 +88,11 @@ internal class AgentCliOptionsParserTest {
 
     @Test
     fun `GIVEN an option without its value WHEN parsing THEN fails`() {
+        // Given
+        val arguments = listOf("--port")
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse(listOf("--port")) }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(arguments) }
 
         // Then
         assertEquals(
@@ -94,8 +103,11 @@ internal class AgentCliOptionsParserTest {
 
     @Test
     fun `GIVEN a port that is not a number WHEN parsing THEN fails`() {
+        // Given
+        val arguments = listOf("--port", "http")
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse(listOf("--port", "http")) }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(arguments) }
 
         // Then
         assertEquals(

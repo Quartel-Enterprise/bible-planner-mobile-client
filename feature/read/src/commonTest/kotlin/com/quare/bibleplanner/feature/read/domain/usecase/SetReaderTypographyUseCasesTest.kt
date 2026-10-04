@@ -21,7 +21,7 @@ internal class SetReaderTypographyUseCasesTest {
     }
 
     @Test
-    fun `stores the picked font`() = runTest {
+    fun `GIVEN a picked font WHEN setting the reader font THEN stores the picked font`() = runTest {
         // When
         SetReaderFontUseCase(readerSettingsRepository = repository)(ReaderFont.BITTER)
 
@@ -33,7 +33,7 @@ internal class SetReaderTypographyUseCasesTest {
     }
 
     @Test
-    fun `stores vertical reading turned on`() = runTest {
+    fun `GIVEN vertical reading turned on WHEN setting it THEN stores vertical reading turned on`() = runTest {
         // When
         SetReaderVerticalReadingUseCase(readerSettingsRepository = repository)(true)
 
@@ -42,7 +42,7 @@ internal class SetReaderTypographyUseCasesTest {
     }
 
     @Test
-    fun `stores the note icon turned off`() = runTest {
+    fun `GIVEN the note icon turned off WHEN setting it THEN stores the note icon turned off`() = runTest {
         // When
         SetReaderNoteIconUseCase(readerSettingsRepository = repository)(false)
 

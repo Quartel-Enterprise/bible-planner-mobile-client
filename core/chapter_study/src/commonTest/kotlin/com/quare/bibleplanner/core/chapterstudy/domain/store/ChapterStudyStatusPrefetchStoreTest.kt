@@ -38,7 +38,7 @@ internal class ChapterStudyStatusPrefetchStoreTest {
     }
 
     @Test
-    fun `WHEN fetching a status THEN keeps it and returns it`() = runTest {
+    fun `GIVEN a status to fetch WHEN fetching it THEN keeps it and returns it`() = runTest {
         // When
         val fetched = store.fetchAndKeep(key) { status }
 

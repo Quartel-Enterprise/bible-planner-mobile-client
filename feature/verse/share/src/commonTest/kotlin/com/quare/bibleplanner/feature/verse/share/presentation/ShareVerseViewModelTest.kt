@@ -44,7 +44,7 @@ internal class ShareVerseViewModelTest {
     }
 
     @Test
-    fun `loads the passage into the card`() = runTest(testDispatcher) {
+    fun `GIVEN a passage WHEN opening the share sheet THEN loads it into the card`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -60,7 +60,7 @@ internal class ShareVerseViewModelTest {
     }
 
     @Test
-    fun `sharing as text emits the formatted message`() = runTest(testDispatcher) {
+    fun `GIVEN a loaded passage WHEN sharing as text THEN emits the formatted message`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -85,64 +85,67 @@ internal class ShareVerseViewModelTest {
     }
 
     @Test
-    fun `sharing as an image opens the composer for the same passage`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a loaded passage WHEN sharing as an image THEN opens the composer for the same passage`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(ShareVerseUiEvent.OnShareAsImageClick)
-        runCurrent()
+            // When
+            viewModel.onEvent(ShareVerseUiEvent.OnShareAsImageClick)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = NavigationCommand.Navigate(
-                ShareVerseImageNavRoute(
-                    bookId = BookId.GEN.name,
-                    chapterNumber = 3,
-                    verseNumbers = verseNumbers,
+            // Then
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    ShareVerseImageNavRoute(
+                        bookId = BookId.GEN.name,
+                        chapterNumber = 3,
+                        verseNumbers = verseNumbers,
+                    ),
                 ),
-            ),
-            actual = commands.single(),
-        )
-    }
+                actual = commands.single(),
+            )
+        }
 
     @Test
-    fun `sharing the rendered card reports the image format`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a loaded passage WHEN sharing the rendered card THEN reports the image format`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(ShareVerseUiEvent.OnShareImageReady(byteArrayOf(1, 2, 3)))
-        runCurrent()
+            // When
+            viewModel.onEvent(ShareVerseUiEvent.OnShareImageReady(byteArrayOf(1, 2, 3)))
+            runCurrent()
 
-        // Then
-        val action = actions.filterIsInstance<ShareVerseUiAction.ShareImage>().single()
-        assertTrue(action.imageBytes.contentEquals(byteArrayOf(1, 2, 3)))
-        assertEquals(
-            expected = "image",
-            actual = trackedEvents.single { it.first == "verse_shared" }.second["format"],
-        )
-    }
+            // Then
+            val action = actions.filterIsInstance<ShareVerseUiAction.ShareImage>().single()
+            assertTrue(action.imageBytes.contentEquals(byteArrayOf(1, 2, 3)))
+            assertEquals(
+                expected = "image",
+                actual = trackedEvents.single { it.first == "verse_shared" }.second["format"],
+            )
+        }
 
     @Test
-    fun `changing the background keeps the chosen font in the style event`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a loaded passage WHEN choosing a background THEN applies it and tracks it in the style event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(ShareVerseUiEvent.OnBackgroundClick(ShareCardBackground.FOREST))
-        runCurrent()
+            // When
+            viewModel.onEvent(ShareVerseUiEvent.OnBackgroundClick(ShareCardBackground.FOREST))
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = ShareCardBackground.FOREST,
-            actual = viewModel.uiState.value.background,
-        )
-        assertEquals(
-            expected = "forest",
-            actual = trackedEvents.single { it.first == "verse_share_style_changed" }.second["background"],
-        )
-    }
+            // Then
+            assertEquals(
+                expected = ShareCardBackground.FOREST,
+                actual = viewModel.uiState.value.background,
+            )
+            assertEquals(
+                expected = "forest",
+                actual = trackedEvents.single { it.first == "verse_share_style_changed" }.second["background"],
+            )
+        }
 
     private fun TestScope.prepareScenario() {
         trackedEvents = mutableListOf()

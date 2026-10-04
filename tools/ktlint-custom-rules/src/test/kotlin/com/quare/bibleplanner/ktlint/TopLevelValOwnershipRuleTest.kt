@@ -7,7 +7,8 @@ class TopLevelValOwnershipRuleTest {
     private val topLevelValOwnershipRuleAssertThat = assertThatRule { TopLevelValOwnershipRule() }
 
     @Test
-    fun `flags a const val only the single class in the file reads`() {
+    fun `GIVEN a const val only the single class in the file reads WHEN linting THEN reports the const val`() {
+        // Given
         val code =
             """
             private const val PAGE_SIZE = 25
@@ -17,12 +18,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 19, buildConstantMessage("PAGE_SIZE", "BooksRepositoryImpl"))
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 19, buildConstantMessage("PAGE_SIZE", "BooksRepositoryImpl"))
     }
 
     @Test
-    fun `flags a val only the single class in the file reads`() {
+    fun `GIVEN a val only the single class in the file reads WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             private val artworkSize = 64.dp
@@ -32,12 +37,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 13, buildValueMessage("artworkSize", "ArtworkTest"))
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 13, buildValueMessage("artworkSize", "ArtworkTest"))
     }
 
     @Test
-    fun `flags a const val only an object reads`() {
+    fun `GIVEN a const val only an object reads WHEN linting THEN reports the const val`() {
+        // Given
         val code =
             """
             private const val TAG = "Keeper"
@@ -47,12 +56,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 19, buildConstantMessage("TAG", "Logger"))
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 19, buildConstantMessage("TAG", "Logger"))
     }
 
     @Test
-    fun `allows a constant a top level composable sizes itself with`() {
+    fun `GIVEN a constant a top level composable sizes itself with WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private val rowCornerRadius = 8.dp
@@ -67,11 +80,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a default for a constructor parameter`() {
+    fun `GIVEN a val used as the default of a constructor parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private val defaultHoldDuration = 700.milliseconds
@@ -81,11 +99,16 @@ class TopLevelValOwnershipRuleTest {
             ) : ViewModel()
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an argument to a superclass constructor call`() {
+    fun `GIVEN a val passed to a superclass constructor call WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private val tuneScoutAbout = About(maintainer = "Pierre Vieira")
@@ -93,11 +116,16 @@ class TopLevelValOwnershipRuleTest {
             abstract class BiblePlannerRule(id: String) : Rule(ruleId = id, about = tuneScoutAbout)
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a constant two top level declarations share`() {
+    fun `GIVEN a constant two top level declarations share WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private const val PAGE_SIZE = 25
@@ -111,11 +139,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a constant in a file without a class`() {
+    fun `GIVEN a constant in a file without a class WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private const val DATABASE_NAME = "bible_planner.db"
@@ -125,11 +158,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a val an interface reads because an interface holds no state`() {
+    fun `GIVEN a val an interface reads WHEN linting THEN reports nothing because an interface holds no state`() {
+        // Given
         val code =
             """
             private val fallback = "none"
@@ -139,11 +177,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a val a value class reads because it cannot declare properties`() {
+    fun `GIVEN a val a value class reads WHEN linting THEN reports nothing as it cannot declare properties`() {
+        // Given
         val code =
             """
             private val sizeSegment = Regex("[0-9]+x[0-9]+")
@@ -153,11 +196,16 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a constant nothing reads`() {
+    fun `GIVEN a constant nothing reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             private const val UNUSED = 1
@@ -165,11 +213,16 @@ class TopLevelValOwnershipRuleTest {
             class Empty
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a public top level val`() {
+    fun `GIVEN a public top level val WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             val sharedPageSize = 25
@@ -179,7 +232,11 @@ class TopLevelValOwnershipRuleTest {
             }
             """.trimIndent()
 
-        topLevelValOwnershipRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = topLevelValOwnershipRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

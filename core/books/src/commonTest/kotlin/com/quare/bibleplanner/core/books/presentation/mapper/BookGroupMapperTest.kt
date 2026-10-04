@@ -12,8 +12,11 @@ internal class BookGroupMapperTest {
 
     @Test
     fun `GIVEN every book WHEN grouping THEN keeps the canonical group sizes in order`() {
+        // Given
+        val books = BookId.entries
+
         // When
-        val groupSizes = BookId.entries
+        val groupSizes = books
             .map(mapper::fromBookId)
             .fold(mutableListOf<Pair<BookGroup, Int>>()) { runs, group ->
                 val last = runs.lastOrNull()
@@ -45,8 +48,11 @@ internal class BookGroupMapperTest {
 
     @Test
     fun `GIVEN every book WHEN grouping THEN the group testament matches the book testament`() {
+        // Given
+        val books = BookId.entries
+
         // When
-        val testaments = BookId.entries.map { mapper.fromBookId(it).testament }
+        val testaments = books.map { mapper.fromBookId(it).testament }
 
         // Then
         assertEquals(
@@ -57,11 +63,13 @@ internal class BookGroupMapperTest {
 
     @Test
     fun `GIVEN every group WHEN reading its title THEN each group has its own title`() {
-        // When
-        val titles = BookId.entries
+        // Given
+        val groups = BookId.entries
             .map(mapper::fromBookId)
             .distinct()
-            .map { it.titleRes.key }
+
+        // When
+        val titles = groups.map { it.titleRes.key }
 
         // Then
         assertEquals(
@@ -83,8 +91,11 @@ internal class BookGroupMapperTest {
 
     @Test
     fun `GIVEN each testament WHEN reading its title THEN uses its own title`() {
+        // Given
+        val testaments = BookTestament.entries
+
         // When
-        val titles = BookTestament.entries.map { it.titleRes.key }
+        val titles = testaments.map { it.titleRes.key }
 
         // Then
         assertEquals(listOf("old_testament", "new_testament"), titles)

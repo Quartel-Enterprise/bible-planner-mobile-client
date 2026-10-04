@@ -28,27 +28,28 @@ internal class GetBibleVersionsByLanguageUseCaseTest {
     )
 
     @Test
-    fun `groups the versions by language with the app language first and the rest alphabetically`() = runTest {
-        // Given
-        val useCase = GetBibleVersionsByLanguageUseCase(
-            repository = FakeBibleRepository(
-                bibles = listOf(kjv, acf, rvr, web),
-                selectedVersionId = "ACF",
-            ),
-            getAppLanguageFlow = { flowOf(Language.SPANISH) },
-        )
+    fun `GIVEN Spanish as the app language WHEN grouping THEN puts it first and the other languages alphabetically`() =
+        runTest {
+            // Given
+            val useCase = GetBibleVersionsByLanguageUseCase(
+                repository = FakeBibleRepository(
+                    bibles = listOf(kjv, acf, rvr, web),
+                    selectedVersionId = "ACF",
+                ),
+                getAppLanguageFlow = { flowOf(Language.SPANISH) },
+            )
 
-        // When
-        val versionsByLanguage = useCase().first()
+            // When
+            val versionsByLanguage = useCase().first()
 
-        // Then
-        assertEquals(
-            expected = listOf(Language.SPANISH, Language.ENGLISH, Language.PORTUGUESE_BRAZIL),
-            actual = versionsByLanguage.keys.toList(),
-        )
-        assertEquals(
-            expected = listOf(kjv, web),
-            actual = versionsByLanguage[Language.ENGLISH],
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(Language.SPANISH, Language.ENGLISH, Language.PORTUGUESE_BRAZIL),
+                actual = versionsByLanguage.keys.toList(),
+            )
+            assertEquals(
+                expected = listOf(kjv, web),
+                actual = versionsByLanguage[Language.ENGLISH],
+            )
+        }
 }

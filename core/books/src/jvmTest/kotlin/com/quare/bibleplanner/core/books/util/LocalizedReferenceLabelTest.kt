@@ -15,11 +15,14 @@ internal class LocalizedReferenceLabelTest {
     @Test
     fun `GIVEN verse numbers WHEN building the reference label THEN appends the compacted verses to the chapter`() =
         runTest {
+            // Given
+            val verseNumbers = listOf(7, 1, 2, 3)
+
             // When
             val label = getVerseReferenceLabel(
                 bookId = BookId.GEN,
                 chapterNumber = 3,
-                verseNumbers = listOf(7, 1, 2, 3),
+                verseNumbers = verseNumbers,
             )
 
             // Then
@@ -28,11 +31,14 @@ internal class LocalizedReferenceLabelTest {
 
     @Test
     fun `GIVEN no verse numbers WHEN building the reference label THEN names only the chapter`() = runTest {
+        // Given
+        val verseNumbers = emptyList<Int>()
+
         // When
         val label = getVerseReferenceLabel(
             bookId = BookId.GEN,
             chapterNumber = 3,
-            verseNumbers = emptyList(),
+            verseNumbers = verseNumbers,
         )
 
         // Then

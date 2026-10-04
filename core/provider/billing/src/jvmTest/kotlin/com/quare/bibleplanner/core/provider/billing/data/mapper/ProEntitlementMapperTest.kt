@@ -13,7 +13,7 @@ internal class ProEntitlementMapperTest {
     private lateinit var mapper: ProEntitlementMapper
 
     @Test
-    fun `should return the entitlement when it expires in the future`() {
+    fun `GIVEN an entitlement expiring in the future WHEN mapping the active entitlement THEN returns it`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(proSubscriberResponse())
 
@@ -26,7 +26,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should return no entitlement when it already expired`() {
+    fun `GIVEN an expired entitlement WHEN mapping the active entitlement THEN returns null`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(
             proSubscriberResponse(expiresDate = "2026-01-06T22:23:11Z"),
@@ -37,7 +37,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should return the entitlement when only the grace period is still running`() {
+    fun `GIVEN an expired entitlement in its grace period WHEN mapping the active entitlement THEN returns it`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(
             proSubscriberResponse(
@@ -51,7 +51,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should return the entitlement when it has no expiration date`() {
+    fun `GIVEN an entitlement without expiration date WHEN mapping the active entitlement THEN returns it`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(proSubscriberResponse(expiresDate = null))
 
@@ -60,7 +60,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should return no entitlement when the expiration date is unparseable`() {
+    fun `GIVEN an unparseable expiration date WHEN mapping the active entitlement THEN returns null`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(proSubscriberResponse(expiresDate = "not-a-date"))
 
@@ -69,7 +69,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should return no entitlement when the subscriber has none`() {
+    fun `GIVEN a subscriber without entitlements WHEN mapping the active entitlement THEN returns null`() {
         // When
         val entitlement = mapper.mapActiveEntitlement(freeSubscriberResponse())
 
@@ -78,7 +78,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should renew when the subscription was not unsubscribed`() {
+    fun `GIVEN a subscription not unsubscribed WHEN mapping will renew THEN returns true`() {
         // When
         val willRenew = mapper.mapWillRenew(
             response = proSubscriberResponse(),
@@ -93,7 +93,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should not renew when the subscription was unsubscribed`() {
+    fun `GIVEN an unsubscribed subscription WHEN mapping will renew THEN returns false`() {
         // When
         val willRenew = mapper.mapWillRenew(
             response = proSubscriberResponse(unsubscribeDetectedAt = "2026-01-06T18:24:02Z"),
@@ -108,7 +108,7 @@ internal class ProEntitlementMapperTest {
     }
 
     @Test
-    fun `should renew when the product has no matching subscription`() {
+    fun `GIVEN a product without a matching subscription WHEN mapping will renew THEN returns true`() {
         // When
         val willRenew = mapper.mapWillRenew(
             response = proSubscriberResponse(),

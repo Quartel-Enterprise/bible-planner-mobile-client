@@ -280,6 +280,23 @@ internal class DeleteAccountViewModelTest {
         viewModel.onEvent(DeleteAccountUiEvent.OnConfirmationTextChange(CONFIRMATION_KEYWORD))
     }
 
+    private fun fakeDeleteAccount(failingPhase: DeleteAccountPhase?): Flow<DeleteAccountProgress> = flow {
+        val failure = Result.failure<Unit>(IllegalStateException("boom"))
+        emit(DeleteAccountProgress.InProgress(DeleteAccountPhase.DELETING_DATA))
+        yield()
+        if (failingPhase == DeleteAccountPhase.DELETING_DATA) {
+            emit(DeleteAccountProgress.Finished(failure))
+            return@flow
+        }
+        emit(DeleteAccountProgress.InProgress(DeleteAccountPhase.CLOSING_ACCOUNT))
+        yield()
+        emit(
+            DeleteAccountProgress.Finished(
+                if (failingPhase == DeleteAccountPhase.CLOSING_ACCOUNT) failure else Result.success(Unit),
+            ),
+        )
+    }
+
     private fun TestScope.prepareScenario(
         subscriptionStatus: SubscriptionStatus? = SubscriptionStatus.Free,
         failingPhase: DeleteAccountPhase? = null,
@@ -299,23 +316,6 @@ internal class DeleteAccountViewModelTest {
         states = mutableListOf<DeleteAccountUiState>().also { collected ->
             backgroundScope.launch { viewModel.uiState.collect { collected += it } }
         }
-    }
-
-    private fun fakeDeleteAccount(failingPhase: DeleteAccountPhase?): Flow<DeleteAccountProgress> = flow {
-        val failure = Result.failure<Unit>(IllegalStateException("boom"))
-        emit(DeleteAccountProgress.InProgress(DeleteAccountPhase.DELETING_DATA))
-        yield()
-        if (failingPhase == DeleteAccountPhase.DELETING_DATA) {
-            emit(DeleteAccountProgress.Finished(failure))
-            return@flow
-        }
-        emit(DeleteAccountProgress.InProgress(DeleteAccountPhase.CLOSING_ACCOUNT))
-        yield()
-        emit(
-            DeleteAccountProgress.Finished(
-                if (failingPhase == DeleteAccountPhase.CLOSING_ACCOUNT) failure else Result.success(Unit),
-            ),
-        )
     }
 
     private companion object {

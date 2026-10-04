@@ -6,8 +6,11 @@ import kotlin.test.assertEquals
 internal class DeleteAccountRequestExceptionTest {
     @Test
     fun `GIVEN a failed status code WHEN creating the exception THEN reports the status in its message`() {
+        // Given
+        val statusCode = 500
+
         // When
-        val exception = DeleteAccountRequestException(statusCode = 500)
+        val exception = DeleteAccountRequestException(statusCode = statusCode)
 
         // Then
         assertEquals("The delete-account function responded with status 500", exception.message)

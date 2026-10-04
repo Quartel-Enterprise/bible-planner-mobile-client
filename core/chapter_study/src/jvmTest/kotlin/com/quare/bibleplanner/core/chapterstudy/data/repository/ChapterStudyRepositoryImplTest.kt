@@ -46,6 +46,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -173,8 +174,11 @@ internal class ChapterStudyRepositoryImplTest {
             // Given
             remoteDataSource.streamError = SSEClientException(response = paymentRequiredResponse())
 
-            // When & Then
-            assertFailsWith<LimitReachedException> { generateChapterStudy().toList() }
+            // When
+            val result = runCatching { generateChapterStudy().toList() }
+
+            // Then
+            assertIs<LimitReachedException>(result.exceptionOrNull())
             assertNull(findCachedStudy())
         }
 
@@ -187,8 +191,11 @@ internal class ChapterStudyRepositoryImplTest {
             response = paymentRequiredResponse(),
         )
 
-        // When & Then
-        assertFailsWith<LimitReachedException> { generateChapterStudy().toList() }
+        // When
+        val result = runCatching { generateChapterStudy().toList() }
+
+        // Then
+        assertIs<LimitReachedException>(result.exceptionOrNull())
     }
 
     @Test

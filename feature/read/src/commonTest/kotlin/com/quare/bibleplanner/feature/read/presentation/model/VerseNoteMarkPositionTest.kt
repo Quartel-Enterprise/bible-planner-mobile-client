@@ -5,9 +5,12 @@ import kotlin.test.assertEquals
 
 internal class VerseNoteMarkPositionTest {
     @Test
-    fun `only the start of a note carries the icon`() {
+    fun `GIVEN every note mark position WHEN filtering by icon THEN only the start of a note carries the icon`() {
+        // Given
+        val positions = VerseNoteMarkPosition.entries
+
         // When
-        val withIcon = VerseNoteMarkPosition.entries.filter { it.hasIcon }
+        val withIcon = positions.filter { it.hasIcon }
 
         // Then
         assertEquals(
@@ -17,10 +20,13 @@ internal class VerseNoteMarkPositionTest {
     }
 
     @Test
-    fun `the bar joins a verse to the verses of its note above and below`() {
+    fun `GIVEN every note mark position WHEN filtering the linked ones THEN the bar joins verses of a note`() {
+        // Given
+        val positions = VerseNoteMarkPosition.entries
+
         // When
-        val linkedAbove = VerseNoteMarkPosition.entries.filter { it.isLinkedAbove }
-        val linkedBelow = VerseNoteMarkPosition.entries.filter { it.isLinkedBelow }
+        val linkedAbove = positions.filter { it.isLinkedAbove }
+        val linkedBelow = positions.filter { it.isLinkedBelow }
 
         // Then
         assertEquals(

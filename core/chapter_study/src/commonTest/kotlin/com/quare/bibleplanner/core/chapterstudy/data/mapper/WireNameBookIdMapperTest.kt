@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.model.book.BookId
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 internal class WireNameBookIdMapperTest {
     private lateinit var bookIdWireNameMapper: BookIdWireNameMapper
@@ -35,10 +34,13 @@ internal class WireNameBookIdMapperTest {
 
     @Test
     fun `GIVEN a name that is not a wire name WHEN mapping THEN returns null`() {
-        // When & Then
-        assertNull(mapper.mapOrNull("TOBIT"))
-        assertNull(mapper.mapOrNull("GEN"))
-        assertNull(mapper.mapOrNull("genesis"))
-        assertNull(mapper.mapOrNull(""))
+        // Given
+        val names = listOf("TOBIT", "GEN", "genesis", "")
+
+        // When
+        val bookIds = names.map(mapper::mapOrNull)
+
+        // Then
+        assertEquals(listOf(null, null, null, null), bookIds)
     }
 }

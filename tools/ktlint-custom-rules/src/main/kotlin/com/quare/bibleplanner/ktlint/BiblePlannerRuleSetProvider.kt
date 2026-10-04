@@ -30,5 +30,10 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { CompanionObjectDurationRule() },
         RuleProvider { SuspendRunCatchingRule() },
         RuleProvider { CommentsSayWhyRule() },
+        RuleProvider { TestNameGivenWhenThenRule() },
+        RuleProvider { TestBodySectionsRule() },
+        RuleProvider { PrepareScenarioReturnsUnitRule() },
+        RuleProvider { PrepareScenarioLastMemberRule() },
+        RuleProvider { PrepareScenarioInGivenRule() },
     )
 }

@@ -71,50 +71,51 @@ internal class DownloadChaptersUseCaseTest {
     private lateinit var server: StorageServer
 
     @Test
-    fun `downloads the missing chapters and saves the text of every known verse in one write`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN missing chapters WHEN downloading the book THEN saves the text of every known verse in one write`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val result = useCase(
-            versionId = VERSION_ID,
-            bookId = BookId.GEN,
-        )
+            // When
+            val result = useCase(
+                versionId = VERSION_ID,
+                bookId = BookId.GEN,
+            )
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(
-            expected = listOf(
-                listOf(
-                    VerseTextEntity(
-                        verseId = 11L,
-                        bibleVersionId = VERSION_ID,
-                        text = "In the beginning",
-                        heading = "The creation",
-                        id = 0,
-                    ),
-                    VerseTextEntity(
-                        verseId = 12L,
-                        bibleVersionId = VERSION_ID,
-                        text = "And the earth was without form",
-                        heading = null,
-                        id = 0,
-                    ),
-                    VerseTextEntity(
-                        verseId = 21L,
-                        bibleVersionId = VERSION_ID,
-                        text = "Thus the heavens were finished",
-                        heading = null,
-                        id = 0,
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                expected = listOf(
+                    listOf(
+                        VerseTextEntity(
+                            verseId = 11L,
+                            bibleVersionId = VERSION_ID,
+                            text = "In the beginning",
+                            heading = "The creation",
+                            id = 0,
+                        ),
+                        VerseTextEntity(
+                            verseId = 12L,
+                            bibleVersionId = VERSION_ID,
+                            text = "And the earth was without form",
+                            heading = null,
+                            id = 0,
+                        ),
+                        VerseTextEntity(
+                            verseId = 21L,
+                            bibleVersionId = VERSION_ID,
+                            text = "Thus the heavens were finished",
+                            heading = null,
+                            id = 0,
+                        ),
                     ),
                 ),
-            ),
-            actual = verseDao.savedVerseTextBatches,
-        )
-    }
+                actual = verseDao.savedVerseTextBatches,
+            )
+        }
 
     @Test
-    fun `skips the chapters this version already downloaded`() = runTest {
+    fun `GIVEN a chapter already downloaded WHEN downloading the book THEN skips it`() = runTest {
         // Given
         prepareScenario()
 
@@ -132,7 +133,7 @@ internal class DownloadChaptersUseCaseTest {
     }
 
     @Test
-    fun `retries a chapter that failed to download`() = runTest {
+    fun `GIVEN a chapter that fails twice WHEN downloading the book THEN retries it`() = runTest {
         // Given
         prepareScenario(failuresBeforeSuccessByPath = mapOf(CHAPTER_ONE_PATH to 2))
 
@@ -151,7 +152,7 @@ internal class DownloadChaptersUseCaseTest {
     }
 
     @Test
-    fun `fails after the last attempt but keeps the chapters that did download`() = runTest {
+    fun `GIVEN a chapter that never downloads WHEN downloading the book THEN fails but keeps the others`() = runTest {
         // Given
         prepareScenario(files = mapOf(CHAPTER_ONE_PATH to CHAPTER_ONE_JSON))
 
@@ -177,7 +178,7 @@ internal class DownloadChaptersUseCaseTest {
     }
 
     @Test
-    fun `does nothing for a book that is already downloaded`() = runTest {
+    fun `GIVEN a book already downloaded WHEN downloading it THEN does nothing`() = runTest {
         // Given
         prepareScenario(downloadedChapterIds = listOf(1L, 2L, 3L))
 

@@ -21,103 +21,126 @@ internal class RequestDownloadNotificationPermissionUseCaseTest {
     private val navigator = Navigator()
     private val commands = mutableListOf<NavigationCommand>()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private lateinit var useCase: RequestDownloadNotificationPermissionUseCase
 
     @Test
-    fun `tracks nothing and sends nothing when the prompt cannot be shown`() = runTest {
-        val useCase = prepareScenario(
+    fun `GIVEN the prompt cannot be shown WHEN requesting the permission THEN tracks and sends nothing`() = runTest {
+        // Given
+        prepareScenario(
             canPrompt = false,
             result = NotificationPermissionPromptResult.GRANTED,
         )
 
+        // When
         useCase()
 
+        // Then
         assertTrue(trackedEvents.isEmpty())
         assertTrue(commands.isEmpty())
     }
 
     @Test
-    fun `tracks the prompted event before the result event`() = runTest {
-        val useCase = prepareScenario(
-            canPrompt = true,
-            result = NotificationPermissionPromptResult.GRANTED,
-        )
+    fun `GIVEN a showable prompt WHEN requesting the permission THEN tracks the prompted event before the result`() =
+        runTest {
+            // Given
+            prepareScenario(
+                canPrompt = true,
+                result = NotificationPermissionPromptResult.GRANTED,
+            )
 
-        useCase()
+            // When
+            useCase()
 
-        assertEquals(
-            listOf(
-                AnalyticsEventNames.NOTIFICATION_PERMISSION_PROMPTED,
-                AnalyticsEventNames.NOTIFICATION_PERMISSION_RESULT,
-            ),
-            trackedEvents.map { it.first },
-        )
-    }
-
-    @Test
-    fun `tracks a granted result when the permission is granted`() = runTest {
-        val useCase = prepareScenario(
-            canPrompt = true,
-            result = NotificationPermissionPromptResult.GRANTED,
-        )
-
-        useCase()
-
-        assertEquals(
-            mapOf(
-                AnalyticsParams.IS_GRANTED to true,
-                AnalyticsParams.CAN_ASK_AGAIN to true,
-            ),
-            trackedEvents.last().second,
-        )
-        assertTrue(commands.isEmpty())
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    AnalyticsEventNames.NOTIFICATION_PERMISSION_PROMPTED,
+                    AnalyticsEventNames.NOTIFICATION_PERMISSION_RESULT,
+                ),
+                trackedEvents.map { it.first },
+            )
+        }
 
     @Test
-    fun `tracks a denied result without navigating when the permission is denied`() = runTest {
-        val useCase = prepareScenario(
-            canPrompt = true,
-            result = NotificationPermissionPromptResult.DENIED,
-        )
+    fun `GIVEN the user grants the permission WHEN requesting it THEN tracks a granted result without navigating`() =
+        runTest {
+            // Given
+            prepareScenario(
+                canPrompt = true,
+                result = NotificationPermissionPromptResult.GRANTED,
+            )
 
-        useCase()
+            // When
+            useCase()
 
-        assertEquals(
-            mapOf(
-                AnalyticsParams.IS_GRANTED to false,
-                AnalyticsParams.CAN_ASK_AGAIN to true,
-            ),
-            trackedEvents.last().second,
-        )
-        assertTrue(commands.isEmpty())
-    }
+            // Then
+            assertEquals(
+                mapOf(
+                    AnalyticsParams.IS_GRANTED to true,
+                    AnalyticsParams.CAN_ASK_AGAIN to true,
+                ),
+                trackedEvents.last().second,
+            )
+            assertTrue(commands.isEmpty())
+        }
 
     @Test
-    fun `sends the rationale route when the permission is permanently denied`() = runTest {
-        val useCase = prepareScenario(
-            canPrompt = true,
-            result = NotificationPermissionPromptResult.PERMANENTLY_DENIED,
-        )
+    fun `GIVEN the user denies the permission WHEN requesting it THEN tracks a denied result without navigating`() =
+        runTest {
+            // Given
+            prepareScenario(
+                canPrompt = true,
+                result = NotificationPermissionPromptResult.DENIED,
+            )
 
-        useCase()
+            // When
+            useCase()
 
-        assertEquals(
-            mapOf(
-                AnalyticsParams.IS_GRANTED to false,
-                AnalyticsParams.CAN_ASK_AGAIN to false,
-            ),
-            trackedEvents.last().second,
-        )
-        assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(NotificationPermissionNavRoute)), commands)
-    }
+            // Then
+            assertEquals(
+                mapOf(
+                    AnalyticsParams.IS_GRANTED to false,
+                    AnalyticsParams.CAN_ASK_AGAIN to true,
+                ),
+                trackedEvents.last().second,
+            )
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a permanently denied permission WHEN requesting it THEN tracks it and sends the rationale route`() =
+        runTest {
+            // Given
+            prepareScenario(
+                canPrompt = true,
+                result = NotificationPermissionPromptResult.PERMANENTLY_DENIED,
+            )
+
+            // When
+            useCase()
+
+            // Then
+            assertEquals(
+                mapOf(
+                    AnalyticsParams.IS_GRANTED to false,
+                    AnalyticsParams.CAN_ASK_AGAIN to false,
+                ),
+                trackedEvents.last().second,
+            )
+            assertEquals(
+                listOf<NavigationCommand>(NavigationCommand.Navigate(NotificationPermissionNavRoute)),
+                commands,
+            )
+        }
 
     private fun TestScope.prepareScenario(
         canPrompt: Boolean,
         result: NotificationPermissionPromptResult,
-    ): RequestDownloadNotificationPermissionUseCase {
+    ) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             navigator.commands.collect { commands += it }
         }
-        return RequestDownloadNotificationPermissionUseCase(
+        useCase = RequestDownloadNotificationPermissionUseCase(
             notificationPermissionRequester = object : NotificationPermissionRequester {
                 override suspend fun canPrompt(): Boolean = canPrompt
 

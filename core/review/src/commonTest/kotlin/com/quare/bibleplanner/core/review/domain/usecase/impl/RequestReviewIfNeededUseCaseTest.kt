@@ -14,44 +14,64 @@ internal class RequestReviewIfNeededUseCaseTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @Test
-    fun `does nothing when the policy rejects the request`() = runTest {
+    fun `GIVEN the policy rejects the request WHEN requesting a review THEN does nothing`() = runTest {
+        // Given
         val preferences = preferences()
-
-        useCase(shouldRequest = false, preferences = preferences)(ReviewTrigger.STREAK_MILESTONE)
-
-        assertNull(preferences.getLastPromptedVersion())
-        assertNull(preferences.getLastPromptedAt())
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `does not record or track when the native review flow could not launch`() = runTest {
-        val preferences = preferences()
-
-        useCase(reviewLaunched = false, preferences = preferences)(ReviewTrigger.PROGRESS_MILESTONE)
-
-        assertNull(preferences.getLastPromptedVersion())
-        assertNull(preferences.getLastPromptedAt())
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `records the prompt and tracks the trigger when the review flow launches`() = runTest {
-        val preferences = preferences()
-
-        useCase(preferences = preferences)(ReviewTrigger.BOOK_COMPLETED)
-
-        assertEquals(APP_VERSION, preferences.getLastPromptedVersion())
-        assertEquals(NOW, preferences.getLastPromptedAt())
-        assertEquals(
-            listOf(
-                AnalyticsEventNames.IN_APP_REVIEW_REQUESTED to mapOf<String, Any>(
-                    AnalyticsParams.TRIGGER to ReviewTrigger.BOOK_COMPLETED.analyticsValue,
-                ),
-            ),
-            trackedEvents,
+        val requestReview = useCase(
+            shouldRequest = false,
+            preferences = preferences,
         )
+
+        // When
+        requestReview(ReviewTrigger.STREAK_MILESTONE)
+
+        // Then
+        assertNull(preferences.getLastPromptedVersion())
+        assertNull(preferences.getLastPromptedAt())
+        assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN the native review flow cannot launch WHEN requesting a review THEN does not record or track`() =
+        runTest {
+            // Given
+            val preferences = preferences()
+            val requestReview = useCase(
+                reviewLaunched = false,
+                preferences = preferences,
+            )
+
+            // When
+            requestReview(ReviewTrigger.PROGRESS_MILESTONE)
+
+            // Then
+            assertNull(preferences.getLastPromptedVersion())
+            assertNull(preferences.getLastPromptedAt())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the review flow launches WHEN requesting a review THEN records the prompt and tracks the trigger`() =
+        runTest {
+            // Given
+            val preferences = preferences()
+            val requestReview = useCase(preferences = preferences)
+
+            // When
+            requestReview(ReviewTrigger.BOOK_COMPLETED)
+
+            // Then
+            assertEquals(APP_VERSION, preferences.getLastPromptedVersion())
+            assertEquals(NOW, preferences.getLastPromptedAt())
+            assertEquals(
+                listOf(
+                    AnalyticsEventNames.IN_APP_REVIEW_REQUESTED to mapOf<String, Any>(
+                        AnalyticsParams.TRIGGER to ReviewTrigger.BOOK_COMPLETED.analyticsValue,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
 
     private fun preferences(): FakeReviewPreferences = FakeReviewPreferences(
         firstEligibleAt = NOW,

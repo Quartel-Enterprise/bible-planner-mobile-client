@@ -9,7 +9,7 @@ internal class EpochMillisMapperTest {
     private lateinit var mapper: EpochMillisMapper
 
     @Test
-    fun `should map an ISO date to epoch milliseconds`() {
+    fun `GIVEN an ISO date WHEN mapping THEN returns its epoch milliseconds`() {
         // When
         val millis = mapper.map("2026-01-06T22:23:11Z")
 
@@ -21,7 +21,7 @@ internal class EpochMillisMapperTest {
     }
 
     @Test
-    fun `should map an ISO date with an offset`() {
+    fun `GIVEN an ISO date with an offset WHEN mapping THEN returns its epoch milliseconds`() {
         // When
         val millis = mapper.map("2026-01-06T19:23:11-03:00")
 
@@ -33,7 +33,7 @@ internal class EpochMillisMapperTest {
     }
 
     @Test
-    fun `should return null for an unparseable date`() {
+    fun `GIVEN an unparseable date WHEN mapping THEN returns null`() {
         // When
         val millis = mapper.map("not-a-date")
 
@@ -42,7 +42,7 @@ internal class EpochMillisMapperTest {
     }
 
     @Test
-    fun `should return null for a blank date`() {
+    fun `GIVEN a blank date WHEN mapping THEN returns null`() {
         // When
         val millis = mapper.map("")
 

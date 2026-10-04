@@ -18,11 +18,12 @@ import kotlin.test.assertEquals
 internal class ObserveVersionAnnotationCountsUseCaseTest {
     private lateinit var versionIds: MutableStateFlow<List<String>>
     private lateinit var passagesByVersion: MutableStateFlow<Map<String, List<AnnotatedPassage>>>
+    private lateinit var useCase: ObserveVersionAnnotationCountsUseCase
 
     @Test
     fun `GIVEN no annotated version WHEN observing the counts THEN emits an empty list`() = runTest {
         // Given
-        val useCase = prepareScenario(passages = emptyMap())
+        prepareScenario(passages = emptyMap())
 
         // When
         val counts = useCase().first()
@@ -37,7 +38,7 @@ internal class ObserveVersionAnnotationCountsUseCaseTest {
     @Test
     fun `GIVEN annotated versions WHEN observing the counts THEN counts the passages of each version`() = runTest {
         // Given
-        val useCase = prepareScenario(
+        prepareScenario(
             passages = mapOf(
                 "A21" to listOf(passage("A21")),
                 "ACF" to listOf(
@@ -72,7 +73,7 @@ internal class ObserveVersionAnnotationCountsUseCaseTest {
     @Test
     fun `GIVEN a version without passages WHEN observing the counts THEN leaves it out`() = runTest {
         // Given
-        val useCase = prepareScenario(
+        prepareScenario(
             passages = mapOf(
                 "A21" to listOf(passage("A21")),
                 "NVI" to emptyList(),
@@ -93,7 +94,7 @@ internal class ObserveVersionAnnotationCountsUseCaseTest {
     fun `GIVEN observed counts WHEN a version gains a passage and another version appears THEN updates the counts`() =
         runTest {
             // Given
-            val useCase = prepareScenario(passages = mapOf("A21" to listOf(passage("A21"))))
+            prepareScenario(passages = mapOf("A21" to listOf(passage("A21"))))
             val emissions = mutableListOf<List<VersionAnnotationCount>>()
             backgroundScope.launch { useCase().toList(emissions) }
             runCurrent()
@@ -144,10 +145,10 @@ internal class ObserveVersionAnnotationCountsUseCaseTest {
         updatedAtEpochMillis = 0L,
     )
 
-    private fun prepareScenario(passages: Map<String, List<AnnotatedPassage>>): ObserveVersionAnnotationCountsUseCase {
+    private fun prepareScenario(passages: Map<String, List<AnnotatedPassage>>) {
         versionIds = MutableStateFlow(passages.keys.sorted())
         passagesByVersion = MutableStateFlow(passages)
-        return ObserveVersionAnnotationCountsUseCase(
+        useCase = ObserveVersionAnnotationCountsUseCase(
             annotatedVersionRepository = { versionIds },
             observeAnnotatedPassages = { versionId ->
                 passagesByVersion.map { it[versionId].orEmpty() }

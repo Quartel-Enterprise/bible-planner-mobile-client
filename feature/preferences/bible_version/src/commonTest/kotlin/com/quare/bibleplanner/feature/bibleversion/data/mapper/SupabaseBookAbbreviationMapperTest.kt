@@ -8,7 +8,7 @@ internal class SupabaseBookAbbreviationMapperTest {
     private val mapper = SupabaseBookAbbreviationMapper()
 
     @Test
-    fun `GIVEN the gospel of John WHEN mapping THEN returns its own directory not Job's`() {
+    fun `GIVEN the gospel of John WHEN mapping THEN returns its own directory not the one of Job`() {
         // Given
         val bookId = BookId.JHN
 

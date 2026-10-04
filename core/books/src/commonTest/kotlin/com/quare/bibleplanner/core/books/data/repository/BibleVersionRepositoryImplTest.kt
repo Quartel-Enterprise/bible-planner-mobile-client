@@ -28,7 +28,7 @@ internal class BibleVersionRepositoryImplTest {
     private lateinit var localDataSource: FakeBibleVersionsLocalDataSource
 
     @Test
-    fun `should serve the cache without hitting remote when the cache is fresh`() = runTest {
+    fun `GIVEN a fresh cache WHEN getting the versions THEN serves the cache without hitting remote`() = runTest {
         // Given
         prepareScenario(cacheAge = freshCacheAge)
 
@@ -44,7 +44,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should bypass a fresh cache when the refresh is forced`() = runTest {
+    fun `GIVEN a fresh cache WHEN forcing the refresh THEN bypasses the cache`() = runTest {
         // Given
         prepareScenario(cacheAge = freshCacheAge)
 
@@ -60,7 +60,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should refresh the content version stamped after the cache expires`() = runTest {
+    fun `GIVEN an expired cache WHEN getting the versions THEN refreshes the content version`() = runTest {
         // Given
         prepareScenario(cacheAge = staleCacheAge)
 
@@ -76,7 +76,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should refresh when the stored timestamp is in the future`() = runTest {
+    fun `GIVEN a stored timestamp in the future WHEN getting the versions THEN refreshes`() = runTest {
         // Given
         prepareScenario(cacheAge = clockRegression)
 
@@ -92,23 +92,24 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should store the fetched versions stamped with the current timestamp`() = runTest {
-        // Given
-        prepareScenario(cacheAge = freshCacheAge)
+    fun `GIVEN a fresh cache WHEN forcing the refresh THEN stores the fetched versions with the current timestamp`() =
+        runTest {
+            // Given
+            prepareScenario(cacheAge = freshCacheAge)
 
-        // When
-        repository.getVersions(forceRefresh = true)
+            // When
+            repository.getVersions(forceRefresh = true)
 
-        // Then
-        assertEquals(expected = NOW, actual = localDataSource.savedTimestamp)
-        assertEquals(
-            expected = listOf(REMOTE_CONTENT_VERSION),
-            actual = localDataSource.savedVersions?.map { it.version },
-        )
-    }
+            // Then
+            assertEquals(expected = NOW, actual = localDataSource.savedTimestamp)
+            assertEquals(
+                expected = listOf(REMOTE_CONTENT_VERSION),
+                actual = localDataSource.savedVersions?.map { it.version },
+            )
+        }
 
     @Test
-    fun `should fall back to the cache when the forced refresh fails`() = runTest {
+    fun `GIVEN a failing remote WHEN forcing the refresh THEN falls back to the cache`() = runTest {
         // Given
         prepareScenario(
             cacheAge = staleCacheAge,
@@ -126,7 +127,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should observe the cached versions without hitting remote when the cache is fresh`() = runTest {
+    fun `GIVEN a fresh cache WHEN observing the versions THEN emits the cache without hitting remote`() = runTest {
         // Given
         prepareScenario(cacheAge = freshCacheAge)
 
@@ -147,7 +148,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should re-emit the observed versions when the cache is updated`() = runTest {
+    fun `GIVEN observed versions WHEN the cache is updated THEN re-emits the versions`() = runTest {
         // Given
         prepareScenario(cacheAge = freshCacheAge)
         val emissions = mutableListOf<List<String>>()
@@ -171,7 +172,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should observe the refreshed versions when the cache is stale`() = runTest {
+    fun `GIVEN a stale cache WHEN observing the versions THEN emits the refreshed versions`() = runTest {
         // Given
         prepareScenario(cacheAge = staleCacheAge)
 
@@ -192,7 +193,7 @@ internal class BibleVersionRepositoryImplTest {
     }
 
     @Test
-    fun `should serve the cached versions before the refresh answers`() = runTest {
+    fun `GIVEN a stale cache and a pending refresh WHEN observing THEN emits the cached versions first`() = runTest {
         // Given
         val remoteGate = CompletableDeferred<Unit>()
         prepareScenario(
@@ -213,6 +214,22 @@ internal class BibleVersionRepositoryImplTest {
             expected = listOf(listOf(CACHED_CONTENT_VERSION)),
             actual = emissions,
         )
+    }
+
+    @Test
+    fun `GIVEN observed stale versions WHEN the refresh answers THEN emits the refreshed versions`() = runTest {
+        // Given
+        val remoteGate = CompletableDeferred<Unit>()
+        prepareScenario(
+            cacheAge = staleCacheAge,
+            remoteGate = remoteGate,
+        )
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeVersions().collect { versions ->
+                emissions.add(versions.map { it.version })
+            }
+        }
 
         // When
         remoteGate.complete(Unit)

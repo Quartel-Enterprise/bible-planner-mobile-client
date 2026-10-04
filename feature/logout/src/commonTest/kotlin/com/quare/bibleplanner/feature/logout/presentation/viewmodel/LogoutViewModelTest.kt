@@ -233,22 +233,6 @@ internal class LogoutViewModelTest {
         )
     }
 
-    private fun TestScope.prepareScenario(result: Result<Unit>) {
-        viewModel = LogoutViewModel(
-            navigator = navigator,
-            logout = { shouldFlush -> fakeLogout(shouldFlush, result) },
-            logoutErrorMapper = LogoutErrorMapper(),
-            trackEvent = { name, params -> trackedEvents += name to params },
-        )
-        backgroundScope.launch { navigator.commands.collect { commands += it } }
-        actions = mutableListOf<LogoutUiAction>().also { collected ->
-            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
-        }
-        states = mutableListOf<LogoutUiState>().also { collected ->
-            backgroundScope.launch { viewModel.uiState.collect { collected += it } }
-        }
-    }
-
     /**
      * [yield] between emissions so the [states] collector observes each phase distinctly instead of
      * StateFlow conflating back-to-back updates — mirrors production, where real suspension (network
@@ -266,5 +250,21 @@ internal class LogoutViewModelTest {
         emit(LogoutProgress.InProgress(LogoutPhase.ENDING_SESSION))
         yield()
         emit(LogoutProgress.Finished(result))
+    }
+
+    private fun TestScope.prepareScenario(result: Result<Unit>) {
+        viewModel = LogoutViewModel(
+            navigator = navigator,
+            logout = { shouldFlush -> fakeLogout(shouldFlush, result) },
+            logoutErrorMapper = LogoutErrorMapper(),
+            trackEvent = { name, params -> trackedEvents += name to params },
+        )
+        backgroundScope.launch { navigator.commands.collect { commands += it } }
+        actions = mutableListOf<LogoutUiAction>().also { collected ->
+            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        }
+        states = mutableListOf<LogoutUiState>().also { collected ->
+            backgroundScope.launch { viewModel.uiState.collect { collected += it } }
+        }
     }
 }

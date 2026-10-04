@@ -14,8 +14,13 @@ internal class ChatConversationMapperTest {
 
     @Test
     fun `GIVEN a context carrying its plan day WHEN mapping THEN the day is read`() {
-        val model = mapper.map(dto(context = context(withPlanDay = true)))
+        // Given
+        val conversation = dto(context = context(withPlanDay = true))
 
+        // When
+        val model = mapper.map(conversation)
+
+        // Then
         assertEquals("Gênesis 4-7", model.contextLabel)
         assertEquals(
             ChatPlanDayModel(
@@ -29,42 +34,59 @@ internal class ChatConversationMapperTest {
 
     @Test
     fun `GIVEN a context frozen before the plan day existed WHEN mapping THEN the day is null`() {
-        val model = mapper.map(dto(context = context(withPlanDay = false)))
+        // Given
+        val conversation = dto(context = context(withPlanDay = false))
 
+        // When
+        val model = mapper.map(conversation)
+
+        // Then
         assertEquals("Gênesis 4-7", model.contextLabel)
         assertNull(model.planDay)
     }
 
     @Test
     fun `GIVEN a half-given plan day WHEN mapping THEN it is treated as none`() {
+        // Given
         val partial = buildJsonObject {
             put("label", "Gênesis 4-7")
             put("day_number", 2)
         }
+        val conversation = dto(context = partial)
 
-        assertNull(mapper.map(dto(context = partial)).planDay)
+        // When
+        val model = mapper.map(conversation)
+
+        // Then
+        assertNull(model.planDay)
     }
 
     @Test
     fun `GIVEN a context-free conversation WHEN mapping THEN label and day are null`() {
-        val model = mapper.map(dto(context = null))
+        // Given
+        val conversation = dto(context = null)
 
+        // When
+        val model = mapper.map(conversation)
+
+        // Then
         assertNull(model.contextLabel)
         assertNull(model.planDay)
     }
 
     @Test
     fun `GIVEN a null title WHEN mapping THEN it becomes empty instead of failing`() {
-        assertEquals(
-            "",
-            mapper
-                .map(
-                    dto(
-                        context = null,
-                        title = null,
-                    ),
-                ).title,
+        // Given
+        val conversation = dto(
+            context = null,
+            title = null,
         )
+
+        // When
+        val model = mapper.map(conversation)
+
+        // Then
+        assertEquals("", model.title)
     }
 
     private fun context(withPlanDay: Boolean): JsonObject = buildJsonObject {

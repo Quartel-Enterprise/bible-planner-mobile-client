@@ -8,18 +8,23 @@ class UnusedFunctionParameterRuleTest {
     private val unusedFunctionParameterRuleAssertThat = assertThatRule { UnusedFunctionParameterRule() }
 
     @Test
-    fun `flags a parameter an expression body never reads`() {
+    fun `GIVEN a parameter an expression body never reads WHEN linting THEN reports the parameter`() {
+        // Given
         val code =
             """
             fun buildGreeting(name: String): String = "Hello"
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 19, buildViolationMessage("name", "buildGreeting"))
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 19, buildViolationMessage("name", "buildGreeting"))
     }
 
     @Test
-    fun `flags only the parameter a block body never reads`() {
+    fun `GIVEN a block body reading one of two parameters WHEN linting THEN reports only the unread one`() {
+        // Given
         val code =
             """
             fun play(book: Book, position: Int) {
@@ -27,37 +32,49 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 22, buildViolationMessage("position", "play"))
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 22, buildViolationMessage("position", "play"))
     }
 
     @Test
-    fun `flags every parameter the function never reads`() {
+    fun `GIVEN a function that reads none of its parameters WHEN linting THEN reports every parameter`() {
+        // Given
         val code =
             """
             fun createBook(id: Long, title: String): Book = Book()
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(1, 16, buildViolationMessage("id", "createBook")),
-                LintViolation(1, 26, buildViolationMessage("title", "createBook")),
-            )
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(1, 16, buildViolationMessage("id", "createBook")),
+            LintViolation(1, 26, buildViolationMessage("title", "createBook")),
+        )
     }
 
     @Test
-    fun `flags a parameter whose name only labels a named argument`() {
+    fun `GIVEN a parameter whose name only labels a named argument WHEN linting THEN reports the parameter`() {
+        // Given
         val code =
             """
             fun createBook(title: String): Book = Book(title = "Unknown")
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(1, 16, buildViolationMessage("title", "createBook"))
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 16, buildViolationMessage("title", "createBook"))
     }
 
     @Test
-    fun `flags an unused parameter of a private method`() {
+    fun `GIVEN a private method with an unused parameter WHEN linting THEN reports the parameter`() {
+        // Given
         val code =
             """
             class BookMapper {
@@ -65,54 +82,77 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 38, buildViolationMessage("index", "toBook"))
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 38, buildViolationMessage("index", "toBook"))
     }
 
     @Test
-    fun `flags a function that suppresses an unrelated warning`() {
+    fun `GIVEN a function suppressing an unrelated warning WHEN linting THEN reports the unused parameter`() {
+        // Given
         val code =
             """
             @Suppress("MagicNumber")
             fun buildGreeting(name: String): String = "Hello"
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 19, buildViolationMessage("name", "buildGreeting"))
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 19, buildViolationMessage("name", "buildGreeting"))
     }
 
     @Test
-    fun `allows a function that reads every parameter`() {
+    fun `GIVEN a function that reads every parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun createBook(id: Long, title: String): Book = Book(id = id, title = title)
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a parameter only a nested lambda reads`() {
+    fun `GIVEN a parameter only a nested lambda reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun findBooks(query: String): List<Book> = books.filter { book -> book.title.contains(query) }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a parameter only the default of another parameter reads`() {
+    fun `GIVEN a parameter only the default of another parameter reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun createRange(start: Int, end: Int = start + 10): IntRange = 0..end
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an override because the supertype dictates its signature`() {
+    fun `GIVEN an override whose signature the supertype dictates WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class FakePlayer : Player {
@@ -122,11 +162,16 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an open function because a subclass may read the parameter`() {
+    fun `GIVEN an open function whose subclass may read the parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             abstract class BasePlayer {
@@ -136,11 +181,16 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a function without a body`() {
+    fun `GIVEN functions without a body WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             abstract class BasePlayer {
@@ -152,11 +202,16 @@ class UnusedFunctionParameterRuleTest {
             external fun decode(bytes: ByteArray): Int
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an interface member with a default body`() {
+    fun `GIVEN an interface member with a default body WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             interface PlayerListener {
@@ -166,11 +221,16 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an operator function`() {
+    fun `GIVEN an operator function WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class BookQueue {
@@ -178,28 +238,42 @@ class UnusedFunctionParameterRuleTest {
             }
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an actual function`() {
+    fun `GIVEN an actual function WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             actual fun createPlayer(context: PlatformContext): Player = DesktopPlayer()
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a function that suppresses the unused parameter warning`() {
+    fun `GIVEN a function suppressing the unused parameter warning WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Suppress("UNUSED_PARAMETER")
             fun buildGreeting(name: String): String = "Hello"
             """.trimIndent()
 
-        unusedFunctionParameterRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = unusedFunctionParameterRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

@@ -15,7 +15,7 @@ internal class InitializeBibleVersionsUseCaseImplTest {
     private lateinit var bibleVersionDao: RecordingBibleVersionDao
 
     @Test
-    fun `syncs every fetched version`() = runTest {
+    fun `GIVEN fetched remote versions WHEN initializing THEN syncs every fetched version`() = runTest {
         // Given
         prepareScenario(
             remoteVersions = Result.success(
@@ -37,7 +37,7 @@ internal class InitializeBibleVersionsUseCaseImplTest {
     }
 
     @Test
-    fun `does nothing when fetching the remote versions fails`() = runTest {
+    fun `GIVEN a failure fetching the remote versions WHEN initializing THEN does nothing`() = runTest {
         // Given
         prepareScenario(
             remoteVersions = Result.failure(IllegalStateException("offline")),
