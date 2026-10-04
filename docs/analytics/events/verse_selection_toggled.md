@@ -16,7 +16,7 @@ The user taps a verse row. Selecting a verse in a different chapter (vertical re
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_selected` | boolean | true | Whether the tap added the verse to the selection or removed it |
+| `is_selected` | string | `"true"` | Whether the tap added the verse to the selection or removed it |
 | `verse_count` | integer | 3 | How many verses the selection covered |
 
 ## Notes

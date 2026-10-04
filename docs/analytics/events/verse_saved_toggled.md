@@ -16,7 +16,7 @@ The user taps Save in the selection panel. The whole selection moves to the same
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_saved` | boolean | true | Whether the verses ended up saved or unsaved |
+| `is_saved` | string | `"true"` | Whether the verses ended up saved or unsaved |
 | `verse_count` | integer | 3 | How many verses the selection covered |
 
 ## Notes

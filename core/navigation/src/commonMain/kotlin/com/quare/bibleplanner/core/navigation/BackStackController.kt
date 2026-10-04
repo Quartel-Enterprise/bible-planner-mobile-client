@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.navigation.utils.hasStudyCompanionOnTop
 import com.quare.bibleplanner.core.navigation.utils.popBackEntries
 import com.quare.bibleplanner.core.navigation.utils.removeTopScreen
 
-internal class BackStackController(
+class BackStackController(
     private val backStack: MutableList<NavKey>,
     private val forwardStack: MutableList<List<NavKey>>,
 ) {

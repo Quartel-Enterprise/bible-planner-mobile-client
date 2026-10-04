@@ -19,7 +19,7 @@ User taps the read toggle in the chapter reader, or taps a chapter checkbox on t
 |---|---|---|---|
 | `book_id` | string | `genesis` | Book the chapter belongs to |
 | `chapter_number` | int | `5` | 1-based chapter within the book |
-| `is_read` | boolean | `true` | New read status after the toggle |
+| `is_read` | string | `"true"` | New read status after the toggle |
 | `source` | string | `reader` \| `day_screen` | Which surface triggered the toggle |
 | `plan_type` | string | `chronological` | Only when `source=day_screen` |
 | `week_number` | int | `12` | Only when `source=day_screen` |

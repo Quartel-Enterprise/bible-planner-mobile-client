@@ -16,6 +16,11 @@ Rules:
   those parameters sensible defaults when most tests share a value.
 - If the setup needs a coroutine scope (e.g. to launch a long-running collector), make it an extension
   on `TestScope` so it can use `backgroundScope` — see [fakes-and-coroutines.md](fakes-and-coroutines.md).
+- **Nothing varies per test → no `prepareScenario`.** A factory without parameters becomes a
+  `@BeforeTest fun setUp()` (or, for a stateless system under test, a field initializer), and the tests
+  drop the call and their `// Given` comment, reading as just `// When` / `// Then`. Keep an
+  `@AfterTest` for teardown beside it. As soon as one test needs a different setup, it goes back to a
+  parameterized `prepareScenario`.
 
 ## Single system under test
 

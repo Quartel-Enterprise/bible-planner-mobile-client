@@ -20,7 +20,7 @@ Two trigger points:
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_first_time` | boolean | `true` | `true` for the download-triggered system prompt; from `NotificationPermissionUiState.isFirstTime` for the dialog flow (`false` means the dialog is in its "open settings" state and no system prompt can be shown) |
+| `is_first_time` | string | `"true"` | `true` for the download-triggered system prompt; from `NotificationPermissionUiState.isFirstTime` for the dialog flow (`false` means the dialog is in its "open settings" state and no system prompt can be shown) |
 
 ## Notes
 

@@ -16,7 +16,7 @@ The user flips the Note icon switch in the appearance sheet.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_enabled` | boolean | false | The state the setting was moved to |
+| `is_enabled` | string | `"false"` | The state the setting was moved to |
 
 ## Notes
 

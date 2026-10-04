@@ -16,7 +16,7 @@ The user taps Note (or View note, when the selection touches a note) in the sele
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_existing` | boolean | false | Whether the selection touched a note, which then opens over that note's own verses |
+| `is_existing` | string | `"false"` | Whether the selection touched a note, which then opens over that note's own verses |
 | `verse_count` | integer | 3 | How many verses the opened note covers: the note's verses when it exists, the selection otherwise |
 
 ## Notes

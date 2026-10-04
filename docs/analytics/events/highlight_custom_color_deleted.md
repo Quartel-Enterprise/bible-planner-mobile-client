@@ -17,7 +17,7 @@ The user confirms either option in the delete-colour dialog.
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `color` | string | `yellow` | The colour key: a preset name, or `c:<hue>:<lightness>` for a custom mix |
-| `kept_highlights` | boolean | true | Whether the highlights made with the colour survived its deletion |
+| `kept_highlights` | string | `"true"` | Whether the highlights made with the colour survived its deletion |
 
 ## Notes
 

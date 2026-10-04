@@ -17,7 +17,7 @@ The user taps the Bitcoin, USDT or Pix section header in the donation bottom she
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `section` | string | `bitcoin` | `bitcoin` \| `usdt` \| `pix` |
-| `is_expanded` | boolean | `true` | New state after the toggle |
+| `is_expanded` | string | `"true"` | New state after the toggle |
 
 ## Notes
 

@@ -23,9 +23,9 @@ On a quota-load failure the event still fires with `success=false` (the surface 
 |---|---|---|---|
 | `target` | string | `card` | `card` (day screen) or `panel` (day-study route screen) |
 | `duration_ms` | int | `2870` | Elapsed monotonic time from surface start to loaded (or failed) state |
-| `success` | boolean | `true` | `false` when loading the quota threw instead of producing a card |
-| `is_cached` | boolean | `true` | Whether the study already existed in the local Room cache |
-| `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `success` | string | `"true"` | `false` when loading the quota threw instead of producing a card |
+| `is_cached` | string | `"true"` | Whether the study already existed in the local Room cache |
+| `is_pro` | string | `"false"` | Whether the user has the Pro entitlement |
 | `reason` | string | `IllegalStateException` | Only on `success=false`: the failure exception's simple class name, or `unknown` |
 
 ## Notes

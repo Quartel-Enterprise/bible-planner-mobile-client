@@ -1,11 +1,10 @@
-package com.quare.bibleplanner.e2e.harness
+package com.quare.bibleplanner.feature.bibleversion.domain
 
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 
-internal class InProcessBibleVersionDownloaderFacade(
+class InProcessBibleVersionDownloaderFacade(
     private val downloader: InProcessBibleVersionDownloader,
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,

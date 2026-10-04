@@ -18,7 +18,7 @@ The study screen shows a study: one already on the device when the screen opens,
 |---|---|---|---|
 | `book_id` | string | `GEN` | Book of the chapter being studied (`BookId` name) |
 | `chapter_number` | int | `3` | 1-based chapter within the book |
-| `is_cached` | boolean | `true` | `true` when the study was already on the device; `false` when a generation just produced it |
+| `is_cached` | string | `"true"` | `true` when the study was already on the device; `false` when a generation just produced it |
 
 ## Notes
 

@@ -17,9 +17,9 @@ The user confirms the removal dialog.
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `verse_count` | integer | 2 | How many verses the passage covers |
-| `has_highlight` | boolean | true | Whether a highlight was removed |
-| `is_saved` | boolean | false | Whether a bookmark was removed |
-| `has_note` | boolean | true | Whether a note was removed |
+| `has_highlight` | string | `"true"` | Whether a highlight was removed |
+| `is_saved` | string | `"false"` | Whether a bookmark was removed |
+| `has_note` | string | `"true"` | Whether a note was removed |
 
 ## Notes
 

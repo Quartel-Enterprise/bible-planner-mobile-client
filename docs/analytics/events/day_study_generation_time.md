@@ -20,8 +20,8 @@ Once per generation job, when it reaches a terminal state:
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `duration_ms` | int | `18450` | Elapsed monotonic time from `start()` to the terminal state |
-| `success` | boolean | `true` | Whether the generation produced a study |
-| `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `success` | string | `"true"` | Whether the generation produced a study |
+| `is_pro` | string | `"false"` | Whether the user has the Pro entitlement |
 | `reason` | string | `limit_reached` | Only on `success=false`: `limit_reached` or `error` |
 | `reading_ms` | int | `2100` | Time spent in the `READING` phase (chapter aggregation before the model streams) |
 | `chapters_ms` | int | `9400` | Time from the `CHAPTERS` phase starting until the next phase |

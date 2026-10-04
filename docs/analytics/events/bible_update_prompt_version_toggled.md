@@ -17,7 +17,7 @@ The pending-updates sheet is open and the user taps a version row or its checkbo
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `version_id` | string | `ACF` | The Bible version being toggled. |
-| `is_selected` | boolean | `false` | Whether the version is selected after the toggle. |
+| `is_selected` | string | `"false"` | Whether the version is selected after the toggle. |
 
 ## Notes
 

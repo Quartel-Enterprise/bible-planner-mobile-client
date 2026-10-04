@@ -73,9 +73,11 @@ Only what a JVM test can reach. Left out:
 | `:ui:*` | Kover is not applied (`configureCoverage` in `build-logic`) | composables and theme constants |
 | `:core:*:testing` | Kover is not applied (`configureCoverage` in `build-logic`) | the fakes tests share: test code that lives in `commonMain` only so other modules can depend on it |
 | `:shared`, `:androidApp`, `:desktopApp` | they don't use the multiplatform convention plugin | app entry points and the iOS umbrella |
+| `com.quare.bibleplanner.tools.agentcli.MainKt` | class filter | the [agent CLI](agent-cli.md)'s entry point, which starts the whole app against the real backend |
 
 The filters and both rules live in the root `build.gradle.kts`; the modules only apply the plugin,
-through `bibleplanner.kotlin.multiplatform`. A new module is measured as soon as it uses it.
+through `bibleplanner.kotlin.multiplatform`. A new module is measured as soon as it uses it;
+`:tools:agent-cli`, a plain JVM module, calls `configureCoverage()` itself.
 Excluding more code is a change to that table and to the filters, reviewed like any other: the
 default for new code is to be measured and tested.
 

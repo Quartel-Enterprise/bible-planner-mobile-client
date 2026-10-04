@@ -18,8 +18,8 @@ The generation stream delivers the finished study and it has been stored on the 
 |---|---|---|---|
 | `book_id` | string | `GEN` | Book of the chapter being studied (`BookId` name) |
 | `chapter_number` | int | `3` | 1-based chapter within the book |
-| `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
-| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
+| `is_pro` | string | `"false"` | Whether the user has the Pro entitlement |
+| `is_rewarded` | string | `"false"` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
 | `duration_ms` | int | `5600` | Time from the start of the generation to the finished study |
 
 ## Notes
