@@ -9,7 +9,8 @@
       "Na leitura, os versículos que têm anotação agora mostram um ícone ao lado, e uma linha liga todos os versículos de uma mesma anotação. Toque no ícone para abrir a anotação. Se preferir ler sem ele, desligue em Aparência da leitura.",
       "Ao selecionar versículos que já têm anotação, o botão vira \"Ver anotação\" e abre a anotação inteira, e agora dá para excluir uma anotação direto pelo editor.",
       "Os menus que abrem de baixo da tela, como os de tema, idioma e aparência da leitura, agora deslizam para baixo suavemente quando você fecha pelo X ou escolhe uma opção, em vez de sumirem de repente. Tocar duas vezes rápido no X também não fecha mais a tela que está por trás.",
-      "Corrigimos um problema que podia fechar o app ao passar para o próximo ou o capítulo anterior com versículos selecionados. Agora a seleção é desfeita e o novo capítulo abre no lugar do anterior."
+      "Corrigimos um problema que podia fechar o app ao passar para o próximo ou o capítulo anterior com versículos selecionados. Agora a seleção é desfeita e o novo capítulo abre no lugar do anterior.",
+      "A tela de assinatura do Pro agora deixa claro que quem assina usa o app sem anúncios."
     ],
     "android": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",
