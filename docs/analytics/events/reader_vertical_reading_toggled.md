@@ -16,7 +16,7 @@ The user flips the Vertical reading switch in the appearance sheet.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_enabled` | boolean | true | The state the setting was moved to |
+| `is_enabled` | string | `"true"` | The state the setting was moved to |
 
 ## Notes
 

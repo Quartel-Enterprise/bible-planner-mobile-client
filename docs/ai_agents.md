@@ -20,5 +20,9 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/store-listing-screenshots.md](store-listing-screenshots.md)
 - [@docs/store-listing-metadata.md](store-listing-metadata.md)
 - [@docs/getting-started.md](getting-started.md)
+- [@docs/agent-cli.md](agent-cli.md)
 - [@docs/code-quality.md](code-quality.md)
 - [@docs/ci.md](ci.md)
+
+To check a ViewModel, use case or repository change in the running app without a simulator, drive it
+headlessly with `scripts/agent-cli.sh` (see [docs/agent-cli.md](agent-cli.md)).

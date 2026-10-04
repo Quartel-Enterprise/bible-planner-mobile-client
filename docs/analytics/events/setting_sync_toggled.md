@@ -21,7 +21,7 @@ Three trigger points:
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `setting` | string | `theme` | Which preference group the toggle controls: `theme` \| `language` \| `study_suggestion` |
-| `is_enabled` | boolean | `true` | New state of the sync switch |
+| `is_enabled` | string | `"true"` | New state of the sync switch |
 
 ## Notes
 

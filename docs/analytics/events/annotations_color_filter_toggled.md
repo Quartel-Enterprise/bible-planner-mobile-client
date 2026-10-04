@@ -17,7 +17,7 @@ The user taps a colour dot in the filter bar (phone) or the filter panel (wide l
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `color` | string | yellow | Key of the tapped colour — a preset name or a custom `c:<hue>:<lightness>` key |
-| `is_selected` | boolean | true | Whether the tap selected the colour or cleared it |
+| `is_selected` | string | `"true"` | Whether the tap selected the colour or cleared it |
 
 ## Notes
 

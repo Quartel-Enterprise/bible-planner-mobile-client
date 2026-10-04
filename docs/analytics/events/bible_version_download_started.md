@@ -22,7 +22,7 @@ The user taps download on a version in the selector, taps resume on a paused dow
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `version_id` | string | `nvi` | Bible version identifier |
-| `is_resume` | boolean | `false` | `true` when resuming a paused download, `false` on a fresh start |
+| `is_resume` | string | `"false"` | `true` when resuming a paused download, `false` on a fresh start |
 | `source` | string | `reader` | Only sent from the reader's chapter-not-downloaded state; absent when fired from the version selector |
 
 ## Notes

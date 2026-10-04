@@ -17,7 +17,7 @@ User taps the synopsis header on the book-details screen to expand or collapse i
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `book_id` | string | `genesis` | Standard param; the book whose synopsis was toggled |
-| `is_expanded` | boolean | `true` | Synopsis state after the toggle |
+| `is_expanded` | string | `"true"` | Synopsis state after the toggle |
 
 ## Notes
 

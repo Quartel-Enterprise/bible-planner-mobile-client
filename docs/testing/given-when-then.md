@@ -5,7 +5,8 @@ comment and separated by a blank line. (These comments are intentional structure
 code, where explanatory `//` comments are avoided.)
 
 - **Given** — build the scenario and inputs (usually a single `prepareScenario(...)` call; see
-  [prepare-scenario.md](prepare-scenario.md)).
+  [prepare-scenario.md](prepare-scenario.md)). A test whose whole setup is shared in `@BeforeTest` has
+  nothing left to arrange and starts at **When**.
 - **When** — exercise the single action under test. Keep it to one behavior per test.
 - **Then** — assertions on the resulting state and/or recorded interactions.
 

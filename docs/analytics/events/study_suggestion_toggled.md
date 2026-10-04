@@ -16,7 +16,7 @@ The user flips the "Show the suggestion" switch in Profile › Preferences › S
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_enabled` | boolean | `false` | The value the toggle was set to |
+| `is_enabled` | string | `"false"` | The value the toggle was set to |
 | `source` | string | `settings` | Where the toggle happened: `settings` or `day_reading_complete` |
 
 ## Notes

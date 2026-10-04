@@ -17,7 +17,7 @@ User taps the mark-all-chapters toggle on the book details screen.
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `book_id` | string | `genesis` | Book being toggled |
-| `is_read` | boolean | `true` | New status: `true` marks all chapters read, `false` clears them |
+| `is_read` | string | `"true"` | New status: `true` marks all chapters read, `false` clears them |
 
 ## Notes
 

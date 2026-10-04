@@ -19,7 +19,7 @@ The user taps the confirm button in the logout dialog — either the normal conf
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_forced` | boolean | `false` | `true` when the user chose to sign out without flushing pending changes after a flush failure (`shouldFlushPending=false`) |
+| `is_forced` | string | `"false"` | `true` when the user chose to sign out without flushing pending changes after a flush failure (`shouldFlushPending=false`) |
 
 ## Notes
 

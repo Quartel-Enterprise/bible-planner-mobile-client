@@ -16,7 +16,7 @@ The user picks Add note or Edit note in a row's menu.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_existing` | boolean | true | Whether the passage already had a note |
+| `is_existing` | string | `"true"` | Whether the passage already had a note |
 | `verse_count` | integer | 2 | How many verses the passage covers |
 
 ## Notes

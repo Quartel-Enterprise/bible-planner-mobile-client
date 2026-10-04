@@ -20,8 +20,8 @@ The study screen opens for a chapter with no study on the device and no generati
 |---|---|---|---|
 | `book_id` | string | `GEN` | Book of the chapter being studied (`BookId` name) |
 | `chapter_number` | int | `3` | 1-based chapter within the book |
-| `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
-| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
+| `is_pro` | string | `"false"` | Whether the user has the Pro entitlement |
+| `is_rewarded` | string | `"false"` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
 
 ## Notes
 

@@ -128,6 +128,11 @@ kover {
                 )
                 // BuildKonfig objects, each module generating its own into a `generated` package
                 packages("*.generated")
+                // The agent CLI's entry point: it starts the whole app against the real backend
+                classes(
+                    "com.quare.bibleplanner.tools.agentcli.MainKt",
+                    "com.quare.bibleplanner.tools.agentcli.MainKt$*",
+                )
             }
         }
         verify {
@@ -156,7 +161,7 @@ tasks.register("verifyNewFilesCoverage") {
         .asText
         .map { output -> output.lines().filter { path -> path.endsWith(".kt") } }
     val minPercent = coverageMinPercent
-    val sourceRoot = Regex("/src/[A-Za-z]+Main/kotlin/")
+    val sourceRoot = Regex("/src/(?:[A-Za-z]+Main|main)/kotlin/")
     doLast {
         val factory = DocumentBuilderFactory.newInstance()
         // The report names a DTD that is not on disk, and the parser would otherwise try to load it

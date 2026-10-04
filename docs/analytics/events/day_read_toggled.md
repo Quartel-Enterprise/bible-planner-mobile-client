@@ -20,7 +20,7 @@ User taps the read checkbox on a day row in the reading plan list, or taps the d
 | `plan_type` | string | `chronological` | Active reading plan |
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
-| `is_read` | boolean | `true` | New read status after the toggle |
+| `is_read` | string | `"true"` | New read status after the toggle |
 | `source` | string | `plan_list` \| `day_screen` | Which surface triggered the toggle |
 
 ## Notes

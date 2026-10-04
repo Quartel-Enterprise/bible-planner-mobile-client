@@ -19,8 +19,8 @@ Two trigger points:
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_granted` | boolean | `false` | Whether the user granted the permission |
-| `can_ask_again` | boolean | `false` | Whether the OS still allows re-prompting; `false` with `is_granted=false` means permanently denied (the download flow opens the rationale dialog in its "open settings" state) |
+| `is_granted` | string | `"false"` | Whether the user granted the permission |
+| `can_ask_again` | string | `"false"` | Whether the OS still allows re-prompting; `false` with `is_granted=false` means permanently denied (the download flow opens the rationale dialog in its "open settings" state) |
 
 ## Notes
 

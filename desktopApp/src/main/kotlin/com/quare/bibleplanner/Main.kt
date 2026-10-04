@@ -16,9 +16,9 @@ import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.jvmAppLanguageModule
 import com.quare.bibleplanner.feature.applanguage.presentation.initAppLocale
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.login.di.jvmLoginModule
 import com.quare.bibleplanner.notification.DesktopBibleVersionDownloadNotifier
-import com.quare.bibleplanner.worker.DesktopBibleVersionDownloaderFacade
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.GlobalContext
@@ -38,7 +38,7 @@ fun main() {
                     single { getDatabaseBuilder() }
                     singleOf(::DesktopBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
                     singleOf(::InProcessBibleVersionDownloader)
-                    singleOf(::DesktopBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
+                    singleOf(::InProcessBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
                 },
             ),
         )

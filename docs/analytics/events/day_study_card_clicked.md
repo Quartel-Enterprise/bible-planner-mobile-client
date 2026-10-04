@@ -18,7 +18,7 @@ The user taps the AI study card, in any of its modes, on either of the two surfa
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `card_mode` | string | `generate` | `view` \| `generate` \| `locked` (snake_case of `DayStudyCardMode`) |
-| `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `is_pro` | string | `"false"` | Whether the user has the Pro entitlement |
 | `source` | string | `day_screen` | Which surface rendered the card: `day_screen` \| `day_study_detail` |
 
 ## Notes

@@ -13,9 +13,9 @@ import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.webAppLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.login.di.webLoginModule
 import com.quare.bibleplanner.notification.WebBibleVersionDownloadNotifier
-import com.quare.bibleplanner.worker.WebBibleVersionDownloaderFacade
 import org.koin.core.context.GlobalContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -33,7 +33,7 @@ fun main() {
                 single { getDatabaseBuilder() }
                 singleOf(::WebBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
                 singleOf(::InProcessBibleVersionDownloader)
-                singleOf(::WebBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
+                singleOf(::InProcessBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
             },
         ),
     )

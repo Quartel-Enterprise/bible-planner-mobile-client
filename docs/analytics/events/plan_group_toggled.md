@@ -20,7 +20,7 @@ User taps the upcoming-weeks or completed-weeks group header on the reading-plan
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `group` | string | `completed` | Which group was toggled: `upcoming` \| `completed` |
-| `is_expanded` | boolean | `true` | Group state after the toggle. Both UiEvents are parameterless `data object`s; the new state is read from the updated UiState |
+| `is_expanded` | string | `"true"` | Group state after the toggle. Both UiEvents are parameterless `data object`s; the new state is read from the updated UiState |
 
 ## Notes
 

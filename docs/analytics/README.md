@@ -54,7 +54,8 @@ Because this test reads files outside its own module's normal Gradle inputs, `co
 
 - Event and parameter names are `snake_case`, `<object>_<action>` with the action in past tense (`chapter_read_toggled`, `purchase_completed`).
 - GA4 limits: event names ≤ 40 chars, ≤ 25 parameters per event, parameter values ≤ 100 chars.
-- Toggles are **one** event with an `is_*` boolean parameter (`is_read`, `is_favorite`), never two separate on/off events.
+- Toggles are **one** event with an `is_*` true/false parameter (`is_read`, `is_favorite`), never two separate on/off events.
+- GA4 has no boolean parameter type, so `TrackEventUseCase` sends every Kotlin `Boolean` as the string `"true"` or `"false"`, and the catalog lists those parameters as strings. Filter on the string in explorations and in the BigQuery export (`is_read = "true"`).
 - Confirmation dialogs use the `*_confirmed` / `*_cancelled` suffix pair.
 - Enum-valued parameters use `snake_case` values (`day_screen`, `user_cancelled`).
 
@@ -74,8 +75,8 @@ Parameters shared across many events are defined once here; event files referenc
 | `source` | string | event-specific enum | Which surface triggered the event |
 | `reason` | string | event-specific enum | Why the event happened (errors, gates) |
 | `method` | string | `google` \| `apple` | Auth provider |
-| `is_pro` | boolean | `true` | Whether the user has the Pro entitlement |
-| `is_rewarded` | boolean | `false` | Whether an AI study generation was unlocked with a rewarded video |
+| `is_pro` | string | `"true"` | Whether the user has the Pro entitlement |
+| `is_rewarded` | string | `"false"` | Whether an AI study generation was unlocked with a rewarded video |
 | `surface` | string | `chapter_study` \| `day_study` \| `day_reading_complete` | Which locked surface offered a rewarded unlock |
 
 ## Auto-collected events

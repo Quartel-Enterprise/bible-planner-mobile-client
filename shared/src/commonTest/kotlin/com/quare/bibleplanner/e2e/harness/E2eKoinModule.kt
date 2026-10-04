@@ -21,6 +21,7 @@ import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObse
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigDataSource
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.MemorySessionManager

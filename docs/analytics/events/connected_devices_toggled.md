@@ -16,7 +16,7 @@ The user taps the "Connected devices" row header in the Account details sheet, t
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_expanded` | boolean | `true` | `true` when the section is being opened, `false` when collapsed |
+| `is_expanded` | string | `"true"` | `true` when the section is being opened, `false` when collapsed |
 
 ## Notes
 

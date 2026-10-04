@@ -18,7 +18,7 @@ The user taps Save in the verse note editor.
 |---|---|---|---|
 | `note_length` | integer | 128 | Character count of the saved note |
 | `verse_count` | integer | 3 | How many verses the selection covered |
-| `is_existing` | boolean | false | Whether the passage already had a note |
+| `is_existing` | string | `"false"` | Whether the passage already had a note |
 
 ## Notes
 
