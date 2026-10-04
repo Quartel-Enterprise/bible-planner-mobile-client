@@ -1,4 +1,9 @@
 {
+  "2.11.1": {
+    "common": [
+      "Fixed the \"Become Pro\" title at the top of the Pro subscription screen, which could be missing the first time you opened it, or every time with animations turned off."
+    ]
+  },
   "2.11.0": {
     "common": [
       "After you sign in or come back online, your reading progress, your highlights and notes, and your profile photo show up much faster.",
