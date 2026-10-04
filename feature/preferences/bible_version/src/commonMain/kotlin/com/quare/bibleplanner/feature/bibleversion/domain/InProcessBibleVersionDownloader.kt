@@ -42,8 +42,9 @@ class InProcessBibleVersionDownloader(
             result
                 .onSuccess { notifier.showComplete(versionId, versionName) }
                 .onFailure {
-                    notifier.showError(versionId, versionName)
+                    // Why: the version is paused before anyone hears of the error, so whoever reacts to it reads PAUSED.
                     bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+                    notifier.showError(versionId, versionName)
                 }
 
             activeDownloads.remove(versionId)
