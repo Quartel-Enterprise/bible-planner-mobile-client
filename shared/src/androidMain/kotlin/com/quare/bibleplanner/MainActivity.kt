@@ -8,10 +8,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -54,17 +59,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isDynamicColorsOn by viewModel.isDynamicColorsEnabled.collectAsState()
-            AppRoot(
-                getSpecificColors = { isAppInDarkTheme ->
-                    getAndroidSpecificColorScheme(
-                        isDynamicColorsOn = isDynamicColorsOn,
-                        isAppInDarkTheme = isAppInDarkTheme,
-                    )
-                },
-                onThemeResolved = { isAppInDarkTheme ->
-                    enableEdgeToEdge(statusBarStyle = getStatusBarStyle(isAppInDarkTheme))
-                },
-            )
+            Box(modifier = Modifier.exposeTestTagsToUiAutomator()) {
+                AppRoot(
+                    getSpecificColors = { isAppInDarkTheme ->
+                        getAndroidSpecificColorScheme(
+                            isDynamicColorsOn = isDynamicColorsOn,
+                            isAppInDarkTheme = isAppInDarkTheme,
+                        )
+                    },
+                    onThemeResolved = { isAppInDarkTheme ->
+                        enableEdgeToEdge(statusBarStyle = getStatusBarStyle(isAppInDarkTheme))
+                    },
+                )
+            }
         }
     }
 
@@ -91,6 +98,9 @@ class MainActivity : ComponentActivity() {
         private const val PREFS_NAME = "app_prefs"
         private const val KEY_APP_LANGUAGE = "app_language"
     }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    private fun Modifier.exposeTestTagsToUiAutomator(): Modifier = semantics { testTagsAsResourceId = true }
 
     private fun getStatusBarStyle(isAppInDarkTheme: Boolean): SystemBarStyle = SystemBarStyle.run {
         val color = Color.Transparent.toArgb()

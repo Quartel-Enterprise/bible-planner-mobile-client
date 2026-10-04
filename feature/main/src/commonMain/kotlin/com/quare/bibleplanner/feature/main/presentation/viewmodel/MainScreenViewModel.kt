@@ -89,6 +89,7 @@ class MainScreenViewModel(
                     symbolName = SFSymbol.calendar,
                     selectedSymbolName = SFSymbol.calendar,
                 ),
+                testTag = PLANS_TAB_TAG,
             )
 
             MainNavRouteDestination.Books -> MainNavigationItemPresentationModel(
@@ -98,6 +99,7 @@ class MainScreenViewModel(
                     symbolName = SFSymbol.book,
                     selectedSymbolName = SFSymbol.bookFill,
                 ),
+                testTag = BOOKS_TAB_TAG,
             )
 
             MainNavRouteDestination.Profile -> MainNavigationItemPresentationModel(
@@ -110,7 +112,14 @@ class MainScreenViewModel(
                     symbolName = SFSymbol.personCropCircle,
                     selectedSymbolName = SFSymbol.personCropCircleFill,
                 ),
+                testTag = PROFILE_TAB_TAG,
             )
         },
     )
+
+    companion object {
+        private const val PLANS_TAB_TAG = "plans_tab"
+        private const val BOOKS_TAB_TAG = "books_tab"
+        private const val PROFILE_TAB_TAG = "profile_tab"
+    }
 }

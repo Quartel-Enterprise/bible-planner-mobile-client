@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
@@ -51,6 +52,7 @@ import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
+private const val READ_CHAPTERS_TAG = "read_chapters"
 private val readingColumnMaxWidth = 640.dp
 private val titleMinColumnWidth = 520.dp
 private val bannerMaxWidth = 560.dp
@@ -134,6 +136,7 @@ internal fun ReadWideScreen(
                         is ReadContentUiState.Success -> {
                             LazyColumn(
                                 modifier = Modifier
+                                    .testTag(READ_CHAPTERS_TAG)
                                     .widthIn(max = readingColumnMaxWidth)
                                     .fillMaxHeight()
                                     .padding(horizontal = 24.dp),

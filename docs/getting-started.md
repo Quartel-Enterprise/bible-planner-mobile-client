@@ -110,3 +110,5 @@ from there.
   feature goes through.
 - [Code quality](code-quality.md) — the ktlint setup, and how to run exactly what CI runs.
 - [Testing](testing/README.md) — what is tested, and how the suites are organised.
+- [Performance](performance.md) — the Baseline Profile the Android app ships, and the macrobenchmarks
+  that measure the critical journeys on a device.

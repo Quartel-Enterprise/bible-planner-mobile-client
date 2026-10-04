@@ -147,6 +147,10 @@ all of it. Every job uploads its test reports when it fails.
 `:shared` joins the `desktop` and `android` jobs with the [end-to-end flows](testing/end-to-end-tests.md),
 and the script leaves it out of `ios`: the flows switch tabs, which on iOS are a native `UITabBar`.
 
+`:tools:baseline-profile` is in no workflow. Its tests sit in `src/main`, as a `com.android.test`
+module's do, so the script never finds it, and they are the macrobenchmarks: they run by hand on a
+physical device nothing else is using. See [Performance](performance.md).
+
 ## iOS release link
 
 Most of the release workflow's `ios-build` job is one Gradle task,

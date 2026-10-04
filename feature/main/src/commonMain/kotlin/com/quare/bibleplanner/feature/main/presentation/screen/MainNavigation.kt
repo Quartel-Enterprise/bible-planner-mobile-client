@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -81,8 +82,9 @@ internal fun MainNavigationBar(
                     mainNavigationModels = mainNavigationModels,
                     isItemSelected = { it.route == selectedRoute },
                     onEvent = onEvent,
-                ) { selected, onClick, icon, label ->
+                ) { modifier, selected, onClick, icon, label ->
                     NavigationBarItem(
+                        modifier = modifier,
                         selected = selected,
                         onClick = onClick,
                         icon = icon,
@@ -119,8 +121,9 @@ internal fun MainNavigationRail(
                 mainNavigationModels = mainNavigationModels,
                 isItemSelected = { it.route == selectedRoute },
                 onEvent = onEvent,
-            ) { selected, onClick, icon, label ->
+            ) { modifier, selected, onClick, icon, label ->
                 NavigationRailItem(
+                    modifier = modifier,
                     selected = selected,
                     onClick = onClick,
                     icon = icon,
@@ -136,12 +139,13 @@ private fun MainNavigationItemsComponent(
     mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
     isItemSelected: (MainNavigationItemModel<NavKey>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
-    itemFactory: @Composable (Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
+    itemFactory: @Composable (Modifier, Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {
     mainNavigationModels.forEach { bottomNavigationItemModel ->
         val presentationItem = bottomNavigationItemModel.presentationModel
         val isSelected = isItemSelected(bottomNavigationItemModel)
         itemFactory(
+            Modifier.testTag(presentationItem.testTag),
             isSelected,
             {
                 onEvent(

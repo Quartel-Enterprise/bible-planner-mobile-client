@@ -27,12 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 
+private const val PLAN_DAY_TAG = "plan_day"
 private const val FLASH_START_ALPHA = 0.28f
 private const val FLASH_DURATION_MILLIS = 1400
 
@@ -91,6 +93,7 @@ internal fun SharedTransitionScope.DayItem(
 
     Row(
         modifier = modifier
+            .testTag(PLAN_DAY_TAG)
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .background(rowBackground)
