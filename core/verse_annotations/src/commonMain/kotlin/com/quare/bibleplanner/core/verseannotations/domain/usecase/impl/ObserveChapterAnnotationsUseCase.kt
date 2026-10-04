@@ -23,6 +23,7 @@ internal class ObserveChapterAnnotationsUseCase(
             highlightColorByVerse = highlights,
             savedVerseNumbers = savedVerses,
             noteIdByVerse = notes.flatMap { note -> note.verseNumbers.map { it to note.id } }.toMap(),
+            noteVerseNumbersById = notes.associate { note -> note.id to note.verseNumbers.sorted() },
         )
     }
 }

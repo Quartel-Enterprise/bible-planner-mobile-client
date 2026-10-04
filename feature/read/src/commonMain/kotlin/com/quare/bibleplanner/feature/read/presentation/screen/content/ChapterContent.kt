@@ -60,6 +60,14 @@ internal fun LazyListScope.chapterContent(
                     ),
                 )
             },
+            onNoteIconClick = { noteMark ->
+                onEvent(
+                    ReadUiEvent.OnNoteIconClick(
+                        chapter = chapter.chapter,
+                        noteMark = noteMark,
+                    ),
+                )
+            },
         )
     }
     if (shouldListChapterStudyCard(isChapterStudyBeside)) {

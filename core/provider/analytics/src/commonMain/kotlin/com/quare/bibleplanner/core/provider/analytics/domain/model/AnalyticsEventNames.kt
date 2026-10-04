@@ -243,6 +243,10 @@ object AnalyticsEventNames {
     const val VERSE_NOTES_LIMIT_REACHED = "verse_notes_limit_reached"
     const val VERSE_NOTE_SAVED = "verse_note_saved"
     const val VERSE_NOTE_DISMISSED = "verse_note_dismissed"
+    const val VERSE_NOTE_DELETE_OPENED = "verse_note_delete_opened"
+    const val VERSE_NOTE_DELETED = "verse_note_deleted"
+    const val VERSE_NOTE_DELETE_CANCELLED = "verse_note_delete_cancelled"
+    const val VERSE_NOTE_ICON_CLICKED = "verse_note_icon_clicked"
     const val VERSES_COPIED = "verses_copied"
     const val VERSE_SHARE_OPENED = "verse_share_opened"
     const val VERSE_SHARED = "verse_shared"
@@ -280,4 +284,5 @@ object AnalyticsEventNames {
     const val READER_FOCUS_AID_CHANGED = "reader_focus_aid_changed"
     const val READER_RULER_HEIGHT_CHANGED = "reader_ruler_height_changed"
     const val READER_VERTICAL_READING_TOGGLED = "reader_vertical_reading_toggled"
+    const val READER_NOTE_ICON_TOGGLED = "reader_note_icon_toggled"
 }

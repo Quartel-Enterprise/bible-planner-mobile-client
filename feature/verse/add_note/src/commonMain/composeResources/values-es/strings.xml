@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="verse_note_title">Nota</string>
+    <string name="edit_verse_note_title">Editar nota</string>
+    <string name="delete_verse_note">Eliminar nota</string>
+    <string name="delete_verse_note_title">¿Eliminar la nota de %1$s?</string>
+    <string name="delete_verse_note_body">El texto de esta nota se eliminará. Los versículos siguen disponibles en la lectura.</string>
+    <string name="confirm_delete_verse_note">Eliminar</string>
+    <string name="cancel_delete_verse_note">Cancelar</string>
     <string name="save_note">Guardar</string>
     <string name="note_placeholder">Escribe tu reflexión, oración u observación sobre este pasaje…</string>
 </resources>

@@ -47,6 +47,10 @@ internal class ObserveChapterAnnotationsUseCaseTest {
             expected = mapOf(4 to "note-1", 5 to "note-1"),
             actual = annotations.noteIdByVerse,
         )
+        assertEquals(
+            expected = mapOf("note-1" to listOf(4, 5)),
+            actual = annotations.noteVerseNumbersById,
+        )
     }
 
     @Test

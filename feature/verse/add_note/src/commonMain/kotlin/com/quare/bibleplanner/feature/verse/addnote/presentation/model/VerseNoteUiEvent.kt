@@ -18,6 +18,26 @@ sealed interface VerseNoteUiEvent : UiEvent {
         )
     }
 
+    data object OnDeleteClick : VerseNoteUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.VERSE_NOTE_DELETE_OPENED,
+            params = emptyMap(),
+        )
+    }
+
+    data object OnDeleteConfirm : VerseNoteUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.VERSE_NOTE_DELETED,
+        )
+    }
+
+    data object OnDeleteCancel : VerseNoteUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.VERSE_NOTE_DELETE_CANCELLED,
+            params = emptyMap(),
+        )
+    }
+
     data object OnDismiss : VerseNoteUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.VERSE_NOTE_DISMISSED,

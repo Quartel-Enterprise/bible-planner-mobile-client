@@ -90,8 +90,7 @@ internal class VerseNoteFlowUiTest {
         clickDescription("Close")
         clickDescription("Back")
         openTheFirstChapter()
-        clickText(VERSE)
-        clickText("Note")
+        clickDescription("Open note")
     }
 
     private fun ComposeUiTest.openTheFirstChapter() {
