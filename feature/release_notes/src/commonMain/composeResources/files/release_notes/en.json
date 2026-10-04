@@ -8,7 +8,8 @@
       "If you use a screen reader, it now tells you what the sort and filter buttons on the Books screen and the circle that marks a day as read in the reading plan do.",
       "While reading, verses with a note now show an icon beside them, and a line joins every verse of the same note. Tap the icon to open the note. If you'd rather read without it, turn it off in the reading appearance settings.",
       "When you select verses that already have a note, the button changes to \"View note\" and opens the whole note, and you can now delete a note right from the editor.",
-      "Menus that open from the bottom of the screen, like the ones for theme, language and reading appearance, now slide down smoothly when you close them with the X or pick an option, instead of disappearing at once. Tapping the X twice quickly also no longer closes the screen behind them."
+      "Menus that open from the bottom of the screen, like the ones for theme, language and reading appearance, now slide down smoothly when you close them with the X or pick an option, instead of disappearing at once. Tapping the X twice quickly also no longer closes the screen behind them.",
+      "Fixed a problem that could close the app when moving to the next or previous chapter with verses selected. The selection is now cleared and the new chapter opens in place of the old one."
     ],
     "android": [
       "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",
