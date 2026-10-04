@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.navigation.utils.hasStudyCompanionOnTop
 import com.quare.bibleplanner.core.navigation.utils.popBackEntries
+import com.quare.bibleplanner.core.navigation.utils.removeTopScreen
 
 internal class BackStackController(
     private val backStack: MutableList<NavKey>,
@@ -27,11 +28,7 @@ internal class BackStackController(
         isWide: Boolean,
     ) {
         if (route != backStack.lastOrNull()) {
-            // Why: the study beside the top entry belongs to it, so it is removed too instead of kept.
-            if (isWide && backStack.hasStudyCompanionOnTop()) {
-                backStack.removeLastOrNull()
-            }
-            backStack.removeLastOrNull()
+            backStack.removeTopScreen(isWide)
             backStack.add(route)
             forwardStack.clear()
         }
