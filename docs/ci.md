@@ -54,7 +54,8 @@ The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge 
 `GITHUB_TOKEN` triggers no other workflow, so the push to `main` would run no checks and
 `cleanup-pr-caches` would not delete the pull request's caches. The secret is a fine-grained personal
 access token restricted to this repository, with Contents and Pull requests set to Read and write.
-The merge shows up as made by the token's owner. When the token expires, the workflow fails with an
+The merge shows up as made by the token's owner. The `record-screenshots`
+workflow (see [Screenshot tests](#screenshot-tests)) pushes with the same token. When the token expires, the workflow fails with an
 error that names the secret.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
@@ -146,6 +147,25 @@ all of it. Every job uploads its test reports when it fails.
 
 `:shared` joins the `desktop` and `android` jobs with the [end-to-end flows](testing/end-to-end-tests.md),
 and the script leaves it out of `ios`: the flows switch tabs, which on iOS are a native `UITabBar`.
+
+## Screenshot tests
+
+The `screenshot-tests` workflow runs the [screenshot tests](testing/screenshot-tests.md) of every
+module that calls `configureScreenshotTests()`, through their `screenshotTests` task. Its `verify`
+job compares each render with its reference on every push, and uploads the differences as
+`screenshot-differences` when one fails. It never skips a push: a skipped check reads as passed to
+`merge-when-green`, which would let a pull request through with nothing verified.
+
+The `record-screenshots` workflow records the references when a pull request gets the
+`record-screenshots` label. It is a workflow of its own, like `claude-review-on-request`, because
+every label starts it: the skipped `record` check other labels leave never stands in for `verify`.
+It renders the references on the pull request's branch, commits them and only then drops the label,
+so a failed run or a rejected push keeps it on for a retry. The push uses `MERGE_WHEN_GREEN_TOKEN`
+(see [Merge when green](#merge-when-green)), handed only to that step: a push made with
+`GITHUB_TOKEN` starts no workflow, and `main`'s ruleset waits for `check-translations` on the head
+commit. Pull requests from forks get no secrets, so they can't record.
+
+`screenshot-tests` is not a required check; `merge-when-green` still waits for it.
 
 ## iOS release link
 

@@ -24,17 +24,15 @@ internal fun BookToggleRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.weight(1.55f)) {
+        Box(modifier = Modifier.weight(1f)) {
             TestamentToggle(
                 selectedTestament = selectedTestament,
                 onEvent = onEvent,
             )
         }
-        Box(modifier = Modifier.weight(0.45f)) {
-            LayoutToggle(
-                selectedLayoutFormat = selectedLayoutFormat,
-                onEvent = onEvent,
-            )
-        }
+        LayoutToggle(
+            selectedLayoutFormat = selectedLayoutFormat,
+            onEvent = onEvent,
+        )
     }
 }

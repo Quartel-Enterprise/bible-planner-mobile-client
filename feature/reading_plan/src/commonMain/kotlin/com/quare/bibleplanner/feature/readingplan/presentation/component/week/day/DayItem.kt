@@ -28,10 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import bibleplanner.feature.reading_plan.generated.resources.Res
+import bibleplanner.feature.reading_plan.generated.resources.day_read
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
+import org.jetbrains.compose.resources.stringResource
 
 private const val FLASH_START_ALPHA = 0.28f
 private const val FLASH_DURATION_MILLIS = 1400
@@ -142,6 +145,10 @@ internal fun SharedTransitionScope.DayItem(
             DayReadToggle(
                 isRead = isRead,
                 isAccented = dayPlan.isAccented,
+                contentDescription = stringResource(
+                    Res.string.day_read,
+                    dayNumber,
+                ),
                 onClick = {
                     onEvent(
                         ReadingPlanUiEvent.OnDayReadClick(

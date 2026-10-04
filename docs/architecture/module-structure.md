@@ -29,7 +29,9 @@ ui/
 ├── theme/           # AppTheme, colors, Theme enum
 ├── component/       # Shared composables
 ├── utils/           # ActionCollector, observe() extension
-└── testing/         # setUiTestContent for the Compose UI tests (test-only dependency)
+├── testing/         # setUiTestContent for the Compose UI tests (test-only dependency)
+└── screenshots/
+    └── testing/     # ScreenshotTest base of the screenshot tests (test-only dependency)
 ```
 
 ## Dependency rules
