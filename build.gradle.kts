@@ -196,9 +196,9 @@ tasks.register("verifyNewFilesCoverage") {
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    val module = this
+    val modulePath = path
     pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
-        rootProject.dependencies.add("kover", module)
+        rootProject.dependencies.add("kover", rootProject.dependencies.project(modulePath))
     }
 
     if (path != ":tools:ktlint-custom-rules") {
