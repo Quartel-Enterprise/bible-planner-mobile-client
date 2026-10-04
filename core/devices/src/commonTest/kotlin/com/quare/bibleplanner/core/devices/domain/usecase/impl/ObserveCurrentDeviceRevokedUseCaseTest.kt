@@ -73,7 +73,7 @@ class ObserveCurrentDeviceRevokedUseCaseTest {
         return emissions
     }
 
-    private fun currentDevice() = DeviceModel(
+    private fun currentDevice(): DeviceModel = DeviceModel(
         id = "row-1",
         deviceId = "device-1",
         name = "This phone",

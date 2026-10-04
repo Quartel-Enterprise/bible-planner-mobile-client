@@ -67,7 +67,7 @@ class UserDeviceLocalStoreTest {
         id: String,
         name: String,
         updatedAt: String,
-    ) = UserDeviceDto(
+    ): UserDeviceDto = UserDeviceDto(
         id = id,
         userId = "user-1",
         deviceId = "device-$id",
@@ -85,7 +85,7 @@ class UserDeviceLocalStoreTest {
         name: String,
         updatedAt: Long,
         pending: Boolean,
-    ) = UserDeviceEntity(
+    ): UserDeviceEntity = UserDeviceEntity(
         id = id,
         deviceId = "device-$id",
         name = name,

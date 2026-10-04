@@ -19,5 +19,5 @@ class SubscriptionPurchasesDelegate(
             onError: (error: PurchasesError, userCancelled: Boolean) -> Unit,
             onSuccess: (storeTransaction: StoreTransaction, customerInfo: CustomerInfo) -> Unit,
         ) -> Unit,
-    ) = Unit
+    ) {}
 }

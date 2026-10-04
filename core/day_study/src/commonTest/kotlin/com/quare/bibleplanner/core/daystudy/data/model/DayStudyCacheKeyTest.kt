@@ -124,7 +124,7 @@ internal class DayStudyCacheKeyTest {
         assertNotEquals(base.asStorageKey(), base.copy(language = "en").asStorageKey())
     }
 
-    private fun cacheKey(vararg passages: PassageRequestDto) = DayStudyCacheKey(
+    private fun cacheKey(vararg passages: PassageRequestDto): DayStudyCacheKey = DayStudyCacheKey(
         passages = passages.toList(),
         version = "ACF",
         language = "pt-BR",
@@ -133,7 +133,7 @@ internal class DayStudyCacheKeyTest {
     private fun passage(
         book: String,
         vararg chapters: ChapterRequestDto,
-    ) = PassageRequestDto(
+    ): PassageRequestDto = PassageRequestDto(
         book = book,
         chapters = chapters.toList(),
     )
@@ -142,7 +142,7 @@ internal class DayStudyCacheKeyTest {
         number: Int,
         startVerse: Int? = null,
         endVerse: Int? = null,
-    ) = ChapterRequestDto(
+    ): ChapterRequestDto = ChapterRequestDto(
         number = number,
         startVerse = startVerse,
         endVerse = endVerse,

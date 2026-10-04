@@ -612,7 +612,7 @@ internal class ProfileUiStateFactoryTest {
         assertNull((state.bibleDownloadProgress as Loadable.Loaded).value)
     }
 
-    private fun authenticated() = SessionStatus.Authenticated(
+    private fun authenticated(): SessionStatus.Authenticated = SessionStatus.Authenticated(
         session = UserSession(
             accessToken = "",
             refreshToken = "",

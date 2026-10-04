@@ -61,9 +61,11 @@ internal class SupabaseModuleTest {
     }
 
     @AfterTest
-    fun tearDown() = runTest {
-        koin.close()
-        client.close()
+    fun tearDown() {
+        runTest {
+            koin.close()
+            client.close()
+        }
     }
 
     @Test

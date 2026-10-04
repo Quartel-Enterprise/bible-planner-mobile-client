@@ -11,5 +11,5 @@ internal object NoDayCompletionBanner : DayCompletionBannerSlot {
         day: PlanDayLocationModel,
         onDismissRequest: () -> Unit,
         modifier: Modifier,
-    ) = Unit
+    ) {}
 }

@@ -17,8 +17,10 @@ internal class DayStudyPanelRatioRepositoryImpl(
         preferences[readingFractionKey]
     }
 
-    override suspend fun setReadingFraction(fraction: Float) = dataStore.write(
-        key = readingFractionKey,
-        value = fraction,
-    )
+    override suspend fun setReadingFraction(fraction: Float) {
+        dataStore.write(
+            key = readingFractionKey,
+            value = fraction,
+        )
+    }
 }

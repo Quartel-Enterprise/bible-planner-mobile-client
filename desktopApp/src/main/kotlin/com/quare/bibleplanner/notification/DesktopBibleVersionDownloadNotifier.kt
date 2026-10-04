@@ -51,7 +51,7 @@ internal class DesktopBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) = Unit
+    ) {}
 
     override suspend fun showError(
         versionId: String,
@@ -64,7 +64,7 @@ internal class DesktopBibleVersionDownloadNotifier(
         )
     }
 
-    override suspend fun dismiss(versionId: String) = Unit
+    override suspend fun dismiss(versionId: String) {}
 
     private fun createTrayIconIfSupported(): TrayIcon? {
         if (!SystemTray.isSupported()) return null

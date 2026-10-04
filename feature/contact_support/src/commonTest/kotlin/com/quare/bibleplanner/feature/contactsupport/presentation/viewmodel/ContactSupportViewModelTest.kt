@@ -39,10 +39,14 @@ internal class ContactSupportViewModelTest {
     private lateinit var trackedEvents: List<Pair<String, Map<String, Any>>>
 
     @BeforeTest
-    fun setUp() = Dispatchers.setMain(testDispatcher)
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
 
     @AfterTest
-    fun tearDown() = Dispatchers.resetMain()
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `GIVEN account and subscription loading WHEN sending support email THEN logs event without params`() =
@@ -138,7 +142,7 @@ internal class ContactSupportViewModelTest {
             )
         }
 
-    private fun authenticated() = SessionStatus.Authenticated(
+    private fun authenticated(): SessionStatus.Authenticated = SessionStatus.Authenticated(
         session = UserSession(
             accessToken = "",
             refreshToken = "",

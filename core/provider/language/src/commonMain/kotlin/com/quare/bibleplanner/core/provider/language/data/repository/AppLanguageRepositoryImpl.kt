@@ -61,12 +61,16 @@ internal class AppLanguageRepositoryImpl(
             value?.let(mapper::mapPreferenceToModel)
         }
 
-    override suspend fun applySyncedLanguage(language: Language) = writeLanguage(language)
+    override suspend fun applySyncedLanguage(language: Language) {
+        writeLanguage(language)
+    }
 
-    private suspend fun writeLanguage(language: Language) = dataStore.write(
-        key = stringPreferencesKey(APP_LANGUAGE),
-        value = mapper.mapModelToPreference(language),
-    )
+    private suspend fun writeLanguage(language: Language) {
+        dataStore.write(
+            key = stringPreferencesKey(APP_LANGUAGE),
+            value = mapper.mapModelToPreference(language),
+        )
+    }
 
     companion object {
         private const val APP_LANGUAGE = "app_language"

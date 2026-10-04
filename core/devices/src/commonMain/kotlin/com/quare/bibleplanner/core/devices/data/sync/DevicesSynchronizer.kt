@@ -30,7 +30,7 @@ internal class DevicesSynchronizer(
     private val initialBackoff: Duration = 2.seconds
     private val maxBackoff: Duration = 60.seconds
 
-    override suspend fun seed(now: Long) = Unit
+    override suspend fun seed(now: Long) {}
 
     override suspend fun runPushLoop() {
         combine(

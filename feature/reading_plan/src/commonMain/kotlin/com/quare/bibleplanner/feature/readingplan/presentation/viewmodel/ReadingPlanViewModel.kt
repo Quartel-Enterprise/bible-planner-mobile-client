@@ -532,9 +532,11 @@ internal class ReadingPlanViewModel(
         ReadingPlanType.BOOKS -> booksOrder
     }
 
-    private fun onOverflowOptionClick(option: OverflowOption) = when (option) {
-        OverflowOption.DELETE_PROGRESS -> onDeleteProgressClick()
-        OverflowOption.EDIT_START_DAY -> navigator.navigate(EditPlanStartDateNavRoute)
+    private fun onOverflowOptionClick(option: OverflowOption) {
+        when (option) {
+            OverflowOption.DELETE_PROGRESS -> onDeleteProgressClick()
+            OverflowOption.EDIT_START_DAY -> navigator.navigate(EditPlanStartDateNavRoute)
+        }
     }
 
     private fun onDeleteProgressClick() {

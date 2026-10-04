@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.verseannotations.data.repository
 
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -131,7 +132,7 @@ internal class VerseSelectionRepositoryImplTest {
         assertNull(repository.selection.value)
     }
 
-    private fun toggle(verseNumber: Int) = repository.toggle(
+    private fun toggle(verseNumber: Int): VerseSelection? = repository.toggle(
         chapter = testChapter,
         verseNumber = verseNumber,
     )

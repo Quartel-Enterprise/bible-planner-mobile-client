@@ -187,65 +187,67 @@ private fun ReadWideHeader(
     isOpeningChapterStudy: Boolean,
     isChapterStudyBeside: Boolean,
     onEvent: (ReadUiEvent) -> Unit,
-) = BoxWithConstraints {
-    val hasRoomForTitle = maxWidth >= titleMinColumnWidth
-    val bookStringResource = visibleChapter?.bookStringResource ?: header.bookStringResource
-    val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
-    val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        BackIcon(
-            platform = platform,
-            onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) },
-        )
-        if (hasRoomForTitle) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "${stringResource(bookStringResource)} $chapterNumber",
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+) {
+    BoxWithConstraints {
+        val hasRoomForTitle = maxWidth >= titleMinColumnWidth
+        val bookStringResource = visibleChapter?.bookStringResource ?: header.bookStringResource
+        val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
+        val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            BackIcon(
+                platform = platform,
+                onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) },
             )
-        } else {
-            Spacer(modifier = Modifier.weight(1f))
-        }
-        ReadStatusPill(
-            isRead = visibleChapter?.isRead ?: header.isChapterRead,
-            isCompact = true,
-            onClick = {
-                onEvent(
-                    ReadUiEvent.ToggleReadStatus(
-                        bookId = bookId,
-                        chapterNumber = chapterNumber,
-                    ),
+            if (hasRoomForTitle) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "${stringResource(bookStringResource)} $chapterNumber",
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            },
-        )
-        if (!isChapterStudyBeside) {
-            ChapterStudyPill(
-                isLoading = isOpeningChapterStudy,
+            } else {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            ReadStatusPill(
+                isRead = visibleChapter?.isRead ?: header.isChapterRead,
+                isCompact = true,
                 onClick = {
                     onEvent(
-                        ReadUiEvent.OnChapterStudyClick(
+                        ReadUiEvent.ToggleReadStatus(
                             bookId = bookId,
                             chapterNumber = chapterNumber,
-                            source = ChapterStudyEntrySource.TOP_BAR,
                         ),
                     )
                 },
             )
+            if (!isChapterStudyBeside) {
+                ChapterStudyPill(
+                    isLoading = isOpeningChapterStudy,
+                    onClick = {
+                        onEvent(
+                            ReadUiEvent.OnChapterStudyClick(
+                                bookId = bookId,
+                                chapterNumber = chapterNumber,
+                                source = ChapterStudyEntrySource.TOP_BAR,
+                            ),
+                        )
+                    },
+                )
+            }
+            BibleVersionChip(
+                versionName = header.versionAbbreviation,
+                onClick = { onEvent(ReadUiEvent.ManageBibleVersions) },
+            )
+            CommonIconButton(
+                imageVector = Icons.Default.TextFormat,
+                contentDescription = stringResource(Res.string.reader_appearance),
+                onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
+            )
         }
-        BibleVersionChip(
-            versionName = header.versionAbbreviation,
-            onClick = { onEvent(ReadUiEvent.ManageBibleVersions) },
-        )
-        CommonIconButton(
-            imageVector = Icons.Default.TextFormat,
-            contentDescription = stringResource(Res.string.reader_appearance),
-            onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
-        )
     }
 }

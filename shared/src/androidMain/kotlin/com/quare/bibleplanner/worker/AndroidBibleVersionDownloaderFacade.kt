@@ -51,7 +51,7 @@ internal class AndroidBibleVersionDownloaderFacade(
 
     private suspend fun cancelOngoingDownload(versionId: String) {
         withWorkManager(
-            onAvailable = { manager -> manager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId)) },
+            onAvailable = { manager -> manager.cancelUniqueWork(BibleVersionDownloadWorker.getWorkName(versionId)) },
             onUnavailable = { inProcessDownloader.cancelDownload(versionId) },
         )
     }
@@ -73,7 +73,7 @@ internal class AndroidBibleVersionDownloaderFacade(
         versionId: String,
     ) {
         scope.launch {
-            val workName = BibleVersionDownloadWorker.workName(versionId)
+            val workName = BibleVersionDownloadWorker.getWorkName(versionId)
             val hasRunningWork = withContext(Dispatchers.IO) {
                 manager
                     .getWorkInfosForUniqueWork(workName)

@@ -120,6 +120,6 @@ internal class BibleVersionDownloadWorker(
         const val KEY_VERSION_ID = "version_id"
         private const val LOG_TAG = "BibleVersionDownload"
 
-        fun workName(versionId: String) = "bible_version_download_$versionId"
+        fun getWorkName(versionId: String): String = "bible_version_download_$versionId"
     }
 }

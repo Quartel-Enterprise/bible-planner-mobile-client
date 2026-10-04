@@ -79,10 +79,12 @@ internal class BibleRepositoryImpl(
         .map { preferences -> preferences[bibleVersionKey] ?: getDefaultVersion() }
         .distinctUntilChanged()
 
-    override suspend fun setSelectedVersionId(id: String) = dataStore.write(
-        key = bibleVersionKey,
-        value = id,
-    )
+    override suspend fun setSelectedVersionId(id: String) {
+        dataStore.write(
+            key = bibleVersionKey,
+            value = id,
+        )
+    }
 
     private fun observeDownloadedChaptersPerVersion(): Flow<List<VersionChapterCount>> =
         observeTableInvalidation(DatabaseTables.VERSE_TEXTS)

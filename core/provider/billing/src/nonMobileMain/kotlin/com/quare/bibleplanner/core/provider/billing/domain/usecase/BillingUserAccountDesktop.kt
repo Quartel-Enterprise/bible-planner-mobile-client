@@ -13,5 +13,5 @@ internal class BillingUserAccountDesktop(
         repository.clearSubscriptionStatus()
     }
 
-    override fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?) = Unit
+    override fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?) {}
 }

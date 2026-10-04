@@ -107,7 +107,7 @@ class ProfilePhotoViewModelTest {
         return actions
     }
 
-    private fun viewModel(platform: Platform = Platform.Android) = ProfilePhotoViewModel(
+    private fun viewModel(platform: Platform = Platform.Android): ProfilePhotoViewModel = ProfilePhotoViewModel(
         observeUserProfile = ObserveUserProfile { flowOf(profile()) },
         removeProfilePhoto = { removePhotoCalls++ },
         useProviderPhoto = { useProviderPhotoCalls++ },
@@ -115,7 +115,7 @@ class ProfilePhotoViewModelTest {
         trackEvent = { _, _ -> },
     )
 
-    private fun profile() = UserProfile(
+    private fun profile(): UserProfile = UserProfile(
         userId = "user-id",
         displayName = "Current Name",
         email = "user@example.com",

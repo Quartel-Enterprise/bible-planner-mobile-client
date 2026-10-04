@@ -130,17 +130,19 @@ internal class ReadmeReadScreenshots :
     private fun readmeScreenshot(
         fileName: String,
         areVersesHighlighted: Boolean,
-    ) = screenshot(
-        backgroundColor = Color(BACKGROUND),
-        subdir = README_SUBDIR,
-        fileName = fileName,
     ) {
-        ReadScreenshotContent(
-            platform = Platform.Android,
-            locale = README_LOCALE,
-            areVersesHighlighted = areVersesHighlighted,
-            statusBarHeight = 0.dp,
-        )
+        screenshot(
+            backgroundColor = Color(BACKGROUND),
+            subdir = README_SUBDIR,
+            fileName = fileName,
+        ) {
+            ReadScreenshotContent(
+                platform = Platform.Android,
+                locale = README_LOCALE,
+                areVersesHighlighted = areVersesHighlighted,
+                statusBarHeight = 0.dp,
+            )
+        }
     }
 
     private companion object {

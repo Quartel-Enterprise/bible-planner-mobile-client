@@ -61,7 +61,7 @@ class ObserveAuthenticatedUserIdUseCaseTest {
     private fun authenticated(
         userId: String,
         accessToken: String = "",
-    ) = SessionStatus.Authenticated(
+    ): SessionStatus.Authenticated = SessionStatus.Authenticated(
         session = UserSession(
             accessToken = accessToken,
             refreshToken = "",

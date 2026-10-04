@@ -14,8 +14,10 @@ internal class BibleUpdatePromptPreferencesImpl(
 
     override suspend fun getLastDismissedAt(): Long? = dataStore.read(lastDismissedAtKey)
 
-    override suspend fun setLastDismissedAt(timestamp: Long) = dataStore.write(
-        key = lastDismissedAtKey,
-        value = timestamp,
-    )
+    override suspend fun setLastDismissedAt(timestamp: Long) {
+        dataStore.write(
+            key = lastDismissedAtKey,
+            value = timestamp,
+        )
+    }
 }

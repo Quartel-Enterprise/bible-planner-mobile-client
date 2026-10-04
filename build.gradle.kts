@@ -290,7 +290,7 @@ private fun registerCollectStoreScreenshots(
     storeDescription: String,
     platform: String,
     devices: Map<String, String>,
-) = tasks.register(name) {
+): TaskProvider<Task> = tasks.register(name) {
     group = "store-screenshots"
     description = "Regenerates the $storeDescription screenshots and collects them into store_listings/$platform/."
     dependsOn(storeScreenshotModules.map { modulePath -> "$modulePath:testAndroidHostTest" })

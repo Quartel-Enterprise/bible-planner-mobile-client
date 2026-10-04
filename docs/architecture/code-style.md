@@ -30,12 +30,16 @@ This applies to:
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
 
-The block-body half of this is enforced by the custom ktlint rule
-`bible-planner-style:unit-function-block-body` (in `tools/ktlint-custom-rules`). Ktlint rules have no type
-resolution, so the rule flags the two cases it can prove: an explicit `: Unit` return type paired with an
-expression body, and an expression body that delegates to a `Unit`-returning function declared in the same
-class or file. A body that calls a `Unit` function from another file (`= println(...)`) is invisible to it —
-treat the rule as a net, not a guarantee.
+Both halves are enforced by the custom ktlint rule `bible-planner-style:unit-function-block-body` (in
+`tools/ktlint-custom-rules`). Ktlint has no type resolution, but it doesn't need it here: an expression body
+with no return type is wrong either way. If it returns `Unit` it needs a block body, otherwise it needs the
+type. So the rule flags every expression body that declares `: Unit` or no return type at all, including
+`= dataStore.write(...)` and `= Unit`. Two kinds are left alone:
+
+- `@Test` functions, and any function whose body is `runTest { }`, such as a `@BeforeTest` or `@AfterTest`
+  that needs coroutines: on JS and wasm, `TestResult` is a promise the function has to return, so it can't
+  move into a block body.
+- Bodies that never return (`= error("unused")`, `= TODO()`, `= throw ...`), the usual stubs in fakes.
 
 ## Expression Body
 
@@ -388,7 +392,7 @@ that genuinely have no owner, not a default.
 ```kotlin
 // Correct
 class ChatContextRequestMapper {
-    fun map(...) = ... DAY_READING_TYPE ...
+    fun map(...): ChatContextRequest = ... DAY_READING_TYPE ...
 
     private companion object {
         const val DAY_READING_TYPE = "day_reading"

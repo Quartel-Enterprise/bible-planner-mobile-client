@@ -335,7 +335,7 @@ private class BookStateChapterDao(
         bookId: String,
         isRead: Boolean,
         updatedAt: Long,
-    ) = Unit
+    ) {}
 }
 
 private class BookStateVerseDao : ThrowingVerseDao() {
@@ -344,5 +344,5 @@ private class BookStateVerseDao : ThrowingVerseDao() {
     override suspend fun updateVersesReadStatusByBook(
         bookId: String,
         isRead: Boolean,
-    ) = Unit
+    ) {}
 }

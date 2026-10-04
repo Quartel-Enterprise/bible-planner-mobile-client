@@ -46,7 +46,7 @@ private val currentWeekChapters = listOf(
 private fun passage(
     firstChapter: Int,
     lastChapter: Int,
-) = PassageModel(
+): PassageModel = PassageModel(
     bookId = BookId.FIRST_KI,
     chapters = (firstChapter..lastChapter).map { chapter ->
         ChapterModel(
@@ -96,7 +96,7 @@ private fun LocalDate.plusDays(days: Int): LocalDate = LocalDate.fromEpochDays(t
 private fun collapsedWeek(
     number: Int,
     group: WeekGroup,
-) = WeekPlanPresentationModel(
+): WeekPlanPresentationModel = WeekPlanPresentationModel(
     weekPlan = WeekPlanModel(number = number, days = emptyList()),
     dayPlans = emptyList(),
     group = group,

@@ -102,7 +102,7 @@ class EditNameViewModelTest {
         return actions
     }
 
-    private fun profile() = UserProfile(
+    private fun profile(): UserProfile = UserProfile(
         userId = "user-id",
         displayName = CURRENT_NAME,
         email = "user@example.com",
