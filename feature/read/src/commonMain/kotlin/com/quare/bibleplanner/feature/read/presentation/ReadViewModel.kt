@@ -75,6 +75,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -252,6 +253,7 @@ class ReadViewModel(
         prefetchStudyQuotaForDaysAboutToFinish()
         observeVerticalReading()
         showStudyOfVisibleChapter()
+        prefetchStudyStatusOfVisibleChapter()
         /*
          * Why: pushing is driven by the store, not the tap, so any way a selection starts opens
          * the panel; the navigator ignores a route already on the stack. Closing is never reactive.
@@ -468,14 +470,7 @@ class ReadViewModel(
     }
 
     private fun showStudyOfVisibleChapter() {
-        observe(
-            combine(
-                isChapterStudyBeside,
-                visibleChapter.filterNotNull(),
-            ) { isBeside, chapter -> chapter.takeIf { isBeside } }
-                .filterNotNull()
-                .distinctUntilChanged(),
-        ) { chapter ->
+        observe(observeVisibleChapter(isStudyBeside = true)) { chapter ->
             navigator.navigate(
                 ChapterStudyNavRoute(
                     bookId = chapter.bookId.name,
@@ -485,6 +480,27 @@ class ReadViewModel(
             )
         }
     }
+
+    // Why: collectLatest drops the request of a chapter the reader already scrolled past.
+    private fun prefetchStudyStatusOfVisibleChapter() {
+        viewModelScope.launch {
+            observeVisibleChapter(isStudyBeside = false).collectLatest { chapter ->
+                studyUseCases.prefetchChapterStudyStatus(
+                    ChapterStudyTargetModel(
+                        bookId = chapter.bookId,
+                        chapterNumber = chapter.chapterNumber,
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun observeVisibleChapter(isStudyBeside: Boolean): Flow<ChapterLocationModel> = combine(
+        isChapterStudyBeside,
+        visibleChapter.filterNotNull(),
+    ) { isBeside, chapter -> chapter.takeIf { isBeside == isStudyBeside } }
+        .filterNotNull()
+        .distinctUntilChanged()
 
     private fun selectVerse(event: ReadUiEvent.OnVerseClick) {
         val selection = toggleVerseSelection(

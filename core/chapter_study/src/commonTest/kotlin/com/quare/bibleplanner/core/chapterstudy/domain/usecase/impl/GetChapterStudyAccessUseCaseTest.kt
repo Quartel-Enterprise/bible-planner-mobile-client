@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyAccessM
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyStatusModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.store.ChapterStudyStatusPrefetchStore
 import com.quare.bibleplanner.core.chapterstudy.testing.ChapterStudyRequest
 import com.quare.bibleplanner.core.chapterstudy.testing.FakeChapterStudyGenerationCoordinator
 import com.quare.bibleplanner.core.chapterstudy.testing.FakeChapterStudyRepository
@@ -33,9 +34,17 @@ internal class GetChapterStudyAccessUseCaseTest {
         ),
         languageCode = "pt-BR",
     )
+    private val statusKey = ChapterStudyStatusKey(
+        userId = "user-1",
+        scope = ChapterStudyScope(
+            chapter = scopeRequest.chapter,
+            languageCode = scopeRequest.languageCode,
+        ),
+    )
     private lateinit var useCase: GetChapterStudyAccessUseCase
     private lateinit var repository: FakeChapterStudyRepository
     private lateinit var coordinator: FakeChapterStudyGenerationCoordinator
+    private lateinit var prefetchStore: ChapterStudyStatusPrefetchStore
     private var authenticationChecks = 0
     private var proChecks = 0
 
@@ -264,6 +273,115 @@ internal class GetChapterStudyAccessUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN a prefetched status with quota left WHEN checking the access THEN it is open without a status call`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = status(
+                    usedCount = 3,
+                    isUnlocked = false,
+                ),
+                prefetchedStatus = status(
+                    usedCount = 2,
+                    isUnlocked = false,
+                ),
+            )
+
+            // When
+            val access = useCase(target)
+
+            // Then
+            assertEquals(
+                expected = ChapterStudyAccessModel.OPEN,
+                actual = access,
+            )
+            assertTrue(repository.statusRequests.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a prefetched status without quota left WHEN checking the access THEN the server confirms it`() =
+        runTest {
+            // Given
+            val freshStatus = status(
+                usedCount = 2,
+                isUnlocked = false,
+            )
+            prepareScenario(
+                status = freshStatus,
+                prefetchedStatus = status(
+                    usedCount = 3,
+                    isUnlocked = false,
+                ),
+            )
+
+            // When
+            val access = useCase(target)
+
+            // Then
+            assertEquals(
+                expected = ChapterStudyAccessModel.OPEN,
+                actual = access,
+            )
+            assertEquals(
+                expected = listOf(scopeRequest),
+                actual = repository.statusRequests,
+            )
+            assertEquals(
+                expected = freshStatus,
+                actual = prefetchStore.find(statusKey),
+            )
+        }
+
+    @Test
+    fun `GIVEN the prefetched status of another user WHEN checking the access THEN it is ignored`() = runTest {
+        // Given
+        prepareScenario(
+            status = status(
+                usedCount = 3,
+                isUnlocked = false,
+            ),
+        )
+        prefetchStore.fetchAndKeep(statusKey.copy(userId = "user-2")) {
+            status(
+                usedCount = 0,
+                isUnlocked = false,
+            )
+        }
+
+        // When
+        val access = useCase(target)
+
+        // Then
+        assertEquals(
+            expected = ChapterStudyAccessModel.LIMIT_REACHED,
+            actual = access,
+        )
+    }
+
+    @Test
+    fun `GIVEN a fetched status WHEN checking the access THEN it is kept for the next check`() = runTest {
+        // Given
+        val fetchedStatus = status(
+            usedCount = 3,
+            isUnlocked = false,
+        )
+        prepareScenario(status = fetchedStatus)
+
+        // When
+        useCase(target)
+
+        // Then
+        assertEquals(
+            expected = fetchedStatus,
+            actual = prefetchStore.find(statusKey),
+        )
+    }
+
+    private suspend fun keepInStore(status: ChapterStudyStatusModel) {
+        prefetchStore.fetchAndKeep(statusKey) { status }
+    }
+
     private fun status(
         usedCount: Int,
         isUnlocked: Boolean,
@@ -275,12 +393,13 @@ internal class GetChapterStudyAccessUseCaseTest {
         rewardedRemainingToday = 2,
     )
 
-    private fun prepareScenario(
+    private suspend fun prepareScenario(
         cachedStudy: ChapterStudyModel? = null,
         userId: String? = "user-1",
         isPro: Boolean = false,
         status: ChapterStudyStatusModel? = null,
         generatingCount: Int = 0,
+        prefetchedStatus: ChapterStudyStatusModel? = null,
     ) {
         repository = FakeChapterStudyRepository(
             cachedStudy = cachedStudy,
@@ -288,29 +407,37 @@ internal class GetChapterStudyAccessUseCaseTest {
             events = emptyList(),
         )
         coordinator = FakeChapterStudyGenerationCoordinator().apply { this.generatingCount = generatingCount }
+        prefetchStore = ChapterStudyStatusPrefetchStore()
+        prefetchedStatus?.let { prefetched -> keepInStore(prefetched) }
         useCase = GetChapterStudyAccessUseCase(
-            repository = repository,
-            scopeResolver = ChapterStudyScopeResolver(
-                bibleRepository = FakeBibleRepository(
-                    bibles = emptyList(),
-                    selectedVersionId = "ACF",
+            localAccessChecker = ChapterStudyLocalAccessChecker(
+                repository = repository,
+                scopeResolver = ChapterStudyScopeResolver(
+                    bibleRepository = FakeBibleRepository(
+                        bibles = emptyList(),
+                        selectedVersionId = "ACF",
+                    ),
+                    getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
+                    languageCodeMapper = LanguageCodeMapper(),
                 ),
-                getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
-                languageCodeMapper = LanguageCodeMapper(),
+                observeAuthenticatedUserId = {
+                    flow {
+                        authenticationChecks++
+                        emit(userId)
+                    }
+                },
+                observeIsProUser = {
+                    flow {
+                        proChecks++
+                        emit(isPro)
+                    }
+                },
             ),
-            generationCoordinator = coordinator,
-            observeAuthenticatedUserId = {
-                flow {
-                    authenticationChecks++
-                    emit(userId)
-                }
-            },
-            observeIsProUser = {
-                flow {
-                    proChecks++
-                    emit(isPro)
-                }
-            },
+            quotaChecker = ChapterStudyQuotaChecker(
+                repository = repository,
+                generationCoordinator = coordinator,
+                statusPrefetchStore = prefetchStore,
+            ),
         )
     }
 }
