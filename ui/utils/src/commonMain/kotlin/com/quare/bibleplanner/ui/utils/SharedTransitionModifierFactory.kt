@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayout
 
 object SharedTransitionModifierFactory {
     @Composable
@@ -13,10 +14,21 @@ object SharedTransitionModifierFactory {
         bookName: String,
     ): Modifier = with(sharedTransitionScope) {
         Modifier.sharedElement(
-            rememberSharedContentState(key = "title-$bookName"),
+            rememberSharedContentState(key = buildBookNameKey(bookName)),
             animatedVisibilityScope = animatedVisibilityScope,
         )
     }
+
+    @Composable
+    fun getTopBarBookNameSharedTransitionModifier(
+        sharedTransitionScope: SharedTransitionScope,
+        animatedVisibilityScope: AnimatedVisibilityScope,
+        bookName: String,
+    ): Modifier = Modifier.sharedElementWithRelayout(
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+        key = buildBookNameKey(bookName),
+    )
 
     @Composable
     fun getReadTopBarSharedTransitionBookChapterModifier(
@@ -30,4 +42,6 @@ object SharedTransitionModifierFactory {
             animatedVisibilityScope = animatedVisibilityScope,
         )
     }
+
+    private fun buildBookNameKey(bookName: String): String = "title-$bookName"
 }

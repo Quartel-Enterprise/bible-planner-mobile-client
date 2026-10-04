@@ -1,7 +1,7 @@
 {
   "2.11.1": {
     "common": [
-      "Fixed the \"Become Pro\" title at the top of the Pro subscription screen, which could be missing the first time you opened it, or every time with animations turned off."
+      "Fixed the title at the top of the Pro subscription screen, the Release Notes screen and a book's details, which could be missing when you opened them, especially with animations turned off."
     ]
   },
   "2.11.0": {

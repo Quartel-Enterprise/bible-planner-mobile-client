@@ -1,7 +1,7 @@
 {
   "2.11.1": {
     "common": [
-      "Corrigimos o título \"Seja Pro\" no topo da tela de assinatura Pro, que podia não aparecer na primeira vez que você abria a tela, ou sempre que as animações estavam desativadas."
+      "Corrigimos o título no topo da tela de assinatura Pro, da tela de Notas de Atualização e dos detalhes de um livro, que podia não aparecer ao abrir essas telas, principalmente com as animações desativadas."
     ]
   },
   "2.11.0": {

@@ -41,7 +41,7 @@ fun BookDetailsTopBar(
                     Text(
                         text = bookName,
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = SharedTransitionModifierFactory.getBookNameSharedTransitionModifier(
+                        modifier = SharedTransitionModifierFactory.getTopBarBookNameSharedTransitionModifier(
                             animatedVisibilityScope = animatedVisibilityScope,
                             sharedTransitionScope = sharedTransitionScope,
                             bookName = bookName,
