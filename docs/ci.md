@@ -117,6 +117,20 @@ per token. When the token expires or is revoked, the run fails on authentication
 and update the secret. The action posts as the Claude GitHub App, which has to be installed on the
 repository.
 
+Both reviews also read the maintainer's agent memories. This repository is public, so they live in
+the private repository `PierreVieira/bible-planner-agent-memory`. The review step checks out only its
+`feedback_*` files, the conventions asked for in past sessions, into `.agent-memory` with the
+`AGENT_MEMORY_DEPLOY_KEY` secret, the private half of a read-only deploy key of that repository. The
+`project_*` memories and the index hold figures and ids, so they never reach the runner, and the
+review is told never to quote a convention in a comment. Without the secret, or when the checkout
+fails, the review runs without them and the run shows a warning. The official plugin's own agents
+judge findings against `CLAUDE.md`, so how much weight the memories get on GitHub is up to its
+orchestrator.
+
+Locally, the `review-conventions` skill reads every memory from Claude Code's memory folder
+(`scripts/agent-memory-dir.sh`), and `create-pr` and `finish-task` push them to the private repository
+with `scripts/sync-agent-memory.sh`.
+
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
 enabling it next to these workflows would review every pull request twice.
 

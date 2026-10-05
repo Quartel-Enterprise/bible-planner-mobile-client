@@ -9,9 +9,52 @@ inputs:
     description: 'Extra instructions appended to the /code-review command.'
     required: false
     default: ''
+  memory-ssh-key:
+    description: 'The AGENT_MEMORY_DEPLOY_KEY secret: a read-only deploy key of the private agent memory repository.'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
+    # The agent memories live in a private repository, since this one is public. Only the feedback_*
+    # ones, the conventions the maintainer asked for, reach the runner: the project_* ones and the
+    # index hold figures and ids a comment must never repeat. Without the key, or when the checkout
+    # fails, the review still runs, only without them.
+    - id: memory
+      if: inputs.memory-ssh-key != ''
+      continue-on-error: true
+      uses: actions/checkout@v6
+      with:
+        repository: PierreVieira/bible-planner-agent-memory
+        ssh-key: ${{ inputs.memory-ssh-key }}
+        path: .agent-memory
+        fetch-depth: 1
+        persist-credentials: false
+        sparse-checkout: |
+          feedback_*.md
+        sparse-checkout-cone-mode: false
+
+    # Excluded from the pull request's checkout, so the review's searches over the repository skip it.
+    - id: memory-instructions
+      shell: bash
+      env:
+        MEMORY_OUTCOME: ${{ steps.memory.outcome }}
+      run: |
+        if [ "$MEMORY_OUTCOME" != success ]; then
+          echo "::warning::The agent memories weren't checked out, so the review runs without them."
+          exit 0
+        fi
+        echo ".agent-memory/" >> .git/info/exclude
+        {
+          echo "text<<MEMORY_INSTRUCTIONS_END"
+          echo "The maintainer's conventions for this repository are in .agent-memory/feedback_*.md,"
+          echo "one per file: read them all and treat them with the same weight as CLAUDE.md."
+          echo "They are private and this repository is public: cite a convention in your own words,"
+          echo "never quote a file or name its path in a comment. .agent-memory is not part of the"
+          echo "pull request: never review it."
+          echo "MEMORY_INSTRUCTIONS_END"
+        } >> "$GITHUB_OUTPUT"
+
     # The same review as /code-review in the create-pr skill. The --allowedTools line has to stay:
     # the action only starts the server that posts inline comments when it names that tool. The gh
     # commands are the ones the plugin runs, allowed for its subagents too.
@@ -31,6 +74,7 @@ runs:
         prompt: >-
           /code-review:code-review --comment
           ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+          ${{ steps.memory-instructions.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model sonnet

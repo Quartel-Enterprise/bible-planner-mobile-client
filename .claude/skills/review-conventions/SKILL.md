@@ -60,6 +60,15 @@ full:
 | A user action, a `UiEvent`, `docs/analytics` | `docs/analytics/README.md` |
 | `.github/`, `fastlane/`, `scripts/` | `docs/ci.md`, `docs/code-quality.md` |
 
+Then read the agent memories. They live outside this repository, in Claude Code's memory folder of
+the main checkout (a worktree shares it), backed up to the private repository
+`PierreVieira/bible-planner-agent-memory`. `scripts/agent-memory-dir.sh` prints the folder.
+`MEMORY.md` there is the index, one line per memory file: it is usually in your context already, so
+read it only if it isn't. The `feedback_*` memories are conventions of this repository with the same
+weight as the docs, and the `project_*` ones give context on past decisions and incidents: open the
+ones that relate to the files in the diff. When the folder doesn't exist, say so in your report and
+go on without them.
+
 Leave out anything ktlint already enforces (formatting, and the custom `bible-planner-style` rules in
 `tools/ktlint-custom-rules`): the `static-analysis` workflow catches those. Your job is what a linter
 can't see.
@@ -118,7 +127,7 @@ For each finding, give:
 
 - `path/to/File.kt:<line>`, the line in the new version of the file
 - What is wrong, in one or two sentences
-- The rule it breaks: a link to the doc section, the invariant, or the part of the intent
+- The rule it breaks: a link to the doc section, the memory, the invariant, or the part of the intent
 - What to do instead
 
 Group the findings under **Must fix** (bugs, broken invariants, intent not met) and **Should fix**
