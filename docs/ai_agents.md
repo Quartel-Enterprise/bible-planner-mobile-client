@@ -26,3 +26,6 @@ This document describes the architecture conventions of this project. Follow the
 
 To check a ViewModel, use case or repository change in the running app without a simulator, drive it
 headlessly with `scripts/agent-cli.sh` (see [docs/agent-cli.md](agent-cli.md)).
+
+Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
+another language. User-facing strings are the exception: they are translated in each `strings.xml`.

@@ -39,6 +39,7 @@ prefs.preferences_pb.tmp
 
 # Claude Code
 .claude/worktrees/
+.claude/memory/
 .claude/settings.json
 .claude/settings.local.json
 
