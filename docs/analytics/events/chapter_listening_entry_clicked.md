@@ -6,7 +6,7 @@ The person tapped one of the listen entry points of the reader.
 
 ## When it fires
 
-Tap on the headphones button of the bottom bar (phone), of the header (tablet/desktop), or on the shortcut under the chapter number.
+Tap on the headphones button of the bottom bar (phone), of the header (tablet/desktop), or on the shortcut under the chapter number (phone in vertical reading only). The bottom bar and header buttons always act on the chapter on screen.
 
 ## Trigger source
 

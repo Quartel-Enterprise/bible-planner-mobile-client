@@ -171,6 +171,8 @@ internal fun ReadWideScreen(
                                         header = state.header,
                                         settings = state.settings,
                                         isChapterStudyBeside = state.isChapterStudyBeside,
+                                        // Why: the header's listen button is always there, in both reading modes.
+                                        isListenShortcutShown = false,
                                         focusedVerseNumber = null,
                                         verseFlash = verseFlash,
                                         listening = listening,
@@ -255,7 +257,11 @@ private fun ReadWideHeader(
                 Spacer(modifier = Modifier.weight(1f))
             }
             if (listening.isAvailable) {
-                val player = listening.player
+                val chapter = ChapterLocationModel(
+                    bookId = bookId,
+                    chapterNumber = chapterNumber,
+                )
+                val player = listening.player?.takeIf { it.chapter == chapter }
                 ListenToggleButton(
                     isActive = player != null,
                     isPlaying = player?.status == ListeningStatusModel.PLAYING,
@@ -263,10 +269,7 @@ private fun ReadWideHeader(
                     onClick = {
                         onListeningEvent(
                             ReadListeningUiEvent.OnListenClick(
-                                chapter = player?.chapter ?: ChapterLocationModel(
-                                    bookId = bookId,
-                                    chapterNumber = chapterNumber,
-                                ),
+                                chapter = chapter,
                                 source = ListeningEntrySource.HEADER,
                             ),
                         )
