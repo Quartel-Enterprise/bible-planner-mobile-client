@@ -69,10 +69,15 @@ picks up from the job that failed:
 | `ios-screenshots-upload`, or the upload job of `android-screenshots` | The screenshot upload | The render |
 | `ios-submit` | The listing update and the review submission | The IPA build, the binary upload, the screenshots |
 
-The jobs that depend on the retried one run again after it. Two of them are built for that:
+The jobs that depend on the retried one run again after it. Three of them are built for that:
 
 - `ios-upload` looks the build up on App Store Connect first and skips the upload when it is
   already there, since App Store Connect refuses a build number it has already taken.
+- `android-upload` does the same on Google Play, which refuses a versionCode it has already
+  taken. When a release on the track that isn't a draft already carries the versionCode, the job
+  only updates the listing copy. When the bundle is only in the Play library, it puts that bundle
+  on the track with the release notes, without uploading it again. A lookup that fails falls
+  back to the upload.
 - `finalize` does nothing once the GitHub release is published, so a retry that comes after the
   release was tagged — a screenshot upload that had left the build unsubmitted, say — does not
   try to tag it a second time.
@@ -255,6 +260,28 @@ it here: the next production release sends it, and editing the console instead g
 Not covered by any API, so still done by hand in the stores at release time: Play's **Ads**
 declaration ("Contains ads", under App content) and the App Store's **App Privacy** labels (the
 API key the pipeline uses cannot edit them).
+
+### Foreground service declarations
+
+Play's **Foreground service permissions** declaration (under App content) has no API either, and
+every foreground service type needs its own entry. A build whose manifest adds a type, like
+`mediaPlayback` in 2.12.0, fails `android-upload` with "You must let us know whether your app uses
+any Foreground Service permissions". Play drops the whole upload, so the new type never reaches the
+form, which only lists the types of bundles already on a release. To unlock it:
+
+1. Download the `android-aab` artifact of the failed run and upload it under **Test and release ›
+   Latest releases and bundles › Upload new version**. It goes into the library, not onto a track.
+2. Create a draft release on the run's track with that bundle (**Add from library**) and save it.
+   Its review step now reports the missing declaration; **Go to declaration** opens the form with
+   the new type in it.
+3. Pick the tasks and paste a link to a video of the feature using the service. A screen recording
+   of the emulator, shared on Drive with anyone who has the link, will do. Save it.
+4. **Re-run failed jobs** on the run. `android-upload` finds the bundle in the library and puts it
+   on the track with the release notes, replacing the draft. It rolls the release out, or leaves
+   it as a draft when the run had `complete_android_release` off. `finalize` tags the release after it.
+
+A release finished in the Console instead is fine too. The re-run then finds it released, updates
+only the listing copy, and lets `finalize` run.
 
 ## Approval gate
 
