@@ -2,7 +2,8 @@
   "2.12.0": {
     "common": [
       "Fixed the title at the top of the Pro subscription screen, the Release Notes screen and a book's details, which could be missing when you opened them, especially with animations turned off.",
-      "While reading, tapping \"Study\" or \"Study this chapter\" now opens the chapter study right away, without loading first."
+      "While reading, tapping \"Study\" or \"Study this chapter\" now opens the chapter study right away, without loading first.",
+      "With the app in Portuguese, the Bible version picked by default is now Almeida Século 21 (A21) instead of Almeida Corrigida Fiel (ACF). If you already chose a version, it stays the same."
     ],
     "android": [
       "You can now listen to the chapter: tap the headphones icon while reading and the Bible is read aloud with your phone's voice, highlighting each verse as the text follows along. You can change the speed and the voice, set a sleep timer, move on to the next chapter on its own, listen to today's reading of your plan in sequence and keep listening with the screen locked. On the free plan you unlock one chapter a day by watching a short video; with Pro you listen as much as you want."

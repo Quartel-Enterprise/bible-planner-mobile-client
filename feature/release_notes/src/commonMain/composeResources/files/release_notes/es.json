@@ -2,7 +2,8 @@
   "2.12.0": {
     "common": [
       "Corregimos el título en la parte superior de la pantalla de suscripción Pro, de la pantalla de Notas de la Versión y de los detalles de un libro, que podía no aparecer al abrir esas pantallas, sobre todo con las animaciones desactivadas.",
-      "Durante la lectura, tocar \"Estudio\" o \"Estudiar este capítulo\" ahora abre el estudio del capítulo al instante, sin quedarse cargando antes."
+      "Durante la lectura, tocar \"Estudio\" o \"Estudiar este capítulo\" ahora abre el estudio del capítulo al instante, sin quedarse cargando antes.",
+      "Con la app en portugués, la versión de la Biblia elegida por defecto ahora es la Almeida Século 21 (A21), en lugar de la Almeida Corrigida Fiel (ACF). Si ya elegiste una versión, se mantiene igual."
     ],
     "android": [
       "Ahora puedes escuchar el capítulo: toca el ícono de audífonos mientras lees y la Biblia se lee en voz alta con la voz de tu teléfono, resaltando cada versículo mientras el texto avanza. Puedes cambiar la velocidad y la voz, usar el temporizador para dormir, pasar solo al siguiente capítulo, escuchar en secuencia la lectura de hoy de tu plan y seguir escuchando con la pantalla bloqueada. En el plan gratis desbloqueas un capítulo al día viendo un video corto; con Pro escuchas todo lo que quieras."

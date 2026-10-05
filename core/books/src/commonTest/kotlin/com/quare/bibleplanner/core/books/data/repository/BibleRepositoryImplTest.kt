@@ -59,7 +59,7 @@ internal class BibleRepositoryImplTest {
             val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
             // Then
-            assertEquals(expected = "ACF", actual = selectedVersionId)
+            assertEquals(expected = "A21", actual = selectedVersionId)
         }
 
     @Test
