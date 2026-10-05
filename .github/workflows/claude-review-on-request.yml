@@ -82,6 +82,7 @@ jobs:
         if: steps.in-progress.outputs.found == 'false'
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
           instructions: |
             The ai-review label asked for another review of this pull request. Leave the condition
             about Claude having already commented out of step 1, including from what the step 1

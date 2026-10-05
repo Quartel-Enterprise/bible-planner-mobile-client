@@ -105,6 +105,16 @@ the PR merged.
 longer exists: this task's, now that its branch is gone, and any left behind by a dropped task. It
 never touches an AVD whose task still has a branch, nor one that isn't a `BiblePlanner_*`.
 
+**The agent memories, in both modes:** push the ones written since the pull request opened to the
+private repository the code review on GitHub reads:
+
+```bash
+./scripts/sync-agent-memory.sh "Update memories after <branch>"
+```
+
+A sync that fails (offline, no access, a rebase conflict) doesn't block the cleanup: report it and
+go on.
+
 ### 5. Verify cleanup
 
 ```bash

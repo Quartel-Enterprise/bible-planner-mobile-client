@@ -235,6 +235,16 @@ If there are no uncommitted changes (the user already committed everything), ski
 git push -u origin HEAD
 ```
 
+Then push the agent memories, so the code review on GitHub, which runs when the pull request opens,
+already sees the ones written during this task:
+
+```bash
+./scripts/sync-agent-memory.sh "Update memories for <branch>"
+```
+
+A sync that fails (offline, no access, a rebase conflict) doesn't block the pull request: tell the
+user and go on.
+
 ### 13. Create the pull request
 
 ```bash

@@ -40,3 +40,4 @@ jobs:
       - uses: ./.github/actions/claude-review
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
