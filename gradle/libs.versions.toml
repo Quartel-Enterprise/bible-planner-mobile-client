@@ -67,6 +67,9 @@ koin = "4.2.2"
 ktor = "3.6.0"
 install-referrer = "2.2"
 play-app-update = "2.1.0"
+# AdMob 25.5.0 brings hsdp 2.0.1, whose HsdpShimActivity crashes when launched without its extras (Crashlytics 80e49a5e);
+# drop once play-services-ads depends on hsdp >= 2.2.0
+play-hsdp = "2.2.0"
 play-review = "2.0.2"
 play-services-ads = "25.5.0"
 play-services-ads-identifier = "18.3.0"
@@ -198,6 +201,7 @@ play-services-ads-identifier = { module = "com.google.android.gms:play-services-
 
 # Google Mobile Ads (AdMob) and its consent SDK
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
+play-hsdp = { module = "com.google.android.play:hsdp", version.ref = "play-hsdp" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "user-messaging-platform" }
 
 # Calf

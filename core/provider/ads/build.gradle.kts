@@ -60,3 +60,9 @@ kotlin {
         }
     }
 }
+
+dependencies {
+    constraints {
+        "androidMainImplementation"(libs.play.hsdp)
+    }
+}
