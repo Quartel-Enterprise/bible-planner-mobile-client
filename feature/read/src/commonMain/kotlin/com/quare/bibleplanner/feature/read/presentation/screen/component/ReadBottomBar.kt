@@ -48,17 +48,18 @@ internal fun ReadBottomBar(
                 onClick = onEvent,
             )
             if (listening.isAvailable) {
-                val player = listening.player
+                val chapter = ChapterLocationModel(
+                    bookId = header.bookId,
+                    chapterNumber = header.chapterNumber,
+                )
+                val player = listening.player?.takeIf { it.chapter == chapter }
                 ListenToggleButton(
                     isActive = player != null,
                     isPlaying = player?.status == ListeningStatusModel.PLAYING,
                     onClick = {
                         onListeningEvent(
                             ReadListeningUiEvent.OnListenClick(
-                                chapter = player?.chapter ?: ChapterLocationModel(
-                                    bookId = header.bookId,
-                                    chapterNumber = header.chapterNumber,
-                                ),
+                                chapter = chapter,
                                 source = ListeningEntrySource.BOTTOM_BAR,
                             ),
                         )

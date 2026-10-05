@@ -100,6 +100,7 @@ internal class RememberVisibleChapterUiTest {
                         header = uiState.header,
                         settings = uiState.settings,
                         isChapterStudyBeside = isChapterStudyBeside,
+                        isListenShortcutShown = false,
                         focusedVerseNumber = null,
                         verseFlash = VerseFlash(
                             focus = null,

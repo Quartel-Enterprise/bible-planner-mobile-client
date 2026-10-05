@@ -229,6 +229,8 @@ internal fun ReadNarrowScreen(
                                     header = state.header,
                                     settings = state.settings,
                                     isChapterStudyBeside = state.isChapterStudyBeside,
+                                    // Why: paged reading already has the bottom bar's listen button.
+                                    isListenShortcutShown = state.settings.isVerticalReadingEnabled,
                                     focusedVerseNumber = null,
                                     verseFlash = verseFlash,
                                     listening = listening,

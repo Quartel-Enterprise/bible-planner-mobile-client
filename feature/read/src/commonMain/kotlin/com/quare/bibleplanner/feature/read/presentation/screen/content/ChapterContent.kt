@@ -32,6 +32,7 @@ internal fun LazyListScope.chapterContent(
     header: ReadHeaderUiModel,
     settings: ReaderSettingsModel,
     isChapterStudyBeside: Boolean,
+    isListenShortcutShown: Boolean,
     focusedVerseNumber: Int?,
     verseFlash: VerseFlash,
     listening: ReadListeningUiState,
@@ -50,7 +51,7 @@ internal fun LazyListScope.chapterContent(
                 bookName = stringResource(chapter.bookStringResource),
                 chapterNumber = chapter.chapter.chapterNumber,
             )
-            if (listening.isAvailable) {
+            if (listening.isAvailable && isListenShortcutShown) {
                 ChapterListenShortcutPill(
                     chapter = chapter,
                     listening = listening,

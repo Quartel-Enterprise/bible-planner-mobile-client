@@ -77,6 +77,9 @@ internal class ReadUiTest {
 
     private val genesisName = BookId.GEN.toBookNameResource()
     private val loadedUiState = readUiState(LOCALE)
+    private val verticalReadingUiState = loadedUiState.copy(
+        settings = loadedUiState.settings.copy(isVerticalReadingEnabled = true),
+    )
     private val loadedChapter = (loadedUiState.content as ReadContentUiState.Success).chapters.first()
     private val firstVerse = loadedChapter.verses.first()
     private val nextSuggestion = ReadNavigationSuggestionModel(
@@ -489,9 +492,7 @@ internal class ReadUiTest {
         runComposeUiTest {
             // Given
             prepareScenario(
-                uiState = loadedUiState.copy(
-                    settings = loadedUiState.settings.copy(isVerticalReadingEnabled = true),
-                ),
+                uiState = verticalReadingUiState,
             )
             val subtitle = getString(
                 Res.string.chapter_study_card_subtitle_with_chapter,
@@ -508,7 +509,7 @@ internal class ReadUiTest {
     @Test
     fun `GIVEN listening is hidden WHEN rendered THEN shows no listening entry`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = loadedUiState)
+        prepareScenario(uiState = verticalReadingUiState)
 
         // When
         val shortcuts = onAllNodesWithTag(LISTEN_SHORTCUT_TAG)
@@ -518,11 +519,27 @@ internal class ReadUiTest {
     }
 
     @Test
-    fun `GIVEN listening is available WHEN clicking the chapter shortcut THEN asks to listen from the shortcut`() =
+    fun `GIVEN listening is available without vertical reading WHEN rendered THEN shows no chapter shortcut`() =
         runComposeUiTest {
             // Given
             prepareScenario(
                 uiState = loadedUiState,
+                listening = availableListeningUiState(),
+            )
+
+            // When
+            val shortcuts = onAllNodesWithTag(LISTEN_SHORTCUT_TAG)
+
+            // Then
+            shortcuts.assertCountEquals(0)
+        }
+
+    @Test
+    fun `GIVEN vertical reading WHEN clicking the chapter listen shortcut THEN asks to listen from the shortcut`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = verticalReadingUiState,
                 listening = availableListeningUiState(),
             )
 
@@ -565,6 +582,89 @@ internal class ReadUiTest {
                 actual = listeningEvents,
             )
         }
+
+    @Test
+    fun `GIVEN another chapter playing WHEN clicking the bottom bar button THEN listens to the chapter on screen`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(
+                    player = listeningPlayer(
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber =
+                                CHAPTER + 1,
+                        ),
+                    ),
+                ),
+            )
+            val listen = getString(Res.string.listening_listen)
+
+            // When
+            onNodeWithContentDescription(listen).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadListeningUiEvent>(
+                    ReadListeningUiEvent.OnListenClick(
+                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        source = ListeningEntrySource.BOTTOM_BAR,
+                    ),
+                ),
+                actual = listeningEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a wide layout and another chapter playing WHEN clicking the header button THEN listens to it`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                isWideLayout = true,
+                listening = availableListeningUiState(
+                    player = listeningPlayer(
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber =
+                                CHAPTER + 1,
+                        ),
+                    ),
+                ),
+            )
+            val listen = getString(Res.string.listening_listen)
+
+            // When
+            onNodeWithContentDescription(listen).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadListeningUiEvent>(
+                    ReadListeningUiEvent.OnListenClick(
+                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        source = ListeningEntrySource.HEADER,
+                    ),
+                ),
+                actual = listeningEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a wide layout in vertical reading WHEN rendered THEN shows no chapter shortcut`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = verticalReadingUiState,
+            isWideLayout = true,
+            listening = availableListeningUiState(),
+        )
+
+        // When
+        val shortcuts = onAllNodesWithTag(LISTEN_SHORTCUT_TAG)
+
+        // Then
+        shortcuts.assertCountEquals(0)
+    }
 
     @Test
     fun `GIVEN a chapter being read aloud WHEN clicking pause in the mini player THEN toggles the playback`() =
