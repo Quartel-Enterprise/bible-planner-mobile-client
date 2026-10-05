@@ -20,6 +20,7 @@ XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
 VERSION_XCCONFIG = "version.xcconfig".freeze
 RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files/release_notes".freeze
 PLAY_DATA_SAFETY_CSV = "fastlane/metadata/android/data_safety.csv".freeze
+PLAY_API_APP_URL = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/#{ANDROID_PACKAGE}".freeze
 
 # Per-store character limits for release notes. Google Play hard-fails the
 # upload when exceeded; App Store rejects the metadata at submit time.
@@ -196,10 +197,37 @@ platform :android do
     # fastlane runs the lane from fastlane/; the repo root is its parent.
     repo_root = File.expand_path("..")
     track = options[:track] || "production"
+    json_key = ENV.fetch("PLAY_STORE_JSON_KEY_PATH")
+    play = {
+      package_name: ANDROID_PACKAGE,
+      track: track,
+      metadata_path: File.join(repo_root, "fastlane/metadata/android"),
+      json_key: json_key,
+      # The listing copy — title, short and full description — is versioned under
+      # fastlane/metadata/android/, so the repo is what the Play listing says. Edit it
+      # there in a PR, never in the Play Console: the next release overwrites the console.
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    }
+
+    version, version_code = app_version(repo_root)
+    bundle_state = play_bundle_state(version_code, track, json_key)
+    if bundle_state == :released
+      # The release went out some other way (finished in the Console, or an earlier attempt of
+      # this job), so only the listing copy it ships with is left to send.
+      UI.important("#{version} (#{version_code}) is already released on the #{track} track — updating only the listing.")
+      upload_to_play_store(
+        **play,
+        version_code: version_code.to_i,
+        skip_upload_aab: true,
+        skip_upload_changelogs: true,
+      )
+      next
+    end
 
     # Build the Play "What's new" from the in-app release notes JSON, keyed by
     # the version currently set in version.xcconfig. Non-fatal on failure.
-    version, version_code = app_version(repo_root)
     has_changelogs = false
     begin
       has_changelogs = stage_play_changelogs(version, version_code, repo_root)
@@ -211,20 +239,22 @@ platform :android do
     # build without releasing it, to be released manually from the Play Console.
     release_status = ENV.fetch("COMPLETE_RELEASE", "true").strip.downcase == "true" ? "completed" : "draft"
 
+    # A bundle already in the Play library can't be uploaded again ("version code already used"),
+    # but it can still be put on the track. That is the state a release is left in when Play
+    # refused the first attempt over a declaration only the Console can make, and the AAB went in
+    # by hand to unlock it: re-running this job then finishes the release with the bundle Play has.
+    bundle = if bundle_state == :uploaded
+      UI.important("#{version} (#{version_code}) is already in the Play library — releasing it without uploading it again.")
+      { skip_upload_aab: true, version_codes_to_retain: [version_code.to_i] }
+    else
+      { aab: File.join(repo_root, "androidApp/build/outputs/bundle/release/androidApp-release.aab") }
+    end
+
     upload_to_play_store(
-      package_name: ANDROID_PACKAGE,
-      track: track,
+      **play,
+      **bundle,
       release_status: release_status,
-      aab: File.join(repo_root, "androidApp/build/outputs/bundle/release/androidApp-release.aab"),
-      metadata_path: File.join(repo_root, "fastlane/metadata/android"),
-      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
-      # The listing copy — title, short and full description — is versioned under
-      # fastlane/metadata/android/, so the repo is what the Play listing says. Edit it
-      # there in a PR, never in the Play Console: the next release overwrites the console.
-      skip_upload_metadata: false,
       skip_upload_changelogs: !has_changelogs,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
     )
   end
 
@@ -259,20 +289,15 @@ platform :android do
   desc "The CSV is the Play Console's own export format (Data safety > Export to CSV): edit it in a PR,"
   desc "never in the console, the same way as the listing copy. Runs with production releases."
   lane :upload_data_safety do
-    require "googleauth"
     require "net/http"
 
     repo_root = File.expand_path("..")
     csv_path = File.join(repo_root, PLAY_DATA_SAFETY_CSV)
     UI.user_error!("#{PLAY_DATA_SAFETY_CSV} is missing") unless File.exist?(csv_path)
 
-    credentials = Google::Auth::ServiceAccountCredentials.make_creds(
-      json_key_io: File.open(ENV.fetch("PLAY_STORE_JSON_KEY_PATH")),
-      scope: "https://www.googleapis.com/auth/androidpublisher",
-    )
-    access_token = credentials.fetch_access_token!.fetch("access_token")
+    access_token = play_access_token(ENV.fetch("PLAY_STORE_JSON_KEY_PATH"))
 
-    uri = URI("https://androidpublisher.googleapis.com/androidpublisher/v3/applications/#{ANDROID_PACKAGE}/dataSafety")
+    uri = URI("#{PLAY_API_APP_URL}/dataSafety")
     request = Net::HTTP::Post.new(uri)
     request["Authorization"] = "Bearer #{access_token}"
     request["Content-Type"] = "application/json"
@@ -577,6 +602,66 @@ def app_store_build_uploaded?(version, version_code)
 rescue => e
   UI.error("Could not look build #{version} (#{version_code}) up on App Store Connect, uploading: #{e.message}")
   false
+end
+
+# An OAuth access token for the Google Play Developer API, from the service account key at
+# json_key_path, for the calls fastlane's own actions don't make.
+def play_access_token(json_key_path)
+  require "googleauth"
+
+  credentials = Google::Auth::ServiceAccountCredentials.make_creds(
+    json_key_io: File.open(json_key_path),
+    scope: "https://www.googleapis.com/auth/androidpublisher",
+  )
+  credentials.fetch_access_token!.fetch("access_token")
+end
+
+# Where Google Play already holds this Android versionCode: :released when a release on the track
+# that is not a draft carries it, :uploaded when the bundle is in the Play library but no such
+# release does, nil otherwise. Play refuses a second upload of a versionCode, so re-running the
+# `upload` lane after the bundle got there — 2.12.0's AAB went in through the Console to unlock
+# the foreground service declaration — has to put that bundle on the track instead of dying on it.
+# Looks through a throwaway edit, deleted at the end. Never raises: when the lookup itself fails,
+# the upload goes ahead as it always did.
+def play_bundle_state(version_code, track, json_key_path)
+  require "net/http"
+
+  access_token = play_access_token(json_key_path)
+  call = lambda do |request_class, url|
+    request = request_class.new(URI(url))
+    request["Authorization"] = "Bearer #{access_token}"
+    Net::HTTP.start(request.uri.host, request.uri.port, use_ssl: true) { |http| http.request(request) }
+  end
+  read = lambda do |response, what|
+    UI.user_error!("Play refused to #{what} (#{response.code}): #{response.body}") unless response.is_a?(Net::HTTPSuccess)
+    JSON.parse(response.body)
+  end
+
+  edit = read.(call.(Net::HTTP::Post, "#{PLAY_API_APP_URL}/edits"), "open an edit")
+  edit_url = "#{PLAY_API_APP_URL}/edits/#{edit.fetch('id')}"
+  begin
+    response = call.(Net::HTTP::Get, "#{edit_url}/tracks/#{track}")
+    # An empty track answers 404, which holds no release either. Any other failure has to stop the
+    # lookup: reading it as an empty track could put a halted rollout back out at 100%.
+    releases = response.is_a?(Net::HTTPNotFound) ? [] : Array(read.(response, "read the #{track} track")["releases"])
+    released = releases.any? do |release|
+      release["status"] != "draft" && Array(release["versionCodes"]).map(&:to_s).include?(version_code.to_s)
+    end
+    return :released if released
+
+    bundles = read.(call.(Net::HTTP::Get, "#{edit_url}/bundles"), "list the bundles")
+    :uploaded if Array(bundles["bundles"]).any? { |bundle| bundle["versionCode"].to_s == version_code.to_s }
+  ensure
+    # A leftover edit expires on its own, so failing to delete it must not throw the answer away.
+    begin
+      call.(Net::HTTP::Delete, edit_url)
+    rescue => e
+      UI.error("Could not delete the Play edit used for the lookup: #{e.message}")
+    end
+  end
+rescue => e
+  UI.error("Could not look #{version_code} up on Google Play, uploading: #{e.message}")
+  nil
 end
 
 # deliver deletes the version's screenshots and then recreates each locale's screenshot sets, but
