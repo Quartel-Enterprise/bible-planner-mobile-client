@@ -4,6 +4,11 @@
 
 DAOs expose `Flow<T>` for reactive queries. Repositories map with `.map(mapper::map)`.
 
+Never store serialized JSON in a column. Model a parent entity plus one child entity per list, each child with a
+`ForeignKey(onDelete = CASCADE)`, an `Index` on the parent key and a `position` column for ordering. Read them back
+with `@Relation` POJOs from a `@Transaction` query, and replace them in a `@Transaction` DAO method that upserts the
+parent and deletes and reinserts the children.
+
 ### Bundled JSON (ComposeResources)
 
 Place files in `src/commonMain/composeResources/files/`. Read asynchronously on `Dispatchers.IO` using `async`/`awaitAll`, deserialize with `kotlinx.serialization`. See `PlanLocalDataSource` for reference.

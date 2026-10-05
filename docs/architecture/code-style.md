@@ -532,6 +532,41 @@ Enforced by the custom ktlint rule `bible-planner-style:unused-function-paramete
 dictated from outside are skipped — `override`, `open`, `abstract`, `operator`, `expect`/`actual`, `external` and
 interface members — as is anything annotated with `@Suppress("UNUSED_PARAMETER")`.
 
+## Parameters Every Caller Fills the Same
+
+A parameter that every caller passes the same literal to is not configurable, it only pretends to be. Drop it and
+use a constant inside the function. String and number constants go in a `companion object` at the end of the class,
+named `UPPER_SNAKE_CASE`; `Duration` constants follow [Durations](#durations) instead. Tests follow the same rule: a
+`prepareScenario(status = "DONE")` that every test calls with `"DONE"` loses the parameter.
+
+```kotlin
+// Wrong — every test passes "DONE"
+private fun prepareScenario(versionStatus: String) { ... }
+
+// Correct
+private fun prepareScenario() { insertVersion(status = DONE_STATUS) }
+
+companion object {
+    private const val DONE_STATUS = "DONE"
+}
+```
+
+## Named Arguments, One per Line
+
+A call that passes more than one argument names each of them and puts each on its own line. A call with a single
+argument stays inline (`list.map(::toModel)`, `?.let(::handle)`).
+
+```kotlin
+// Correct
+val callback = ConnectivityCallback(
+    onAvailable = ::markOnline,
+    onLost = ::markOffline,
+)
+
+// Wrong
+val callback = ConnectivityCallback(::markOnline, ::markOffline)
+```
+
 ## DTOs
 
 A `@Serializable` `*Dto` mirrors the wire format and nothing else:
