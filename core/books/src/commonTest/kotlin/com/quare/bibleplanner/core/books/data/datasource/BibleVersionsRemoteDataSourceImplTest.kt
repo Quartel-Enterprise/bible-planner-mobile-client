@@ -10,13 +10,68 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
+
+private const val MANIFEST_PATH = "versions.json"
 
 internal class BibleVersionsRemoteDataSourceImplTest {
     private lateinit var dataSource: BibleVersionsRemoteDataSourceImpl
     private lateinit var bucketApi: FakeBucketApi
 
     @Test
-    fun `GIVEN version folders WHEN fetching the versions THEN decodes each folder metadata`() = runTest {
+    fun `GIVEN the versions manifest WHEN fetching the versions THEN reads it alone without listing`() = runTest {
+        // Given
+        prepareScenario(
+            folders = listOf("WEB", "ACF"),
+            metadataByFolder = emptyMap(),
+            manifest = """{"versions":[${metadata(id = "WEB")},${metadata(id = "ACF")}]}""",
+        )
+
+        // When
+        val result = dataSource.getVersions()
+
+        // Then
+        assertEquals(listOf("WEB", "ACF"), result.getOrThrow().map(VersionDto::id))
+        assertEquals(listOf(MANIFEST_PATH), bucketApi.downloadedPaths)
+        assertTrue(bucketApi.listedPrefixes.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an invalid versions manifest WHEN fetching the versions THEN lists the version folders`() = runTest {
+        // Given
+        prepareScenario(
+            folders = listOf("WEB"),
+            metadataByFolder = mapOf("WEB" to metadata(id = "WEB")),
+            manifest = "{ not json",
+        )
+
+        // When
+        val result = dataSource.getVersions()
+
+        // Then
+        assertEquals(listOf("WEB"), result.getOrThrow().map(VersionDto::id))
+        assertEquals(listOf("bible"), bucketApi.listedPrefixes)
+    }
+
+    @Test
+    fun `GIVEN an empty versions manifest WHEN fetching the versions THEN lists the version folders`() = runTest {
+        // Given
+        prepareScenario(
+            folders = listOf("WEB"),
+            metadataByFolder = mapOf("WEB" to metadata(id = "WEB")),
+            manifest = """{"versions":[]}""",
+        )
+
+        // When
+        val result = dataSource.getVersions()
+
+        // Then
+        assertEquals(listOf("WEB"), result.getOrThrow().map(VersionDto::id))
+        assertEquals(listOf("bible"), bucketApi.listedPrefixes)
+    }
+
+    @Test
+    fun `GIVEN no versions manifest WHEN fetching the versions THEN decodes each folder metadata`() = runTest {
         // Given
         prepareScenario(
             folders = listOf("WEB", "ACF"),
@@ -33,7 +88,7 @@ internal class BibleVersionsRemoteDataSourceImplTest {
         assertEquals(listOf("WEB", "ACF"), result.getOrThrow().map(VersionDto::id))
         assertEquals(listOf("bible"), bucketApi.listedPrefixes)
         assertEquals(
-            setOf("bible/WEB/metadata.json", "bible/ACF/metadata.json"),
+            setOf(MANIFEST_PATH, "bible/WEB/metadata.json", "bible/ACF/metadata.json"),
             bucketApi.downloadedPaths.toSet(),
         )
     }
@@ -79,10 +134,12 @@ internal class BibleVersionsRemoteDataSourceImplTest {
     private fun prepareScenario(
         folders: List<String>?,
         metadataByFolder: Map<String, String>,
+        manifest: String? = null,
     ) {
         bucketApi = FakeBucketApi(
             folders = folders,
             metadataByFolder = metadataByFolder,
+            manifest = manifest,
         )
         dataSource = BibleVersionsRemoteDataSourceImpl(
             bucketApi = bucketApi,
@@ -94,6 +151,7 @@ internal class BibleVersionsRemoteDataSourceImplTest {
 private class FakeBucketApi(
     private val folders: List<String>?,
     private val metadataByFolder: Map<String, String>,
+    private val manifest: String?,
 ) : ThrowingBucketApi() {
     val listedPrefixes = mutableListOf<String>()
     val downloadedPaths = mutableListOf<String>()
@@ -120,6 +178,7 @@ private class FakeBucketApi(
         options: DownloadOptionBuilder.() -> Unit,
     ): ByteArray {
         downloadedPaths += path
+        if (path == MANIFEST_PATH) return checkNotNull(manifest) { "no manifest" }.encodeToByteArray()
         val folder = path.removePrefix("bible/").substringBefore("/")
         return metadataByFolder.getValue(folder).encodeToByteArray()
     }
