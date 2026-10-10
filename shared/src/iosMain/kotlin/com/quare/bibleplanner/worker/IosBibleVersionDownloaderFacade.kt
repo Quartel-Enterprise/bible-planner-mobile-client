@@ -3,6 +3,7 @@ package com.quare.bibleplanner.worker
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
@@ -21,6 +22,7 @@ internal class IosBibleVersionDownloaderFacade(
     private val bibleRepository: BibleRepository,
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
+    private val initializeBooksIfNeeded: InitializeBooksIfNeededUseCase,
 ) : BibleVersionDownloaderFacade {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -36,11 +38,12 @@ internal class IosBibleVersionDownloaderFacade(
             bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
             val versionName = resolveVersionName(versionId)
             notifier.showProgress(versionId, versionName, 0f)
+            // Why: the pending chapters come from the book rows, which a first launch may still be inserting.
+            initializeBooksIfNeeded()
             val tasks = bridge.getPendingDownloads(versionId)
             if (tasks.isEmpty()) {
-                bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.DONE)
-                notifier.showComplete(versionId = versionId, versionName = versionName)
-                downloadSession.endLiveActivity(versionId)
+                // Why: no pending chapter does not prove the version is complete; let the chapter count decide.
+                bridge.finalizeVersionIfComplete(versionId) { downloadSession.endLiveActivity(versionId) }
                 return@launch
             }
             if (previousStatus == DownloadStatus.PAUSED) {

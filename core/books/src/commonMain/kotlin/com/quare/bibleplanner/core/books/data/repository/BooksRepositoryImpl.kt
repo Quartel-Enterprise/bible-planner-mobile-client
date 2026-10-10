@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
+import com.quare.bibleplanner.core.provider.room.transaction.DatabaseTransactionRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -31,6 +32,7 @@ class BooksRepositoryImpl(
     private val booksWithChapterMapper: BooksWithChapterMapper,
     private val dataStore: DataStore<Preferences>,
     private val currentTimestampProvider: CurrentTimestampProvider,
+    private val runInTransaction: DatabaseTransactionRunner,
 ) : BooksRepository {
     private val initMutex = Mutex()
 
@@ -48,49 +50,57 @@ class BooksRepositoryImpl(
     override suspend fun getBooks(): List<BookDataModel> = booksWithChapterMapper
         .mapList(bookDao.getAllBooksWithChapters())
 
+    override suspend fun isDatabaseInitialized(): Boolean = bookDao.hasBooks()
+
     override suspend fun initializeDatabase() {
         initMutex.withLock {
-            if (bookDao.getAllBooksWithChapters().isNotEmpty()) return
+            if (isDatabaseInitialized()) return
 
             val books = booksLocalDataSource.getBooks()
 
-            val bookEntities = books.map { book ->
-                BookEntity(
-                    id = book.id.name,
-                    isRead = book.isRead,
-                    isFavorite = book.isFavorite,
-                    favoriteUpdatedAt = null,
-                    isFavoritePendingSync = false,
-                )
-            }
-            bookDao.insertBooks(bookEntities)
-
-            books.forEach { book ->
-                val chapterEntities = book.chapters.map { chapter ->
-                    ChapterEntity(
-                        number = chapter.number,
-                        bookId = book.id.name,
-                        isRead = chapter.isRead,
-                        id = 0,
-                        readUpdatedAt = null,
-                        isReadPendingSync = false,
+            /*
+             * Why: seeding takes seconds on a slow device, and a Bible download started meanwhile found
+             * no chapters for the books not yet inserted, skipped them and was marked done.
+             */
+            runInTransaction {
+                val bookEntities = books.map { book ->
+                    BookEntity(
+                        id = book.id.name,
+                        isRead = book.isRead,
+                        isFavorite = book.isFavorite,
+                        favoriteUpdatedAt = null,
+                        isFavoritePendingSync = false,
                     )
                 }
-                val chapterIds = chapterDao.insertChapters(chapterEntities)
+                bookDao.insertBooks(bookEntities)
 
-                book.chapters.forEachIndexed { chapterIndex, chapter ->
-                    val chapterId = chapterIds[chapterIndex]
-                    val verseEntities = chapter.verses.map { verse ->
-                        VerseEntity(
+                books.forEach { book ->
+                    val chapterEntities = book.chapters.map { chapter ->
+                        ChapterEntity(
+                            number = chapter.number,
+                            bookId = book.id.name,
+                            isRead = chapter.isRead,
                             id = 0,
-                            number = verse.number,
-                            chapterId = chapterId,
-                            isRead = verse.isRead,
                             readUpdatedAt = null,
                             isReadPendingSync = false,
                         )
                     }
-                    verseDao.upsertVerses(verseEntities)
+                    val chapterIds = chapterDao.insertChapters(chapterEntities)
+
+                    book.chapters.forEachIndexed { chapterIndex, chapter ->
+                        val chapterId = chapterIds[chapterIndex]
+                        val verseEntities = chapter.verses.map { verse ->
+                            VerseEntity(
+                                id = 0,
+                                number = verse.number,
+                                chapterId = chapterId,
+                                isRead = verse.isRead,
+                                readUpdatedAt = null,
+                                isReadPendingSync = false,
+                            )
+                        }
+                        verseDao.upsertVerses(verseEntities)
+                    }
                 }
             }
         }

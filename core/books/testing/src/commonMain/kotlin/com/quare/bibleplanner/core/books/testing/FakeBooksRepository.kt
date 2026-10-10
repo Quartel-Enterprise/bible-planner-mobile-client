@@ -29,6 +29,8 @@ class FakeBooksRepository(
 
     override suspend fun getBooks(): List<BookDataModel> = books.value
 
+    override suspend fun isDatabaseInitialized(): Boolean = books.value.isNotEmpty()
+
     override suspend fun initializeDatabase() {
         initializationCount += 1
     }

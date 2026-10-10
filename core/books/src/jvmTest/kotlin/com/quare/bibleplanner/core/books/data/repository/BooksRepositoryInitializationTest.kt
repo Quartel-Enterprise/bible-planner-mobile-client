@@ -29,6 +29,7 @@ internal class BooksRepositoryInitializationTest {
             booksWithChapterMapper = BooksWithChapterMapper(),
             dataStore = InMemoryPreferencesDataStore(),
             currentTimestampProvider = CurrentTimestampProvider { 0L },
+            runInTransaction = database.transactionRunner,
         )
     }
 
@@ -56,6 +57,18 @@ internal class BooksRepositoryInitializationTest {
         val versesOfChapter = database.verses.filter { it.chapterId == genesisFirstChapter.id }
         assertEquals(1189, database.chapters.size)
         assertEquals((1..31).toList(), versesOfChapter.map { it.number })
+    }
+
+    @Test
+    fun `GIVEN an empty database WHEN initializing THEN writes every row inside one transaction`() = runTest {
+        // When
+        repository.initializeDatabase()
+
+        // Then
+        assertEquals(
+            expected = 0,
+            actual = database.writesOutsideTransaction,
+        )
     }
 
     @Test

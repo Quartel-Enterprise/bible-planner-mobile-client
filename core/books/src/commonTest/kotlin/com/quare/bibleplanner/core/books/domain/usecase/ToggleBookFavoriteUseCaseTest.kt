@@ -40,6 +40,8 @@ internal class ToggleBookFavoriteUseCaseTest {
 
         override suspend fun getBooks(): List<BookDataModel> = emptyList()
 
+        override suspend fun isDatabaseInitialized(): Boolean = true
+
         override suspend fun initializeDatabase() {}
 
         override fun getBookLayoutFormatFlow(): Flow<String?> = emptyFlow()

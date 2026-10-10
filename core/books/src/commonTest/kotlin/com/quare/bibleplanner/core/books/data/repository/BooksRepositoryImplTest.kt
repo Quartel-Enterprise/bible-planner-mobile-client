@@ -41,6 +41,7 @@ internal class BooksRepositoryImplTest {
             booksWithChapterMapper = BooksWithChapterMapper(),
             dataStore = InMemoryPreferencesDataStore(),
             currentTimestampProvider = CurrentTimestampProvider { now },
+            runInTransaction = database.transactionRunner,
         )
     }
 

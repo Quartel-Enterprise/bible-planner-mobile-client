@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.room.relation.BookWithChapters
 import com.quare.bibleplanner.core.provider.room.relation.ChapterWithVerses
 import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
+import com.quare.bibleplanner.core.provider.room.transaction.DatabaseTransactionRunner
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -24,6 +25,9 @@ internal class FakeReadingDatabase {
     val chapterReadUpdates = mutableListOf<Triple<Long, Boolean, Long>>()
     val verseRangeUpdates = mutableListOf<VerseRangeUpdate>()
     val syncResets = mutableListOf<Pair<String, Long>>()
+    var writesOutsideTransaction = 0
+        private set
+    private var isInTransaction = false
 
     private val version = MutableStateFlow(0)
     private var lastChapterId = 0L
@@ -32,6 +36,14 @@ internal class FakeReadingDatabase {
     val bookDao: BookDao = FakeBookDao()
     val chapterDao: ChapterDao = FakeChapterDao()
     val verseDao: VerseDao = FakeVerseDao()
+    val transactionRunner = DatabaseTransactionRunner { block ->
+        isInTransaction = true
+        try {
+            block()
+        } finally {
+            isInTransaction = false
+        }
+    }
 
     fun seedBook(
         bookId: BookId,
@@ -98,6 +110,10 @@ internal class FakeReadingDatabase {
         version.value += 1
     }
 
+    private fun recordWrite() {
+        if (!isInTransaction) writesOutsideTransaction += 1
+    }
+
     private fun booksWithChapters(): List<BookWithChapters> = books.map(::bookWithChapters)
 
     private fun bookWithChapters(book: BookEntity): BookWithChapters = BookWithChapters(
@@ -142,6 +158,8 @@ internal class FakeReadingDatabase {
     private inner class FakeBookDao : ThrowingBookDao() {
         override suspend fun getBookById(bookId: String): BookEntity? = books.find { it.id == bookId }
 
+        override suspend fun hasBooks(): Boolean = books.isNotEmpty()
+
         override suspend fun getAllBooksWithChapters(): List<BookWithChapters> = booksWithChapters()
 
         override fun getAllBooksWithChaptersFlow(): Flow<List<BookWithChapters>> = version.map { booksWithChapters() }
@@ -151,6 +169,7 @@ internal class FakeReadingDatabase {
         }
 
         override suspend fun insertBooks(books: List<BookEntity>) {
+            recordWrite()
             this@FakeReadingDatabase.books += books
             touch()
         }
@@ -191,6 +210,7 @@ internal class FakeReadingDatabase {
         ): ChapterEntity? = chapters.find { it.bookId == bookId && it.number == chapterNumber }
 
         override suspend fun insertChapters(chapters: List<ChapterEntity>): List<Long> = chapters.map { chapter ->
+            recordWrite()
             val id = nextChapterId()
             this@FakeReadingDatabase.chapters += chapter.copy(id = id)
             id
@@ -243,6 +263,7 @@ internal class FakeReadingDatabase {
             version.map { versesWithTexts(chapterId) }
 
         override suspend fun upsertVerses(verses: List<VerseEntity>): List<Long> = verses.map { verse ->
+            recordWrite()
             val id = nextVerseId()
             this@FakeReadingDatabase.verses += verse.copy(id = id)
             id

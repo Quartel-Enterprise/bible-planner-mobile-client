@@ -144,6 +144,8 @@ private class DaoBooksRepository(
 
     override suspend fun getBooks(): List<BookDataModel> = error("unused")
 
+    override suspend fun isDatabaseInitialized(): Boolean = error("unused")
+
     override suspend fun initializeDatabase() = error("unused")
 
     override suspend fun updateBookFavoriteStatus(

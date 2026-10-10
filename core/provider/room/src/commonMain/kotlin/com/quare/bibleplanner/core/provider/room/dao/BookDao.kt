@@ -18,6 +18,9 @@ interface BookDao {
     @Query("SELECT * FROM books WHERE id = :bookId")
     suspend fun getBookById(bookId: String): BookEntity?
 
+    @Query("SELECT EXISTS(SELECT 1 FROM books)")
+    suspend fun hasBooks(): Boolean
+
     @Transaction
     @Query("SELECT * FROM books")
     suspend fun getAllBooksWithChapters(): List<BookWithChapters>

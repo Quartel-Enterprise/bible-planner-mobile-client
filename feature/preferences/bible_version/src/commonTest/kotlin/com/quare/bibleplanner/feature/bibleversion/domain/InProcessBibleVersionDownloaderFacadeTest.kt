@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.domain
 
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
@@ -51,6 +53,7 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
             downloadBible = DownloadBibleUseCase(
                 bibleVersionDao = bibleVersionDao,
                 verseDao = verseDao,
+                initializeBooksIfNeeded = InitializeBooksIfNeededUseCase(FakeBooksRepository(emptyList())),
                 getRemoteContentVersion = GetRemoteContentVersionUseCase(
                     FakeBibleVersionRepository(Result.success(emptyList())),
                 ),

@@ -7,7 +7,7 @@ class InitializeBooksIfNeededUseCase(
 ) {
     suspend operator fun invoke() {
         repository.run {
-            if (getBooks().isEmpty()) {
+            if (!isDatabaseInitialized()) {
                 initializeDatabase()
             }
         }
