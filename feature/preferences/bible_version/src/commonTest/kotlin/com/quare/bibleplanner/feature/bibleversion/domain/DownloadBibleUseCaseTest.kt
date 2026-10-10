@@ -32,7 +32,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 internal class DownloadBibleUseCaseTest {
-    private val otherBooksChapters = chaptersOfOtherBooks(BookId.GEN)
+    private val otherBooksChapters = chaptersOfOtherBooks(setOf(BookId.GEN))
     private val totalChapters = BookId.entries.size
     private lateinit var useCase: DownloadBibleUseCase
     private lateinit var bibleVersionDao: InMemoryBibleVersionDao

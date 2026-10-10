@@ -58,7 +58,7 @@ internal class DownloadBooksInParallelUseCaseTest {
     }
 
     private fun prepareScenario(files: Map<String, String>) {
-        val otherBooksChapters = chaptersOfOtherBooks(BookId.GEN, BookId.MAT)
+        val otherBooksChapters = chaptersOfOtherBooks(setOf(BookId.GEN, BookId.MAT))
         verseDao = InMemoryVerseDao(
             verses = listOf(
                 VerseEntity(

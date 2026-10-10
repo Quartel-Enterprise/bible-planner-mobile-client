@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -195,6 +196,25 @@ internal class BibleRepositoryImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN version rows rewritten unchanged WHEN observing THEN reuses the last chapter count`() = runTest {
+        // Given
+        prepareScenario(appLanguage = Language.ENGLISH)
+        repository.getBiblesFlow().first()
+        val countQueriesBefore = verseDao.countQueries
+        val versionReadsBefore = bibleVersionDao.reads
+
+        // When
+        versionsInvalidations.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = (versionReadsBefore + 1) to countQueriesBefore,
+            actual = bibleVersionDao.reads to verseDao.countQueries,
+        )
+    }
+
     private fun bible(
         version: VersionModel,
         downloadedChapters: Int,
@@ -274,11 +294,23 @@ private class StubBibleVersionRepository(
 private class StoredBibleVersionDao(
     var versions: List<BibleVersionEntity>,
 ) : ThrowingBibleVersionDao() {
-    override suspend fun getAllVersions(): List<BibleVersionEntity> = versions
+    var reads = 0
+        private set
+
+    override suspend fun getAllVersions(): List<BibleVersionEntity> {
+        reads += 1
+        return versions
+    }
 }
 
 private class CountingVerseDao(
     var counts: List<VersionChapterCount>,
 ) : ThrowingVerseDao() {
-    override suspend fun getDownloadedChaptersPerVersion(): List<VersionChapterCount> = counts
+    var countQueries = 0
+        private set
+
+    override suspend fun getDownloadedChaptersPerVersion(): List<VersionChapterCount> {
+        countQueries += 1
+        return counts
+    }
 }

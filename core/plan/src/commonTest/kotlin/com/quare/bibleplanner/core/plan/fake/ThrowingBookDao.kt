@@ -10,7 +10,9 @@ internal open class ThrowingBookDao : BookDao {
 
     override suspend fun getBookById(bookId: String): BookEntity? = error("Unexpected call")
 
-    override suspend fun hasBooks(): Boolean = error("Unexpected call")
+    override suspend fun isSeeded(): Boolean = error("Unexpected call")
+
+    override suspend fun getBookIds(): List<String> = error("Unexpected call")
 
     override suspend fun getAllBooksWithChapters(): List<BookWithChapters> = error("Unexpected call")
 

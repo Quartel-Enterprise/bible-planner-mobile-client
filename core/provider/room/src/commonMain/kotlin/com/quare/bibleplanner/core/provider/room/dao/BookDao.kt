@@ -18,8 +18,18 @@ interface BookDao {
     @Query("SELECT * FROM books WHERE id = :bookId")
     suspend fun getBookById(bookId: String): BookEntity?
 
-    @Query("SELECT EXISTS(SELECT 1 FROM books)")
-    suspend fun hasBooks(): Boolean
+    // Why: older versions seeded outside a transaction, so books alone don't prove every chapter and verse got in.
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM books) " +
+            "AND NOT EXISTS(SELECT 1 FROM books " +
+            "WHERE NOT EXISTS(SELECT 1 FROM chapters WHERE chapters.bookId = books.id)) " +
+            "AND NOT EXISTS(SELECT 1 FROM chapters " +
+            "WHERE NOT EXISTS(SELECT 1 FROM verses WHERE verses.chapterId = chapters.id))",
+    )
+    suspend fun isSeeded(): Boolean
+
+    @Query("SELECT id FROM books")
+    suspend fun getBookIds(): List<String>
 
     @Transaction
     @Query("SELECT * FROM books")

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.model.BibleVersionsDownloadState
+import com.quare.bibleplanner.core.books.data.model.DownloadStateChange
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
@@ -20,10 +21,11 @@ import com.quare.bibleplanner.core.utils.throttleLatest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.shareIn
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -95,21 +97,31 @@ internal class BibleRepositoryImpl(
 
     /*
      * Why: reading the statuses and the chapter counts apart let a version show done with a count
-     * from before its last chapters, flashing "Update available" when a download finished. A status
-     * write recounts right away, and statuses are read first, so a done version comes with every
-     * chapter that was written before it.
+     * from before its last chapters, flashing "Update available" when a download finished. A changed
+     * version row recounts right away, and statuses are read first, so a done version comes with
+     * every chapter written before it. Rewrites that change no row, such as the version sync on every
+     * launch, reuse the last count instead of walking every verse again.
      */
     private fun observeDownloadState(): Flow<BibleVersionsDownloadState> = merge(
-        observeTableInvalidation(DatabaseTables.VERSE_TEXTS).throttleLatest(downloadedChaptersThrottle),
-        observeTableInvalidation(DatabaseTables.BIBLE_VERSIONS),
-    ).conflate()
-        .map {
-            val versions = bibleVersionDao.getAllVersions()
-            BibleVersionsDownloadState(
-                versions = versions,
-                chapterCounts = verseDao.getDownloadedChaptersPerVersion(),
-            )
-        }.distinctUntilChanged()
+        observeTableInvalidation(DatabaseTables.VERSE_TEXTS)
+            .throttleLatest(downloadedChaptersThrottle)
+            .map { DownloadStateChange.VERSE_TEXTS },
+        observeTableInvalidation(DatabaseTables.BIBLE_VERSIONS).map { DownloadStateChange.VERSIONS },
+    ).runningFold(initial = null) { previous: BibleVersionsDownloadState?, change ->
+        val versions = bibleVersionDao.getAllVersions()
+        val isCountCurrent = previous != null &&
+            change == DownloadStateChange.VERSIONS &&
+            previous.versions == versions
+        BibleVersionsDownloadState(
+            versions = versions,
+            chapterCounts = if (isCountCurrent) {
+                previous.chapterCounts
+            } else {
+                verseDao.getDownloadedChaptersPerVersion()
+            },
+        )
+    }.filterNotNull()
+        .distinctUntilChanged()
 
     private fun getDefaultVersion(): String = when (languageProvider.getAppLanguage()) {
         Language.PORTUGUESE_BRAZIL -> "A21"

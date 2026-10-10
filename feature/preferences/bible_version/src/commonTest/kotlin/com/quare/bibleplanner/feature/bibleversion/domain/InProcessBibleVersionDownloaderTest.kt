@@ -172,7 +172,7 @@ internal class InProcessBibleVersionDownloaderTest {
                 ),
             ),
         )
-        val chapters = chaptersOfOtherBooks()
+        val chapters = chaptersOfOtherBooks(emptySet())
         val verseDao = InMemoryVerseDao(downloadedChapterIds = chapters.map { it.id })
         downloader = InProcessBibleVersionDownloader(
             bibleVersionDao = bibleVersionDao,

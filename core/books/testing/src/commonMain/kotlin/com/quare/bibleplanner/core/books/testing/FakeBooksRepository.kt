@@ -19,6 +19,7 @@ class FakeBooksRepository(
     val selectedTestaments = mutableListOf<String>()
     var initializationCount = 0
         private set
+    private var isInitialized = books.isNotEmpty()
 
     override fun getBooksFlow(): Flow<List<BookDataModel>> = books
 
@@ -29,10 +30,11 @@ class FakeBooksRepository(
 
     override suspend fun getBooks(): List<BookDataModel> = books.value
 
-    override suspend fun isDatabaseInitialized(): Boolean = books.value.isNotEmpty()
+    override suspend fun isDatabaseInitialized(): Boolean = isInitialized
 
     override suspend fun initializeDatabase() {
         initializationCount += 1
+        isInitialized = true
     }
 
     override suspend fun updateBookFavoriteStatus(

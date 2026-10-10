@@ -50,6 +50,9 @@ interface VerseDao {
     @Upsert
     suspend fun upsertVerses(verses: List<VerseEntity>): List<Long>
 
+    @Query("SELECT DISTINCT chapterId FROM verses")
+    suspend fun getChapterIdsWithVerses(): List<Long>
+
     // Why: returns nothing, unlike upsertVerses, so seeding pays no row id round trip for ~31k verses.
     @Insert
     suspend fun insertVerses(verses: List<VerseEntity>)

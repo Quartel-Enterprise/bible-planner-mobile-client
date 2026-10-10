@@ -5,8 +5,8 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 
 private const val OTHER_BOOK_CHAPTER_ID_OFFSET = 1_000L
 
-internal fun chaptersOfOtherBooks(vararg bookIds: BookId): List<ChapterEntity> = BookId.entries
-    .filterNot { it in bookIds }
+internal fun chaptersOfOtherBooks(excludedBookIds: Set<BookId>): List<ChapterEntity> = BookId.entries
+    .filterNot { it in excludedBookIds }
     .map { bookId ->
         ChapterEntity(
             id = OTHER_BOOK_CHAPTER_ID_OFFSET + bookId.ordinal,

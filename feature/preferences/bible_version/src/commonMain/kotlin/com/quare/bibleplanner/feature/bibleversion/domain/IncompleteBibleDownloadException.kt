@@ -2,6 +2,6 @@ package com.quare.bibleplanner.feature.bibleversion.domain
 
 class IncompleteBibleDownloadException(
     versionId: String,
-    downloadedChapters: Int,
+    missingChapters: Int,
     totalChapters: Int,
-) : IllegalStateException("$versionId has $downloadedChapters of $totalChapters chapters after downloading")
+) : IllegalStateException("$versionId is missing $missingChapters of $totalChapters chapters after downloading")

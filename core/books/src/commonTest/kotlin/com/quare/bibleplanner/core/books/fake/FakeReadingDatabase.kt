@@ -27,6 +27,7 @@ internal class FakeReadingDatabase {
     val syncResets = mutableListOf<Pair<String, Long>>()
     var writesOutsideTransaction = 0
         private set
+    var failVerseInserts = false
     private var isInTransaction = false
 
     private val version = MutableStateFlow(0)
@@ -37,9 +38,17 @@ internal class FakeReadingDatabase {
     val chapterDao: ChapterDao = FakeChapterDao()
     val verseDao: VerseDao = FakeVerseDao()
     val transactionRunner = DatabaseTransactionRunner { block ->
+        val storedBooks = books.toList()
+        val storedChapters = chapters.toList()
+        val storedVerses = verses.toList()
         isInTransaction = true
         try {
             block()
+        } catch (throwable: Throwable) {
+            books.replaceWith(storedBooks)
+            chapters.replaceWith(storedChapters)
+            verses.replaceWith(storedVerses)
+            throw throwable
         } finally {
             isInTransaction = false
         }
@@ -102,6 +111,11 @@ internal class FakeReadingDatabase {
         return verses.filter { it.chapterId == chapterId && it.isRead }.map { it.number }
     }
 
+    private fun <T> MutableList<T>.replaceWith(items: List<T>) {
+        clear()
+        addAll(items)
+    }
+
     private fun nextChapterId(): Long = ++lastChapterId
 
     private fun nextVerseId(): Long = ++lastVerseId
@@ -158,7 +172,15 @@ internal class FakeReadingDatabase {
     private inner class FakeBookDao : ThrowingBookDao() {
         override suspend fun getBookById(bookId: String): BookEntity? = books.find { it.id == bookId }
 
-        override suspend fun hasBooks(): Boolean = books.isNotEmpty()
+        override suspend fun isSeeded(): Boolean {
+            val bookIdsWithChapters = chapters.map { it.bookId }.toSet()
+            val chapterIdsWithVerses = verses.map { it.chapterId }.toSet()
+            return books.isNotEmpty() &&
+                books.all { it.id in bookIdsWithChapters } &&
+                chapters.all { it.id in chapterIdsWithVerses }
+        }
+
+        override suspend fun getBookIds(): List<String> = books.map { it.id }
 
         override suspend fun getAllBooksWithChapters(): List<BookWithChapters> = booksWithChapters()
 
@@ -201,6 +223,8 @@ internal class FakeReadingDatabase {
     }
 
     private inner class FakeChapterDao : ThrowingChapterDao() {
+        override suspend fun getAllChapters(): List<ChapterEntity> = chapters.toList()
+
         override suspend fun getChaptersByBookId(bookId: String): List<ChapterEntity> =
             chapters.filter { it.bookId == bookId }
 
@@ -262,7 +286,10 @@ internal class FakeReadingDatabase {
         override fun getVersesWithTextsByChapterIdFlow(chapterId: Long): Flow<List<VerseWithTexts>> =
             version.map { versesWithTexts(chapterId) }
 
+        override suspend fun getChapterIdsWithVerses(): List<Long> = verses.map { it.chapterId }.distinct()
+
         override suspend fun insertVerses(verses: List<VerseEntity>) {
+            check(!failVerseInserts) { "verse insert failed" }
             upsertVerses(verses)
         }
 

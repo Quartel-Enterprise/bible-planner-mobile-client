@@ -22,74 +22,49 @@ class DownloadBibleUseCase(
 ) {
     suspend operator fun invoke(versionId: String): Result<Unit> = suspendRunCatching {
         // Why: the chapters to download come from the book rows, which a first launch may still be inserting.
-        suspendRunCatching { initializeBooksIfNeeded() }.onFailure { throwable ->
-            return trackFailure(
-                versionId = versionId,
-                throwable = throwable,
-            )
+        initializeBooksIfNeeded()
+        val version = bibleVersionDao.getVersionById(versionId) ?: error("Version not found")
+        if (version.status == DownloadStatus.DONE && countMissingChapters(version) <= 0) {
+            return Result.success(Unit)
         }
-        val version = bibleVersionDao.getVersionById(versionId)
-            ?: return trackFailure(
-                versionId = versionId,
-                throwable = IllegalStateException("Version not found"),
-            )
-
-        val isComplete =
-            verseDao.countChaptersWithVersesByVersion(versionId) >= version.totalChapters
-        if (version.status == DownloadStatus.DONE && isComplete) return Result.success(Unit)
 
         val remoteContentVersion = getRemoteContentVersion(versionId)
         downloadBooksInParallel(
             versionId = versionId,
             contentVersion = remoteContentVersion,
-        ).fold(
-            onSuccess = { checkEveryChapterDownloaded(version) },
-            onFailure = Result.Companion::failure,
-        ).onSuccess {
-            if (remoteContentVersion.isNotEmpty()) {
-                bibleVersionDao.updateContentVersion(
-                    id = versionId,
-                    contentVersion = remoteContentVersion,
-                )
-            }
-            bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
-            trackEvent(
-                name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
-                params = mapOf(AnalyticsParams.VERSION_ID to versionId),
-            )
-        }.onFailure { throwable ->
-            trackDownloadFailed(
-                versionId = versionId,
-                throwable = throwable,
-            )
-        }.getOrThrow()
-    }
-
-    /*
-     * Why: a book with no chapter rows downloads nothing and still succeeds, and a version marked done
-     * that way showed an update right after its first download.
-     */
-    private suspend fun checkEveryChapterDownloaded(version: BibleVersionEntity): Result<Unit> = suspendRunCatching {
-        val downloadedChapters = verseDao.countChaptersWithVersesByVersion(version.id)
-        if (downloadedChapters < version.totalChapters) {
+        ).getOrThrow()
+        /*
+         * Why: every book succeeding doesn't prove every chapter was stored, and a version marked done
+         * short of chapters showed an update right after its first download.
+         */
+        val missingChapters = countMissingChapters(version)
+        if (missingChapters > 0) {
             throw IncompleteBibleDownloadException(
-                versionId = version.id,
-                downloadedChapters = downloadedChapters,
+                versionId = versionId,
+                missingChapters = missingChapters,
                 totalChapters = version.totalChapters,
             )
         }
-    }
-
-    private fun trackFailure(
-        versionId: String,
-        throwable: Throwable,
-    ): Result<Unit> {
+        if (remoteContentVersion.isNotEmpty()) {
+            bibleVersionDao.updateContentVersion(
+                id = versionId,
+                contentVersion = remoteContentVersion,
+            )
+        }
+        bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+        trackEvent(
+            name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
+            params = mapOf(AnalyticsParams.VERSION_ID to versionId),
+        )
+    }.onFailure { throwable ->
         trackDownloadFailed(
             versionId = versionId,
             throwable = throwable,
         )
-        return Result.failure(throwable)
     }
+
+    private suspend fun countMissingChapters(version: BibleVersionEntity): Int =
+        version.totalChapters - verseDao.countChaptersWithVersesByVersion(version.id)
 
     private fun trackDownloadFailed(
         versionId: String,
