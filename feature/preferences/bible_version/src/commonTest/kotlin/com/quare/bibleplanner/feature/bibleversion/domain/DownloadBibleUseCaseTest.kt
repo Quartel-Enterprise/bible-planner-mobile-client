@@ -109,7 +109,7 @@ internal class DownloadBibleUseCaseTest {
 
         // Then
         assertEquals(
-            expected = listOf(GENESIS_PATH),
+            expected = listOf(GENESIS_BOOK_PATH),
             actual = server.requestedPaths,
         )
     }
@@ -176,7 +176,10 @@ internal class DownloadBibleUseCaseTest {
                 ),
             ),
         ),
-        files: Map<String, String> = mapOf(GENESIS_PATH to CHAPTER_JSON),
+        files: Map<String, String> = mapOf(
+            GENESIS_BOOK_PATH to BOOK_JSON,
+            GENESIS_PATH to CHAPTER_JSON,
+        ),
     ) {
         trackedEvents = mutableListOf()
         server = StorageServer(filesByPath = files)
@@ -229,5 +232,7 @@ internal class DownloadBibleUseCaseTest {
         const val REMOTE_CONTENT_VERSION = "1.1.0"
         const val GENESIS_PATH = "bible/ACF/Gn/1.json"
         const val CHAPTER_JSON = """{"chapter":1,"verses":[]}"""
+        const val GENESIS_BOOK_PATH = "bible/ACF/books/$REMOTE_CONTENT_VERSION/Gn.json"
+        const val BOOK_JSON = """{"chapters":[$CHAPTER_JSON]}"""
     }
 }

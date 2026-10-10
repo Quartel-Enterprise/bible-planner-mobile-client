@@ -6,9 +6,12 @@ import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.utils.suspendRunCatching
+import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncBookDto
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
+import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.storage.BucketApi
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -31,10 +34,12 @@ class DownloadChaptersUseCase(
     }
     private val downloadSemaphore = Semaphore(permits = MAX_CONCURRENT_DOWNLOADS)
     private val retryDelay: Duration = 2.seconds
+    private val clientErrorStatusCodes = 400..499
 
     suspend operator fun invoke(
         versionId: String,
         bookId: BookId,
+        contentVersion: String,
     ): Result<Unit> = suspendRunCatching {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
         val chapters = chapterDao.getChaptersByBookId(bookId.name)
@@ -43,9 +48,25 @@ class DownloadChaptersUseCase(
                 versionId = versionId,
                 chapterIds = chapters.map { it.id },
             ).toSet()
+        val pendingChapters = chapters.filterNot { it.id in downloadedChapterIds }
+        val bookChaptersByNumber = if (pendingChapters.isNotEmpty() && contentVersion.isNotEmpty()) {
+            fetchBookOrNull(
+                versionId = versionId,
+                supabaseBookDir = supabaseBookDir,
+                contentVersion = contentVersion,
+            )?.chapters
+                ?.associateBy { it.chapter }
+                .orEmpty()
+        } else {
+            emptyMap()
+        }
+        val (chaptersInBook, chaptersLeft) = pendingChapters.partition { it.number in bookChaptersByNumber }
+        saveChaptersToDatabase(
+            versionId = versionId,
+            chapters = chaptersInBook.associate { it.id to bookChaptersByNumber.getValue(it.number) },
+        )
         var failedChapters = 0
-        chapters
-            .filterNot { it.id in downloadedChapterIds }
+        chaptersLeft
             .chunked(DOWNLOAD_CHAPTERS_CHUNK_SIZE)
             .forEach { chunk ->
                 supervisorScope {
@@ -55,7 +76,7 @@ class DownloadChaptersUseCase(
                                 suspendRunCatching {
                                     val fileName =
                                         "bible/${versionId.uppercase()}/$supabaseBookDir/${chapter.number}.json"
-                                    val bytes = downloadChapterBytes(fileName)
+                                    val bytes = downloadBytes(fileName)
                                     chapter.id to json.decodeFromString<SyncChapterDto>(bytes.decodeToString())
                                 }.onFailure { Logger.e(it) { "Error syncing $bookId:${chapter.number}" } }
                             }
@@ -70,16 +91,43 @@ class DownloadChaptersUseCase(
         check(failedChapters == 0) { "$failedChapters chapters of $bookId failed to download" }
     }.onFailure { Logger.e(it) { "Error downloading chapters for $bookId" } }
 
-    private suspend fun downloadChapterBytes(fileName: String): ByteArray {
+    /*
+     * Why: one request per book instead of one per chapter, so a version download stops flooding the
+     * Storage server. The path carries the content version, which lets the CDN cache it for good. Any
+     * failure (an older content version without book files, a network error) falls back to the chapter
+     * files, which have retries.
+     */
+    private suspend fun fetchBookOrNull(
+        versionId: String,
+        supabaseBookDir: String,
+        contentVersion: String,
+    ): SyncBookDto? = suspendRunCatching {
+        val fileName = "bible/${versionId.uppercase()}/books/$contentVersion/$supabaseBookDir.json"
+        json.decodeFromString<SyncBookDto>(downloadBytes(fileName).decodeToString())
+    }.onFailure { Logger.w(it) { "No book file for $supabaseBookDir, downloading its chapters one by one" } }
+        .getOrNull()
+
+    private suspend fun downloadBytes(fileName: String): ByteArray {
         repeat(MAX_DOWNLOAD_ATTEMPTS - 1) {
             suspendRunCatching {
                 downloadSemaphore.withPermit { bucketApi.downloadPublic(fileName) }
             }.onSuccess { bytes -> return bytes }
-                .onFailure { Logger.e(it) { "Retrying $fileName after a failed attempt" } }
+                .onFailure { throwable ->
+                    if (!throwable.isRetryable()) throw throwable
+                    Logger.e(throwable) { "Retrying $fileName after a failed attempt" }
+                }
             delay(retryDelay)
         }
         return downloadSemaphore.withPermit { bucketApi.downloadPublic(fileName) }
     }
+
+    /*
+     * Why: a missing file comes back as a client error (Storage answers 400 "not_found"), and asking
+     * again only delays the fallback. A 429 is the exception, since it clears with time.
+     */
+    private fun Throwable.isRetryable(): Boolean = this !is RestException ||
+        statusCode !in clientErrorStatusCodes ||
+        statusCode == HttpStatusCode.TooManyRequests.value
 
     /*
      * Why: one write per chunk, because every write wakes every screen observing the Bible tables
@@ -115,7 +163,9 @@ class DownloadChaptersUseCase(
 
         /*
          * Why: kept below the HTTP client's per-host limit so other Supabase calls never queue behind a
-         * download burst; the CDN edge served far more than this without throttling.
+         * download burst. Only the chapter files feel it now: they are served with no-cache, so every
+         * request reaches the Storage server, and in production this many from a few devices at once
+         * exhausted its connection pool and drew 429s. Book files take one request per book instead.
          */
         private const val MAX_CONCURRENT_DOWNLOADS = 24
         private const val MAX_DOWNLOAD_ATTEMPTS = 3

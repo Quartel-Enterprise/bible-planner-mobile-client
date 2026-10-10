@@ -22,7 +22,10 @@ internal class DownloadBooksInParallelUseCaseTest {
         prepareScenario(files = mapOf(GENESIS_PATH to CHAPTER_JSON, MATTHEW_PATH to CHAPTER_JSON))
 
         // When
-        val result = useCase(VERSION_ID)
+        val result = useCase(
+            versionId = VERSION_ID,
+            contentVersion = NO_CONTENT_VERSION,
+        )
 
         // Then
         assertTrue(result.isSuccess)
@@ -41,7 +44,10 @@ internal class DownloadBooksInParallelUseCaseTest {
         prepareScenario(files = mapOf(GENESIS_PATH to CHAPTER_JSON))
 
         // When
-        val result = useCase(VERSION_ID)
+        val result = useCase(
+            versionId = VERSION_ID,
+            contentVersion = NO_CONTENT_VERSION,
+        )
 
         // Then
         assertEquals(
@@ -106,6 +112,7 @@ internal class DownloadBooksInParallelUseCaseTest {
 
     private companion object {
         const val VERSION_ID = "acf"
+        const val NO_CONTENT_VERSION = ""
         const val GENESIS_PATH = "bible/ACF/Gn/1.json"
         const val MATTHEW_PATH = "bible/ACF/Mt/1.json"
         const val CHAPTER_JSON = """{"chapter":1,"verses":[{"number":1,"text":"Verse one"}]}"""

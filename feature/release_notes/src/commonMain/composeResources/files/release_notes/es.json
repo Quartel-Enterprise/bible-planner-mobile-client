@@ -1,4 +1,9 @@
 {
+  "2.12.1": {
+    "common": [
+      "Descargar una versión de la Biblia ahora es mucho más rápido."
+    ]
+  },
   "2.12.0": {
     "common": [
       "Corregimos el título en la parte superior de la pantalla de suscripción Pro, de la pantalla de Notas de la Versión y de los detalles de un libro, que podía no aparecer al abrir esas pantallas, sobre todo con las animaciones desactivadas.",

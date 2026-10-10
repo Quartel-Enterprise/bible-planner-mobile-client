@@ -29,25 +29,27 @@ class DownloadBibleUseCase(
         if (version.status == DownloadStatus.DONE && isComplete) return Result.success(Unit)
 
         val remoteContentVersion = getRemoteContentVersion(versionId)
-        downloadBooksInParallel(versionId)
-            .onSuccess {
-                if (remoteContentVersion.isNotEmpty()) {
-                    bibleVersionDao.updateContentVersion(
-                        id = versionId,
-                        contentVersion = remoteContentVersion,
-                    )
-                }
-                bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
-                trackEvent(
-                    name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
-                    params = mapOf(AnalyticsParams.VERSION_ID to versionId),
+        downloadBooksInParallel(
+            versionId = versionId,
+            contentVersion = remoteContentVersion,
+        ).onSuccess {
+            if (remoteContentVersion.isNotEmpty()) {
+                bibleVersionDao.updateContentVersion(
+                    id = versionId,
+                    contentVersion = remoteContentVersion,
                 )
-            }.onFailure { throwable ->
-                trackDownloadFailed(
-                    versionId = versionId,
-                    throwable = throwable,
-                )
-            }.getOrThrow()
+            }
+            bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+            trackEvent(
+                name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
+                params = mapOf(AnalyticsParams.VERSION_ID to versionId),
+            )
+        }.onFailure { throwable ->
+            trackDownloadFailed(
+                versionId = versionId,
+                throwable = throwable,
+            )
+        }.getOrThrow()
     }
 
     private fun trackFailure(
