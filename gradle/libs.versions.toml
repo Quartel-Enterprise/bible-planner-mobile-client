@@ -1,7 +1,7 @@
 [versions]
 # Build tooling
 agp = "9.4.1"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 ksp = "2.3.12"
 buildkonfig = "0.23.0"
 junit-bom = "6.1.3"
@@ -74,8 +74,8 @@ play-review = "2.0.2"
 play-services-ads = "25.5.0"
 play-services-ads-identifier = "18.3.0"
 play-services-time = "16.0.1"
-revenuecat = "3.11.0"
-sentry = "8.59.0"
+revenuecat = "3.13.0"
+sentry = "8.60.0"
 supabase = "3.8.0"
 user-messaging-platform = "4.0.0"
 
