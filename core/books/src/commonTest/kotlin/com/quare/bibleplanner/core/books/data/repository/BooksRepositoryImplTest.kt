@@ -41,6 +41,7 @@ internal class BooksRepositoryImplTest {
             booksWithChapterMapper = BooksWithChapterMapper(),
             dataStore = InMemoryPreferencesDataStore(),
             currentTimestampProvider = CurrentTimestampProvider { now },
+            runInTransaction = database.transactionRunner,
         )
     }
 
@@ -82,12 +83,24 @@ internal class BooksRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a populated database WHEN initializing THEN keeps the existing rows untouched`() = runTest {
+    fun `GIVEN a partly populated database WHEN initializing THEN keeps the existing rows untouched`() = runTest {
+        // Given
+        val storedBooks = database.books.toList()
+        val storedChapters = database.chapters.toList()
+        val storedVerses = database.verses.toList()
+
         // When
         repository.initializeDatabase()
 
         // Then
-        assertEquals(listOf("GEN", "EXO"), database.books.map { it.id })
+        assertEquals(
+            expected = Triple(storedBooks, storedChapters, storedVerses),
+            actual = Triple(
+                database.books.take(storedBooks.size),
+                database.chapters.take(storedChapters.size),
+                database.verses.take(storedVerses.size),
+            ),
+        )
     }
 
     @Test

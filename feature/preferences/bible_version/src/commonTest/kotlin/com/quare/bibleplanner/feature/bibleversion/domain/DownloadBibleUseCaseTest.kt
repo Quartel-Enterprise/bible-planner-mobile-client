@@ -1,13 +1,17 @@
 package com.quare.bibleplanner.feature.bibleversion.domain
 
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
+import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
+import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
@@ -20,12 +24,16 @@ import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
+import com.quare.bibleplanner.feature.bibleversion.fake.chaptersOfOtherBooks
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 internal class DownloadBibleUseCaseTest {
+    private val otherBooksChapters = chaptersOfOtherBooks(setOf(BookId.GEN))
+    private val totalChapters = BookId.entries.size
     private lateinit var useCase: DownloadBibleUseCase
     private lateinit var bibleVersionDao: InMemoryBibleVersionDao
     private lateinit var server: StorageServer
@@ -46,7 +54,7 @@ internal class DownloadBibleUseCaseTest {
                 expected = BibleVersionEntity(
                     id = VERSION_ID,
                     status = DownloadStatus.DONE,
-                    totalChapters = TOTAL_CHAPTERS,
+                    totalChapters = totalChapters,
                     contentVersion = REMOTE_CONTENT_VERSION,
                 ),
                 actual = bibleVersionDao.versions[VERSION_ID],
@@ -84,7 +92,7 @@ internal class DownloadBibleUseCaseTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
-            chaptersWithVerses = TOTAL_CHAPTERS,
+            downloadedChapterIds = otherBooksChapters.map { it.id } + GENESIS_CHAPTER_ID,
         )
 
         // When
@@ -101,7 +109,7 @@ internal class DownloadBibleUseCaseTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
-            chaptersWithVerses = TOTAL_CHAPTERS - 1,
+            downloadedChapterIds = otherBooksChapters.map { it.id },
         )
 
         // When
@@ -161,9 +169,69 @@ internal class DownloadBibleUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN seeding that fails WHEN downloading THEN fails before requesting any file and tracks the reason`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = DownloadStatus.IN_PROGRESS,
+                booksRepository = object : BooksRepository by FakeBooksRepository(emptyList()) {
+                    override suspend fun initializeDatabase() {
+                        error("seeding failed")
+                    }
+                },
+            )
+
+            // When
+            val result = useCase(VERSION_ID)
+
+            // Then
+            assertTrue(result.isFailure)
+            assertTrue(server.requestedPaths.isEmpty())
+            assertEquals(
+                expected = listOf(
+                    AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_FAILED to mapOf<String, Any>(
+                        AnalyticsParams.VERSION_ID to VERSION_ID,
+                        AnalyticsParams.REASON to "IllegalStateException",
+                    ),
+                ),
+                actual = trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a version missing chapter rows WHEN downloading THEN fails without marking it done`() = runTest {
+        // Given
+        prepareScenario(
+            status = DownloadStatus.IN_PROGRESS,
+            totalChapters = totalChapters + 1,
+        )
+
+        // When
+        val result = useCase(VERSION_ID)
+
+        // Then
+        assertIs<IncompleteBibleDownloadException>(result.exceptionOrNull())
+        assertEquals(
+            expected = DownloadStatus.IN_PROGRESS,
+            actual = bibleVersionDao.versions[VERSION_ID]?.status,
+        )
+        assertEquals(
+            expected = listOf(
+                AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_FAILED to mapOf<String, Any>(
+                    AnalyticsParams.VERSION_ID to VERSION_ID,
+                    AnalyticsParams.REASON to "IncompleteBibleDownloadException",
+                ),
+            ),
+            actual = trackedEvents,
+        )
+    }
+
     private fun prepareScenario(
         status: DownloadStatus,
-        chaptersWithVerses: Int = 0,
+        totalChapters: Int = this.totalChapters,
+        downloadedChapterIds: List<Long> = otherBooksChapters.map { it.id },
+        booksRepository: BooksRepository = FakeBooksRepository(emptyList()),
         remoteVersions: Result<List<VersionModel>> = Result.success(
             listOf(
                 VersionModel(
@@ -171,7 +239,7 @@ internal class DownloadBibleUseCaseTest {
                     name = "Almeida Corrigida Fiel",
                     version = REMOTE_CONTENT_VERSION,
                     language = Language.PORTUGUESE_BRAZIL,
-                    chapters = TOTAL_CHAPTERS,
+                    chapters = totalChapters,
                     size = null,
                 ),
             ),
@@ -188,15 +256,28 @@ internal class DownloadBibleUseCaseTest {
                 BibleVersionEntity(
                     id = VERSION_ID,
                     status = status,
-                    totalChapters = TOTAL_CHAPTERS,
+                    totalChapters = totalChapters,
                     contentVersion = LOCAL_CONTENT_VERSION,
                 ),
             ),
         )
-        val verseDao = InMemoryVerseDao(chaptersWithVerses = chaptersWithVerses)
+        val verseDao = InMemoryVerseDao(
+            verses = listOf(
+                VerseEntity(
+                    id = 11L,
+                    number = 1,
+                    chapterId = GENESIS_CHAPTER_ID,
+                    isRead = false,
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
+                ),
+            ),
+            downloadedChapterIds = downloadedChapterIds,
+        )
         useCase = DownloadBibleUseCase(
             bibleVersionDao = bibleVersionDao,
             verseDao = verseDao,
+            initializeBooksIfNeeded = InitializeBooksIfNeededUseCase(booksRepository),
             getRemoteContentVersion = GetRemoteContentVersionUseCase(FakeBibleVersionRepository(remoteVersions)),
             downloadBooksInParallel = DownloadBooksInParallelUseCase(
                 getPrioritizedBookIds = GetPrioritizedBookIdsUseCase(
@@ -208,14 +289,14 @@ internal class DownloadBibleUseCaseTest {
                     chapterDao = InMemoryChapterDao(
                         listOf(
                             ChapterEntity(
-                                id = 1L,
+                                id = GENESIS_CHAPTER_ID,
                                 number = 1,
                                 bookId = BookId.GEN.name,
                                 isRead = false,
                                 readUpdatedAt = null,
                                 isReadPendingSync = false,
                             ),
-                        ),
+                        ) + otherBooksChapters,
                     ),
                     verseDao = verseDao,
                     bucketApi = server.bucketApi,
@@ -227,11 +308,11 @@ internal class DownloadBibleUseCaseTest {
 
     private companion object {
         const val VERSION_ID = "acf"
-        const val TOTAL_CHAPTERS = 1
+        const val GENESIS_CHAPTER_ID = 1L
         const val LOCAL_CONTENT_VERSION = "1.0.0"
         const val REMOTE_CONTENT_VERSION = "1.1.0"
         const val GENESIS_PATH = "bible/ACF/Gn/1.json"
-        const val CHAPTER_JSON = """{"chapter":1,"verses":[]}"""
+        const val CHAPTER_JSON = """{"chapter":1,"verses":[{"number":1,"text":"No princípio"}]}"""
         const val GENESIS_BOOK_PATH = "bible/ACF/books/$REMOTE_CONTENT_VERSION/Gn.json"
         const val BOOK_JSON = """{"chapters":[$CHAPTER_JSON]}"""
     }

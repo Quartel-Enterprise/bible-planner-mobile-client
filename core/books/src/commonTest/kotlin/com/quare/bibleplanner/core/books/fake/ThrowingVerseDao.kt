@@ -33,6 +33,10 @@ internal open class ThrowingVerseDao : VerseDao {
 
     override suspend fun upsertVerses(verses: List<VerseEntity>): List<Long> = error("Unexpected call")
 
+    override suspend fun getChapterIdsWithVerses(): List<Long> = error("Unexpected call")
+
+    override suspend fun insertVerses(verses: List<VerseEntity>): Unit = error("Unexpected call")
+
     override suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>) {
         error("Unexpected call")
     }

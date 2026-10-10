@@ -21,6 +21,8 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.db.AppDatabase
 import com.quare.bibleplanner.core.provider.room.invalidation.RoomTableInvalidationObserver
 import com.quare.bibleplanner.core.provider.room.invalidation.TableInvalidationObserver
+import com.quare.bibleplanner.core.provider.room.transaction.DatabaseTransactionRunner
+import com.quare.bibleplanner.core.provider.room.transaction.RoomDatabaseTransactionRunner
 import com.quare.bibleplanner.core.utils.ioDispatcher
 import org.koin.dsl.module
 
@@ -52,4 +54,5 @@ val roomModule = module {
     single<AnnotatedVersionDao> { get<AppDatabase>().annotatedVersionDao() }
 
     single<TableInvalidationObserver> { RoomTableInvalidationObserver(get()) }
+    single<DatabaseTransactionRunner> { RoomDatabaseTransactionRunner(get()) }
 }

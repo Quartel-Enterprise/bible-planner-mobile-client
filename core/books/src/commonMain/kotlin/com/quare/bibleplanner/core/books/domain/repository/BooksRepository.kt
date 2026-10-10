@@ -11,6 +11,8 @@ interface BooksRepository {
 
     suspend fun getBooks(): List<BookDataModel>
 
+    suspend fun isDatabaseInitialized(): Boolean
+
     suspend fun initializeDatabase()
 
     suspend fun updateBookFavoriteStatus(

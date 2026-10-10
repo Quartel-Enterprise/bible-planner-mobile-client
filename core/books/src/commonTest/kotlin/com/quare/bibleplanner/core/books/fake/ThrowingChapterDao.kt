@@ -13,6 +13,8 @@ internal open class ThrowingChapterDao : ChapterDao {
 
     override suspend fun getChapterById(chapterId: Long): ChapterEntity? = error("Unexpected call")
 
+    override suspend fun getAllChapters(): List<ChapterEntity> = error("Unexpected call")
+
     override suspend fun getChapterByBookIdAndNumber(
         bookId: String,
         chapterNumber: Int,

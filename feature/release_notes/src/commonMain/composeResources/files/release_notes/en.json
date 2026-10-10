@@ -1,7 +1,8 @@
 {
   "2.12.1": {
     "common": [
-      "Downloading a Bible version is now much faster."
+      "Downloading a Bible version is now much faster.",
+      "Fixed a Bible version downloaded right after installing the app that could be missing some books and show \"Update available\" as soon as the download finished."
     ]
   },
   "2.12.0": {

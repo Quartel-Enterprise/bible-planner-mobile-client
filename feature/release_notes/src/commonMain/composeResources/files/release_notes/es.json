@@ -1,7 +1,8 @@
 {
   "2.12.1": {
     "common": [
-      "Descargar una versión de la Biblia ahora es mucho más rápido."
+      "Descargar una versión de la Biblia ahora es mucho más rápido.",
+      "Corregimos que una versión de la Biblia descargada justo después de instalar la app pudiera quedar sin algunos libros y mostrar \"Actualización disponible\" al terminar la descarga."
     ]
   },
   "2.12.0": {

@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.books.fake.FakeReadingDatabase
 import com.quare.bibleplanner.core.books.fake.InMemoryPreferencesDataStore
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,6 +30,7 @@ internal class BooksRepositoryInitializationTest {
             booksWithChapterMapper = BooksWithChapterMapper(),
             dataStore = InMemoryPreferencesDataStore(),
             currentTimestampProvider = CurrentTimestampProvider { 0L },
+            runInTransaction = database.transactionRunner,
         )
     }
 
@@ -57,6 +59,67 @@ internal class BooksRepositoryInitializationTest {
         assertEquals(1189, database.chapters.size)
         assertEquals((1..31).toList(), versesOfChapter.map { it.number })
     }
+
+    @Test
+    fun `GIVEN an empty database WHEN initializing THEN writes every row inside one transaction`() = runTest {
+        // When
+        repository.initializeDatabase()
+
+        // Then
+        assertEquals(
+            expected = 0,
+            actual = database.writesOutsideTransaction,
+        )
+    }
+
+    @Test
+    fun `GIVEN a seeding that fails partway WHEN initializing again THEN starts from nothing and seeds every row`() =
+        runTest {
+            // Given
+            database.failVerseInserts = true
+            suspendRunCatching { repository.initializeDatabase() }
+            val rowsLeftByFailure = database.books.size + database.chapters.size + database.verses.size
+            database.failVerseInserts = false
+
+            // When
+            repository.initializeDatabase()
+
+            // Then
+            assertEquals(
+                expected = 0 to 1189,
+                actual = rowsLeftByFailure to database.chapters.size,
+            )
+        }
+
+    @Test
+    fun `GIVEN a database left half seeded WHEN initializing THEN adds only the missing rows and keeps the progress`() =
+        runTest {
+            // Given
+            database.seedBook(
+                bookId = BookId.GEN,
+                versesPerChapter = listOf(31),
+                readChapters = setOf(1),
+            )
+
+            // When
+            repository.initializeDatabase()
+
+            // Then
+            val genesisFirstChapter = database.chapter(
+                bookId = BookId.GEN,
+                chapterNumber = 1,
+            )
+            assertEquals(
+                expected = Triple(66, 1189, 31),
+                actual = Triple(
+                    database.books.size,
+                    database.chapters.size,
+                    database.verses.count { it.chapterId == genesisFirstChapter.id },
+                ),
+            )
+            assertTrue(genesisFirstChapter.isRead)
+            assertTrue(repository.isDatabaseInitialized())
+        }
 
     @Test
     fun `GIVEN an initialized database WHEN initializing again THEN does not duplicate the rows`() = runTest {

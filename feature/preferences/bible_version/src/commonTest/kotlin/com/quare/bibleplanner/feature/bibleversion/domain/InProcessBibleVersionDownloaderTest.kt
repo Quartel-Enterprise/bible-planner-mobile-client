@@ -1,8 +1,10 @@
 package com.quare.bibleplanner.feature.bibleversion.domain
 
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
@@ -19,6 +21,7 @@ import com.quare.bibleplanner.feature.bibleversion.fake.NeverLoadingBibleReposit
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifier
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
+import com.quare.bibleplanner.feature.bibleversion.fake.chaptersOfOtherBooks
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
@@ -169,12 +172,14 @@ internal class InProcessBibleVersionDownloaderTest {
                 ),
             ),
         )
-        val verseDao = InMemoryVerseDao()
+        val chapters = chaptersOfOtherBooks(emptySet())
+        val verseDao = InMemoryVerseDao(downloadedChapterIds = chapters.map { it.id })
         downloader = InProcessBibleVersionDownloader(
             bibleVersionDao = bibleVersionDao,
             downloadBible = DownloadBibleUseCase(
                 bibleVersionDao = bibleVersionDao,
                 verseDao = verseDao,
+                initializeBooksIfNeeded = InitializeBooksIfNeededUseCase(FakeBooksRepository(emptyList())),
                 getRemoteContentVersion = GetRemoteContentVersionUseCase(
                     FakeBibleVersionRepository(Result.success(emptyList())),
                 ),
@@ -185,7 +190,7 @@ internal class InProcessBibleVersionDownloaderTest {
                     ),
                     downloadChapters = DownloadChaptersUseCase(
                         supabaseBookAbbreviationMapper = SupabaseBookAbbreviationMapper(),
-                        chapterDao = InMemoryChapterDao(emptyList()),
+                        chapterDao = InMemoryChapterDao(chapters),
                         verseDao = verseDao,
                         bucketApi = StorageServer(filesByPath = emptyMap()).bucketApi,
                     ),

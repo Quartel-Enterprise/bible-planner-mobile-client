@@ -182,6 +182,26 @@ internal class DownloadChaptersUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a book with no chapter rows WHEN downloading it THEN fails without requesting files`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.EXO,
+            contentVersion = NO_CONTENT_VERSION,
+        )
+
+        // Then
+        assertEquals(
+            expected = "EXO has no chapters to download",
+            actual = result.exceptionOrNull()?.message,
+        )
+        assertTrue(server.requestedPaths.isEmpty())
+    }
+
+    @Test
     fun `GIVEN a book already downloaded WHEN downloading it THEN does nothing`() = runTest {
         // Given
         prepareScenario(downloadedChapterIds = listOf(1L, 2L, 3L))

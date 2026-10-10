@@ -22,6 +22,9 @@ interface ChapterDao {
     @Query("SELECT * FROM chapters WHERE id = :chapterId")
     suspend fun getChapterById(chapterId: Long): ChapterEntity?
 
+    @Query("SELECT * FROM chapters")
+    suspend fun getAllChapters(): List<ChapterEntity>
+
     @Query("SELECT * FROM chapters WHERE bookId = :bookId AND number = :chapterNumber")
     suspend fun getChapterByBookIdAndNumber(
         bookId: String,
