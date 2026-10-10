@@ -18,11 +18,23 @@ class DownloadBooksInParallelUseCase(
      * books hide each book's write pause, measured ~2x faster than half this number.
      * Opening all 66 would only lose the priority order.
      */
-    suspend operator fun invoke(versionId: String): Result<Unit> = suspendRunCatching {
+    suspend operator fun invoke(
+        versionId: String,
+        contentVersion: String,
+    ): Result<Unit> = suspendRunCatching {
         val results = supervisorScope {
             getPrioritizedBookIds()
-                .map { bookId -> async { bookSemaphore.withPermit { downloadChapters(versionId, bookId) } } }
-                .awaitAll()
+                .map { bookId ->
+                    async {
+                        bookSemaphore.withPermit {
+                            downloadChapters(
+                                versionId = versionId,
+                                bookId = bookId,
+                                contentVersion = contentVersion,
+                            )
+                        }
+                    }
+                }.awaitAll()
         }
         results.firstOrNull { it.isFailure }?.getOrThrow()
     }

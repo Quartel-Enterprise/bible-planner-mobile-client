@@ -1,4 +1,9 @@
 {
+  "2.12.1": {
+    "common": [
+      "Downloading a Bible version is now much faster."
+    ]
+  },
   "2.12.0": {
     "common": [
       "Fixed the title at the top of the Pro subscription screen, the Release Notes screen and a book's details, which could be missing when you opened them, especially with animations turned off.",

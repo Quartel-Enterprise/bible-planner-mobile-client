@@ -32,10 +32,13 @@ internal class StorageServer(
                     }
                     val file = filesByPath[path]
                     val failures = failuresBeforeSuccessByPath[path] ?: 0
-                    if (file == null || attempt <= failures) {
-                        respondError(HttpStatusCode.InternalServerError)
-                    } else {
-                        respond(file)
+                    when {
+                        attempt <= failures -> respondError(HttpStatusCode.InternalServerError)
+
+                        // What Storage answers for a missing object: a 400 carrying "not_found".
+                        file == null -> respondError(HttpStatusCode.BadRequest, NOT_FOUND_BODY)
+
+                        else -> respond(file)
                     }
                 }
             },
@@ -46,5 +49,6 @@ internal class StorageServer(
     private companion object {
         const val BUCKET = "content"
         const val PUBLIC_PREFIX = "/storage/v1/object/public/$BUCKET/"
+        const val NOT_FOUND_BODY = """{"statusCode":"404","error":"not_found","message":"Object not found"}"""
     }
 }

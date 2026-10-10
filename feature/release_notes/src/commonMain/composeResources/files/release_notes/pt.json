@@ -1,4 +1,9 @@
 {
+  "2.12.1": {
+    "common": [
+      "Baixar uma versão da Bíblia ficou bem mais rápido."
+    ]
+  },
   "2.12.0": {
     "common": [
       "Corrigimos o título no topo da tela de assinatura Pro, da tela de Notas de Atualização e dos detalhes de um livro, que podia não aparecer ao abrir essas telas, principalmente com as animações desativadas.",

@@ -80,6 +80,7 @@ internal class DownloadChaptersUseCaseTest {
             val result = useCase(
                 versionId = VERSION_ID,
                 bookId = BookId.GEN,
+                contentVersion = NO_CONTENT_VERSION,
             )
 
             // Then
@@ -123,6 +124,7 @@ internal class DownloadChaptersUseCaseTest {
         useCase(
             versionId = VERSION_ID,
             bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
         )
 
         // Then
@@ -141,6 +143,7 @@ internal class DownloadChaptersUseCaseTest {
         val result = useCase(
             versionId = VERSION_ID,
             bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
         )
 
         // Then
@@ -154,12 +157,13 @@ internal class DownloadChaptersUseCaseTest {
     @Test
     fun `GIVEN a chapter that never downloads WHEN downloading the book THEN fails but keeps the others`() = runTest {
         // Given
-        prepareScenario(files = mapOf(CHAPTER_ONE_PATH to CHAPTER_ONE_JSON))
+        prepareScenario(failuresBeforeSuccessByPath = mapOf(CHAPTER_TWO_PATH to MAX_DOWNLOAD_ATTEMPTS))
 
         // When
         val result = useCase(
             versionId = VERSION_ID,
             bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
         )
 
         // Then
@@ -186,6 +190,7 @@ internal class DownloadChaptersUseCaseTest {
         val result = useCase(
             versionId = VERSION_ID,
             bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
         )
 
         // Then
@@ -193,6 +198,145 @@ internal class DownloadChaptersUseCaseTest {
         assertTrue(server.requestedPaths.isEmpty())
         assertTrue(verseDao.savedVerseTextBatches.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a book file WHEN downloading the book THEN saves its missing chapters with one request`() = runTest {
+        // Given
+        prepareScenario(files = mapOf(BOOK_PATH to BOOK_JSON))
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.GEN,
+            contentVersion = CONTENT_VERSION,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            expected = listOf(BOOK_PATH),
+            actual = server.requestedPaths,
+        )
+        assertEquals(
+            expected = listOf(listOf(11L, 12L, 21L)),
+            actual = verseDao.savedVerseTextBatches.map { batch -> batch.map { it.verseId } },
+        )
+    }
+
+    @Test
+    fun `GIVEN no book file WHEN downloading the book THEN falls back to its chapter files`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.GEN,
+            contentVersion = CONTENT_VERSION,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            expected = 1,
+            actual = server.requestedPaths.count { it == BOOK_PATH },
+        )
+        assertEquals(
+            expected = listOf(11L, 12L, 21L),
+            actual = verseDao.savedVerseTextBatches
+                .flatten()
+                .map { it.verseId },
+        )
+    }
+
+    @Test
+    fun `GIVEN a missing chapter file WHEN downloading the book THEN asks for it only once`() = runTest {
+        // Given
+        prepareScenario(files = mapOf(CHAPTER_ONE_PATH to CHAPTER_ONE_JSON))
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
+        )
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(
+            expected = 1,
+            actual = server.requestedPaths.count { it == CHAPTER_TWO_PATH },
+        )
+    }
+
+    @Test
+    fun `GIVEN a book file that fails once WHEN downloading the book THEN retries it instead of the chapters`() =
+        runTest {
+            // Given
+            prepareScenario(
+                files = mapOf(BOOK_PATH to BOOK_JSON),
+                failuresBeforeSuccessByPath = mapOf(BOOK_PATH to 1),
+            )
+
+            // When
+            val result = useCase(
+                versionId = VERSION_ID,
+                bookId = BookId.GEN,
+                contentVersion = CONTENT_VERSION,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                expected = listOf(BOOK_PATH, BOOK_PATH),
+                actual = server.requestedPaths,
+            )
+        }
+
+    @Test
+    fun `GIVEN a book file missing a chapter WHEN downloading the book THEN downloads that chapter alone`() = runTest {
+        // Given
+        prepareScenario(
+            files = mapOf(
+                BOOK_PATH to """{"chapters":[$CHAPTER_ONE_JSON]}""",
+                CHAPTER_TWO_PATH to CHAPTER_TWO_JSON,
+            ),
+        )
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.GEN,
+            contentVersion = CONTENT_VERSION,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            expected = listOf(BOOK_PATH, CHAPTER_TWO_PATH),
+            actual = server.requestedPaths,
+        )
+    }
+
+    @Test
+    fun `GIVEN a book already downloaded WHEN downloading it with a content version THEN skips the book file`() =
+        runTest {
+            // Given
+            prepareScenario(
+                files = mapOf(BOOK_PATH to BOOK_JSON),
+                downloadedChapterIds = listOf(1L, 2L, 3L),
+            )
+
+            // When
+            useCase(
+                versionId = VERSION_ID,
+                bookId = BookId.GEN,
+                contentVersion = CONTENT_VERSION,
+            )
+
+            // Then
+            assertTrue(server.requestedPaths.isEmpty())
+        }
 
     private fun prepareScenario(
         files: Map<String, String> = mapOf(
@@ -220,11 +364,16 @@ internal class DownloadChaptersUseCaseTest {
 
     private companion object {
         const val VERSION_ID = "acf"
+        const val NO_CONTENT_VERSION = ""
+        const val MAX_DOWNLOAD_ATTEMPTS = 3
+        const val CONTENT_VERSION = "1.1.0"
+        const val BOOK_PATH = "bible/ACF/books/1.1.0/Gn.json"
         const val CHAPTER_ONE_PATH = "bible/ACF/Gn/1.json"
         const val CHAPTER_TWO_PATH = "bible/ACF/Gn/2.json"
         const val CHAPTER_ONE_JSON =
             """{"chapter":1,"verses":[{"number":1,"text":"In the beginning","heading":"The creation"},""" +
                 """{"number":2,"text":"And the earth was without form"},{"number":99,"text":"Unknown verse"}]}"""
         const val CHAPTER_TWO_JSON = """{"chapter":2,"verses":[{"number":1,"text":"Thus the heavens were finished"}]}"""
+        const val BOOK_JSON = """{"version":"ACF","book":"Gn","chapters":[$CHAPTER_ONE_JSON,$CHAPTER_TWO_JSON]}"""
     }
 }
