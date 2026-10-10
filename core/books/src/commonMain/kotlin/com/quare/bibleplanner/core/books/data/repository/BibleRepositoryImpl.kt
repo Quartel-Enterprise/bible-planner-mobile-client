@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
+import com.quare.bibleplanner.core.books.data.model.BibleVersionsDownloadState
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
@@ -12,7 +13,6 @@ import com.quare.bibleplanner.core.provider.language.domain.provider.LanguagePro
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.invalidation.TableInvalidationObserver
-import com.quare.bibleplanner.core.provider.room.relation.VersionChapterCount
 import com.quare.bibleplanner.core.provider.room.utils.DatabaseTables
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -20,8 +20,10 @@ import com.quare.bibleplanner.core.utils.throttleLatest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -31,7 +33,7 @@ internal class BibleRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val languageProvider: LanguageProvider,
     private val observeTableInvalidation: TableInvalidationObserver,
-    bibleVersionDao: BibleVersionDao,
+    private val bibleVersionDao: BibleVersionDao,
     bibleVersionRepository: BibleVersionRepository,
     bibleMapper: BibleMapper,
     applicationScope: ApplicationScope,
@@ -48,13 +50,14 @@ internal class BibleRepositoryImpl(
         combine(
             bibleVersionRepository.observeVersions(),
             getSelectedVersionIdFlow(),
-            bibleVersionDao.getAllVersionsFlow(),
-            observeDownloadedChaptersPerVersion(),
-        ) { supportedVersions, selectedVersionId, dbVersions, chapterCounts ->
-            val downloadedChaptersMap = chapterCounts.associate { it.bibleVersionId to it.downloadedChapters }
+            observeDownloadState(),
+        ) { supportedVersions, selectedVersionId, downloadState ->
+            val downloadedChaptersMap = downloadState.chapterCounts.associate {
+                it.bibleVersionId to it.downloadedChapters
+            }
             bibleMapper
                 .map(
-                    dataBaseVersions = dbVersions,
+                    dataBaseVersions = downloadState.versions,
                     supportedVersions = supportedVersions,
                     downloadedChaptersMap = downloadedChaptersMap,
                 ).map { bible ->
@@ -90,11 +93,23 @@ internal class BibleRepositoryImpl(
         )
     }
 
-    private fun observeDownloadedChaptersPerVersion(): Flow<List<VersionChapterCount>> =
-        observeTableInvalidation(DatabaseTables.VERSE_TEXTS)
-            .throttleLatest(downloadedChaptersThrottle)
-            .map { verseDao.getDownloadedChaptersPerVersion() }
-            .distinctUntilChanged()
+    /*
+     * Why: reading the statuses and the chapter counts apart let a version show done with a count
+     * from before its last chapters, flashing "Update available" when a download finished. A status
+     * write recounts right away, and statuses are read first, so a done version comes with every
+     * chapter that was written before it.
+     */
+    private fun observeDownloadState(): Flow<BibleVersionsDownloadState> = merge(
+        observeTableInvalidation(DatabaseTables.VERSE_TEXTS).throttleLatest(downloadedChaptersThrottle),
+        observeTableInvalidation(DatabaseTables.BIBLE_VERSIONS),
+    ).conflate()
+        .map {
+            val versions = bibleVersionDao.getAllVersions()
+            BibleVersionsDownloadState(
+                versions = versions,
+                chapterCounts = verseDao.getDownloadedChaptersPerVersion(),
+            )
+        }.distinctUntilChanged()
 
     private fun getDefaultVersion(): String = when (languageProvider.getAppLanguage()) {
         Language.PORTUGUESE_BRAZIL -> "A21"

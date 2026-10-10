@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.room.dao
 
 import androidx.room3.Dao
+import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Update
@@ -48,6 +49,10 @@ interface VerseDao {
 
     @Upsert
     suspend fun upsertVerses(verses: List<VerseEntity>): List<Long>
+
+    // Why: returns nothing, unlike upsertVerses, so seeding pays no row id round trip for ~31k verses.
+    @Insert
+    suspend fun insertVerses(verses: List<VerseEntity>)
 
     /*
      * Why: returns nothing on purpose; Room row ids cost a last_insert_rowid() round trip per

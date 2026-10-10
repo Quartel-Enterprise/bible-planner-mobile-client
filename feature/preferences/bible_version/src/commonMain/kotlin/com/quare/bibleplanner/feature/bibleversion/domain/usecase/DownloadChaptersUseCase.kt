@@ -43,6 +43,8 @@ class DownloadChaptersUseCase(
     ): Result<Unit> = suspendRunCatching {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
         val chapters = chapterDao.getChaptersByBookId(bookId.name)
+        // Why: no chapter rows means the book was never seeded, not that it has nothing to download.
+        check(chapters.isNotEmpty()) { "$bookId has no chapters to download" }
         val downloadedChapterIds = verseDao
             .getDownloadedChapterIds(
                 versionId = versionId,

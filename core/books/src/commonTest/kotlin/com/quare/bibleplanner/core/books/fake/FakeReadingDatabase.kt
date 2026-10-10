@@ -262,6 +262,10 @@ internal class FakeReadingDatabase {
         override fun getVersesWithTextsByChapterIdFlow(chapterId: Long): Flow<List<VerseWithTexts>> =
             version.map { versesWithTexts(chapterId) }
 
+        override suspend fun insertVerses(verses: List<VerseEntity>) {
+            upsertVerses(verses)
+        }
+
         override suspend fun upsertVerses(verses: List<VerseEntity>): List<Long> = verses.map { verse ->
             recordWrite()
             val id = nextVerseId()

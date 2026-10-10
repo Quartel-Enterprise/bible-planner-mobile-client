@@ -58,38 +58,38 @@ class BooksRepositoryImpl(
 
             val books = booksLocalDataSource.getBooks()
 
+            val bookEntities = books.map { book ->
+                BookEntity(
+                    id = book.id.name,
+                    isRead = book.isRead,
+                    isFavorite = book.isFavorite,
+                    favoriteUpdatedAt = null,
+                    isFavoritePendingSync = false,
+                )
+            }
+            val chapters = books.flatMap { book -> book.chapters.map { chapter -> book.id to chapter } }
+            val chapterEntities = chapters.map { (bookId, chapter) ->
+                ChapterEntity(
+                    number = chapter.number,
+                    bookId = bookId.name,
+                    isRead = chapter.isRead,
+                    id = 0,
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
+                )
+            }
+
             /*
-             * Why: seeding takes seconds on a slow device, and a Bible download started meanwhile found
-             * no chapters for the books not yet inserted, skipped them and was marked done.
+             * Why: seeding in one transaction keeps a Bible download started meanwhile from finding only
+             * some books, skipping the rest and being marked done. One insert per table keeps the
+             * transaction, which blocks every other write, as short as possible.
              */
             runInTransaction {
-                val bookEntities = books.map { book ->
-                    BookEntity(
-                        id = book.id.name,
-                        isRead = book.isRead,
-                        isFavorite = book.isFavorite,
-                        favoriteUpdatedAt = null,
-                        isFavoritePendingSync = false,
-                    )
-                }
                 bookDao.insertBooks(bookEntities)
-
-                books.forEach { book ->
-                    val chapterEntities = book.chapters.map { chapter ->
-                        ChapterEntity(
-                            number = chapter.number,
-                            bookId = book.id.name,
-                            isRead = chapter.isRead,
-                            id = 0,
-                            readUpdatedAt = null,
-                            isReadPendingSync = false,
-                        )
-                    }
-                    val chapterIds = chapterDao.insertChapters(chapterEntities)
-
-                    book.chapters.forEachIndexed { chapterIndex, chapter ->
-                        val chapterId = chapterIds[chapterIndex]
-                        val verseEntities = chapter.verses.map { verse ->
+                val chapterIds = chapterDao.insertChapters(chapterEntities)
+                val verseEntities = chapters
+                    .zip(chapterIds) { (_, chapter), chapterId ->
+                        chapter.verses.map { verse ->
                             VerseEntity(
                                 id = 0,
                                 number = verse.number,
@@ -99,9 +99,8 @@ class BooksRepositoryImpl(
                                 isReadPendingSync = false,
                             )
                         }
-                        verseDao.upsertVerses(verseEntities)
-                    }
-                }
+                    }.flatten()
+                verseDao.insertVerses(verseEntities)
             }
         }
     }

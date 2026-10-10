@@ -21,6 +21,7 @@ import com.quare.bibleplanner.feature.bibleversion.fake.NeverLoadingBibleReposit
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifier
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
+import com.quare.bibleplanner.feature.bibleversion.fake.chaptersOfOtherBooks
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
@@ -171,7 +172,8 @@ internal class InProcessBibleVersionDownloaderTest {
                 ),
             ),
         )
-        val verseDao = InMemoryVerseDao()
+        val chapters = chaptersOfOtherBooks()
+        val verseDao = InMemoryVerseDao(downloadedChapterIds = chapters.map { it.id })
         downloader = InProcessBibleVersionDownloader(
             bibleVersionDao = bibleVersionDao,
             downloadBible = DownloadBibleUseCase(
@@ -188,7 +190,7 @@ internal class InProcessBibleVersionDownloaderTest {
                     ),
                     downloadChapters = DownloadChaptersUseCase(
                         supabaseBookAbbreviationMapper = SupabaseBookAbbreviationMapper(),
-                        chapterDao = InMemoryChapterDao(emptyList()),
+                        chapterDao = InMemoryChapterDao(chapters),
                         verseDao = verseDao,
                         bucketApi = StorageServer(filesByPath = emptyMap()).bucketApi,
                     ),

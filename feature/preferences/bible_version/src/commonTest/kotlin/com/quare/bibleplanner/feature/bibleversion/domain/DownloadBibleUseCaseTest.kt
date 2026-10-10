@@ -24,6 +24,7 @@ import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
+import com.quare.bibleplanner.feature.bibleversion.fake.chaptersOfOtherBooks
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -31,6 +32,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 internal class DownloadBibleUseCaseTest {
+    private val otherBooksChapters = chaptersOfOtherBooks(BookId.GEN)
+    private val totalChapters = BookId.entries.size
     private lateinit var useCase: DownloadBibleUseCase
     private lateinit var bibleVersionDao: InMemoryBibleVersionDao
     private lateinit var server: StorageServer
@@ -51,7 +54,7 @@ internal class DownloadBibleUseCaseTest {
                 expected = BibleVersionEntity(
                     id = VERSION_ID,
                     status = DownloadStatus.DONE,
-                    totalChapters = TOTAL_CHAPTERS,
+                    totalChapters = totalChapters,
                     contentVersion = REMOTE_CONTENT_VERSION,
                 ),
                 actual = bibleVersionDao.versions[VERSION_ID],
@@ -89,7 +92,7 @@ internal class DownloadBibleUseCaseTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
-            downloadedChapterIds = listOf(GENESIS_CHAPTER_ID),
+            downloadedChapterIds = otherBooksChapters.map { it.id } + GENESIS_CHAPTER_ID,
         )
 
         // When
@@ -106,7 +109,7 @@ internal class DownloadBibleUseCaseTest {
         // Given
         prepareScenario(
             status = DownloadStatus.DONE,
-            downloadedChapterIds = emptyList(),
+            downloadedChapterIds = otherBooksChapters.map { it.id },
         )
 
         // When
@@ -201,7 +204,7 @@ internal class DownloadBibleUseCaseTest {
         // Given
         prepareScenario(
             status = DownloadStatus.IN_PROGRESS,
-            totalChapters = TOTAL_CHAPTERS + 1,
+            totalChapters = totalChapters + 1,
         )
 
         // When
@@ -226,8 +229,8 @@ internal class DownloadBibleUseCaseTest {
 
     private fun prepareScenario(
         status: DownloadStatus,
-        totalChapters: Int = TOTAL_CHAPTERS,
-        downloadedChapterIds: List<Long> = emptyList(),
+        totalChapters: Int = this.totalChapters,
+        downloadedChapterIds: List<Long> = otherBooksChapters.map { it.id },
         booksRepository: BooksRepository = FakeBooksRepository(emptyList()),
         remoteVersions: Result<List<VersionModel>> = Result.success(
             listOf(
@@ -236,7 +239,7 @@ internal class DownloadBibleUseCaseTest {
                     name = "Almeida Corrigida Fiel",
                     version = REMOTE_CONTENT_VERSION,
                     language = Language.PORTUGUESE_BRAZIL,
-                    chapters = TOTAL_CHAPTERS,
+                    chapters = totalChapters,
                     size = null,
                 ),
             ),
@@ -293,7 +296,7 @@ internal class DownloadBibleUseCaseTest {
                                 readUpdatedAt = null,
                                 isReadPendingSync = false,
                             ),
-                        ),
+                        ) + otherBooksChapters,
                     ),
                     verseDao = verseDao,
                     bucketApi = server.bucketApi,
@@ -305,7 +308,6 @@ internal class DownloadBibleUseCaseTest {
 
     private companion object {
         const val VERSION_ID = "acf"
-        const val TOTAL_CHAPTERS = 1
         const val GENESIS_CHAPTER_ID = 1L
         const val LOCAL_CONTENT_VERSION = "1.0.0"
         const val REMOTE_CONTENT_VERSION = "1.1.0"

@@ -7,6 +7,7 @@ import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbre
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
+import com.quare.bibleplanner.feature.bibleversion.fake.chaptersOfOtherBooks
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -57,6 +58,7 @@ internal class DownloadBooksInParallelUseCaseTest {
     }
 
     private fun prepareScenario(files: Map<String, String>) {
+        val otherBooksChapters = chaptersOfOtherBooks(BookId.GEN, BookId.MAT)
         verseDao = InMemoryVerseDao(
             verses = listOf(
                 VerseEntity(
@@ -76,6 +78,7 @@ internal class DownloadBooksInParallelUseCaseTest {
                     isReadPendingSync = false,
                 ),
             ),
+            downloadedChapterIds = otherBooksChapters.map { it.id },
         )
         useCase = DownloadBooksInParallelUseCase(
             getPrioritizedBookIds = GetPrioritizedBookIdsUseCase(
@@ -102,7 +105,7 @@ internal class DownloadBooksInParallelUseCaseTest {
                             readUpdatedAt = null,
                             isReadPendingSync = false,
                         ),
-                    ),
+                    ) + otherBooksChapters,
                 ),
                 verseDao = verseDao,
                 bucketApi = StorageServer(filesByPath = files).bucketApi,
