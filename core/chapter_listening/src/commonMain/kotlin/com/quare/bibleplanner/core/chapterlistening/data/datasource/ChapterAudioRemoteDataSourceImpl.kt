@@ -115,14 +115,22 @@ internal class ChapterAudioRemoteDataSourceImpl(
      */
     private suspend fun <T> withFreshSession(call: suspend () -> T): T {
         // Why: after a while in the background the token has predictably expired, so it is renewed before the call.
-        if (isSessionExpiring()) renewSession(auth.currentAccessTokenOrNull())
+        if (isSessionExpiring()) {
+            renewSession(
+                usedToken = auth.currentAccessTokenOrNull(),
+                isRefusalOnly = true,
+            )
+        }
         val usedToken = auth.currentAccessTokenOrNull()
         val result = suspendRunCatching { call() }
         val failure = result.exceptionOrNull()
         if (failure == null || !failure.isUnauthorized() || auth.currentSessionOrNull() == null) {
             return result.getOrThrow()
         }
-        renewSession(usedToken)
+        renewSession(
+            usedToken = usedToken,
+            isRefusalOnly = false,
+        )
         return call()
     }
 
@@ -136,7 +144,14 @@ internal class ChapterAudioRemoteDataSourceImpl(
         return expiresAt.toEpochMilliseconds().milliseconds - now <= expiryMargin
     }
 
-    private suspend fun renewSession(usedToken: String?) {
+    /*
+     * Why: a renewal ahead of the call only gives up on a refused session; any other failure (offline,
+     * say) is left to the call itself, whose own error says what went wrong.
+     */
+    private suspend fun renewSession(
+        usedToken: String?,
+        isRefusalOnly: Boolean,
+    ) {
         renewalMutex.withLock {
             if (auth.currentAccessTokenOrNull() != usedToken) return
             when (checkRemoteSessionState()) {
@@ -145,7 +160,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
                 RemoteSessionState.REVOKED -> throw NotSignedInException()
 
                 // Why: a rate limit or an auth server error is not the missing connection an IOException reads as.
-                RemoteSessionState.UNKNOWN -> throw SessionRenewalException()
+                RemoteSessionState.UNKNOWN -> if (!isRefusalOnly) throw SessionRenewalException()
             }
         }
     }

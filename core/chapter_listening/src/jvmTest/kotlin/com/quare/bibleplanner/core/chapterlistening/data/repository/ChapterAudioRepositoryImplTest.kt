@@ -240,6 +240,24 @@ internal class ChapterAudioRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN an expiring session while offline WHEN getting the audio THEN asks for a connection`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { throw IOException("offline") },
+            now = 4_000_000_000_000L,
+        )
+
+        // When
+        val result = repository.loadChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.NO_CONNECTION), result)
+    }
+
+    @Test
     fun `GIVEN a manifest that leaves out the headings WHEN getting the audio THEN reads the verses`() = runTest {
         // Given
         prepareScenario(
@@ -700,6 +718,7 @@ internal class ChapterAudioRepositoryImplTest {
     private suspend fun prepareScenario(
         respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData,
         isSignedIn: Boolean = true,
+        now: Long = 0L,
     ) {
         requests = mutableListOf()
         val recorded = requests
@@ -754,7 +773,7 @@ internal class ChapterAudioRepositoryImplTest {
                 httpClient = HttpClient(engine),
                 auth = client.auth,
                 json = json,
-                currentTimestampProvider = { 0L },
+                currentTimestampProvider = { now },
                 checkRemoteSessionState = {
                     suspendRunCatching { client.auth.refreshCurrentSession() }.fold(
                         onSuccess = { RemoteSessionState.ACTIVE },

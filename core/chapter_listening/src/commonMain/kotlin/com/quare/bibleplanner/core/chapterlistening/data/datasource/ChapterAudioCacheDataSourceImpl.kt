@@ -38,6 +38,7 @@ internal class ChapterAudioCacheDataSourceImpl(
     private val indexPath = Path(directory.path, INDEX_FILE_NAME)
     private var loadedEntries: List<ChapterAudioCacheEntryDto>? = null
     private var indexWrittenAt: Long? = null
+    private var hasSwept = false
 
     // Why: replaced revisions stay on disk until the next launch, so their bytes still count against the cap.
     private val retiredBytesByFileName = mutableMapOf<String, Long>()
@@ -192,8 +193,12 @@ internal class ChapterAudioCacheDataSourceImpl(
      * killed, everything when it is missing or can't be read) could never be evicted.
      */
     private fun readEntries(): List<ChapterAudioCacheEntryDto> {
+        // Why: flagged first, so a read that fails and is retried later never sweeps a file being written.
+        val shouldSweep = !hasSwept
+        hasSwept = true
         if (!SystemFileSystem.exists(directory.path)) return emptyList()
         val entries = if (SystemFileSystem.exists(indexPath)) readIndexEntries() else emptyList()
+        if (!shouldSweep) return entries
         val knownNames = entries
             .flatMap { entry ->
                 listOf(toAudioPath(entry.fileName).name, toManifestPath(entry.fileName).name)
