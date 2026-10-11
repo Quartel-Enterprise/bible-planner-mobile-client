@@ -22,8 +22,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 /*
  * Why: connecting a MediaController is what starts the MediaSessionService; Media3 then moves it to
- * the foreground with the media notification while speech plays, which keeps the process alive with
- * the screen off. The player is not an ExoPlayer, so audio focus and the noisy broadcast are handled here.
+ * the foreground with the media notification while the chapter plays, which keeps the process alive
+ * with the screen off. The session player is not the ExoPlayer that decodes the audio, so audio
+ * focus and the noisy broadcast are handled here.
  */
 internal class AndroidListeningMediaSession(
     private val context: Context,

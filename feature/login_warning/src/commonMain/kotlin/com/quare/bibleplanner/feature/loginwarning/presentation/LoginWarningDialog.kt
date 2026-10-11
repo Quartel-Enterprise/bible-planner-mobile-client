@@ -5,6 +5,7 @@ import bibleplanner.feature.login_warning.generated.resources.Res
 import bibleplanner.feature.login_warning.generated.resources.login_warning_dismiss
 import bibleplanner.feature.login_warning.generated.resources.login_warning_login
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_ai_chat
+import bibleplanner.feature.login_warning.generated.resources.login_warning_message_chapter_listening
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_day_study
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_language
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_purchase
@@ -36,6 +37,7 @@ internal fun LoginWarningReason.toMessageResource(): StringResource = when (this
     LoginWarningReason.Purchase -> Res.string.login_warning_message_purchase
     LoginWarningReason.DayStudy, LoginWarningReason.ChapterStudy -> Res.string.login_warning_message_day_study
     LoginWarningReason.AiChat -> Res.string.login_warning_message_ai_chat
+    LoginWarningReason.ChapterListening -> Res.string.login_warning_message_chapter_listening
     LoginWarningReason.Preferences.Theme -> Res.string.login_warning_message_theme
     LoginWarningReason.Preferences.Language -> Res.string.login_warning_message_language
     LoginWarningReason.Preferences.StudySuggestion -> Res.string.login_warning_message_study_suggestion

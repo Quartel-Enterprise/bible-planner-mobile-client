@@ -9,7 +9,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayMod
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,13 +24,9 @@ internal class FakeChapterListeningController(
             session = session,
             settings = ChapterListeningSettingsModel(
                 speed = 1f,
-                voiceId = null,
                 isAutoNextEnabled = true,
             ),
             sleepTimer = ListeningSleepTimerModel.Off,
-            voices = SpeechVoicesModel.Loading,
-            selectedVoiceId = null,
-            previewingVoiceId = null,
         ),
     )
     override val events = MutableSharedFlow<ChapterListeningEventModel>(extraBufferCapacity = 1)
@@ -109,17 +104,6 @@ internal class FakeChapterListeningController(
         calls += "setSpeed:$speed"
     }
 
-    override fun selectVoice(voiceId: String) {
-        calls += "selectVoice:$voiceId"
-    }
-
-    override fun previewVoice(
-        voiceId: String,
-        sampleText: String,
-    ) {
-        calls += "previewVoice:$voiceId:$sampleText"
-    }
-
     override fun setSleepTimer(option: ListeningSleepTimerOption) {
         calls += "setSleepTimer:${option.key}"
     }
@@ -138,9 +122,5 @@ internal class FakeChapterListeningController(
 
     override fun detachReader() {
         attachedReaders--
-    }
-
-    override fun openVoiceSettings() {
-        calls += "openVoiceSettings"
     }
 }

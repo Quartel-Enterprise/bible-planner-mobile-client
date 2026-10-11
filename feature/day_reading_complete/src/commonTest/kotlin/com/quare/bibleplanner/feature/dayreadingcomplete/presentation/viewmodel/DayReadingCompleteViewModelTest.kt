@@ -205,6 +205,7 @@ internal class DayReadingCompleteViewModelTest {
                         paywallSource = PaywallEntrySource.DAY_STUDY,
                         requestKey = SHEET_REQUEST_KEY,
                         rewardedRemainingToday = 2,
+                        canUnlockWithoutVideo = false,
                     ),
                 ),
                 actual = commands.last(),

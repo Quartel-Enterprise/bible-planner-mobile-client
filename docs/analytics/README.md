@@ -317,19 +317,18 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 |---|---|---|
 | [chapter_listening_started](events/chapter_listening_started.md) | P1 | Listening |
 | [chapter_listening_completed](events/chapter_listening_completed.md) | P1 | Listening |
-| [chapter_listening_voice_unavailable](events/chapter_listening_voice_unavailable.md) | P2 | Listening |
+| [chapter_listening_audio_unavailable](events/chapter_listening_audio_unavailable.md) | P2 | Listening |
 | [chapter_listening_interrupted](events/chapter_listening_interrupted.md) | P2 | Listening |
 | [chapter_listening_sleep_timer_ended](events/chapter_listening_sleep_timer_ended.md) | P2 | Listening |
 | [chapter_listening_locked](events/chapter_listening_locked.md) | P1 | Listening |
+| [chapter_listening_free_unlocked](events/chapter_listening_free_unlocked.md) | P1 | Listening |
 | [chapter_listening_entry_clicked](events/chapter_listening_entry_clicked.md) | P1 | Listening |
 | [chapter_listening_player_opened](events/chapter_listening_player_opened.md) | P2 | Listening |
 | [chapter_listening_player_closed](events/chapter_listening_player_closed.md) | P2 | Listening |
 | [chapter_listening_control_clicked](events/chapter_listening_control_clicked.md) | P2 | Listening |
 | [chapter_listening_stopped](events/chapter_listening_stopped.md) | P2 | Listening |
+| [chapter_listening_sign_in_clicked](events/chapter_listening_sign_in_clicked.md) | P2 | Listening |
 | [chapter_listening_speed_changed](events/chapter_listening_speed_changed.md) | P2 | Listening |
-| [chapter_listening_voice_changed](events/chapter_listening_voice_changed.md) | P2 | Listening |
-| [chapter_listening_voice_previewed](events/chapter_listening_voice_previewed.md) | P2 | Listening |
-| [chapter_listening_voice_settings_opened](events/chapter_listening_voice_settings_opened.md) | P2 | Listening |
 | [chapter_listening_sleep_timer_set](events/chapter_listening_sleep_timer_set.md) | P2 | Listening |
 | [chapter_listening_auto_next_toggled](events/chapter_listening_auto_next_toggled.md) | P2 | Listening |
 | [chapter_listening_unlock_clicked](events/chapter_listening_unlock_clicked.md) | P1 | Listening |
@@ -434,6 +433,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [paywall_teaser_dismissed](events/paywall_teaser_dismissed.md) | P2 | Monetization |
 | [unlock_sheet_viewed](events/unlock_sheet_viewed.md) | P1 | Monetization |
 | [unlock_subscribe_clicked](events/unlock_subscribe_clicked.md) | P1 | Monetization |
+| [unlock_without_video_clicked](events/unlock_without_video_clicked.md) | P1 | Monetization |
 | [rewarded_ad_started](events/rewarded_ad_started.md) | P1 | Monetization |
 | [rewarded_ad_earned](events/rewarded_ad_earned.md) | P1 | Monetization |
 | [rewarded_ad_dismissed](events/rewarded_ad_dismissed.md) | P2 | Monetization |

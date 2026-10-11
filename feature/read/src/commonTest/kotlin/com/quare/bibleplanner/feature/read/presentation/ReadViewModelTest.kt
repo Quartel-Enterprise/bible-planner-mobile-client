@@ -1273,6 +1273,7 @@ internal class ReadViewModelTest {
                             paywallSource = PaywallEntrySource.CHAPTER_STUDY,
                             requestKey = READER_REQUEST_KEY,
                             rewardedRemainingToday = 2,
+                            canUnlockWithoutVideo = false,
                         ),
                     ),
                 ),

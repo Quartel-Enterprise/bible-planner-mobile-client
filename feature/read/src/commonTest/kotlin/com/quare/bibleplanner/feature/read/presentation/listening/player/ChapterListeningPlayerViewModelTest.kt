@@ -11,9 +11,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVoiceModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -52,12 +50,6 @@ internal class ChapterListeningPlayerViewModelTest {
     private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
     private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
     private val genesisThree = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
-    private val enhancedVoice = ListeningVoiceModel(
-        id = "voice-1",
-        name = "Luciana",
-        languageTag = "pt-BR",
-        isEnhanced = true,
-    )
 
     private lateinit var viewModel: ChapterListeningPlayerViewModel
     private lateinit var controller: FakeChapterListeningController
@@ -89,7 +81,6 @@ internal class ChapterListeningPlayerViewModelTest {
             assertEquals(1f, state.speed)
             assertTrue(state.isAutoNextEnabled)
             assertFalse(state.isAutoNextLocked)
-            assertEquals(ListeningVoicesUiModel.Loading, state.voices)
             assertEquals(
                 ListeningSleepTimerUiModel(
                     selectedOption = ListeningSleepTimerOption.OFF,
@@ -130,57 +121,6 @@ internal class ChapterListeningPlayerViewModelTest {
             // Then
             assertTrue(state.isAutoNextLocked)
             assertTrue(state.isAutoNextEnabled)
-        }
-
-    @Test
-    fun `GIVEN installed voices WHEN observing THEN marks the chosen and the previewed one`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(session = listeningSession(chapter = genesisOne))
-
-            // When
-            controller.state.update {
-                it.copy(
-                    voices = SpeechVoicesModel.Available(
-                        voices = listOf(enhancedVoice),
-                        shouldSuggestEnhancedVoice = true,
-                    ),
-                    selectedVoiceId = enhancedVoice.id,
-                    previewingVoiceId = enhancedVoice.id,
-                )
-            }
-
-            // Then
-            assertEquals(
-                ListeningVoicesUiModel.Available(
-                    options = listOf(
-                        ListeningVoiceOptionUiModel(
-                            id = enhancedVoice.id,
-                            name = enhancedVoice.name,
-                            position = 1,
-                            languageTag = enhancedVoice.languageTag,
-                            isEnhanced = true,
-                            isSelected = true,
-                            isPreviewing = true,
-                        ),
-                    ),
-                    shouldSuggestEnhancedVoice = true,
-                ),
-                viewModel.uiState.value.voices,
-            )
-        }
-
-    @Test
-    fun `GIVEN no voice for the language WHEN observing THEN says which language is missing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(session = listeningSession(chapter = genesisOne))
-
-            // When
-            controller.state.update { it.copy(voices = SpeechVoicesModel.Unavailable) }
-
-            // Then
-            assertEquals(ListeningVoicesUiModel.Unavailable("en-US"), viewModel.uiState.value.voices)
         }
 
     @Test
@@ -243,7 +183,6 @@ internal class ChapterListeningPlayerViewModelTest {
             ChapterListeningPlayerUiEvent.OnNextChapterClick,
             ChapterListeningPlayerUiEvent.OnSeek(1),
             ChapterListeningPlayerUiEvent.OnSpeedClick(1.25f),
-            ChapterListeningPlayerUiEvent.OnVoiceSettingsClick,
             ChapterListeningPlayerUiEvent.OnSleepTimerClick(ListeningSleepTimerOption.END_OF_CHAPTER),
             ChapterListeningPlayerUiEvent.OnAutoNextToggle(false),
         ).forEach(viewModel::onEvent)
@@ -258,7 +197,6 @@ internal class ChapterListeningPlayerViewModelTest {
                 "nextChapter",
                 "skipToVerse:1",
                 "setSpeed:1.25",
-                "openVoiceSettings",
                 "setSleepTimer:end_of_chapter",
                 "setAutoNextEnabled:false",
             ),
@@ -270,32 +208,6 @@ internal class ChapterListeningPlayerViewModelTest {
             ),
         )
     }
-
-    @Test
-    fun `GIVEN a voice WHEN choosing and previewing it THEN reads the current verse with it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(session = listeningSession(chapter = genesisOne))
-            val option = ListeningVoiceOptionUiModel(
-                id = enhancedVoice.id,
-                name = enhancedVoice.name,
-                position = 1,
-                languageTag = enhancedVoice.languageTag,
-                isEnhanced = true,
-                isSelected = false,
-                isPreviewing = false,
-            )
-
-            // When
-            viewModel.onEvent(ChapterListeningPlayerUiEvent.OnVoiceClick(option))
-            viewModel.onEvent(ChapterListeningPlayerUiEvent.OnVoicePreviewClick(option))
-
-            // Then
-            assertEquals(
-                listOf("selectVoice:voice-1", "previewVoice:voice-1:one two three four five"),
-                controller.calls,
-            )
-        }
 
     @Test
     fun `GIVEN a locked next chapter WHEN skipping to it THEN asks to unlock it and keeps playing`() =
@@ -380,6 +292,7 @@ internal class ChapterListeningPlayerViewModelTest {
             prepareRewardedUnlockOffer = { false },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         viewModel = ViewModelProvider.create(
@@ -392,10 +305,11 @@ internal class ChapterListeningPlayerViewModelTest {
                         playbackActions = ListeningPlaybackActions(
                             controller = controller,
                             gate = gate,
+                            navigator = navigator,
                             trackEvent = trackEvent,
                         ),
                         navigator = navigator,
-                        playerUiModelMapper = ListeningPlayerUiModelMapper(EstimateListeningTimeUseCase()),
+                        playerUiModelMapper = ListeningPlayerUiModelMapper(GetListeningTimeUseCase()),
                         trackEvent = trackEvent,
                     )
                 }

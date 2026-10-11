@@ -400,6 +400,7 @@ internal class DayStudyViewModelTest {
                             paywallSource = PaywallEntrySource.DAY_STUDY,
                             requestKey = "day_study_card|$jobKey",
                             rewardedRemainingToday = 2,
+                            canUnlockWithoutVideo = false,
                         ),
                     ),
                 ),

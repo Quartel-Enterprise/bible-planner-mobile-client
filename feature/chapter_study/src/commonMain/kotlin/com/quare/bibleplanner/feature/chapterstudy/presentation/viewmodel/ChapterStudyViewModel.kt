@@ -230,6 +230,7 @@ internal class ChapterStudyViewModel(
                 paywallSource = PaywallEntrySource.CHAPTER_STUDY,
                 requestKey = rewardedUnlockRequestKey,
                 rewardedRemainingToday = hero.quota?.rewardedRemainingToday ?: 0,
+                canUnlockWithoutVideo = false,
             )
         } else {
             PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT)

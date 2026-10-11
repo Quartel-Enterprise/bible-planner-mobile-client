@@ -1,13 +1,12 @@
 package com.quare.bibleplanner.feature.read.presentation.listening.mapper
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVerseModel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
 
 internal class ListeningPlayerUiModelMapper(
-    private val estimateListeningTime: EstimateListeningTimeUseCase,
+    private val getListeningTime: GetListeningTimeUseCase,
 ) {
     fun map(
         session: ListeningSessionModel,
@@ -15,8 +14,8 @@ internal class ListeningPlayerUiModelMapper(
     ): ListeningPlayerUiModel {
         val verse = session.verses.getOrNull(session.verseIndex)
         val verseCount = session.verses.size
-        val time = estimateListeningTime(
-            wordCounts = session.verses.map(ListeningVerseModel::wordCount),
+        val time = getListeningTime(
+            verses = session.verses,
             verseIndex = session.verseIndex,
             verseProgress = session.verseProgress,
             speed = speed,
@@ -24,7 +23,7 @@ internal class ListeningPlayerUiModelMapper(
         return ListeningPlayerUiModel(
             chapter = session.segment.chapter,
             verseNumber = verse?.number,
-            verseText = verse?.text,
+            verseText = verse?.text?.takeIf(String::isNotBlank),
             verseIndex = session.verseIndex,
             verseCount = verseCount,
             status = session.status,
@@ -33,7 +32,6 @@ internal class ListeningPlayerUiModelMapper(
             remaining = time.remaining,
             total = time.total,
             versionAbbreviation = session.bibleVersionId.uppercase(),
-            languageTag = session.languageTag,
             dayProgress = session.day?.let { day ->
                 ListeningDayProgressUiModel(
                     chapters = day.segments.map { segment -> segment.chapter },

@@ -338,6 +338,7 @@ class ReadViewModel(
                 paywallSource = PaywallEntrySource.CHAPTER_STUDY,
                 requestKey = requestKey,
                 rewardedRemainingToday = rewardedRemainingToday,
+                canUnlockWithoutVideo = false,
             ),
         )
     }

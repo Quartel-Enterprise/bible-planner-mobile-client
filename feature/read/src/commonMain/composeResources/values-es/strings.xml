@@ -62,9 +62,6 @@
     <string name="listening_listening_remaining">Escuchando · quedan %1$s</string>
     <string name="listening_paused_at">En pausa en %1$s</string>
     <string name="listening_preparing">Preparando la voz…</string>
-    <string name="listening_voice_unavailable_title">Voz no disponible en %1$s</string>
-    <string name="listening_voice_unavailable_body">Instala una voz en %1$s en los ajustes del dispositivo</string>
-    <string name="listening_settings">Ajustes</string>
     <string name="listening_interrupted_title">Audio interrumpido</string>
     <string name="listening_resume">Reanudar</string>
     <string name="listening_mini_playing">%1$s · quedan %2$s</string>
@@ -92,17 +89,6 @@
     <string name="listening_verse_of">Versículo %1$d de %2$d</string>
     <string name="listening_time_remaining">%1$s · quedan %2$s</string>
     <string name="listening_speed">Velocidad</string>
-    <string name="listening_voice">Voz</string>
-    <string name="listening_voice_none">Ninguna</string>
-    <string name="listening_voice_fallback_name">Voz %1$d</string>
-    <string name="listening_voice_enhanced">%1$s · Mejorada</string>
-    <string name="listening_voice_standard">%1$s · Estándar</string>
-    <string name="listening_voice_preview">Escuchar</string>
-    <string name="listening_voice_unavailable_sheet_title">Ninguna voz en %1$s en este dispositivo</string>
-    <string name="listening_voice_unavailable_sheet_body">Esta Biblia está en %1$s y el dispositivo solo tiene voces en otros idiomas. Instala una en los ajustes del sistema y vuelve aquí.</string>
-    <string name="listening_open_device_settings">Abrir ajustes del dispositivo</string>
-    <string name="listening_enhanced_hint">Descarga una voz mejorada en Ajustes para una lectura más natural.</string>
-    <string name="listening_enhanced_hint_path">Ajustes › Accesibilidad › Contenido leído › Voces</string>
     <string name="listening_sleep_timer">Temporizador para dormir</string>
     <string name="listening_sleep_timer_off">Apagado</string>
     <string name="listening_sleep_timer_minutes">%1$d min</string>
@@ -114,8 +100,16 @@
     <string name="listening_auto_next_off">Se detiene al final de este capítulo</string>
     <string name="listening_auto_next_day">En la lectura de hoy, los capítulos del día suenan en secuencia</string>
     <string name="listening_locked_sheet">Desbloquea %1$s para seguir escuchando</string>
-    <string name="listening_language_portuguese">portugués</string>
-    <string name="listening_language_english">inglés</string>
-    <string name="listening_language_spanish">español</string>
     <string name="listening_dismiss">Descartar</string>
+    <string name="listening_no_connection_title">Sin conexión</string>
+    <string name="listening_no_connection_body">Conéctate a internet para escuchar este capítulo</string>
+    <string name="listening_sign_in_title">Inicia sesión para escuchar</string>
+    <string name="listening_sign_in_body">Los capítulos narrados necesitan una cuenta</string>
+    <string name="listening_sign_in">Iniciar sesión</string>
+    <string name="listening_version_unavailable_title">Sin narración para la %1$s</string>
+    <string name="listening_version_unavailable_body">Elige otra versión de la Biblia para escuchar</string>
+    <string name="listening_audio_unavailable_title">Audio no disponible</string>
+    <string name="listening_audio_unavailable_body">No se pudo cargar este capítulo ahora</string>
+    <string name="listening_retry">Reintentar</string>
+    <string name="listening_ai_voice">Narrado por voces generadas por IA</string>
 </resources>

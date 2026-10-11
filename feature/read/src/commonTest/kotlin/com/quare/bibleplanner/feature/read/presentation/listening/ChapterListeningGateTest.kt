@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
@@ -29,6 +31,7 @@ internal class ChapterListeningGateTest {
     private lateinit var gate: ChapterListeningGate
     private lateinit var commands: MutableList<NavigationCommand>
     private lateinit var recordedUnlocks: MutableList<ChapterLocationModel>
+    private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private var allowedCount = 0
 
     @Test
@@ -87,12 +90,9 @@ internal class ChapterListeningGateTest {
     }
 
     @Test
-    fun `GIVEN an unlock left but no ad to show WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
+    fun `GIVEN a signed-out user WHEN requesting THEN asks to log in first`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(
-            access = { ChapterListeningAccessModel.UnlockAvailable(1) },
-            isOfferPrepared = false,
-        )
+        prepareScenario(access = { ChapterListeningAccessModel.LoginRequired })
 
         // When
         gate.request(
@@ -104,16 +104,66 @@ internal class ChapterListeningGateTest {
         // Then
         assertEquals(
             listOf<NavigationCommand>(
-                NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_LIMIT)),
+                NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.ChapterListening.key)),
             ),
             commands,
         )
+        assertEquals(0, allowedCount)
     }
+
+    @Test
+    fun `GIVEN no video to offer and the free chapter unused WHEN requesting THEN unlocks it and plays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = true) },
+                isOfferPrepared = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(listOf(chapter), recordedUnlocks)
+            assertEquals(1, allowedCount)
+            assertTrue(commands.isEmpty())
+            assertEquals("chapter_listening_free_unlocked", trackedEvents.single().first)
+        }
+
+    @Test
+    fun `GIVEN no video to offer and the free chapter used WHEN requesting THEN opens the Pro teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = false) },
+                isOfferPrepared = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_LIMIT)),
+                ),
+                commands,
+            )
+            assertTrue(recordedUnlocks.isEmpty())
+        }
 
     @Test
     fun `GIVEN an unlock left WHEN requesting THEN offers the video for this chapter`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = { ChapterListeningAccessModel.UnlockAvailable(1) })
+        prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
 
         // When
         gate.request(
@@ -131,6 +181,7 @@ internal class ChapterListeningGateTest {
                         paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
                         requestKey = requestKey,
                         rewardedRemainingToday = 1,
+                        canUnlockWithoutVideo = true,
                     ),
                 ),
             ),
@@ -143,7 +194,7 @@ internal class ChapterListeningGateTest {
     fun `GIVEN the video offered WHEN the reward is earned THEN records the unlock and plays`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(access = { ChapterListeningAccessModel.UnlockAvailable(1) })
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
             gate.request(
                 scope = backgroundScope,
                 chapter = chapter,
@@ -158,6 +209,12 @@ internal class ChapterListeningGateTest {
             assertEquals(1, allowedCount)
         }
 
+    private fun createUnlockAvailable(isFreeUnlockAvailable: Boolean): ChapterListeningAccessModel =
+        ChapterListeningAccessModel.UnlockAvailable(
+            rewardedRemainingToday = 1,
+            isFreeUnlockAvailable = isFreeUnlockAvailable,
+        )
+
     private fun TestScope.prepareScenario(
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
@@ -165,6 +222,7 @@ internal class ChapterListeningGateTest {
         val navigator = Navigator()
         commands = mutableListOf()
         recordedUnlocks = mutableListOf()
+        trackedEvents = mutableListOf()
         allowedCount = 0
         gate = ChapterListeningGate(
             getChapterListeningAccess = { access() },
@@ -172,6 +230,7 @@ internal class ChapterListeningGateTest {
             prepareRewardedUnlockOffer = { isOfferPrepared },
             studyUnlockResultStore = resultStore,
             navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { navigator.commands.collect { command -> commands += command } }
     }

@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation.listening.mapper
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSegmentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 internal class ListeningPlayerUiModelMapperTest {
-    private val mapper = ListeningPlayerUiModelMapper(EstimateListeningTimeUseCase())
+    private val mapper = ListeningPlayerUiModelMapper(GetListeningTimeUseCase())
     private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
     private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
 
@@ -45,7 +45,6 @@ internal class ListeningPlayerUiModelMapperTest {
                 remaining = 3.seconds,
                 total = 4.seconds,
                 versionAbbreviation = "WEB",
-                languageTag = "en-US",
                 dayProgress = null,
                 lockedChapter = null,
             ),

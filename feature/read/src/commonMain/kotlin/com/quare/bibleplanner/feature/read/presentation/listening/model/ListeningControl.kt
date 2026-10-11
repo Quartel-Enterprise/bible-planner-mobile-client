@@ -9,6 +9,7 @@ enum class ListeningControl {
     NEXT_CHAPTER,
     PREVIOUS_CHAPTER,
     SEEK,
+    RETRY,
     ;
 
     val key: String

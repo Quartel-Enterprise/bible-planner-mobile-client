@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.WorkspacePremium
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.study_unlock.generated.resources.Res
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_body
+import bibleplanner.feature.study_unlock.generated.resources.study_unlock_listen_free
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_listening_body
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_listening_title
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_not_now
@@ -39,6 +41,7 @@ import bibleplanner.feature.study_unlock.generated.resources.study_unlock_subscr
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_title
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_video_loading
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_video_unavailable
+import bibleplanner.feature.study_unlock.generated.resources.study_unlock_video_unavailable_free
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_watch_video
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockUiEvent
@@ -111,10 +114,16 @@ internal fun StudyUnlockSheet(
             Text(text = stringResource(Res.string.study_unlock_subscribe))
         }
         VerticalSpacer(8)
-        WatchVideoButton(
-            videoState = uiState.videoState,
-            onClick = { onEvent(StudyUnlockUiEvent.OnWatchVideoClick) },
-        )
+        if (uiState.isFreeUnlockShown) {
+            UnlockWithoutVideoButton(
+                onClick = { onEvent(StudyUnlockUiEvent.OnUnlockWithoutVideoClick) },
+            )
+        } else {
+            WatchVideoButton(
+                videoState = uiState.videoState,
+                onClick = { onEvent(StudyUnlockUiEvent.OnWatchVideoClick) },
+            )
+        }
         VerticalSpacer(6)
         Text(
             text = videoCaption(uiState),
@@ -159,10 +168,33 @@ private fun WatchVideoButton(
 }
 
 @Composable
+private fun UnlockWithoutVideoButton(onClick: () -> Unit) {
+    OutlinedButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        Icon(
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+            imageVector = Icons.Rounded.Headphones,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(Res.string.study_unlock_listen_free))
+    }
+}
+
+private val StudyUnlockUiState.isFreeUnlockShown: Boolean
+    get() = canUnlockWithoutVideo && videoState == StudyUnlockVideoState.UNAVAILABLE
+
+@Composable
 private fun videoCaption(uiState: StudyUnlockUiState): String = when (uiState.videoState) {
     StudyUnlockVideoState.LOADING -> stringResource(Res.string.study_unlock_video_loading)
 
-    StudyUnlockVideoState.UNAVAILABLE -> stringResource(Res.string.study_unlock_video_unavailable)
+    StudyUnlockVideoState.UNAVAILABLE -> if (uiState.canUnlockWithoutVideo) {
+        stringResource(Res.string.study_unlock_video_unavailable_free)
+    } else {
+        stringResource(Res.string.study_unlock_video_unavailable)
+    }
 
     StudyUnlockVideoState.READY, StudyUnlockVideoState.PLAYING -> pluralStringResource(
         Res.plurals.study_unlock_remaining_today,

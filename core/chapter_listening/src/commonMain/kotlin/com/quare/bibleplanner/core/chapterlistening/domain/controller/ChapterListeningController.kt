@@ -46,13 +46,6 @@ interface ChapterListeningController {
 
     fun setSpeed(speed: Float)
 
-    fun selectVoice(voiceId: String)
-
-    fun previewVoice(
-        voiceId: String,
-        sampleText: String,
-    )
-
     fun setSleepTimer(option: ListeningSleepTimerOption)
 
     fun setAutoNextEnabled(isEnabled: Boolean)
@@ -62,6 +55,4 @@ interface ChapterListeningController {
     fun attachReader()
 
     fun detachReader()
-
-    fun openVoiceSettings()
 }

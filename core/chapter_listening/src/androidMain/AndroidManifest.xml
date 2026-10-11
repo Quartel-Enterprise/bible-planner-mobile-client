@@ -4,13 +4,8 @@
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-
-    <!-- Lets the engine list the installed text-to-speech services on Android 11+. -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.TTS_SERVICE" />
-        </intent>
-    </queries>
+    <!-- Keeps the CPU decoding the chapter audio while the screen is off. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application>
         <!--

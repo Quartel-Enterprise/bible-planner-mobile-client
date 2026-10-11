@@ -46,10 +46,12 @@ sealed interface ReadListeningUiEvent : UiEvent {
         )
     }
 
-    data object OnVoiceSettingsClick : ReadListeningUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_VOICE_SETTINGS_OPENED,
-            params = mapOf(AnalyticsParams.SURFACE to ListeningSurface.MINI_PLAYER.key),
+    data object OnUnavailableActionClick : ReadListeningUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+            ),
         )
     }
 

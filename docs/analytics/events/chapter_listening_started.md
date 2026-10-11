@@ -2,11 +2,11 @@
 
 **Tier:** P1 | **Domain:** Listening
 
-A chapter started being read aloud by the device's text-to-speech voice. It is the top of the listening funnel and the denominator of [chapter_listening_completed](chapter_listening_completed.md).
+A chapter started playing its narrated audio. It is the top of the listening funnel and the denominator of [chapter_listening_completed](chapter_listening_completed.md).
 
 ## When it fires
 
-The player opens a chapter and is about to speak it: a chapter or the reading of today started from the reader, the player moving on to the next chapter by itself or from its chapter buttons, or the reader opening another chapter while listening (the player follows it).
+The player opens a chapter and is about to play it: a chapter or the reading of today started from the reader, the player moving on to the next chapter by itself or from its chapter buttons, or the reader opening another chapter while listening (the player follows it).
 
 ## Trigger source
 
@@ -23,5 +23,5 @@ The player opens a chapter and is about to speak it: a chapter or the reading of
 
 ## Notes
 
-- Not sent when no voice is installed for the language of the Bible; [chapter_listening_voice_unavailable](chapter_listening_voice_unavailable.md) is sent instead.
+- Not sent when the chapter's audio can't be loaded; [chapter_listening_audio_unavailable](chapter_listening_audio_unavailable.md) is sent instead.
 - A free user must have unlocked the chapter first; see [chapter_listening_locked](chapter_listening_locked.md).

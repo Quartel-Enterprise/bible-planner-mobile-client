@@ -5,11 +5,16 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterLis
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -24,10 +29,11 @@ internal class ChapterListeningGate(
     private val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,
     private val studyUnlockResultStore: StudyUnlockResultStore,
     private val navigator: Navigator,
+    private val trackEvent: TrackEvent,
 ) {
     private var earnedJob: Job? = null
 
-    // Why: a failed access check lets the person listen, like the chapter study does, since the voice costs nothing.
+    // Why: a failed access check lets the person listen, like the chapter study does; the server's monthly budget caps what that can cost.
     fun request(
         scope: CoroutineScope,
         chapter: ChapterLocationModel,
@@ -39,10 +45,14 @@ internal class ChapterListeningGate(
             when (access) {
                 ChapterListeningAccessModel.Open -> onAllowed()
 
+                ChapterListeningAccessModel.LoginRequired -> navigator.navigate(
+                    LoginWarningNavRoute(LoginWarningReason.ChapterListening.key),
+                )
+
                 is ChapterListeningAccessModel.UnlockAvailable -> offerUnlock(
                     scope = scope,
                     chapter = chapter,
-                    rewardedRemainingToday = access.rewardedRemainingToday,
+                    access = access,
                     onAllowed = onAllowed,
                 )
 
@@ -51,14 +61,22 @@ internal class ChapterListeningGate(
         }
     }
 
+    // Why: without a rewarded video to offer, the first chapter of the day is free instead of going straight to the paywall.
     private suspend fun offerUnlock(
         scope: CoroutineScope,
         chapter: ChapterLocationModel,
-        rewardedRemainingToday: Int,
+        access: ChapterListeningAccessModel.UnlockAvailable,
         onAllowed: () -> Unit,
     ) {
-        if (!prepareRewardedUnlockOffer(rewardedRemainingToday)) {
-            openPaywallTeaser()
+        if (!prepareRewardedUnlockOffer(access.rewardedRemainingToday)) {
+            if (access.isFreeUnlockAvailable) {
+                unlockForFree(
+                    chapter = chapter,
+                    onAllowed = onAllowed,
+                )
+            } else {
+                openPaywallTeaser()
+            }
             return
         }
         val requestKey = listOf(
@@ -77,9 +95,26 @@ internal class ChapterListeningGate(
                 surface = StudyUnlockSurface.CHAPTER_LISTENING,
                 paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
                 requestKey = requestKey,
-                rewardedRemainingToday = rewardedRemainingToday,
+                rewardedRemainingToday = access.rewardedRemainingToday,
+                canUnlockWithoutVideo = access.isFreeUnlockAvailable,
             ),
         )
+    }
+
+    private suspend fun unlockForFree(
+        chapter: ChapterLocationModel,
+        onAllowed: () -> Unit,
+    ) {
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
+            params = mapOf(
+                AnalyticsParams.BOOK_ID to chapter.bookId.name
+                    .lowercase(),
+                AnalyticsParams.CHAPTER_NUMBER to chapter.chapterNumber,
+            ),
+        )
+        recordChapterListeningUnlock(chapter)
+        onAllowed()
     }
 
     private fun openPaywallTeaser() {

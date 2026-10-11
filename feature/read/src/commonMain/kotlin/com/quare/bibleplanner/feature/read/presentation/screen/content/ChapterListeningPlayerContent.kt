@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.content
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,25 +19,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.RadioButtonChecked
-import androidx.compose.material.icons.rounded.RadioButtonUnchecked
-import androidx.compose.material.icons.rounded.RecordVoiceOver
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material.icons.rounded.Speed
-import androidx.compose.material.icons.rounded.VoiceOverOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
@@ -47,35 +37,30 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.listening_ai_voice
 import bibleplanner.feature.read.generated.resources.listening_auto_next
 import bibleplanner.feature.read.generated.resources.listening_auto_next_day
 import bibleplanner.feature.read.generated.resources.listening_auto_next_off
 import bibleplanner.feature.read.generated.resources.listening_auto_next_on
 import bibleplanner.feature.read.generated.resources.listening_day_progress
 import bibleplanner.feature.read.generated.resources.listening_day_title
-import bibleplanner.feature.read.generated.resources.listening_enhanced_hint
-import bibleplanner.feature.read.generated.resources.listening_enhanced_hint_path
 import bibleplanner.feature.read.generated.resources.listening_locked_sheet
 import bibleplanner.feature.read.generated.resources.listening_next_verse
-import bibleplanner.feature.read.generated.resources.listening_open_device_settings
 import bibleplanner.feature.read.generated.resources.listening_pause
 import bibleplanner.feature.read.generated.resources.listening_play
 import bibleplanner.feature.read.generated.resources.listening_previous_verse
@@ -89,25 +74,20 @@ import bibleplanner.feature.read.generated.resources.listening_speed
 import bibleplanner.feature.read.generated.resources.listening_time_remaining
 import bibleplanner.feature.read.generated.resources.listening_unlock
 import bibleplanner.feature.read.generated.resources.listening_verse_of
-import bibleplanner.feature.read.generated.resources.listening_voice
-import bibleplanner.feature.read.generated.resources.listening_voice_enhanced
-import bibleplanner.feature.read.generated.resources.listening_voice_fallback_name
-import bibleplanner.feature.read.generated.resources.listening_voice_none
-import bibleplanner.feature.read.generated.resources.listening_voice_preview
-import bibleplanner.feature.read.generated.resources.listening_voice_standard
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_sheet_body
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_sheet_title
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.feature.read.presentation.listening.hasUnavailableAction
+import com.quare.bibleplanner.feature.read.presentation.listening.isUnavailable
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableAction
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableBody
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableTitle
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiState
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningSleepTimerUiModel
-import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningVoiceOptionUiModel
-import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningVoicesUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
-import com.quare.bibleplanner.feature.read.presentation.listening.toLanguageNameResource
+import com.quare.bibleplanner.feature.read.presentation.listening.toUnavailableIcon
 import com.quare.bibleplanner.feature.read.presentation.screen.component.chapterTitle
 import com.quare.bibleplanner.feature.read.presentation.screen.component.verseReference
 import com.quare.bibleplanner.ui.component.AppSwitch
@@ -116,7 +96,6 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 private const val VERSE_MAX_LINES = 3
-private const val CHEVRON_EXPANDED_DEGREES = 180f
 private val speedOptions = listOf(0.75f, 1f, 1.25f, 1.5f, 2f)
 private val sleepTimerOptions = ListeningSleepTimerOption.entries
 private val cardShape = RoundedCornerShape(16.dp)
@@ -152,12 +131,14 @@ internal fun ChapterListeningPlayerContent(
                 onEvent = onEvent,
             )
         }
+        if (player.status.isUnavailable) {
+            UnavailableCard(
+                player = player,
+                onEvent = onEvent,
+            )
+        }
         SpeedCard(
             speed = uiState.speed,
-            onEvent = onEvent,
-        )
-        VoiceCard(
-            voices = uiState.voices,
             onEvent = onEvent,
         )
         SleepTimerCard(
@@ -168,6 +149,7 @@ internal fun ChapterListeningPlayerContent(
             uiState = uiState,
             onEvent = onEvent,
         )
+        AiVoiceLabel()
     }
 }
 
@@ -419,6 +401,41 @@ private fun LockedCard(
 }
 
 @Composable
+private fun UnavailableCard(
+    player: ListeningPlayerUiModel,
+    onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
+) {
+    PlayerSection(verticalPadding = 12.dp) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                imageVector = player.status.toUnavailableIcon(),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = listeningUnavailableTitle(player),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Text(
+                    text = listeningUnavailableBody(player.status),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (player.status.hasUnavailableAction) {
+                Button(onClick = { onEvent(ChapterListeningPlayerUiEvent.OnUnavailableActionClick) }) {
+                    Text(text = listeningUnavailableAction(player.status))
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun SpeedCard(
     speed: Float,
     onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
@@ -446,214 +463,6 @@ private fun SpeedCard(
                     label = { Text(text = "${option.toSpeedLabel()}x") },
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun VoiceCard(
-    voices: ListeningVoicesUiModel,
-    onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
-) {
-    var isExpanded by rememberSaveable { mutableStateOf(voices is ListeningVoicesUiModel.Unavailable) }
-    val chevronRotation by animateFloatAsState(if (isExpanded) CHEVRON_EXPANDED_DEGREES else 0f)
-    val selectedVoice = (voices as? ListeningVoicesUiModel.Available)?.options?.find { it.isSelected }
-    PlayerSection(verticalPadding = 0.dp) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .clickable { isExpanded = !isExpanded }
-                .padding(vertical = 13.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            SectionIcon(Icons.Rounded.RecordVoiceOver)
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(Res.string.listening_voice),
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Text(
-                text = selectedVoice?.let { voiceName(it) } ?: stringResource(Res.string.listening_voice_none),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Icon(
-                modifier = Modifier.rotate(chevronRotation),
-                imageVector = Icons.Rounded.ExpandMore,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        AnimatedVisibility(visible = isExpanded) {
-            Column(modifier = Modifier.padding(bottom = 10.dp)) {
-                when (voices) {
-                    ListeningVoicesUiModel.Loading -> Box(
-                        modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                    }
-
-                    is ListeningVoicesUiModel.Unavailable -> VoiceUnavailableSection(
-                        languageTag = voices.languageTag,
-                        onEvent = onEvent,
-                    )
-
-                    is ListeningVoicesUiModel.Available -> {
-                        voices.options.forEach { voice ->
-                            VoiceOptionRow(
-                                voice = voice,
-                                onEvent = onEvent,
-                            )
-                        }
-                        if (voices.shouldSuggestEnhancedVoice) {
-                            EnhancedVoiceHintRow(onEvent = onEvent)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun VoiceUnavailableSection(
-    languageTag: String,
-    onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
-) {
-    val language = stringResource(languageTag.toLanguageNameResource())
-    Row(
-        modifier = Modifier.padding(vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.VoiceOverOff,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary,
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.listening_voice_unavailable_sheet_title, language),
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Text(
-                modifier = Modifier.padding(top = 2.dp),
-                text = stringResource(Res.string.listening_voice_unavailable_sheet_body, language),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Button(
-                modifier = Modifier.padding(top = 8.dp),
-                onClick = { onEvent(ChapterListeningPlayerUiEvent.OnVoiceSettingsClick) },
-            ) {
-                Icon(
-                    modifier = Modifier.size(17.dp),
-                    imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                    contentDescription = null,
-                )
-                Text(
-                    modifier = Modifier.padding(start = 6.dp),
-                    text = stringResource(Res.string.listening_open_device_settings),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun VoiceOptionRow(
-    voice: ListeningVoiceOptionUiModel,
-    onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                if (voice.isSelected) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHigh
-                },
-            ).clickable { onEvent(ChapterListeningPlayerUiEvent.OnVoiceClick(voice)) }
-            .padding(horizontal = 8.dp, vertical = 9.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Icon(
-            imageVector = if (voice.isSelected) {
-                Icons.Rounded.RadioButtonChecked
-            } else {
-                Icons.Rounded.RadioButtonUnchecked
-            },
-            contentDescription = null,
-            tint = if (voice.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = voiceName(voice),
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = stringResource(
-                    if (voice.isEnhanced) Res.string.listening_voice_enhanced else Res.string.listening_voice_standard,
-                    voice.languageTag,
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        OutlinedButton(
-            modifier = Modifier.height(32.dp),
-            onClick = { onEvent(ChapterListeningPlayerUiEvent.OnVoicePreviewClick(voice)) },
-            contentPadding = PaddingValues(start = 8.dp, end = 10.dp),
-        ) {
-            Icon(
-                modifier = Modifier.size(17.dp),
-                imageVector = if (voice.isPreviewing) Icons.Rounded.GraphicEq else Icons.AutoMirrored.Rounded.VolumeUp,
-                contentDescription = null,
-            )
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = stringResource(Res.string.listening_voice_preview),
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
-    }
-}
-
-@Composable
-private fun EnhancedVoiceHintRow(onEvent: (ChapterListeningPlayerUiEvent) -> Unit) {
-    Row(
-        modifier = Modifier.padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Icon(
-            modifier = Modifier.size(18.dp),
-            imageVector = Icons.Rounded.Info,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.listening_enhanced_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onEvent(ChapterListeningPlayerUiEvent.OnVoiceSettingsClick) }
-                    .padding(vertical = 4.dp),
-                text = stringResource(Res.string.listening_enhanced_hint_path),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-            )
         }
     }
 }
@@ -746,6 +555,28 @@ private fun AutoNextCard(
     }
 }
 
+// Why: the narration is synthesized, and saying so up front keeps it from passing as a human recording.
+@Composable
+private fun AiVoiceLabel() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+    ) {
+        Icon(
+            modifier = Modifier.size(16.dp),
+            imageVector = Icons.Rounded.AutoAwesome,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.listening_ai_voice),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
 @Composable
 private fun PlayerSection(
     verticalPadding: Dp,
@@ -770,10 +601,6 @@ private fun SectionIcon(imageVector: ImageVector) {
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-@Composable
-private fun voiceName(voice: ListeningVoiceOptionUiModel): String =
-    voice.name.ifBlank { stringResource(Res.string.listening_voice_fallback_name, voice.position) }
 
 @Composable
 private fun sleepTimerLabel(option: ListeningSleepTimerOption): String = when (option) {

@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.VoiceOverOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
@@ -58,15 +57,16 @@ import bibleplanner.feature.read.generated.resources.listening_paused_at
 import bibleplanner.feature.read.generated.resources.listening_play
 import bibleplanner.feature.read.generated.resources.listening_preparing
 import bibleplanner.feature.read.generated.resources.listening_resume
-import bibleplanner.feature.read.generated.resources.listening_settings
 import bibleplanner.feature.read.generated.resources.listening_unlock
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_body
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_title
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.feature.read.presentation.listening.hasUnavailableAction
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableAction
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableBody
+import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableTitle
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
-import com.quare.bibleplanner.feature.read.presentation.listening.toLanguageNameResource
+import com.quare.bibleplanner.feature.read.presentation.listening.toUnavailableIcon
 import org.jetbrains.compose.resources.stringResource
 
 internal const val LISTENING_MINI_PLAYER_TAG = "listening_mini_player"
@@ -116,7 +116,11 @@ internal fun ListeningMiniPlayerBar(
             when (player.status) {
                 ListeningStatusModel.PREPARING -> PreparingContent(player, onEvent)
 
-                ListeningStatusModel.VOICE_UNAVAILABLE -> VoiceUnavailableContent(player, onEvent)
+                ListeningStatusModel.NEEDS_CONNECTION,
+                ListeningStatusModel.NEEDS_SIGN_IN,
+                ListeningStatusModel.VERSION_UNAVAILABLE,
+                ListeningStatusModel.AUDIO_UNAVAILABLE,
+                -> UnavailableContent(player, onEvent)
 
                 ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
 
@@ -211,27 +215,28 @@ private fun RowScope.PreparingContent(
 }
 
 @Composable
-private fun RowScope.VoiceUnavailableContent(
+private fun RowScope.UnavailableContent(
     player: ListeningPlayerUiModel,
     onEvent: (ReadListeningUiEvent) -> Unit,
 ) {
-    val language = stringResource(player.languageTag.toLanguageNameResource())
     LeadingIcon(
-        imageVector = Icons.Rounded.VoiceOverOff,
+        imageVector = player.status.toUnavailableIcon(),
         tint = MaterialTheme.colorScheme.tertiary,
     )
     PlayerTitleColumn(
-        title = stringResource(Res.string.listening_voice_unavailable_title, language),
-        subtitle = stringResource(Res.string.listening_voice_unavailable_body, language),
+        title = listeningUnavailableTitle(player),
+        subtitle = listeningUnavailableBody(player.status),
         isAnimating = null,
         onEvent = onEvent,
     )
-    OutlinedButton(
-        modifier = Modifier.height(actionButtonHeight),
-        onClick = { onEvent(ReadListeningUiEvent.OnVoiceSettingsClick) },
-        contentPadding = PaddingValues(horizontal = 12.dp),
-    ) {
-        Text(text = stringResource(Res.string.listening_settings))
+    if (player.status.hasUnavailableAction) {
+        OutlinedButton(
+            modifier = Modifier.height(actionButtonHeight),
+            onClick = { onEvent(ReadListeningUiEvent.OnUnavailableActionClick) },
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            Text(text = listeningUnavailableAction(player.status))
+        }
     }
 }
 

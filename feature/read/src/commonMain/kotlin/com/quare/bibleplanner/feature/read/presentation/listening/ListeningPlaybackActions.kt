@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.controller.ChapterListeningController
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -12,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 internal class ListeningPlaybackActions(
     private val controller: ChapterListeningController,
     private val gate: ChapterListeningGate,
+    private val navigator: Navigator,
     private val trackEvent: TrackEvent,
 ) {
     fun togglePlayPause(surface: ListeningSurface) {
@@ -37,9 +40,31 @@ internal class ListeningPlaybackActions(
         )
     }
 
+    // Why: the session only ends mid-listening when it expired, so the person goes straight to signing in again.
+    fun handleUnavailableAction(surface: ListeningSurface) {
+        val session = controller.state.value.session ?: return
+        if (session.status != ListeningStatusModel.NEEDS_SIGN_IN) {
+            togglePlayPause(surface)
+            return
+        }
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
+            params = mapOf(AnalyticsParams.SURFACE to surface.key),
+        )
+        navigator.navigate(LoginNavRoute(notifyResultViaSnackbar = true))
+    }
+
     private fun toToggleControl(status: ListeningStatusModel): ListeningControl = when (status) {
         ListeningStatusModel.PLAYING, ListeningStatusModel.PREPARING -> ListeningControl.PAUSE
+
         ListeningStatusModel.INTERRUPTED -> ListeningControl.RESUME
+
+        ListeningStatusModel.NEEDS_CONNECTION,
+        ListeningStatusModel.NEEDS_SIGN_IN,
+        ListeningStatusModel.VERSION_UNAVAILABLE,
+        ListeningStatusModel.AUDIO_UNAVAILABLE,
+        -> ListeningControl.RETRY
+
         else -> ListeningControl.PLAY
     }
 }

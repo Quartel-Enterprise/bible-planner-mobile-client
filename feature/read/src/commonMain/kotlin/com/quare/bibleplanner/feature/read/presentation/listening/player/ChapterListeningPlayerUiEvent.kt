@@ -46,28 +46,12 @@ sealed interface ChapterListeningPlayerUiEvent : UiEvent {
         )
     }
 
-    data class OnVoiceClick(
-        val voice: ListeningVoiceOptionUiModel,
-    ) : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_VOICE_CHANGED,
-            params = mapOf(AnalyticsParams.IS_ENHANCED to voice.isEnhanced),
-        )
-    }
-
-    data class OnVoicePreviewClick(
-        val voice: ListeningVoiceOptionUiModel,
-    ) : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_VOICE_PREVIEWED,
-            params = mapOf(AnalyticsParams.IS_ENHANCED to voice.isEnhanced),
-        )
-    }
-
-    data object OnVoiceSettingsClick : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_VOICE_SETTINGS_OPENED,
-            params = mapOf(AnalyticsParams.SURFACE to ListeningSurface.PLAYER.key),
+    data object OnUnavailableActionClick : ChapterListeningPlayerUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+            ),
         )
     }
 

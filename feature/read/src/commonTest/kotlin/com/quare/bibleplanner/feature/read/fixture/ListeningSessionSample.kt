@@ -8,6 +8,8 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVerseModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 internal fun listeningSession(
     chapter: ChapterLocationModel,
@@ -31,8 +33,8 @@ internal fun listeningSession(
         languageTag = "en-US",
         shouldForceCanonOrder = false,
         verses = listOf(
-            ListeningVerseModel(number = 1, text = "one two three four five", wordCount = 5),
-            ListeningVerseModel(number = 2, text = "six seven eight nine ten", wordCount = 5),
+            ListeningVerseModel(number = 1, text = "one two three four five", start = Duration.ZERO, end = 2.seconds),
+            ListeningVerseModel(number = 2, text = "six seven eight nine ten", start = 2.seconds, end = 4.seconds),
         ),
         verseIndex = verseIndex,
         verseProgress = 0.5f,

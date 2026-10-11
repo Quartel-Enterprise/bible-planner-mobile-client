@@ -347,6 +347,7 @@ internal class DayStudyRouteViewModel(
                     paywallSource = PaywallEntrySource.DAY_STUDY_DETAIL,
                     requestKey = REWARDED_UNLOCK_REQUEST_PREFIX + jobKey,
                     rewardedRemainingToday = card.rewardedRemainingToday,
+                    canUnlockWithoutVideo = false,
                 ),
             )
 

@@ -8,4 +8,5 @@ data class StudyUnlockNavRoute(
     val paywallSource: PaywallEntrySource,
     val requestKey: String,
     val rewardedRemainingToday: Int,
+    val canUnlockWithoutVideo: Boolean,
 ) : NavRoute

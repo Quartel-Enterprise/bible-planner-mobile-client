@@ -8,7 +8,6 @@ data class ChapterListeningPlayerUiState(
     val previousChapter: ChapterLocationModel?,
     val nextChapter: ChapterLocationModel?,
     val speed: Float,
-    val voices: ListeningVoicesUiModel,
     val sleepTimer: ListeningSleepTimerUiModel,
     val isAutoNextEnabled: Boolean,
     val isAutoNextLocked: Boolean,

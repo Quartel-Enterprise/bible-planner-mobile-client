@@ -5,8 +5,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /*
- * Why: the system voices report no duration, so time is estimated from the word count at the pace
- * they speak at 1x. Words are counted once per verse, since the state changes on every spoken word.
+ * Why: before a chapter's audio is fetched there is no duration to read, so the time shown next to the
+ * listen entry is estimated from the word count at the pace the voices read at 1x.
  */
 class EstimateListeningTimeUseCase {
     private val whitespace = Regex("\\s+")
@@ -30,14 +30,6 @@ class EstimateListeningTimeUseCase {
             ),
         )
     }
-
-    fun getDuration(
-        wordCount: Int,
-        speed: Float,
-    ): Duration = toDuration(
-        words = wordCount.toFloat(),
-        speed = speed,
-    )
 
     fun countWords(text: String): Int = text.split(whitespace).count(String::isNotBlank)
 

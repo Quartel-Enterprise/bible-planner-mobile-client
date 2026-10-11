@@ -74,19 +74,4 @@ internal class EstimateListeningTimeUseCaseTest {
         // Then
         assertEquals(5, wordCount)
     }
-
-    @Test
-    fun `GIVEN a verse of ten words WHEN getting its duration THEN reads it at the voice pace`() {
-        // Given
-        val wordCount = 10
-
-        // When
-        val duration = useCase.getDuration(
-            wordCount = wordCount,
-            speed = 1f,
-        )
-
-        // Then
-        assertEquals(4.seconds, duration)
-    }
 }

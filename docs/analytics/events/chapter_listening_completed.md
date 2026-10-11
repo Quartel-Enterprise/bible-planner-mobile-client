@@ -6,7 +6,7 @@ A chapter was read aloud to its last verse.
 
 ## When it fires
 
-The voice finishes the last verse of the chapter (or of the verse range of a partial chapter in the reading of today).
+The audio reaches the end of the last verse of the chapter (or of the verse range of a partial chapter in the reading of today).
 
 ## Trigger source
 

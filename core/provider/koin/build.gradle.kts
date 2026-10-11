@@ -106,6 +106,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.functions)
+            implementation(libs.kotlinx.io.core)
         }
     }
 }

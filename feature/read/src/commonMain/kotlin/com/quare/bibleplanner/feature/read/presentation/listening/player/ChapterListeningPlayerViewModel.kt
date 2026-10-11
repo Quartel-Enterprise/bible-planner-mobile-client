@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListenin
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -96,11 +95,9 @@ internal class ChapterListeningPlayerViewModel(
 
             is ChapterListeningPlayerUiEvent.OnSpeedClick -> controller.setSpeed(event.speed)
 
-            is ChapterListeningPlayerUiEvent.OnVoiceClick -> controller.selectVoice(event.voice.id)
-
-            is ChapterListeningPlayerUiEvent.OnVoicePreviewClick -> previewVoice(event.voice)
-
-            ChapterListeningPlayerUiEvent.OnVoiceSettingsClick -> controller.openVoiceSettings()
+            ChapterListeningPlayerUiEvent.OnUnavailableActionClick -> playbackActions.handleUnavailableAction(
+                ListeningSurface.PLAYER,
+            )
 
             is ChapterListeningPlayerUiEvent.OnSleepTimerClick -> controller.setSleepTimer(event.option)
 
@@ -110,16 +107,6 @@ internal class ChapterListeningPlayerViewModel(
 
             ChapterListeningPlayerUiEvent.OnDismiss -> navigator.navigateBack()
         }
-    }
-
-    // Why: the voice reads the verse being listened to, so the sample is in the Bible's language whatever the app's is.
-    private fun previewVoice(voice: ListeningVoiceOptionUiModel) {
-        val session = controller.state.value.session ?: return
-        val sample = (session.verses.getOrNull(session.verseIndex) ?: session.verses.firstOrNull())?.text ?: return
-        controller.previewVoice(
-            voiceId = voice.id,
-            sampleText = sample.take(PREVIEW_MAX_LENGTH),
-        )
     }
 
     // Why: asking before moving keeps the current chapter playing when the next one turns out locked.
@@ -154,37 +141,9 @@ internal class ChapterListeningPlayerViewModel(
             previousChapter = previousChapter,
             nextChapter = nextChapter,
             speed = state.settings.speed,
-            voices = toVoices(
-                state = state,
-                languageTag = session?.languageTag.orEmpty(),
-            ),
             sleepTimer = toSleepTimer(state.sleepTimer),
             isAutoNextEnabled = state.settings.isAutoNextEnabled || session?.mode == ListeningModeModel.DAY_READING,
             isAutoNextLocked = session?.mode == ListeningModeModel.DAY_READING,
-        )
-    }
-
-    private fun toVoices(
-        state: ChapterListeningStateModel,
-        languageTag: String,
-    ): ListeningVoicesUiModel = when (val voices = state.voices) {
-        SpeechVoicesModel.Loading -> ListeningVoicesUiModel.Loading
-
-        SpeechVoicesModel.Unavailable -> ListeningVoicesUiModel.Unavailable(languageTag)
-
-        is SpeechVoicesModel.Available -> ListeningVoicesUiModel.Available(
-            options = voices.voices.mapIndexed { index, voice ->
-                ListeningVoiceOptionUiModel(
-                    id = voice.id,
-                    name = voice.name,
-                    position = index + 1,
-                    languageTag = voice.languageTag,
-                    isEnhanced = voice.isEnhanced,
-                    isSelected = voice.id == state.selectedVoiceId,
-                    isPreviewing = voice.id == state.previewingVoiceId,
-                )
-            },
-            shouldSuggestEnhancedVoice = voices.shouldSuggestEnhancedVoice,
         )
     }
 
@@ -203,9 +162,5 @@ internal class ChapterListeningPlayerViewModel(
             selectedOption = ListeningSleepTimerOption.END_OF_CHAPTER,
             remaining = null,
         )
-    }
-
-    private companion object {
-        const val PREVIEW_MAX_LENGTH = 160
     }
 }

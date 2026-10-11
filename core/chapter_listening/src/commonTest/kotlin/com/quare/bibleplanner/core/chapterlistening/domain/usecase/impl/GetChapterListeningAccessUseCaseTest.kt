@@ -24,6 +24,21 @@ internal class GetChapterListeningAccessUseCaseTest {
     private lateinit var recordUnlock: RecordChapterListeningUnlockUseCase
 
     @Test
+    fun `GIVEN a signed-out user WHEN asking for a chapter THEN asks to sign in first`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = true,
+            isSignedIn = false,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(ChapterListeningAccessModel.LoginRequired, access)
+    }
+
+    @Test
     fun `GIVEN a Pro user WHEN asking for a chapter THEN it is open`() = runTest {
         // Given
         prepareScenario(isPro = true)
@@ -44,7 +59,13 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisOne)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.UnlockAvailable(1), access)
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 1,
+                isFreeUnlockAvailable = true,
+            ),
+            access,
+        )
     }
 
     @Test
@@ -86,12 +107,80 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisTwo)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.UnlockAvailable(2), access)
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 2,
+                isFreeUnlockAvailable = false,
+            ),
+            access,
+        )
+    }
+
+    @Test
+    fun `GIVEN rewarded unlocks switched off remotely WHEN asking THEN still offers the free chapter of the day`() =
+        runTest {
+            // Given
+            prepareScenario(
+                isPro = false,
+                dailyLimit = 0,
+            )
+
+            // When
+            val access = useCase(genesisOne)
+
+            // Then
+            assertEquals(
+                ChapterListeningAccessModel.UnlockAvailable(
+                    rewardedRemainingToday = 0,
+                    isFreeUnlockAvailable = true,
+                ),
+                access,
+            )
+        }
+
+    @Test
+    fun `GIVEN both daily limits switched off remotely WHEN asking THEN the limit is reached`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            dailyLimit = 0,
+            freeDailyLimit = 0,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(ChapterListeningAccessModel.LimitReached, access)
+    }
+
+    @Test
+    fun `GIVEN a higher free limit WHEN asking after one unlock THEN still offers a free chapter`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            freeDailyLimit = 2,
+        )
+        recordUnlock(genesisOne)
+
+        // When
+        val access = useCase(genesisTwo)
+
+        // Then
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 0,
+                isFreeUnlockAvailable = true,
+            ),
+            access,
+        )
     }
 
     private fun prepareScenario(
         isPro: Boolean,
         dailyLimit: Int? = null,
+        freeDailyLimit: Int? = null,
+        isSignedIn: Boolean = true,
     ) {
         val dateProvider = ListeningDateProvider(
             currentTimestampProvider = { 0L },
@@ -103,19 +192,25 @@ internal class GetChapterListeningAccessUseCaseTest {
             dateProvider = dateProvider,
         )
         useCase = GetChapterListeningAccessUseCase(
+            getAuthenticatedUserId = { "user-1".takeIf { isSignedIn } },
             isProUser = { isPro },
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
-            getIntRemoteConfig = FakeGetIntRemoteConfig(dailyLimit),
+            getIntRemoteConfig = FakeGetIntRemoteConfig(
+                mapOf(
+                    "listening_rewarded_daily_limit" to dailyLimit,
+                    "listening_free_daily_limit" to freeDailyLimit,
+                ),
+            ),
         )
     }
 }
 
 private class FakeGetIntRemoteConfig(
-    private val value: Int?,
+    private val values: Map<String, Int?>,
 ) : GetIntRemoteConfig {
     override suspend fun invoke(
         key: String,
         default: Int,
-    ): Int = value ?: default
+    ): Int = values[key] ?: default
 }

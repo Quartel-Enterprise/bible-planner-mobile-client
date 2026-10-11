@@ -18,34 +18,30 @@ internal class ChapterListeningSettingsRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN nothing saved WHEN observing THEN reads at normal speed with the default voice and auto next`() =
-        runTest {
-            // When
-            val settings = repository.observe().first()
+    fun `GIVEN nothing saved WHEN observing THEN reads at normal speed with auto next`() = runTest {
+        // When
+        val settings = repository.observe().first()
 
-            // Then
-            assertEquals(
-                ChapterListeningSettingsModel(
-                    speed = 1f,
-                    voiceId = null,
-                    isAutoNextEnabled = true,
-                ),
-                settings,
-            )
-        }
+        // Then
+        assertEquals(
+            ChapterListeningSettingsModel(
+                speed = 1f,
+                isAutoNextEnabled = true,
+            ),
+            settings,
+        )
+    }
 
     @Test
     fun `GIVEN saved choices WHEN observing THEN reads them back`() = runTest {
         // When
         repository.setSpeed(1.5f)
-        repository.setVoiceId("voice-1")
         repository.setAutoNextEnabled(false)
 
         // Then
         assertEquals(
             ChapterListeningSettingsModel(
                 speed = 1.5f,
-                voiceId = "voice-1",
                 isAutoNextEnabled = false,
             ),
             repository.observe().first(),

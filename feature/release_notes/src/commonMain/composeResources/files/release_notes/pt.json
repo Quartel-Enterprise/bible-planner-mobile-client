@@ -1,4 +1,14 @@
 {
+  "2.13.0": {
+    "android": [
+      "Ouvir o capítulo ficou muito mais natural: a Bíblia agora é narrada por vozes geradas por IA, com um narrador, uma voz para Deus, outra para Jesus e vozes diferentes para os personagens dos diálogos. Para ouvir, entre na sua conta e esteja conectado à internet; os capítulos que você já ouviu ficam guardados no aparelho e tocam mesmo sem conexão.",
+      "No plano grátis, quando não houver vídeo disponível para liberar um capítulo, o primeiro capítulo do dia agora é grátis."
+    ],
+    "ios": [
+      "Ouvir o capítulo ficou muito mais natural: a Bíblia agora é narrada por vozes geradas por IA, com um narrador, uma voz para Deus, outra para Jesus e vozes diferentes para os personagens dos diálogos. Para ouvir, entre na sua conta e esteja conectado à internet; os capítulos que você já ouviu ficam guardados no aparelho e tocam mesmo sem conexão.",
+      "No plano grátis, quando não houver vídeo disponível para liberar um capítulo, o primeiro capítulo do dia agora é grátis."
+    ]
+  },
   "2.12.1": {
     "common": [
       "Baixar uma versão da Bíblia ficou bem mais rápido.",
