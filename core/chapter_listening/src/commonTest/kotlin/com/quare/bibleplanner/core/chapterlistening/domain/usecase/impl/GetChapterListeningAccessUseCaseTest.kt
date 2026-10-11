@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 import androidx.datastore.preferences.core.emptyPreferences
 import com.quare.bibleplanner.core.chapterlistening.data.repository.ChapterListeningUnlockRepositoryImpl
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -63,6 +64,10 @@ internal class GetChapterListeningAccessUseCaseTest {
             ChapterListeningAccessModel.UnlockAvailable(
                 rewardedRemainingToday = 1,
                 isFreeUnlockAvailable = true,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
             ),
             access,
         )
@@ -91,7 +96,15 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisTwo)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.LimitReached, access)
+        assertEquals(
+            ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+            access,
+        )
     }
 
     @Test
@@ -111,6 +124,10 @@ internal class GetChapterListeningAccessUseCaseTest {
             ChapterListeningAccessModel.UnlockAvailable(
                 rewardedRemainingToday = 2,
                 isFreeUnlockAvailable = false,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
             ),
             access,
         )
@@ -133,6 +150,10 @@ internal class GetChapterListeningAccessUseCaseTest {
                 ChapterListeningAccessModel.UnlockAvailable(
                     rewardedRemainingToday = 0,
                     isFreeUnlockAvailable = true,
+                    allowance = ListeningAllowanceModel(
+                        hasRewardedUnlocks = false,
+                        hasFreeUnlocks = true,
+                    ),
                 ),
                 access,
             )
@@ -151,7 +172,15 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisOne)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.LimitReached, access)
+        assertEquals(
+            ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = false,
+                    hasFreeUnlocks = false,
+                ),
+            ),
+            access,
+        )
     }
 
     @Test
@@ -171,6 +200,10 @@ internal class GetChapterListeningAccessUseCaseTest {
             ChapterListeningAccessModel.UnlockAvailable(
                 rewardedRemainingToday = 0,
                 isFreeUnlockAvailable = true,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
             ),
             access,
         )

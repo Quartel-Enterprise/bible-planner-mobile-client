@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -70,7 +71,7 @@ internal class ChapterListeningGateTest {
     @Test
     fun `GIVEN the daily unlock used WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = { ChapterListeningAccessModel.LimitReached })
+        prepareScenario(access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = true) })
 
         // When
         gate.request(
@@ -166,9 +167,8 @@ internal class ChapterListeningGateTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                access = { ChapterListeningAccessModel.LimitReached },
+                access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = false) },
                 isRewardedUnlockEnabled = false,
-                freeDailyLimit = 0,
             )
 
             // When
@@ -192,9 +192,7 @@ internal class ChapterListeningGateTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                access = { ChapterListeningAccessModel.LimitReached },
-                rewardedDailyLimit = 0,
-                freeDailyLimit = 0,
+                access = { createLimitReached(hasRewardedUnlocks = false, hasFreeUnlocks = false) },
             )
 
             // When
@@ -286,14 +284,26 @@ internal class ChapterListeningGateTest {
         ChapterListeningAccessModel.UnlockAvailable(
             rewardedRemainingToday = 1,
             isFreeUnlockAvailable = isFreeUnlockAvailable,
+            allowance = ListeningAllowanceModel(
+                hasRewardedUnlocks = true,
+                hasFreeUnlocks = true,
+            ),
         )
+
+    private fun createLimitReached(
+        hasRewardedUnlocks: Boolean,
+        hasFreeUnlocks: Boolean,
+    ): ChapterListeningAccessModel = ChapterListeningAccessModel.LimitReached(
+        ListeningAllowanceModel(
+            hasRewardedUnlocks = hasRewardedUnlocks,
+            hasFreeUnlocks = hasFreeUnlocks,
+        ),
+    )
 
     private fun TestScope.prepareScenario(
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
         isRewardedUnlockEnabled: Boolean = true,
-        freeDailyLimit: Int = 1,
-        rewardedDailyLimit: Int = 1,
     ) {
         val navigator = Navigator()
         commands = mutableListOf()
@@ -305,8 +315,6 @@ internal class ChapterListeningGateTest {
             recordChapterListeningUnlock = { unlocked -> recordedUnlocks += unlocked },
             prepareRewardedUnlockOffer = { isOfferPrepared },
             checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
-            getRewardedListeningDailyLimit = { rewardedDailyLimit },
-            getFreeListeningDailyLimit = { freeDailyLimit },
             studyUnlockResultStore = resultStore,
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

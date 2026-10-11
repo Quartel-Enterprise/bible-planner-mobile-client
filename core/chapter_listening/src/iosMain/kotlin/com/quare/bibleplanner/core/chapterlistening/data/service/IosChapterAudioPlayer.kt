@@ -19,6 +19,7 @@ import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeErrorKey
 import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
+import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
 import platform.AVFoundation.audioTimePitchAlgorithm
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.pause
@@ -63,6 +64,9 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     private var seekTarget: Duration? = null
     private var seekCount = 0
 
+    // Why: AVFoundation can't seek a new item with a completion handler before it is ready to play.
+    private var pendingStartSpeed: Float? = null
+
     init {
         observe(AVPlayerItemDidPlayToEndTimeNotification) { send(ChapterAudioPlayerEvent.Ended(playbackId)) }
         // Why: a file that fails partway through carries its error in the notification, not on the item.
@@ -76,6 +80,7 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
         get() {
             val item = loadedItem ?: return Duration.ZERO
             if (item.status == AVPlayerItemStatusFailed) reportFailure(item.error)
+            startWhenReady(item)
             seekTarget?.let { target -> return target }
             val seconds = CMTimeGetSeconds(player.currentTime())
             return if (seconds.isNaN()) Duration.ZERO else seconds.seconds
@@ -97,12 +102,26 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
             loadedPath = audioPath
             hasReportedFailure = false
         }
+        if (loadedItem?.status != AVPlayerItemStatusReadyToPlay) {
+            seekTarget = position
+            pendingStartSpeed = speed
+            return
+        }
         seek(position)
         player.playImmediatelyAtRate(speed)
     }
 
     override fun seekTo(position: Duration) {
-        if (loadedPath != null) seek(position)
+        if (loadedItem?.status == AVPlayerItemStatusReadyToPlay) seek(position)
+    }
+
+    // Why: the controller reads the position every few hundred ms while it plays, so the start runs here.
+    private fun startWhenReady(item: AVPlayerItem) {
+        val speed = pendingStartSpeed ?: return
+        if (item.status != AVPlayerItemStatusReadyToPlay) return
+        pendingStartSpeed = null
+        seek(seekTarget ?: Duration.ZERO)
+        player.playImmediatelyAtRate(speed)
     }
 
     // Why: the seek completes later, and until then currentTime still reports the old position.
@@ -122,14 +141,17 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     }
 
     override fun setSpeed(speed: Float) {
+        if (pendingStartSpeed != null) pendingStartSpeed = speed
         if (player.rate != 0f) player.setRate(speed)
     }
 
     override fun pause() {
+        pendingStartSpeed = null
         player.pause()
     }
 
     override fun release() {
+        pendingStartSpeed = null
         player.pause()
         player.replaceCurrentItemWithPlayerItem(null)
         seekTarget = null

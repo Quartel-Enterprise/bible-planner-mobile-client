@@ -95,6 +95,8 @@ internal class AndroidListeningMediaSession(
 
     private companion object {
         const val WAKE_LOCK_TAG = "BiblePlanner:ChapterListening"
-        const val WAKE_LOCK_TIMEOUT_MILLIS = 3L * 60 * 1000
+
+        // Why: a long safety net, since nothing is published to renew it while the next chapter loads for minutes.
+        const val WAKE_LOCK_TIMEOUT_MILLIS = 30L * 60 * 1000
     }
 }

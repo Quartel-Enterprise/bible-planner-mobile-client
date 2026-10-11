@@ -49,6 +49,7 @@ import bibleplanner.feature.read.generated.resources.listening_locked_body
 import bibleplanner.feature.read.generated.resources.listening_locked_title
 import bibleplanner.feature.read.generated.resources.listening_mini_day
 import bibleplanner.feature.read.generated.resources.listening_mini_finished
+import bibleplanner.feature.read.generated.resources.listening_mini_not_loaded
 import bibleplanner.feature.read.generated.resources.listening_mini_paused
 import bibleplanner.feature.read.generated.resources.listening_mini_playing
 import bibleplanner.feature.read.generated.resources.listening_next_verse
@@ -159,6 +160,9 @@ private fun RowScope.PlaybackContent(
     val dayProgress = player.dayProgress
     val subtitle = when {
         player.status == ListeningStatusModel.FINISHED -> stringResource(Res.string.listening_mini_finished)
+
+        // Why: a chapter moved to while paused loads only once played, so it has no length to show yet.
+        player.verseCount == 0 -> stringResource(Res.string.listening_mini_not_loaded)
 
         dayProgress != null -> stringResource(
             Res.string.listening_mini_day,

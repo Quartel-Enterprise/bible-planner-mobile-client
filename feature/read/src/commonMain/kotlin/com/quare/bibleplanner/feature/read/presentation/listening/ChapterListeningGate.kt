@@ -1,9 +1,8 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetRewardedListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -32,8 +31,6 @@ internal class ChapterListeningGate(
     private val recordChapterListeningUnlock: RecordChapterListeningUnlock,
     private val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,
     private val checkRewardedUnlockEnabled: IsRewardedUnlockEnabled,
-    private val getRewardedListeningDailyLimit: GetRewardedListeningDailyLimit,
-    private val getFreeListeningDailyLimit: GetFreeListeningDailyLimit,
     private val studyUnlockResultStore: StudyUnlockResultStore,
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
@@ -63,7 +60,7 @@ internal class ChapterListeningGate(
                     onAllowed = onAllowed,
                 )
 
-                ChapterListeningAccessModel.LimitReached -> openPaywallTeaser()
+                is ChapterListeningAccessModel.LimitReached -> openPaywallTeaser(access.allowance)
             }
         }
     }
@@ -82,7 +79,7 @@ internal class ChapterListeningGate(
                     onAllowed = onAllowed,
                 )
             } else {
-                openPaywallTeaser()
+                openPaywallTeaser(access.allowance)
             }
             return
         }
@@ -130,14 +127,12 @@ internal class ChapterListeningGate(
     }
 
     // Why: the teaser only speaks of the videos or the free chapter that today's configuration offers.
-    private suspend fun openPaywallTeaser() {
-        val isVideoUnlockOffered = suspendRunCatching {
-            checkRewardedUnlockEnabled() && getRewardedListeningDailyLimit() > 0
-        }.getOrDefault(false)
-        val freeDailyLimit = suspendRunCatching { getFreeListeningDailyLimit() }.getOrDefault(0)
+    private suspend fun openPaywallTeaser(allowance: ListeningAllowanceModel) {
+        val isVideoUnlockOffered = allowance.hasRewardedUnlocks &&
+            suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
         val reason = when {
             isVideoUnlockOffered -> PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
-            freeDailyLimit > 0 -> PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
+            allowance.hasFreeUnlocks -> PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
             else -> PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY
         }
         navigator.navigate(PaywallTeaserNavRoute(reason))

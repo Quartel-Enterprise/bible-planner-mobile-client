@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterDirectio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningEventModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningSettingsModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningRemoteCommand
@@ -1523,6 +1524,10 @@ internal class ChapterListeningControllerImplTest {
                     ChapterListeningAccessModel.UnlockAvailable(
                         rewardedRemainingToday = 1,
                         isFreeUnlockAvailable = true,
+                        allowance = ListeningAllowanceModel(
+                            hasRewardedUnlocks = true,
+                            hasFreeUnlocks = true,
+                        ),
                     )
                 } else {
                     ChapterListeningAccessModel.Open

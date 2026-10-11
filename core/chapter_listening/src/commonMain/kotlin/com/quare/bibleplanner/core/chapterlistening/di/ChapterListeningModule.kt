@@ -60,7 +60,8 @@ val chapterListeningModule = module {
             }
         }
     }
-    factory<ChapterAudioRemoteDataSource> {
+    // Why: its renewal lock only spends a refresh token once while there is a single instance.
+    single<ChapterAudioRemoteDataSource> {
         ChapterAudioRemoteDataSourceImpl(
             functions = get(),
             httpClient = get(named(CHAPTER_AUDIO_HTTP_CLIENT)),

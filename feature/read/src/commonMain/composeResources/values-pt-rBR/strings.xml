@@ -68,6 +68,7 @@
     <string name="listening_mini_paused">Pausado · %1$s restantes</string>
     <string name="listening_mini_day">Leitura de hoje · %1$d de %2$d · %3$s restantes</string>
     <string name="listening_mini_finished">Capítulo concluído · toque para ouvir de novo</string>
+    <string name="listening_mini_not_loaded">Pausado · toque em play para ouvir</string>
     <string name="listening_locked_title">Continuar em %1$s</string>
     <string name="listening_locked_body">Libere com um vídeo ou com o Pro</string>
     <string name="listening_unlock">Liberar</string>

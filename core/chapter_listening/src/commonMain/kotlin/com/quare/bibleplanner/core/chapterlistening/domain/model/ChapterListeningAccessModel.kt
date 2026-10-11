@@ -8,7 +8,10 @@ sealed interface ChapterListeningAccessModel {
     data class UnlockAvailable(
         val rewardedRemainingToday: Int,
         val isFreeUnlockAvailable: Boolean,
+        val allowance: ListeningAllowanceModel,
     ) : ChapterListeningAccessModel
 
-    data object LimitReached : ChapterListeningAccessModel
+    data class LimitReached(
+        val allowance: ListeningAllowanceModel,
+    ) : ChapterListeningAccessModel
 }

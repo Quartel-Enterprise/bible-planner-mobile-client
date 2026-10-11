@@ -41,8 +41,7 @@ internal class ChapterAudioRepositoryImpl(
     private val stateMutex = Mutex()
 
     // Why: playing a chapter while it is being prefetched waits for that download, but never for another chapter's.
-    private val downloadLocks = mutableMapOf<String, Mutex>()
-    private val downloadLockHolders = mutableMapOf<String, Int>()
+    private val downloadLocks = mutableMapOf<String, ChapterLock>()
 
     // Why: a cached chapter is checked against the server once per launch, so a corrected revision replaces it.
     private val checkedChapterKeys = mutableSetOf<String>()
@@ -135,21 +134,15 @@ internal class ChapterAudioRepositoryImpl(
         block: suspend () -> T,
     ): T {
         val lock = stateMutex.withLock {
-            downloadLockHolders[chapterKey] = (downloadLockHolders[chapterKey] ?: 0) + 1
-            downloadLocks.getOrPut(chapterKey, ::Mutex)
+            downloadLocks.getOrPut(chapterKey, ::ChapterLock).also { it.holders++ }
         }
         try {
-            return lock.withLock { block() }
+            return lock.mutex.withLock { block() }
         } finally {
             withContext(NonCancellable) {
                 stateMutex.withLock {
-                    val holders = (downloadLockHolders[chapterKey] ?: 1) - 1
-                    if (holders == 0) {
-                        downloadLockHolders -= chapterKey
-                        downloadLocks -= chapterKey
-                    } else {
-                        downloadLockHolders[chapterKey] = holders
-                    }
+                    lock.holders--
+                    if (lock.holders == 0) downloadLocks -= chapterKey
                 }
             }
         }
@@ -259,6 +252,11 @@ internal class ChapterAudioRepositoryImpl(
             ?.jsonPrimitive
             ?.contentOrNull
     }.getOrNull()
+
+    private class ChapterLock {
+        val mutex = Mutex()
+        var holders = 0
+    }
 
     private companion object {
         const val KEY_SEPARATOR = "/"

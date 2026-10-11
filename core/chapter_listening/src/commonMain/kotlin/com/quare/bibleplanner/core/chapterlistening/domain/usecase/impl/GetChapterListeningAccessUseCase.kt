@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
@@ -28,15 +29,22 @@ internal class GetChapterListeningAccessUseCase(
         if (isProUser()) return ChapterListeningAccessModel.Open
         val unlockedChapters = unlockRepository.getUnlockedChapters(dateProvider.today)
         if (chapter in unlockedChapters) return ChapterListeningAccessModel.Open
-        val rewardedRemaining = (getRewardedListeningDailyLimit() - unlockedChapters.size).coerceAtLeast(0)
-        val isFreeUnlockAvailable = unlockedChapters.size < getFreeListeningDailyLimit()
+        val rewardedDailyLimit = getRewardedListeningDailyLimit()
+        val freeDailyLimit = getFreeListeningDailyLimit()
+        val allowance = ListeningAllowanceModel(
+            hasRewardedUnlocks = rewardedDailyLimit > 0,
+            hasFreeUnlocks = freeDailyLimit > 0,
+        )
+        val rewardedRemaining = (rewardedDailyLimit - unlockedChapters.size).coerceAtLeast(0)
+        val isFreeUnlockAvailable = unlockedChapters.size < freeDailyLimit
         return if (rewardedRemaining > 0 || isFreeUnlockAvailable) {
             ChapterListeningAccessModel.UnlockAvailable(
                 rewardedRemainingToday = rewardedRemaining,
                 isFreeUnlockAvailable = isFreeUnlockAvailable,
+                allowance = allowance,
             )
         } else {
-            ChapterListeningAccessModel.LimitReached
+            ChapterListeningAccessModel.LimitReached(allowance)
         }
     }
 }

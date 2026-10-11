@@ -337,7 +337,7 @@ internal class ChapterListeningControllerImpl(
      */
     private fun showUnloaded(session: ListeningSessionModel) {
         loadJob?.cancel()
-        prefetchJob?.cancel()
+        cancelPrefetchUnlessFor(session.segment.chapter)
         refreshLeftChapter(session.segment.chapter)
         silencePlayer()
         audio = null
@@ -399,8 +399,7 @@ internal class ChapterListeningControllerImpl(
         session: ListeningSessionModel,
         leadingSilence: Duration,
     ) {
-        // Why: a prefetch for a chapter that is no longer next would compete with the one now loading.
-        if (prefetchingChapter != session.segment.chapter) prefetchJob?.cancel()
+        cancelPrefetchUnlessFor(session.segment.chapter)
         refreshLeftChapter(session.segment.chapter)
         silencePlayer()
         audio = null
@@ -574,10 +573,23 @@ internal class ChapterListeningControllerImpl(
         val current = session ?: return
         if (current.mode != ListeningModeModel.DAY_READING && !state.value.settings.isAutoNextEnabled) return
         prefetchJob?.cancel()
+        prefetchingChapter = null
         prefetchJob = scope.launch {
-            suspendRunCatching { prefetch(current) }
-                .onFailure { throwable -> Logger.w(throwable) { "Could not prefetch the next chapter audio" } }
+            try {
+                suspendRunCatching { prefetch(current) }
+                    .onFailure { throwable -> Logger.w(throwable) { "Could not prefetch the next chapter audio" } }
+            } finally {
+                // Why: a cancelled job ends after its replacement started, and must not clear the new one's chapter.
+                if (prefetchJob === coroutineContext[Job]) prefetchingChapter = null
+            }
         }
+    }
+
+    // Why: a prefetch for a chapter that is no longer next would compete with the one now loading.
+    private fun cancelPrefetchUnlessFor(chapter: ChapterLocationModel) {
+        if (prefetchingChapter == chapter) return
+        prefetchJob?.cancel()
+        prefetchingChapter = null
     }
 
     private suspend fun prefetch(current: ListeningSessionModel) {
@@ -585,8 +597,8 @@ internal class ChapterListeningControllerImpl(
             current = current,
             direction = ChapterDirectionModel.NEXT,
         ) ?: return
-        if (!isOpen(next)) return
         prefetchingChapter = next.chapter
+        if (!isOpen(next)) return
         val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,

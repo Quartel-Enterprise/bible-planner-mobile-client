@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSegmentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
@@ -215,7 +216,12 @@ internal class ChapterListeningPlayerViewModelTest {
             // Given
             prepareScenario(
                 session = listeningSession(chapter = genesisTwo),
-                access = ChapterListeningAccessModel.LimitReached,
+                access = ChapterListeningAccessModel.LimitReached(
+                    ListeningAllowanceModel(
+                        hasRewardedUnlocks = true,
+                        hasFreeUnlocks = true,
+                    ),
+                ),
             )
 
             // When
@@ -291,8 +297,6 @@ internal class ChapterListeningPlayerViewModelTest {
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
             checkRewardedUnlockEnabled = { true },
-            getRewardedListeningDailyLimit = { 1 },
-            getFreeListeningDailyLimit = { 1 },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

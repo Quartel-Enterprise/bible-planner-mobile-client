@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterChangeCause
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningEventModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSegmentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
@@ -202,7 +203,14 @@ internal class ReadListeningViewModelTest {
     @Test
     fun `GIVEN a locked chapter WHEN tapping listen THEN does not play it yet`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = ChapterListeningAccessModel.LimitReached)
+        prepareScenario(
+            access = ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+        )
 
         // When
         viewModel.onEvent(
@@ -559,8 +567,6 @@ internal class ReadListeningViewModelTest {
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
             checkRewardedUnlockEnabled = { true },
-            getRewardedListeningDailyLimit = { 1 },
-            getFreeListeningDailyLimit = { 1 },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
