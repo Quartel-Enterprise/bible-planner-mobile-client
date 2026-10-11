@@ -19,6 +19,9 @@ internal class UnsupportedChapterAudioPlayer : ChapterAudioPlayer {
     ) {
     }
 
+    override fun seekTo(position: Duration) {
+    }
+
     override fun setSpeed(speed: Float) {
     }
 

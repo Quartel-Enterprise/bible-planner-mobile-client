@@ -62,6 +62,10 @@ internal class AndroidChapterAudioPlayer(
         player.play()
     }
 
+    override fun seekTo(position: Duration) {
+        if (loadedPath != null) player.seekTo(position.inWholeMilliseconds)
+    }
+
     override fun setSpeed(speed: Float) {
         if (loadedPath != null) player.setPlaybackSpeed(speed)
     }

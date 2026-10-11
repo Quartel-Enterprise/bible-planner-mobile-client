@@ -17,10 +17,15 @@ internal class CheckRemoteSessionStateUseCase(
             onFailure = { it.toRemoteSessionState() },
         )
 
+    // Why: a rate-limited refresh says nothing about the session, so only other client errors mean it was revoked.
     private fun Throwable.toRemoteSessionState(): RemoteSessionState =
-        if (this is RestException && statusCode in clientErrorStatusCodes) {
+        if (this is RestException && statusCode in clientErrorStatusCodes && statusCode != TOO_MANY_REQUESTS_STATUS) {
             RemoteSessionState.REVOKED
         } else {
             RemoteSessionState.UNKNOWN
         }
+
+    private companion object {
+        const val TOO_MANY_REQUESTS_STATUS = 429
+    }
 }

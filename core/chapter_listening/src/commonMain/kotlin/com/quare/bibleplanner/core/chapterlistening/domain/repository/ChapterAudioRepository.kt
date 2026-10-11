@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioRes
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 
 interface ChapterAudioRepository {
-    suspend fun getChapterAudio(
+    suspend fun loadChapterAudio(
         bibleVersionId: String,
         chapter: ChapterLocationModel,
     ): ChapterAudioResultModel

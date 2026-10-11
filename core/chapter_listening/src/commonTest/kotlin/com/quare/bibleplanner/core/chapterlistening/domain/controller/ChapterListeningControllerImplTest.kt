@@ -810,6 +810,24 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
+    fun `GIVEN a paused chapter WHEN the lock screen scrubs THEN moves the player to show the new position`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(8.seconds))
+
+            // Then
+            assertEquals(listOf(8.seconds), audioPlayer.seeks)
+        }
+
+    @Test
     fun `GIVEN remote commands WHEN they arrive THEN drive the playback`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1504,6 +1522,7 @@ private class FakeChapterAudioPlayer : ChapterAudioPlayer {
     var speed: Float? = null
     var releaseCount = 0
     var pauseCount = 0
+    val seeks = mutableListOf<Duration>()
 
     fun emit(event: ChapterAudioPlayerEvent) {
         eventFlow.tryEmit(event)
@@ -1526,6 +1545,10 @@ private class FakeChapterAudioPlayer : ChapterAudioPlayer {
         )
         this.position = position
         this.speed = speed
+    }
+
+    override fun seekTo(position: Duration) {
+        seeks += position
     }
 
     override fun setSpeed(speed: Float) {
@@ -1557,7 +1580,7 @@ private class FakeChapterAudioRepository(
     val refreshed = mutableListOf<ChapterLocationModel>()
     val evicted = mutableListOf<String>()
 
-    override suspend fun getChapterAudio(
+    override suspend fun loadChapterAudio(
         bibleVersionId: String,
         chapter: ChapterLocationModel,
     ): ChapterAudioResultModel {

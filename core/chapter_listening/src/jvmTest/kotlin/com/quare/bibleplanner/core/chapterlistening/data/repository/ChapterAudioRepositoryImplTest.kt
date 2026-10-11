@@ -74,7 +74,7 @@ internal class ChapterAudioRepositoryImplTest {
             prepareScenario(respond = respondOk())
 
             // When
-            val result = repository.getChapterAudio(
+            val result = repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -126,7 +126,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -142,14 +142,14 @@ internal class ChapterAudioRepositoryImplTest {
     fun `GIVEN a cached chapter WHEN getting its audio again THEN serves it without the network`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
         val requestCount = requests.size
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -170,7 +170,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -199,7 +199,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -223,7 +223,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -244,7 +244,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -265,7 +265,7 @@ internal class ChapterAudioRepositoryImplTest {
             )
 
             // When
-            val result = repository.getChapterAudio(
+            val result = repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -286,7 +286,7 @@ internal class ChapterAudioRepositoryImplTest {
             )
 
             // When
-            val result = repository.getChapterAudio(
+            val result = repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -307,7 +307,7 @@ internal class ChapterAudioRepositoryImplTest {
             )
 
             // When
-            val result = repository.getChapterAudio(
+            val result = repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -322,7 +322,7 @@ internal class ChapterAudioRepositoryImplTest {
         prepareScenario(respond = { throw IOException("offline") })
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -340,7 +340,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -363,7 +363,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -387,7 +387,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -400,7 +400,7 @@ internal class ChapterAudioRepositoryImplTest {
     fun `GIVEN a cached manifest that no longer reads WHEN getting the audio THEN downloads it again`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -408,7 +408,7 @@ internal class ChapterAudioRepositoryImplTest {
         val requestCount = requests.size
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -431,7 +431,7 @@ internal class ChapterAudioRepositoryImplTest {
         )
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -448,7 +448,7 @@ internal class ChapterAudioRepositoryImplTest {
         java.io.File(directory.toString()).writeText("not a directory")
 
         // When
-        val result = repository.getChapterAudio(
+        val result = repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -462,7 +462,7 @@ internal class ChapterAudioRepositoryImplTest {
         runTest {
             // Given
             prepareScenario(respond = respondOk())
-            repository.getChapterAudio(
+            repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -475,7 +475,7 @@ internal class ChapterAudioRepositoryImplTest {
             )
 
             // Then
-            val result = repository.getChapterAudio(
+            val result = repository.loadChapterAudio(
                 bibleVersionId = "A21",
                 chapter = genesisOne,
             )
@@ -489,7 +489,7 @@ internal class ChapterAudioRepositoryImplTest {
     fun `GIVEN a cached chapter WHEN refreshing it twice THEN asks the server once`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -514,7 +514,7 @@ internal class ChapterAudioRepositoryImplTest {
     fun `GIVEN a check that failed offline WHEN refreshing again THEN asks the server again`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -539,7 +539,7 @@ internal class ChapterAudioRepositoryImplTest {
     fun `GIVEN a cached chapter WHEN evicting it THEN downloads it again next time`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )
@@ -547,7 +547,7 @@ internal class ChapterAudioRepositoryImplTest {
 
         // When
         repository.evict(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3").toString())
-        repository.getChapterAudio(
+        repository.loadChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,
         )

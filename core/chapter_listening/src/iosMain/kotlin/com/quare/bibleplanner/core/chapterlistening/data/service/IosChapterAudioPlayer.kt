@@ -97,7 +97,16 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
             loadedPath = audioPath
             hasReportedFailure = false
         }
-        // Why: the seek completes later, and until then currentTime still reports the old position.
+        seek(position)
+        player.playImmediatelyAtRate(speed)
+    }
+
+    override fun seekTo(position: Duration) {
+        if (loadedPath != null) seek(position)
+    }
+
+    // Why: the seek completes later, and until then currentTime still reports the old position.
+    private fun seek(position: Duration) {
         val seekId = ++seekCount
         seekTarget = position
         player.seekToTime(
@@ -110,7 +119,6 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
                 }
             },
         )
-        player.playImmediatelyAtRate(speed)
     }
 
     override fun setSpeed(speed: Float) {

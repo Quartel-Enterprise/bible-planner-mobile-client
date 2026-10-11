@@ -165,6 +165,9 @@ private class SupportAudioPlayer(
         playbackId: Int,
     ) = error("unused")
 
+    override fun seekTo(position: Duration) {
+    }
+
     override fun setSpeed(speed: Float) = error("unused")
 
     override fun pause() = error("unused")

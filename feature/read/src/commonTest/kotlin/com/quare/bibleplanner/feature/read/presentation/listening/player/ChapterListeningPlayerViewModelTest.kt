@@ -291,6 +291,7 @@ internal class ChapterListeningPlayerViewModelTest {
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
             checkRewardedUnlockEnabled = { true },
+            getRewardedListeningDailyLimit = { 1 },
             getFreeListeningDailyLimit = { 1 },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,

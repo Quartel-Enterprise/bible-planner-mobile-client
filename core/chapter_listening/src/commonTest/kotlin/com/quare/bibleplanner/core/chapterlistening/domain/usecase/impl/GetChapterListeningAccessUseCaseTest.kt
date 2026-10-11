@@ -202,7 +202,7 @@ internal class GetChapterListeningAccessUseCaseTest {
             isProUser = { isPro },
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
-            getIntRemoteConfig = remoteConfig,
+            getRewardedListeningDailyLimit = GetRewardedListeningDailyLimitUseCase(remoteConfig),
             getFreeListeningDailyLimit = GetFreeListeningDailyLimitUseCase(remoteConfig),
         )
     }

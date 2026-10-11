@@ -26,6 +26,7 @@ internal class UnsupportedListeningServicesTest {
             speed = 1f,
             playbackId = 1,
         )
+        audioPlayer.seekTo(Duration.ZERO)
         audioPlayer.setSpeed(1.5f)
         audioPlayer.pause()
         audioPlayer.release()

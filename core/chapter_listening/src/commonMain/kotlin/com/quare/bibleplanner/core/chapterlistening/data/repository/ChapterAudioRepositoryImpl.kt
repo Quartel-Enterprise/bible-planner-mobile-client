@@ -48,7 +48,7 @@ internal class ChapterAudioRepositoryImpl(
     private val checkedChapterKeys = mutableSetOf<String>()
     private val checkingChapterKeys = mutableSetOf<String>()
 
-    override suspend fun getChapterAudio(
+    override suspend fun loadChapterAudio(
         bibleVersionId: String,
         chapter: ChapterLocationModel,
     ): ChapterAudioResultModel {

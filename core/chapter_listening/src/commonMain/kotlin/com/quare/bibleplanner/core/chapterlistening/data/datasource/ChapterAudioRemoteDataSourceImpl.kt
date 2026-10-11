@@ -26,6 +26,8 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.buffered
@@ -40,6 +42,8 @@ internal class ChapterAudioRemoteDataSourceImpl(
     private val json: Json,
     private val checkRemoteSessionState: CheckRemoteSessionState,
 ) : ChapterAudioRemoteDataSource {
+    private val renewalMutex = Mutex()
+
     /*
      * Why: a chapter nobody has heard yet is generated during this call (~20–35 s) without sending a
      * byte, and a request for one already being generated waits up to 45 s on the server, both past
@@ -97,21 +101,22 @@ internal class ChapterAudioRemoteDataSourceImpl(
         if (failure == null || !failure.isUnauthorized() || auth.currentSessionOrNull() == null) {
             return result.getOrThrow()
         }
-        if (auth.currentAccessTokenOrNull() == usedToken) renewSession()
+        renewSession(usedToken)
         return call()
     }
 
-    // Why: like Supabase's own auto refresh, a refused refresh token ends the session, so the person can sign in again.
-    private suspend fun renewSession() {
-        when (checkRemoteSessionState()) {
-            RemoteSessionState.ACTIVE -> Unit
-
-            RemoteSessionState.REVOKED -> {
-                auth.clearSession()
-                throw NotSignedInException()
+    /*
+     * Why: calls refused together renew the session once, since a refresh token is spent on use; one
+     * the server refuses is left to the app's own session handling, which signs the person out.
+     */
+    private suspend fun renewSession(usedToken: String?) {
+        renewalMutex.withLock {
+            if (auth.currentAccessTokenOrNull() != usedToken) return
+            when (checkRemoteSessionState()) {
+                RemoteSessionState.ACTIVE -> Unit
+                RemoteSessionState.REVOKED -> throw NotSignedInException()
+                RemoteSessionState.UNKNOWN -> throw IOException("Could not renew the session")
             }
-
-            RemoteSessionState.UNKNOWN -> throw IOException("Could not renew the session")
         }
     }
 

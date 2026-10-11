@@ -409,7 +409,7 @@ internal class ChapterListeningControllerImpl(
                 ),
             )
         }
-        val result = chapterAudioRepository.getChapterAudio(
+        val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = session.bibleVersionId,
             chapter = session.segment.chapter,
         )
@@ -570,7 +570,7 @@ internal class ChapterListeningControllerImpl(
             direction = ChapterDirectionModel.NEXT,
         ) ?: return
         if (!isOpen(next)) return
-        val result = chapterAudioRepository.getChapterAudio(
+        val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,
         )
@@ -727,6 +727,7 @@ internal class ChapterListeningControllerImpl(
             return
         }
         position = verse.start
+        audioPlayer.seekTo(verse.start)
         updateSession {
             it.copy(
                 verseIndex = verseIndex,
@@ -748,6 +749,8 @@ internal class ChapterListeningControllerImpl(
             return
         }
         position = start
+        // Why: Android's lock screen shows the player's own position, so a paused seek moves it too.
+        audioPlayer.seekTo(start)
         showPosition(start)
         updateSession {
             it.copy(status = if (it.status == ListeningStatusModel.FINISHED) ListeningStatusModel.PAUSED else it.status)

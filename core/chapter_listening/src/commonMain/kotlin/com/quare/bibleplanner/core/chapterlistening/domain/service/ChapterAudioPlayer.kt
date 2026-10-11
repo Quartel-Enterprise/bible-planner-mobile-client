@@ -16,6 +16,8 @@ interface ChapterAudioPlayer {
         playbackId: Int,
     )
 
+    fun seekTo(position: Duration)
+
     fun setSpeed(speed: Float)
 
     fun pause()
