@@ -128,6 +128,8 @@ class CheckRemoteSessionStateUseCaseTest {
                 codeVerifierCache = MemoryCodeVerifierCache()
             }
         }
+        // Auth's background setupPlatform() moves Initializing to NotAuthenticated and can overwrite an imported session.
+        client.auth.awaitInitialization()
         if (hasLocalSession) {
             client.auth.importSession(
                 session = UserSession(
