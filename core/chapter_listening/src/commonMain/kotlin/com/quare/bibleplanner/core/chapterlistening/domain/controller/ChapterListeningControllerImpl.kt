@@ -112,6 +112,7 @@ internal class ChapterListeningControllerImpl(
     private var prefetchJob: Job? = null
     private var prefetchingChapter: ChapterLocationModel? = null
     private var refreshJob: Job? = null
+    private var hasTrackedStart = false
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
@@ -154,7 +155,6 @@ internal class ChapterListeningControllerImpl(
                     bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = shouldForceCanonOrder,
                 ),
-                leadingSilence = Duration.ZERO,
             )
         }
     }
@@ -173,7 +173,6 @@ internal class ChapterListeningControllerImpl(
                     bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = false,
                 ),
-                leadingSilence = Duration.ZERO,
             )
         }
     }
@@ -203,7 +202,6 @@ internal class ChapterListeningControllerImpl(
                 startLoad {
                     openSegment(
                         session = followed,
-                        leadingSilence = Duration.ZERO,
                     )
                 }
             } else {
@@ -222,7 +220,6 @@ internal class ChapterListeningControllerImpl(
                     chapterChangeCause = ChapterChangeCause.PLAYER,
                     lockedSegment = null,
                 ),
-                leadingSilence = Duration.ZERO,
             )
         }
     }
@@ -341,6 +338,7 @@ internal class ChapterListeningControllerImpl(
         cancelPrefetchUnlessFor(session.segment.chapter)
         refreshLeftChapter(session.segment.chapter)
         silencePlayer()
+        hasTrackedStart = false
         audio = null
         position = Duration.ZERO
         state.update {
@@ -398,11 +396,12 @@ internal class ChapterListeningControllerImpl(
 
     private suspend fun openSegment(
         session: ListeningSessionModel,
-        leadingSilence: Duration,
+        leadingSilence: Duration = Duration.ZERO,
     ) {
         cancelPrefetchUnlessFor(session.segment.chapter)
         refreshLeftChapter(session.segment.chapter)
         silencePlayer()
+        hasTrackedStart = false
         audio = null
         position = Duration.ZERO
         state.update {
@@ -540,14 +539,17 @@ internal class ChapterListeningControllerImpl(
             status == ListeningStatusModel.AUDIO_UNAVAILABLE -> NO_VERSES_REASON
             else -> null
         }
-        if (unavailableReason != null) {
-            trackEvent(
-                name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
-                params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to unavailableReason),
-            )
-            return
-        }
-        if (status != ListeningStatusModel.PREPARING) return
+        if (unavailableReason == null) return
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
+            params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to unavailableReason),
+        )
+    }
+
+    // Why: a chapter paused while it loaded counts as started when it first plays, not when it loads.
+    private fun trackStartOnce(session: ListeningSessionModel) {
+        if (hasTrackedStart) return
+        hasTrackedStart = true
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_STARTED,
             params =
@@ -564,7 +566,8 @@ internal class ChapterListeningControllerImpl(
 
     /*
      * Why: the next chapter is downloaded (and generated, the first time anyone asks for it) while
-     * this one plays, so moving on doesn't wait for it; a locked one is left alone.
+     * this one plays, so moving on doesn't wait for it; a locked one is left alone, and its revision
+     * is only checked once the session leaves it, so the check never runs during its own playback.
      */
     private fun prefetchNextSegment() {
         val current = session ?: return
@@ -596,12 +599,7 @@ internal class ChapterListeningControllerImpl(
         ) ?: return
         prefetchingChapter = next.chapter
         if (!isOpen(next)) return
-        val result = chapterAudioRepository.loadChapterAudio(
-            bibleVersionId = current.bibleVersionId,
-            chapter = next.chapter,
-        )
-        if (result !is ChapterAudioResultModel.Ready) return
-        chapterAudioRepository.refresh(
+        chapterAudioRepository.loadChapterAudio(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,
         )
@@ -621,7 +619,7 @@ internal class ChapterListeningControllerImpl(
 
     private fun playFrom(
         start: Duration,
-        leadingSilence: Duration,
+        leadingSilence: Duration = Duration.ZERO,
     ) {
         val current = session ?: return
         val chapterAudio = audio ?: return
@@ -635,6 +633,7 @@ internal class ChapterListeningControllerImpl(
         position = start
         showPosition(start)
         updateSession { it.copy(status = ListeningStatusModel.PLAYING) }
+        trackStartOnce(current)
         playbackJob = scope.launch {
             delay(leadingSilence)
             audioPlayer.play(
@@ -702,7 +701,6 @@ internal class ChapterListeningControllerImpl(
 
             ListeningStatusModel.FINISHED -> playFrom(
                 start = current.verses.firstOrNull()?.start ?: Duration.ZERO,
-                leadingSilence = Duration.ZERO,
             )
 
             ListeningStatusModel.NEEDS_CONNECTION,
@@ -712,7 +710,6 @@ internal class ChapterListeningControllerImpl(
             -> launchLoad {
                 openSegment(
                     session = current,
-                    leadingSilence = Duration.ZERO,
                 )
             }
 
@@ -732,7 +729,6 @@ internal class ChapterListeningControllerImpl(
         } else {
             playFrom(
                 start = position,
-                leadingSilence = Duration.ZERO,
             )
         }
     }
@@ -744,7 +740,6 @@ internal class ChapterListeningControllerImpl(
                 startLoad {
                     openSegment(
                         session = current,
-                        leadingSilence = Duration.ZERO,
                     )
                 }
                 return@launchMove
@@ -765,7 +760,6 @@ internal class ChapterListeningControllerImpl(
         if (current.isPlaying) {
             playFrom(
                 start = verse.start,
-                leadingSilence = Duration.ZERO,
             )
             return
         }
@@ -787,7 +781,6 @@ internal class ChapterListeningControllerImpl(
         if (current.isPlaying) {
             playFrom(
                 start = start,
-                leadingSilence = Duration.ZERO,
             )
             return
         }
@@ -823,7 +816,6 @@ internal class ChapterListeningControllerImpl(
                 startLoad {
                     openSegment(
                         session = moved,
-                        leadingSilence = Duration.ZERO,
                     )
                 }
             } else {

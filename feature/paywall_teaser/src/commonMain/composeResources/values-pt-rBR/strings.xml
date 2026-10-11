@@ -7,9 +7,9 @@
     <string name="paywall_teaser_chapter_study_limit_title">Seus estudos grátis acabaram</string>
     <string name="paywall_teaser_chapter_study_limit_body">Você já usou seus estudos de capítulo grátis. Com o Pro você estuda qualquer capítulo com IA, quantas vezes quiser — além do estudo do dia e do chat sem limites.</string>
     <string name="paywall_teaser_chapter_study_limit_dismiss">Agora não</string>
-    <string name="paywall_teaser_chapter_listening_limit_title">Você já usou o capítulo grátis de hoje</string>
-    <string name="paywall_teaser_chapter_listening_limit_body">A cada dia você libera um capítulo para ouvir assistindo a um vídeo curto. Com o Pro você ouve qualquer capítulo, quantos quiser — e segue para o próximo sozinho.</string>
-    <string name="paywall_teaser_chapter_listening_limit_body_free">A cada dia você ouve um capítulo grátis. Com o Pro você ouve qualquer capítulo, quantos quiser — e segue para o próximo sozinho.</string>
+    <string name="paywall_teaser_chapter_listening_limit_title">Você já usou a escuta grátis de hoje</string>
+    <string name="paywall_teaser_chapter_listening_limit_body">A cada dia você libera capítulos para ouvir assistindo a um vídeo curto. Com o Pro você ouve qualquer capítulo, quantos quiser — e segue para o próximo sozinho.</string>
+    <string name="paywall_teaser_chapter_listening_limit_body_free">A escuta grátis volta amanhã. Com o Pro você ouve qualquer capítulo, quantos quiser — e segue para o próximo sozinho.</string>
     <string name="paywall_teaser_chapter_listening_limit_dismiss">Agora não</string>
     <string name="paywall_teaser_chapter_listening_pro_only_title">Ouça com o Pro</string>
     <string name="paywall_teaser_chapter_listening_pro_only_body">Com o Pro você ouve qualquer capítulo narrado por vozes naturais, quantos quiser — e segue para o próximo sozinho.</string>

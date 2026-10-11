@@ -77,7 +77,11 @@ internal class AndroidListeningMediaSession(
     override fun update(nowPlaying: NowPlayingModel) {
         val shownPlayer = player ?: createPlayer().also { created -> player = created }
         shownPlayer.show(nowPlaying)
-        if (nowPlaying.isPlaying) wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS) else releaseWakeLock()
+        if (!nowPlaying.isPlaying) {
+            releaseWakeLock()
+        } else if (!wakeLock.isHeld) {
+            wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS)
+        }
     }
 
     override fun deactivate() {

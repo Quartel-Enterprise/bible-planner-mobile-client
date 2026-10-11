@@ -535,7 +535,7 @@ internal class ChapterListeningControllerImplTest {
 
         // Then
         assertEquals(listOf(genesisOne, genesisTwo), audioRepository.requests)
-        assertEquals(listOf(genesisTwo), audioRepository.refreshed)
+        assertTrue(audioRepository.refreshed.isEmpty())
     }
 
     @Test
@@ -625,6 +625,29 @@ internal class ChapterListeningControllerImplTest {
             // Then
             assertEquals(ListeningStatusModel.PAUSED, session?.status)
             assertEquals(startedCount, trackedEvents.count { (name, _) -> name == "chapter_listening_started" })
+        }
+
+    @Test
+    fun `GIVEN a chapter paused while loading WHEN it is played later THEN counts it as started once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            audioLoaded.complete(Unit)
+
+            // When
+            controller.togglePlayPause()
+            controller.togglePlayPause()
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(1, trackedEvents.count { (name, _) -> name == "chapter_listening_started" })
         }
 
     @Test
@@ -1446,7 +1469,7 @@ internal class ChapterListeningControllerImplTest {
 
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
-            assertTrue(genesisTwo in audioRepository.refreshed)
+            assertTrue(genesisTwo in audioRepository.requests)
         }
 
     @Test

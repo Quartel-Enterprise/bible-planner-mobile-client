@@ -19,6 +19,8 @@ import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 
 class PaywallUiStateFactory(
@@ -34,9 +36,13 @@ class PaywallUiStateFactory(
     suspend fun create(storeName: String): PaywallInitializationResult {
         val maxFreeNotes = getMaxFreeNotesAmount()
         // Why: listening is only sold where it exists (mobile, switched on, a version with narration).
-        val isChapterListeningAvailable = suspendRunCatching { observeIsChapterListeningEnabled().first() }
-            .getOrDefault(false)
-        return getOfferingsResult().fold(
+        val (offeringsResult, isChapterListeningAvailable) = coroutineScope {
+            val isListeningAvailable = async {
+                suspendRunCatching { observeIsChapterListeningEnabled().first() }.getOrDefault(false)
+            }
+            getOfferingsResult() to isListeningAvailable.await()
+        }
+        return offeringsResult.fold(
             onSuccess = { offerings ->
                 val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
                 val subscriptionPlans = offerings.mapNotNull { storePackage ->

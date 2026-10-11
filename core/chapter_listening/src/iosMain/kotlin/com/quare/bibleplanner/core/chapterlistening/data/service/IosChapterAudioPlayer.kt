@@ -5,9 +5,13 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPla
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import platform.AVFoundation.AVAudioTimePitchAlgorithmSpectral
 import platform.AVFoundation.AVErrorDecodeFailed
 import platform.AVFoundation.AVErrorFailedToParse
@@ -20,6 +24,7 @@ import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeErrorKey
 import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
 import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
+import platform.AVFoundation.AVPlayerItemStatusUnknown
 import platform.AVFoundation.audioTimePitchAlgorithm
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.pause
@@ -39,6 +44,7 @@ import platform.Foundation.NSURL
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
@@ -56,7 +62,18 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     private val eventChannel = Channel<ChapterAudioPlayerEvent>(Channel.UNLIMITED)
     override val events: Flow<ChapterAudioPlayerEvent> = eventChannel.receiveAsFlow()
 
-    private val player = AVPlayer()
+    // Why: created on the first play, so checking support or opening the reader never builds an AVPlayer.
+    private val player: AVPlayer by lazy {
+        observe(AVPlayerItemDidPlayToEndTimeNotification) { send(ChapterAudioPlayerEvent.Ended(playbackId)) }
+        // Why: a file that fails partway through carries its error in the notification, not on the item.
+        observe(AVPlayerItemFailedToPlayToEndTimeNotification) { notification ->
+            reportFailure(notification.userInfo?.get(AVPlayerItemFailedToPlayToEndTimeErrorKey) as? NSError)
+        }
+        AVPlayer()
+    }
+    private val statusScope = MainScope()
+    private val statusPollInterval: Duration = 100.milliseconds
+    private var statusJob: Job? = null
     private var loadedItem: AVPlayerItem? = null
     private var loadedPath: String? = null
     private var playbackId = 0
@@ -67,20 +84,9 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     // Why: AVFoundation can't seek a new item with a completion handler before it is ready to play.
     private var pendingStartSpeed: Float? = null
 
-    init {
-        observe(AVPlayerItemDidPlayToEndTimeNotification) { send(ChapterAudioPlayerEvent.Ended(playbackId)) }
-        // Why: a file that fails partway through carries its error in the notification, not on the item.
-        observe(AVPlayerItemFailedToPlayToEndTimeNotification) { notification ->
-            reportFailure(notification.userInfo?.get(AVPlayerItemFailedToPlayToEndTimeErrorKey) as? NSError)
-        }
-    }
-
-    // Why: an item that fails to open posts no notification, only its status changes, and the controller reads this every few hundred ms.
     override val position: Duration
         get() {
-            val item = loadedItem ?: return Duration.ZERO
-            if (item.status == AVPlayerItemStatusFailed) reportFailure(item.error)
-            startWhenReady(item)
+            if (loadedItem == null) return Duration.ZERO
             seekTarget?.let { target -> return target }
             val seconds = CMTimeGetSeconds(player.currentTime())
             return if (seconds.isNaN()) Duration.ZERO else seconds.seconds
@@ -101,6 +107,7 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
             loadedItem = item
             loadedPath = audioPath
             hasReportedFailure = false
+            watchStatus(item)
         }
         if (loadedItem?.status != AVPlayerItemStatusReadyToPlay) {
             // Why: a seek still pending on the replaced item must not clear this start when it completes.
@@ -117,10 +124,25 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
         if (loadedItem?.status == AVPlayerItemStatusReadyToPlay) seek(position)
     }
 
-    // Why: the controller reads the position every few hundred ms while it plays, so the start runs here.
-    private fun startWhenReady(item: AVPlayerItem) {
+    /*
+     * Why: an item that fails to open posts no notification, only its status changes, and Kotlin
+     * can't override the KVO callback, so the player follows the status itself until it settles.
+     */
+    private fun watchStatus(item: AVPlayerItem) {
+        statusJob?.cancel()
+        statusJob = statusScope.launch {
+            while (item.status == AVPlayerItemStatusUnknown) delay(statusPollInterval)
+            if (item != loadedItem) return@launch
+            if (item.status == AVPlayerItemStatusFailed) {
+                reportFailure(item.error)
+            } else {
+                startPending()
+            }
+        }
+    }
+
+    private fun startPending() {
         val speed = pendingStartSpeed ?: return
-        if (item.status != AVPlayerItemStatusReadyToPlay) return
         pendingStartSpeed = null
         seek(seekTarget ?: Duration.ZERO)
         player.playImmediatelyAtRate(speed)
@@ -144,16 +166,18 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
 
     override fun setSpeed(speed: Float) {
         if (pendingStartSpeed != null) pendingStartSpeed = speed
-        if (player.rate != 0f) player.setRate(speed)
+        if (loadedItem != null && player.rate != 0f) player.setRate(speed)
     }
 
     override fun pause() {
         pendingStartSpeed = null
-        player.pause()
+        if (loadedItem != null) player.pause()
     }
 
     override fun release() {
         pendingStartSpeed = null
+        if (loadedItem == null) return
+        statusJob?.cancel()
         player.pause()
         player.replaceCurrentItemWithPlayerItem(null)
         seekTarget = null
