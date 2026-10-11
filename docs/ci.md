@@ -85,9 +85,9 @@ Claude reviews pull requests at three points:
   When another review of the pull request is still running, it starts nothing and only removes the
   label.
 
-The review can't read the inline comments on the pull request, so the action hands it the ones
-earlier reviews left (a draft marked ready a second time, a review on request), for it not to raise
-the same issues again.
+The review can't read the earlier reviews on the pull request, so the action hands it the findings
+they left, inline comments and review bodies alike (a draft marked ready a second time, a review on
+request), for it not to raise the same issues again.
 
 Both only comment: they fail only when the run itself does (an expired token, the 30-minute
 timeout), never because of what they found. They are skipped on pull requests from forks, which get
@@ -141,15 +141,19 @@ violations and cleanups of the changed code (reuse, simplification, efficiency, 
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
 locally. On GitHub the model invokes the skill itself with the level and the pull request number and
-ends its reply with the findings as JSON; Claude posts nothing. A step of the action then hands that
-JSON to `.github/actions/claude-review/post-review.sh`, which posts it with the workflow's token (so
-the review comes from `github-actions`) as one review with an inline comment per finding, one
-notification, rather than through the skill's `--comment` flag, which posts one review per finding.
-When GitHub refuses an inline comment (a line outside the diff), the script posts the findings as one
-review body instead, so none is lost; with no findings it posts a review saying so, and a reply with
-no findings list (a timeout, a skill that stopped early) gets a review pointing at the run, so the
-pull request always shows the review ran. At high effort the skill runs its angles one after another
-in a single context, so a large pull request may take long: the workflows give it 30 minutes.
+ends its reply with the findings as JSON; the model posts nothing. A Stop hook of the session
+(`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
+it as one review with an inline comment per finding, one notification, rather than through the
+skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so
+the review comes from `claude[bot]`, with the Claude GitHub App's token the action gives the session
+and revokes when it ends. When the hook didn't post, a step of the action posts the same findings with
+the workflow's token, as `github-actions`, and the run shows a warning.
+GitHub only anchors a comment to a line inside the diff, so a finding on another line (the recipe
+reports bugs on unchanged lines of a touched function on purpose) goes in the review's body instead,
+and none is lost; with no findings the review says so, and a reply with no findings list (a timeout,
+a skill that stopped early) gets a review pointing at the run, so the pull request always shows the
+review ran. At high effort the skill runs its angles one after another in a single context, so a
+large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,
 a fixed recipe: five Sonnet agents, a shallow scan for bugs plus a `CLAUDE.md` check, nothing under

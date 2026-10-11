@@ -1,11 +1,14 @@
 name: 'Claude review'
 description: 'Reviews the pull request with the /code-review skill bundled with Claude Code, at high effort, and posts the findings as one review'
 
-# The review step only reviews. The findings come back as JSON in Claude's last message, and the
-# posting step below hands them to post-review.sh, which posts them as one pull request review with
-# the workflow's token. Claude itself posts nothing: the skill's --comment flag posts one review per
-# finding, each with its own notification, and a script run by Claude depends on a Bash allowlist the
-# action didn't honour for it.
+# The review step only reviews: the findings come back as JSON in Claude's last message. A Stop hook
+# of the session (stop-hook.sh) then hands them to post-review.sh, which posts them as one pull
+# request review. The hook runs inside the session, so the review is posted as claude[bot], with the
+# Claude GitHub App's token the action gives the session and revokes when it ends: a step after the
+# action couldn't use it. When the hook didn't post (no token, a GitHub outage), the posting step
+# below posts the same findings with the workflow's token, as github-actions. The model posts nothing
+# itself: the skill's --comment flag posts one review per finding, each with its own notification,
+# and a script run by the model depends on a Bash allowlist the action didn't honour for it.
 
 inputs:
   oauth-token:
@@ -64,9 +67,10 @@ runs:
           echo "MEMORY_INSTRUCTIONS_END"
         } >> "$GITHUB_OUTPUT"
 
-    # The review can't read the inline comments on the pull request, so the ones Claude left before
-    # (a draft marked ready a second time, a review on request after new pushes) are handed to it, for
-    # it not to raise the same issues again.
+    # The review can't read the earlier reviews on the pull request, so the findings they left (a
+    # draft marked ready a second time, a review on request after new pushes) are handed to it, for it
+    # not to raise the same issues again: the inline comments, and the bodies of the reviews that
+    # listed findings GitHub couldn't anchor to a line.
     - id: earlier
       shell: bash
       env:
@@ -74,9 +78,15 @@ runs:
         GH_REPO: ${{ github.repository }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-        comments=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
-          --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
-            | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"')
+        comments=$(
+          gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
+            --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
+              | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"'
+          gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/reviews" \
+            --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
+              | .body | select(test("^### Code review\\s+\\d+ finding"))
+              | split("\n\n")[2:] | map(gsub("\\s+"; " ") | .[0:300]) | .[] | select(. != "") | "- " + .'
+        )
         {
           echo "text<<EARLIER_COMMENTS_END"
           if [ -n "$comments" ]; then
@@ -93,7 +103,8 @@ runs:
     # put on the skill's command line, the instructions below would become part of its target.
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
-    # the posting step reads from Claude's last message. The gh and git commands are the read-only
+    # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
+    # pull request number from the ref the workflow checked out. The gh and git commands are the read-only
     # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
     # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
     # here when the review needs it.
@@ -108,6 +119,8 @@ runs:
         CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: "1"
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
+        settings: |
+          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": ".github/actions/claude-review/stop-hook.sh", "timeout": 180}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `high ${{ github.event.pull_request.number }}` as its
@@ -125,14 +138,14 @@ runs:
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(cd:*)"
+          --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)"
           --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
 
-    # Claude's last message ends with the findings in a ```json fence (the last one, should the skill
-    # print more than one); a reply that is nothing but the array counts too. Without either, the
-    # review ended without a findings list (a timeout, a refusal, a skill that stopped early): a review
-    # saying so is posted, so the pull request shows the run, and the run shows a warning.
-    - name: Post the findings as one review
+    # The Stop hook leaves a marker with the url of the review it posted. Without it, the findings of
+    # Claude's last message (extract-findings.py reads the ```json fence) are posted here instead, with
+    # the workflow's token, and a notice when there is no findings list (a timeout, a refusal, a skill
+    # that stopped early), so the pull request always shows the run.
+    - name: Post the findings when the hook didn't
       if: always() && steps.claude.outputs.execution_file != ''
       shell: bash
       env:
@@ -141,30 +154,22 @@ runs:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
-        result=$(jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE")
-        findings=$(awk '
-          /^[[:space:]]*```json[[:space:]]*$/ { buf = ""; inside = 1; next }
-          /^[[:space:]]*```[[:space:]]*$/ { if (inside) { last = buf; inside = 0 }; next }
-          inside { buf = buf $0 "\n" }
-          END { printf "%s", last }' <<< "$result")
-        if ! jq -e 'type == "array"' <<< "$findings" > /dev/null 2>&1; then
-          if jq -e 'type == "array"' <<< "$result" > /dev/null 2>&1; then
-            findings=$result
-          else
-            echo "::warning::The review ended without a findings list, so only a notice was posted."
-            jq -n --arg url "$RUN_URL" '{event: "COMMENT",
-              body: ("### Code review\n\nThe review ended without a findings list; see [the run](" + $url + ").")}' |
-              gh api --method POST "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --input - --jq .html_url
-            exit 0
-          fi
+        if [ -f .github/actions/claude-review/.posted ]; then
+          echo "The review was posted from the session: $(cat .github/actions/claude-review/.posted)"
+          exit 0
         fi
-        .github/actions/claude-review/post-review.sh "$PR_NUMBER" <<< "$findings"
+        echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
+        jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE" |
+          python3 .github/actions/claude-review/extract-findings.py |
+          .github/actions/claude-review/post-review.sh "$PR_NUMBER"
 
     # The action hides Claude's output, since this repository's logs are public, so a tool the review
     # was denied doesn't show anywhere. Only the tool's name is printed, and for Bash the program (a
     # path to a script counts), its flags and its subcommand (two for gh, whose verbs come in pairs),
     # enough to allow it above: a word that doesn't look like one (a path argument, a value, an
-    # assignment) is left out. Reading the file never fails the review.
+    # assignment) is left out. A compound command (&&, ||, |, ;) is denied as a whole when one of its
+    # parts isn't allowed, so every part is printed, joined with "+". Reading the file never fails the
+    # review.
     - name: List the tools the review was denied
       if: always() && steps.claude.outputs.execution_file != ''
       shell: bash
@@ -173,14 +178,15 @@ runs:
       run: |
         if ! denied=$(jq -r '.[] | select(.type == "result") | .permission_denials[]?
           | if .tool_name == "Bash"
-            then [.tool_input.command // "" | splits("\\s+") | select(. != "")]
-              | map(select(test("^[A-Za-z_][A-Za-z0-9_]*=") | not))
-              | "Bash("
-                + ([(.[0] // "" | select(test("^[A-Za-z./][A-Za-z0-9._/-]*$")) // "?"),
-                    (.[1] // "" | select(test("^(-[A-Za-z0-9-]*|[a-z][a-z0-9-]*)$"))),
-                    (if .[0] == "gh" then (.[2] // "" | select(test("^[a-z][a-z0-9-]*$"))) else empty end)]
-                   | join(" "))
-                + ")"
+            then [.tool_input.command // "" | split("\n")[0] | splits("\\s*(&&|\\|\\||\\||;)\\s*") | select(. != "")]
+              | map([splits("\\s+") | select(. != "" and (test("^[A-Za-z_][A-Za-z0-9_]*=") | not))]
+                | "Bash("
+                  + ([(.[0] // "" | select(test("^[A-Za-z./][A-Za-z0-9._/-]*$")) // "?"),
+                      (.[1] // "" | select(test("^(-[A-Za-z0-9-]*|[a-z][a-z0-9-]*)$"))),
+                      (if .[0] == "gh" then (.[2] // "" | select(test("^[a-z][a-z0-9-]*$"))) else empty end)]
+                     | join(" "))
+                  + ")")
+              | join(" + ")
             else .tool_name end' "$EXECUTION_FILE"); then
           echo "::warning::Couldn't read the tools the review was denied."
           exit 0
