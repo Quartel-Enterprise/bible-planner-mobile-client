@@ -8,8 +8,9 @@ repository's 10 GB cache budget:
 
 - **`main`** always writes. Every pull request restores from those entries.
 - **`GRADLE_CACHE_WRITE_ON_PULL_REQUESTS=true`** lets a job write on a pull request too, scoped to
-  that pull request's ref, so the next push compiles only what changed. Only `build`, the longest
-  job, sets it. `unit-tests` stays read-only and restores `main`'s entry.
+  that pull request's ref, so the next push compiles only what changed. The jobs on the critical
+  path set it: `build`, the three `android` shards and `ios` of `ui-tests`. `unit-tests` stays
+  read-only and restores `main`'s entry.
 - **`GRADLE_CACHE_READ_ONLY=true`** never writes, even on `main`. It is for jobs that barely use
   Gradle (`ktlint`, `module-graph`): their small entries would take up the budget, and since
   setup-gradle falls back to the most recent entry of any job, another job could restore one of
@@ -193,14 +194,19 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
 - **`desktop`** runs them on the JVM with `-PuiTests=only`, which leaves the unit tests of the same
   modules to `unit-tests`. Only the modules with UI tests and what they depend on compile here.
 
-- **`android`** has two shards, and each boots its own API 35 `x86_64` emulator with KVM. The
-  script deals the modules to the shards round-robin, so keep `SHARD_COUNT` equal to the length of
-  `matrix.shard`. A shard assembles its test APKs before the emulator boots: that gives Gradle all
-  four cores, and a compile error fails the job before the SDK download and the boot. The emulator
-  and its system image are installed in their own step, with three attempts, because the emulator
-  runner fails the job on the first corrupt download. The tests run with `--max-workers=1`, so one
-  module at a time drives the emulator and the log stays readable. The step has a 25-minute
-  timeout, under the job's 45: a hung run then still uploads its reports.
+- **`android`** has three shards, and each boots its own API 35 `x86_64` emulator with KVM. Shard 0
+  runs `:shared` alone, and the script deals the screen modules round-robin to the other shards, so
+  keep `SHARD_COUNT` equal to the length of `matrix.shard`. `:shared` is on its own because its
+  [end-to-end flows](testing/end-to-end-tests.md) drive the whole app from launch: measured over six
+  warm runs of October 2026, the module took 3 to 4 minutes on the device, against 30 to 80 seconds
+  for each screen module and about 6 minutes for the nine of them together. Dealt alphabetically
+  into two shards, `:shared` landed with four screen modules, and that shard ran 2 to 3 minutes
+  longer than the other on every run. A shard assembles its test APKs before the emulator boots:
+  that gives Gradle all four cores, and a compile error fails the job before the SDK download and
+  the boot. The emulator and its system image are installed in their own step, with three attempts,
+  because the emulator runner fails the job on the first corrupt download. The tests run with
+  `--max-workers=1`, so one module at a time drives the emulator and the log stays readable. The
+  step has a 25-minute timeout, under the job's 45: a hung run then still uploads its reports.
 - **`ios`** runs the same modules on the iOS simulator of a `macos-latest` runner, which costs
   nothing on a public repository. Besides setup-gradle it caches `~/.konan`, which setup-gradle
   leaves out: the Kotlin/Native toolchain and, more expensive, the compiled cache of every library

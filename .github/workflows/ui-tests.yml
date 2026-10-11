@@ -56,18 +56,20 @@ jobs:
           path: '**/build/reports/tests/jvmTest/**'
 
   # The device runs one module's tests at a time, so that phase grows with every module and is the
-  # longest part of this job. Each shard boots its own emulator and takes every other module with
-  # a src/androidDeviceTest directory; scripts/ui_test_shard.sh deals them out, so nothing here
-  # needs editing when a module is added. Keep SHARD_COUNT equal to the length of matrix.shard.
+  # longest part of this job. Each shard boots its own emulator. Shard 0 runs :shared alone, whose
+  # end-to-end flows take longer on the device than the screen modules together, and the other
+  # shards deal the modules with a src/androidDeviceTest directory between them;
+  # scripts/ui_test_shard.sh does the dealing, so nothing here needs editing when a module is
+  # added. Keep SHARD_COUNT equal to the length of matrix.shard.
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1]
+        shard: [0, 1, 2]
     env:
-      SHARD_COUNT: 2
+      SHARD_COUNT: 3
       # Compilation is most of a cold run. See .github/actions/gradle.
       GRADLE_CACHE_WRITE_ON_PULL_REQUESTS: true
     steps:
