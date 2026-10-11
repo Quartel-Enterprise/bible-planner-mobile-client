@@ -23,9 +23,10 @@
 # at least as many as it restored every job replaced its own, and the restored ones are the
 # previous push's. When it saved fewer, a job kept its bundle (the iOS transforms rarely change)
 # and nothing says which, so they all stay until a later run stops restoring them. The pruning is
-# skipped unless every job with a home entry on the ref saved one in the latest run, because a job
-# that did not save still needs its previous bundles; a job that was removed or renamed blocks it
-# until the pull request closes.
+# skipped when a job restored its home entry in the latest run but saved none, because that job
+# still needs its previous bundles. A job that was removed or renamed (a matrix change renames
+# the android shards) restores nothing, so it does not hold the pruning up and its entries go with
+# the rest once nothing restores them.
 
 set -euo pipefail
 
@@ -46,7 +47,7 @@ REF="$1"
 RUN_START="$2"
 case "$RUN_START" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;; *) usage ;; esac
 
-ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,sizeInBytes,createdAt,lastAccessedAt)
+ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
 
 # Every entry with the seconds since the run started, negative when it predates the run; its kind
 # (the key without the content hash or the commit) and platform; and, for a home entry, its job.
@@ -68,10 +69,11 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
     | add // []' <<< "$ENTRIES")
 
 NOT_SAVED=$(jq -r '
-    (map(select(.job != null)) | group_by(.job)) | map(select(all(.created < 0))) | .[][0].job
+    (map(select(.job != null)) | group_by(.job))
+    | map(select(all(.created < 0) and any(.accessed >= 0))) | .[][0].job
 ' <<< "$CLASSIFIED")
 if [ -n "$NOT_SAVED" ]; then
-    echo "Keeping every entry of $REF: these jobs saved no cache in the run that started at $RUN_START" >&2
+    echo "Keeping every entry of $REF: these jobs restored their cache in the run that started at $RUN_START but saved none" >&2
     echo "$NOT_SAVED" >&2
     exit 0
 fi
