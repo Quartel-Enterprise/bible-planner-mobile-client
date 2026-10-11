@@ -139,6 +139,33 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN an audio URL without an extension WHEN getting the audio THEN keeps the revision in the file name`() =
+        runTest {
+            // Given
+            prepareScenario(
+                respond = { request ->
+                    if (request.url.encodedPath.endsWith(".json") || request.url.host == AUDIO_HOST) {
+                        respondOk()(request)
+                    } else {
+                        respondJson(FUNCTION_RESPONSE.replace("GENESIS/1.mp3", "GENESIS/1"))
+                    }
+                },
+            )
+
+            // When
+            val result = repository.loadChapterAudio(
+                bibleVersionId = "A21",
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(
+                Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3").toString(),
+                (result as ChapterAudioResultModel.Ready).audio.audioPath,
+            )
+        }
+
+    @Test
     fun `GIVEN a cached chapter WHEN getting its audio again THEN serves it without the network`() = runTest {
         // Given
         prepareScenario(respond = respondOk())

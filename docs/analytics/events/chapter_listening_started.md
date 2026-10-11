@@ -6,11 +6,11 @@ A chapter started playing its narrated audio. It is the top of the listening fun
 
 ## When it fires
 
-The player opens a chapter and is about to play it: a chapter or the reading of today started from the reader, the player moving on to the next chapter by itself or from its chapter buttons, or the reader opening another chapter while listening (the player follows it).
+A chapter's audio first plays after it was opened: a chapter or the reading of today started from the reader, the player moving on to the next chapter by itself or from its chapter buttons, or the reader opening another chapter while listening (the player follows it). A chapter paused while it loaded, or moved to while paused, counts when it is first played, once.
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackOpenedSegment`, once per chapter opened.
+`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackStartOnce`, from `playFrom`, once per opened chapter that plays.
 
 ## Parameters
 

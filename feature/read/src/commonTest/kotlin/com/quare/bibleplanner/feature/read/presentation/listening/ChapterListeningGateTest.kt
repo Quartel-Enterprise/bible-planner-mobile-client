@@ -232,6 +232,26 @@ internal class ChapterListeningGateTest {
         }
 
     @Test
+    fun `GIVEN videos on but none loaded and unlocks left WHEN requesting THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = false) },
+                isOfferPrepared = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertTrue((commands.single() as NavigationCommand.Navigate).route is StudyUnlockNavRoute)
+        }
+
+    @Test
     fun `GIVEN an unlock left WHEN requesting THEN offers the video for this chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })

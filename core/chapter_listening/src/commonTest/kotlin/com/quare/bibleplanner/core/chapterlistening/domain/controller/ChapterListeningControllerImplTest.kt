@@ -901,7 +901,7 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a chapter playing WHEN the lock screen skips to a verse THEN plays from it`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter playing WHEN skipping to a verse THEN plays from it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -910,7 +910,7 @@ internal class ChapterListeningControllerImplTest {
         )
 
         // When
-        mediaSession.commands.emit(ListeningRemoteCommand.SkipToVerse(2))
+        controller.skipToVerse(2)
 
         // Then
         assertEquals(2, session?.verseIndex)

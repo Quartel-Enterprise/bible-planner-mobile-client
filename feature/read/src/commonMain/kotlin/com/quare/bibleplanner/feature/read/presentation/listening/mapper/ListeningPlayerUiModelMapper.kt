@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import kotlin.time.Duration
 
 internal class ListeningPlayerUiModelMapper(
     private val getListeningTime: GetListeningTimeUseCase,
@@ -27,7 +28,8 @@ internal class ListeningPlayerUiModelMapper(
             verseIndex = session.verseIndex,
             verseCount = verseCount,
             status = session.status,
-            progress = getProgress(session),
+            // Why: the verses differ in length (the first carries the chapter title), so progress follows the time.
+            progress = if (time.total > Duration.ZERO) (time.elapsed / time.total).toFloat().coerceIn(0f, 1f) else 0f,
             elapsed = time.elapsed,
             remaining = time.remaining,
             total = time.total,
@@ -40,11 +42,5 @@ internal class ListeningPlayerUiModelMapper(
             },
             lockedChapter = session.lockedSegment?.chapter,
         )
-    }
-
-    private fun getProgress(session: ListeningSessionModel): Float {
-        val verseCount = session.verses.size
-        if (verseCount == 0) return 0f
-        return ((session.verseIndex + session.verseProgress) / verseCount).coerceIn(0f, 1f)
     }
 }

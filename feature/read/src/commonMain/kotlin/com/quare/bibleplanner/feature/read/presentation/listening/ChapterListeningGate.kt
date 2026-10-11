@@ -77,17 +77,37 @@ internal class ChapterListeningGate(
         val isVideoOffered = suspendRunCatching { prepareRewardedUnlockOffer(access.rewardedRemainingToday) }
             .onFailure { throwable -> Logger.e(throwable) { "Could not prepare the rewarded unlock" } }
             .getOrDefault(false)
-        if (!isVideoOffered) {
-            if (access.isFreeUnlockAvailable) {
-                unlockForFree(
-                    chapter = chapter,
-                    onAllowed = onAllowed,
-                )
-            } else {
-                openPaywallTeaser(access.allowance)
-            }
-            return
+        when {
+            isVideoOffered -> openUnlockSheet(
+                scope = scope,
+                chapter = chapter,
+                access = access,
+                onAllowed = onAllowed,
+            )
+
+            access.isFreeUnlockAvailable -> unlockForFree(
+                chapter = chapter,
+                onAllowed = onAllowed,
+            )
+
+            // Why: unlocks are still left when only the video failed to load, so the sheet says so and offers Pro.
+            access.rewardedRemainingToday > 0 && isRewardedUnlockEnabled() -> openUnlockSheet(
+                scope = scope,
+                chapter = chapter,
+                access = access,
+                onAllowed = onAllowed,
+            )
+
+            else -> openPaywallTeaser(access.allowance)
         }
+    }
+
+    private fun openUnlockSheet(
+        scope: CoroutineScope,
+        chapter: ChapterLocationModel,
+        access: ChapterListeningAccessModel.UnlockAvailable,
+        onAllowed: () -> Unit,
+    ) {
         // Why: unique per request, so a gate whose sheet was dismissed can't take another screen's unlock.
         val requestKey = listOf(
             REQUEST_KEY_PREFIX,
@@ -136,9 +156,11 @@ internal class ChapterListeningGate(
     }
 
     // Why: the teaser only speaks of the videos or the free chapter that today's configuration offers.
+    private suspend fun isRewardedUnlockEnabled(): Boolean =
+        suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
+
     private suspend fun openPaywallTeaser(allowance: ListeningAllowanceModel) {
-        val isVideoUnlockOffered = allowance.hasRewardedUnlocks &&
-            suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
+        val isVideoUnlockOffered = allowance.hasRewardedUnlocks && isRewardedUnlockEnabled()
         val reason = when {
             isVideoUnlockOffered -> PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
             allowance.hasFreeUnlocks -> PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT

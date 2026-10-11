@@ -849,28 +849,27 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
-    private fun moveToSegment(
+    // Why: runs inside the caller's move job, after the checks that decided the move.
+    private suspend fun moveToSegment(
         moved: ListeningSessionModel,
         shouldPlay: Boolean,
     ) {
-        launchMove {
-            /*
-             * Why: a skip from the notification or the headset cannot show the unlock, so it keeps a
-             * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
-             */
-            if (shouldPlay || session?.isPlaying == true) {
-                if (!isOpen(moved.segment)) {
-                    trackLocked(moved.segment)
-                    return@launchMove
-                }
-                startLoad {
-                    openSegment(
-                        session = moved,
-                    )
-                }
-            } else {
-                showUnloaded(moved)
+        /*
+         * Why: a skip from the notification or the headset cannot show the unlock, so it keeps a
+         * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
+         */
+        if (shouldPlay || session?.isPlaying == true) {
+            if (!isOpen(moved.segment)) {
+                trackLocked(moved.segment)
+                return
             }
+            startLoad {
+                openSegment(
+                    session = moved,
+                )
+            }
+        } else {
+            showUnloaded(moved)
         }
     }
 
@@ -1067,7 +1066,6 @@ internal class ChapterListeningControllerImpl(
             ListeningRemoteCommand.Stop -> stop()
             ListeningRemoteCommand.NextVerse -> nextVerse()
             ListeningRemoteCommand.PreviousVerse -> previousVerse()
-            is ListeningRemoteCommand.SkipToVerse -> moveToVerse(command.verseIndex)
             is ListeningRemoteCommand.SeekTo -> seekTo(command.position)
             ListeningRemoteCommand.NextChapter -> nextChapter()
             ListeningRemoteCommand.PreviousChapter -> previousChapter()

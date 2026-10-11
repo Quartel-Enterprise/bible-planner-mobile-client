@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.chapterlistening.data.datasource.ChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioRequestDto
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioResponseDto
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioDownloadException
-import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.mapper.ChapterAudioMapper
@@ -201,11 +200,14 @@ internal class ChapterAudioRepositoryImpl(
     }
 
     // Why: the URL path names the version, cast, text revision and chapter, so a new revision gets a new file.
-    private fun toFileName(audioUrl: String): String = Url(audioUrl)
-        .encodedPath
-        .removePrefix(PATH_SEPARATOR)
-        .substringBeforeLast(EXTENSION_SEPARATOR)
-        .replace(PATH_SEPARATOR, FILE_NAME_SEPARATOR)
+    private fun toFileName(audioUrl: String): String {
+        val path = Url(audioUrl).encodedPath.removePrefix(PATH_SEPARATOR)
+        // Why: only the file's own extension goes, never a dot of a directory such as the text revision.
+        val name = path.substringAfterLast(PATH_SEPARATOR).substringBeforeLast(EXTENSION_SEPARATOR)
+        return (path.substringBeforeLast(PATH_SEPARATOR, missingDelimiterValue = "") + PATH_SEPARATOR + name)
+            .removePrefix(PATH_SEPARATOR)
+            .replace(PATH_SEPARATOR, FILE_NAME_SEPARATOR)
+    }
 
     private fun toFailure(
         throwable: Throwable,
@@ -229,8 +231,6 @@ internal class ChapterAudioRepositoryImpl(
             is HttpRequestTimeoutException -> ChapterAudioFailureModel.UNAVAILABLE
 
             is HttpRequestException -> ChapterAudioFailureModel.NO_CONNECTION
-
-            is ChapterAudioStorageException -> ChapterAudioFailureModel.UNAVAILABLE
 
             is IOException -> ChapterAudioFailureModel.NO_CONNECTION
 

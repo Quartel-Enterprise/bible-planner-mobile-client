@@ -13,10 +13,6 @@ sealed interface ListeningRemoteCommand {
 
     data object PreviousVerse : ListeningRemoteCommand
 
-    data class SkipToVerse(
-        val verseIndex: Int,
-    ) : ListeningRemoteCommand
-
     data class SeekTo(
         val position: Duration,
     ) : ListeningRemoteCommand
