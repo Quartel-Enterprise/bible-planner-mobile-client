@@ -195,13 +195,14 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
   modules to `unit-tests`. Only the modules with UI tests and what they depend on compile here.
 
 - **`android`** has three shards, and each boots its own API 35 `x86_64` emulator with KVM. Shard 0
-  runs `:shared` alone, and the script deals the screen modules round-robin to the other shards, so
-  keep `SHARD_COUNT` equal to the length of `matrix.shard`. `:shared` is on its own because its
-  [end-to-end flows](testing/end-to-end-tests.md) drive the whole app from launch: measured over six
-  warm runs of October 2026, the module took 3 to 4 minutes on the device, against 30 to 80 seconds
-  for each screen module and about 6 minutes for the nine of them together. Dealt alphabetically
-  into two shards, `:shared` landed with four screen modules, and that shard ran 2 to 3 minutes
-  longer than the other on every run. A shard assembles its test APKs before the emulator boots:
+  runs `:shared` alone, and the script deals the screen modules round-robin to the other shards; to
+  add one, add the next index to `matrix.shard`, and the script reads the count from the size of
+  the matrix. `:shared` is on its own because its [end-to-end flows](testing/end-to-end-tests.md)
+  drive the whole app from launch and take about as long on the device as every screen module
+  together (measured in October 2026, when a shard that held `:shared` and four screen modules
+  ran 2 to 3 minutes longer than the other one on every run). A shard with no module makes the
+  script fail, since `./gradlew` with no task would run `help` and pass without a test. A shard
+  assembles its test APKs before the emulator boots:
   that gives Gradle all four cores, and a compile error fails the job before the SDK download and
   the boot. The emulator and its system image are installed in their own step, with three attempts,
   because the emulator runner fails the job on the first corrupt download. The tests run with
