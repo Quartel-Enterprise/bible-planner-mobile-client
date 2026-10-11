@@ -35,13 +35,13 @@ are one restored and one saved per job, so when the push saved exactly as many a
 job replaced its own; fewer means a job kept its bundle or failed to save it, more means a job saved
 without restoring from the pull request, and either way the restored ones stay one more push. What
 the cancelled run of the previous push saved late, after the new run started, is told apart by the
-commit in its home entries and counts as the previous push's. Nothing is pruned after a failed push,
-since a job that failed before restoring its cache would look like one that no longer exists. Before
-this, three pushes of one pull request held 12.5 GB of the budget and had pushed out `main`'s
-entries for `build`, the `android` shards and `ios`, so every new pull request started cold. When
-the pull request closes, the `cleanup` job cancels its runs that are still going and waits for them,
-since a cancelled job still saves its cache in the post step, and then deletes the entries of every
-closed pull request.
+commit in its home entries and goes with the previous push's. Nothing is pruned after a failed push,
+since a job that failed before restoring its cache would look like one that no longer exists, nor
+for a push the pull request has moved on from. Before this, three pushes of one pull request held
+12.5 GB of the budget and had pushed out `main`'s entries for `build`, the `android` shards and
+`ios`, so every new pull request started cold. When the pull request closes, the `cleanup` job
+cancels its runs that are still going and waits for them, since a cancelled job still saves its
+cache in the post step, and then deletes the entries of every closed pull request.
 
 The script can be tried by hand without deleting anything, with a pull request's cache scope and
 the start time of its latest run:

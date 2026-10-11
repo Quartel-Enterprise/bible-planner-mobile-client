@@ -30,7 +30,9 @@
 # was evicted, or a new shard); in both cases nothing says which, so they all stay until a later
 # run stops restoring them. The run that the push cancelled still saves in its post steps, right
 # after the new run started: its home entries carry the previous commit, and whatever was created
-# up to the last of them counts as the previous push's.
+# up to the last of them counts as the previous push's and goes. Should a job of the new push have
+# restored one of those late entries (its home was the newest when a long-queued job started), that
+# job rebuilds the bundle once on the next push.
 set -euo pipefail
 
 usage() {
@@ -57,7 +59,8 @@ ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBy
 # (the key without the content hash or the commit) and, for a home entry, its job and commit. The
 # commit of the newest home entry is this push's; entries created up to the last home entry of
 # another commit were saved by the cancelled run of the previous push, and count as older than the
-# run, restored only if something read them after they were saved. Then, per kind and platform,
+# run and not restored: a fresh entry's last access can trail its creation by a few seconds with
+# nothing having read it, so the access time says nothing about them. Then, per kind and platform,
 # whether the run replaced what it restored.
 CLASSIFIED=$(jq --arg start "$RUN_START" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
@@ -71,10 +74,8 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
     })
     | ([.[] | select(.job != null and .created >= 0)] | max_by(.created) | .commit) as $thisPush
     | ([.[] | select(.job != null and .created >= 0 and .commit != $thisPush) | .created] | max // -1) as $cancelledUntil
-    | map(if .created >= 0 and .created <= $cancelledUntil
-          then .accessed = (if .accessed > .created then .accessed else -1 end) | .created = -1
-          else . end)
-    | map(. + { replacedEachPush: (.kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache")) })
+    | map(if .created >= 0 and .created <= $cancelledUntil then .created = -1 | .accessed = -1 else . end)
+    | map(. + { replacedEachPush: (.kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) })
     | group_by([.kind, .version])
     | map(
         ([.[] | select(.created >= 0)] | length) as $saved
@@ -109,7 +110,7 @@ STATUS=0
 while IFS= read -r ID; do
     if ! OUTPUT=$(gh cache delete "$ID" 2>&1); then
         case "$OUTPUT" in
-            *"HTTP 404"* | *"Not Found"*) echo "  $ID was already evicted" ;;
+            *"Could not find a cache"* | *"HTTP 404"*) echo "  $ID was already evicted" ;;
             *) echo "  $ID: $OUTPUT" >&2; STATUS=1 ;;
         esac
     fi

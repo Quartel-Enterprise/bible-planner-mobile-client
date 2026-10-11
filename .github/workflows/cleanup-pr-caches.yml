@@ -48,6 +48,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
       NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
     steps:
       # A writer job saves its cache in its post step, so the pruning waits until the latest run of
@@ -55,15 +56,24 @@ jobs:
       # after a green push: a job that failed before it restored its cache would otherwise look
       # like one that no longer exists, and lose its entries. Older runs of the same commit
       # (cancelled on close, say, and reopened) and the runs of another pull request with the same
-      # head are ignored. The time the push's runs started is the line between the entries this
-      # push made or restored and the ones it left behind. This step comes before the checkout,
-      # which a run that stops here never needs. A failing gh call fails the step, so a broken
-      # gate shows as a red check instead of a silent skip.
+      # head are ignored, and so is a push that is no longer the pull request's head: a newer push
+      # is restoring and saving, and its own completion prunes. The time the push's runs started is
+      # the line between the entries this push made or restored and the ones it left behind. This
+      # step comes before the checkout, which a run that stops here never needs. A failing gh call
+      # fails the step, so a broken gate shows as a red check instead of a silent skip. The run
+      # that triggered this one is complete and successful whatever the listing says of it, which
+      # can lag behind the event by a few seconds.
       - name: Find the push's runs
         id: push
         run: |
+          head=$(gh pr view "$NUMBER" --json headRefOid --jq '.headRefOid')
+          if [ "$head" != "$HEAD_SHA" ]; then
+            echo "#$NUMBER has moved on from $HEAD_SHA to $head; the newer push prunes."
+            exit 0
+          fi
           runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
-            --jq "[.workflow_runs[] | select(.pull_requests | any(.number == $NUMBER))]")
+            --jq "[.workflow_runs[] | select(.pull_requests | any(.number == $NUMBER))
+                   | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
           start=""
           for workflow in build-and-test ui-tests; do
             run=$(jq -c --arg workflow "$workflow" '[.[] | select(.name == $workflow)] | max_by(.created_at)' <<< "$runs")
