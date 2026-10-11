@@ -152,6 +152,8 @@ internal class EndSessionUseCaseTest {
             }
             install(Realtime)
         }
+        // Auth's background setupPlatform() moves Initializing to NotAuthenticated and can overwrite an imported session.
+        supabaseClient.auth.awaitInitialization()
         if (signOutFails) {
             supabaseClient.auth.importSession(
                 session = UserSession(
