@@ -24,20 +24,23 @@ entry instead of from nothing.
 `cleanup-pr-caches` keeps a pull request's entries within what its latest push uses. setup-gradle
 saves one small home entry per job and commit, and a bundle per directory of the Gradle user home,
 keyed by content: a bundle that did not change (the dependencies, say) is restored by the next push
-and not saved again, while the transforms and build cache bundles change on every push and each push
-saves a new one per writer job, hundreds of MB each. Once both writer workflows of a push have
-completed, the `prune` job runs [`scripts/prune_pr_caches.sh`](../scripts/prune_pr_caches.sh) with
-the time that push's runs started: an entry stays when the runs created it, or restored it and did
-not replace it; the rest goes. Whether a restored transforms, build cache or home entry was replaced
-comes from a count: the entries of one kind on one platform are one restored and one saved per job,
-so when the push saved at least as many as it restored, every job replaced its own. The pruning is
-skipped when a job restored its entry in that push but saved none, since it still needs its previous
-bundles; a job that no longer exists, or whose key changed with the matrix, restores nothing and its
-entries go with the rest. Before this, three pushes of one pull request held 12.5 GB of the budget
-and had pushed out `main`'s entries for `build`, the `android` shards and `ios`, so every new pull
-request started cold. When the pull request closes, the `cleanup` job cancels its runs that are
-still going and waits for them, since a cancelled job still saves its cache in the post step, and
-then deletes the entries of every closed pull request.
+and not saved again, while the transforms and build cache bundles change on almost every push and
+each push saves a new one per writer job, hundreds of MB each. Once both writer workflows of a push
+have succeeded, the `prune` job runs [`scripts/prune_pr_caches.sh`](../scripts/prune_pr_caches.sh)
+with the time that push's runs started, over the setup-gradle and Kotlin/Native entries of the pull
+request (a workflow a path filter skipped keeps what it saved earlier): an entry stays when the runs
+created it, or restored it and did not replace it; the rest goes. Whether a restored transforms,
+build cache or home entry was replaced comes from a count: the entries of one kind on one platform
+are one restored and one saved per job, so when the push saved exactly as many as it restored, every
+job replaced its own; fewer means a job kept its bundle, more means a job saved without restoring
+from the pull request, and either way the restored ones stay one more push. The pruning is skipped
+after a failed push, and when a job restored its entry in that push but saved none, since the job
+still needs its previous bundles; a job that no longer exists, or whose key changed with the matrix,
+restores nothing and its entries go with the rest. Before this, three pushes of one pull request
+held 12.5 GB of the budget and had pushed out `main`'s entries for `build`, the `android` shards and
+`ios`, so every new pull request started cold. When the pull request closes, the `cleanup` job
+cancels its runs that are still going and waits for them, since a cancelled job still saves its
+cache in the post step, and then deletes the entries of every closed pull request.
 
 The script can be tried by hand without deleting anything, with a pull request's cache scope and
 the start time of its latest run:

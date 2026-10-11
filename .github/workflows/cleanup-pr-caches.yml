@@ -7,7 +7,7 @@ name: cleanup-pr-caches
 #   writer job, hundreds of MB each, and the previous push's bundles serve nothing more: the next
 #   run restores the newest entry of its job. Three pushes of one pull request held 12.5 GB of the
 #   10 GB budget and pushed out the entries main had saved, so every new pull request started
-#   cold. The prune job runs once both writer workflows of a push have completed and deletes what
+#   cold. The prune job runs once both writer workflows of a push have succeeded and deletes what
 #   that push's runs neither created nor restored, and what they restored and then replaced;
 #   scripts/prune_pr_caches.sh has the rule.
 # - Once the pull request is closed, nothing can read its entries at all, and the cleanup job
@@ -41,32 +41,55 @@ jobs:
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-
       # A writer job saves its cache in its post step, so the pruning waits until every writer
-      # workflow of this push has completed; the run that completes last gets past this step. The
-      # time the push's runs started is the line between the entries this push made or restored
-      # and the ones it left behind.
-      - name: Prune the entries this push no longer needs
+      # workflow of this push has completed, and only prunes after a green push: a job that failed
+      # before it restored its cache would otherwise look like one that no longer exists, and lose
+      # its entries. The run that completes last gets past this step. The time the push's runs
+      # started is the line between the entries this push made or restored and the ones it left
+      # behind. This step comes before the checkout, which the first of the two runs never needs.
+      - name: Find the push's runs and pull requests
+        id: push
         run: |
-          runs=$(gh run list --commit "$HEAD_SHA" --event pull_request --limit 50 \
-            --json workflowName,status,createdAt \
-            --jq '[.[] | select(.workflowName == "build-and-test" or .workflowName == "ui-tests")]')
-          if jq -e 'any(.status != "completed")' <<< "$runs" > /dev/null; then
+          runs=$(for workflow in build-and-test ui-tests; do
+            gh run list --commit "$HEAD_SHA" --event pull_request --workflow "$workflow" --limit 10 \
+              --json workflowName,status,conclusion,createdAt --jq '.[]'
+          done | jq -s '.')
+          if jq -e 'length < 2 or any(.status != "completed")' <<< "$runs" > /dev/null; then
             echo "A writer workflow of $HEAD_SHA is still running; its completion prunes."
             exit 0
           fi
-          number=$(gh pr list --state open --search "$HEAD_SHA" --json number,headRefOid \
-            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number")
-          if [ -z "$number" ]; then
+          if jq -e 'any(.conclusion != "success")' <<< "$runs" > /dev/null; then
+            echo "A writer workflow of $HEAD_SHA did not succeed; the next green push prunes."
+            exit 0
+          fi
+          numbers=$(gh pr list --state open --search "$HEAD_SHA" --json number,headRefOid \
+            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" | tr '\n' ' ')
+          if [ -z "$numbers" ]; then
             echo "No open pull request has $HEAD_SHA as its head: a newer push prunes, or the cleanup job does."
             exit 0
           fi
-          start=$(jq -r 'map(.createdAt) | min' <<< "$runs")
-          ./scripts/prune_pr_caches.sh "refs/pull/$number/merge" "$start"
+          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
+          echo "start=$(jq -r 'map(.createdAt) | min' <<< "$runs")" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout code
+        if: steps.push.outputs.numbers != ''
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          sparse-checkout: scripts/prune_pr_caches.sh
+          sparse-checkout-cone-mode: false
+
+      # More than one open pull request can share a head commit (stacked branches); each has a
+      # cache scope of its own.
+      - name: Prune the entries this push no longer needs
+        if: steps.push.outputs.numbers != ''
+        env:
+          NUMBERS: ${{ steps.push.outputs.numbers }}
+          START: ${{ steps.push.outputs.start }}
+        run: |
+          for number in $NUMBERS; do
+            ./scripts/prune_pr_caches.sh "refs/pull/$number/merge" "$START"
+          done
 
   cleanup:
     if: github.event_name == 'pull_request'
