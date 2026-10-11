@@ -56,11 +56,12 @@ ALL_MODULE_DIRS=$(cd "$PROJECT_ROOT" && find . -type d -path '*/src/androidDevic
     | sed -E 's#^\./##; s#/src/androidDeviceTest$##' \
     | LC_ALL=C sort)
 
+# How each mode treats the end-to-end module: alone in shard 0, dealt like the rest, or skipped.
 case "$MODE" in
-    assemble | connected) E2E_ALONE=1 ;;
-    *) E2E_ALONE=0 ;;
+    assemble | connected) E2E_ALONE=1; SKIPPED="" ;;
+    ios) E2E_ALONE=0; SKIPPED="$END_TO_END_DIR" ;;
+    *) E2E_ALONE=0; SKIPPED="" ;;
 esac
-[ "$MODE" = "ios" ] && SKIPPED="$END_TO_END_DIR" || SKIPPED=""
 MODULE_DIRS=$(awk -v e2e="$END_TO_END_DIR" -v alone="$E2E_ALONE" -v skipped="$SKIPPED" \
     -v shard="$SHARD_INDEX" -v count="$SHARD_COUNT" '
     $0 == skipped { next }
