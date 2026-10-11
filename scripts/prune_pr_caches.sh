@@ -56,15 +56,16 @@ usage() {
 
 DRY_RUN=false
 ALL=false
-while [ "$#" -gt 0 ]; do
-    case "$1" in
+POSITIONAL=()
+for ARG in "$@"; do
+    case "$ARG" in
         --dry-run) DRY_RUN=true ;;
         --all) ALL=true ;;
         --*) usage ;;
-        *) break ;;
+        *) POSITIONAL+=("$ARG") ;;
     esac
-    shift
 done
+set -- "${POSITIONAL[@]+"${POSITIONAL[@]}"}"
 if [ "$ALL" = true ]; then
     [ "$#" -eq 1 ] || usage
     REF="$1"
