@@ -157,8 +157,11 @@ jobs:
         run: |
           numbers=${FAILED:-$(jq -r 'map(.number) | join(" ")' <<< "$PULL_REQUESTS")}
           for number in $numbers; do
-            if gh api "repos/$GH_REPO/issues/$number/comments" --paginate \
-                --jq '.[] | select(.user.login == "github-actions[bot]") | .body' | grep -q "^The pruning of this pull request"; then
+            # A listing that fails says nothing about earlier notices, so no notice is posted then:
+            # the API is failing, which is one more reason not to add comments.
+            notices=$(gh api "repos/$GH_REPO/issues/$number/comments" --paginate \
+              --jq '.[] | select(.user.login == "github-actions[bot]") | .body') || continue
+            if grep -q "^The pruning of this pull request" <<< "$notices"; then
               continue
             fi
             gh pr comment "$number" --body "The pruning of this pull request's Gradle cache failed: $GITHUB_SERVER_URL/$GH_REPO/actions/runs/$GITHUB_RUN_ID. It is tried again on every green push; this notice is posted once." || true
