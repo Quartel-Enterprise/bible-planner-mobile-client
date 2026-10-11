@@ -87,7 +87,9 @@ internal class IosListeningMediaSession : ListeningMediaSession {
             MPMediaItemPropertyPlaybackDuration to NSNumber(nowPlaying.time.total.toDouble(DurationUnit.SECONDS)),
             MPNowPlayingInfoPropertyElapsedPlaybackTime to
                 NSNumber(nowPlaying.time.elapsed.toDouble(DurationUnit.SECONDS)),
-            MPNowPlayingInfoPropertyPlaybackRate to NSNumber(if (nowPlaying.isPlaying) 1.0 else 0.0),
+            // Why: while the chapter loads nothing plays, so the lock screen must not move its time forward.
+            MPNowPlayingInfoPropertyPlaybackRate to
+                NSNumber(if (nowPlaying.isPlaying && nowPlaying.isAudioLoaded) 1.0 else 0.0),
         )
     }
 

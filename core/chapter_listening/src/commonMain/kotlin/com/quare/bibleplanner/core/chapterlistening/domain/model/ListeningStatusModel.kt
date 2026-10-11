@@ -12,4 +12,13 @@ enum class ListeningStatusModel {
     NARRATION_PAUSED,
     NEXT_LOCKED,
     FINISHED,
+    ;
+
+    // Why: the chapter couldn't be loaded, so the UI explains why and playing again reloads it.
+    val isUnavailable: Boolean
+        get() = this == NEEDS_CONNECTION ||
+            this == NEEDS_SIGN_IN ||
+            this == VERSION_UNAVAILABLE ||
+            this == AUDIO_UNAVAILABLE ||
+            this == NARRATION_PAUSED
 }

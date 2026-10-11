@@ -66,6 +66,7 @@ val chapterListeningModule = module {
             auth = get(),
             json = get(),
             checkRemoteSessionState = get(),
+            currentTimestampProvider = get(),
         )
     }
     single<ChapterAudioCacheDataSource> {

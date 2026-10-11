@@ -754,6 +754,7 @@ internal class ChapterAudioRepositoryImplTest {
                 httpClient = HttpClient(engine),
                 auth = client.auth,
                 json = json,
+                currentTimestampProvider = { 0L },
                 checkRemoteSessionState = {
                     suspendRunCatching { client.auth.refreshCurrentSession() }.fold(
                         onSuccess = { RemoteSessionState.ACTIVE },

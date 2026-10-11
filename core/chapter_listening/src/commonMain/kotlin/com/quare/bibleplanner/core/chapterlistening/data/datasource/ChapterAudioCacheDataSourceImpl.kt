@@ -90,7 +90,10 @@ internal class ChapterAudioCacheDataSourceImpl(
                 val manifestPath = toManifestPath(fileName)
                 // Why: files that never make it into the index could never be evicted.
                 try {
-                    SystemFileSystem.atomicMove(partialPath, audioPath)
+                    SystemFileSystem.atomicMove(
+                        source = partialPath,
+                        destination = audioPath,
+                    )
                     writeText(
                         path = manifestPath,
                         text = manifest,
@@ -198,7 +201,12 @@ internal class ChapterAudioCacheDataSourceImpl(
         SystemFileSystem
             .list(directory.path)
             .filter { path -> path.name !in knownNames }
-            .forEach { path -> SystemFileSystem.delete(path, mustExist = false) }
+            .forEach { path ->
+                SystemFileSystem.delete(
+                    path = path,
+                    mustExist = false,
+                )
+            }
         return entries
     }
 
@@ -217,22 +225,34 @@ internal class ChapterAudioCacheDataSourceImpl(
             path = partialPath,
             text = json.encodeToString(ChapterAudioCacheIndexDto.serializer(), ChapterAudioCacheIndexDto(entries)),
         )
-        SystemFileSystem.atomicMove(partialPath, indexPath)
+        SystemFileSystem.atomicMove(
+            source = partialPath,
+            destination = indexPath,
+        )
         indexWrittenAt = currentTimestampProvider.getCurrentTimestamp()
     }
 
     // Why: a cleanup failure must not hide the download error or the cancellation it cleans up after.
     private fun deleteQuietly(path: Path) {
         try {
-            SystemFileSystem.delete(path, mustExist = false)
+            SystemFileSystem.delete(
+                path = path,
+                mustExist = false,
+            )
         } catch (exception: IOException) {
             Logger.w(exception) { "Could not delete the partial chapter audio $path" }
         }
     }
 
     private fun deleteFiles(fileName: String) {
-        SystemFileSystem.delete(toAudioPath(fileName), mustExist = false)
-        SystemFileSystem.delete(toManifestPath(fileName), mustExist = false)
+        SystemFileSystem.delete(
+            path = toAudioPath(fileName),
+            mustExist = false,
+        )
+        SystemFileSystem.delete(
+            path = toManifestPath(fileName),
+            mustExist = false,
+        )
     }
 
     private fun toAudioPath(fileName: String): Path = Path(directory.path, "$fileName$AUDIO_EXTENSION")

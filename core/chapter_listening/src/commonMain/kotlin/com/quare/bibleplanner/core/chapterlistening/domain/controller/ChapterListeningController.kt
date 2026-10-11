@@ -40,7 +40,8 @@ interface ChapterListeningController {
 
     fun previousChapter()
 
-    fun moveToChapter(
+    fun moveToAdjacentChapter(
+        direction: ChapterDirectionModel,
         chapter: ChapterLocationModel,
         shouldPlay: Boolean,
     )

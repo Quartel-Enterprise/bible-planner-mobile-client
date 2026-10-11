@@ -56,15 +56,11 @@ internal class ChapterAudioRepositoryImpl(
             chapter = chapter,
         )
         val chapterKey = toChapterKey(request)
-        findCached(chapterKey)?.let { cached -> return cached }
+        findCached(chapterKey)?.let { cached -> return ChapterAudioResultModel.Ready(cached) }
         // Why: a chapter still being prefetched is awaited, not asked of the server a second time.
         return suspendRunCatching {
             withChapterLock(chapterKey) {
-                // Why: the cache is only a shortcut, so a cache that can't be read falls back to downloading.
-                val cached = suspendRunCatching { cacheDataSource.find(chapterKey) }
-                    .onFailure { throwable -> Logger.e(throwable) { "Could not read the cached audio of $chapterKey" } }
-                    .getOrNull()
-                cached?.let(chapterAudioMapper::map) ?: download(
+                findCached(chapterKey) ?: download(
                     request = request,
                     chapterKey = chapterKey,
                 )
@@ -151,11 +147,12 @@ internal class ChapterAudioRepositoryImpl(
         }
     }
 
-    private suspend fun findCached(chapterKey: String): ChapterAudioResultModel? {
+    // Why: the cache is only a shortcut, so one that can't be read, or holds a broken manifest, means downloading.
+    private suspend fun findCached(chapterKey: String): ChapterAudioModel? {
         val cached = suspendRunCatching { cacheDataSource.find(chapterKey) }
             .onFailure { throwable -> Logger.e(throwable) { "Could not read the cached audio of $chapterKey" } }
             .getOrNull() ?: return null
-        return suspendRunCatching { ChapterAudioResultModel.Ready(chapterAudioMapper.map(cached)) }
+        return suspendRunCatching { chapterAudioMapper.map(cached) }
             .onFailure { throwable ->
                 Logger.e(throwable) { "Unreadable cached manifest of $chapterKey" }
                 suspendRunCatching { cacheDataSource.remove(cached.audioPath) }

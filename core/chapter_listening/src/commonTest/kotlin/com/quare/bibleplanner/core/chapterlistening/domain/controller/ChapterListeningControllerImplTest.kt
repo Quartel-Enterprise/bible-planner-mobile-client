@@ -282,7 +282,28 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chosen chapter WHEN moving to it while playing THEN opens that chapter`() = runTest(testDispatcher) {
+    fun `GIVEN a session that moved on WHEN moving to the chapter unlocked before THEN stays put`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisThree,
+                shouldPlay = true,
+            )
+
+            // Then
+            assertEquals(genesisOne, session?.segment?.chapter)
+        }
+
+    @Test
+    fun `GIVEN the unlocked next chapter WHEN moving to it THEN opens that chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -291,14 +312,15 @@ internal class ChapterListeningControllerImplTest {
         )
 
         // When
-        controller.moveToChapter(
-            chapter = genesisThree,
+        controller.moveToAdjacentChapter(
+            direction = ChapterDirectionModel.NEXT,
+            chapter = genesisTwo,
             shouldPlay = false,
         )
 
         // Then
-        assertEquals(genesisThree, session?.segment?.chapter)
-        assertEquals("/cache/GEN_3.mp3", audioPlayer.plays.last().audioPath)
+        assertEquals(genesisTwo, session?.segment?.chapter)
+        assertEquals("/cache/GEN_2.mp3", audioPlayer.plays.last().audioPath)
     }
 
     @Test
@@ -313,14 +335,15 @@ internal class ChapterListeningControllerImplTest {
             controller.togglePlayPause()
 
             // When
-            controller.moveToChapter(
-                chapter = genesisThree,
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisTwo,
                 shouldPlay = true,
             )
 
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
-            assertEquals("/cache/GEN_3.mp3", audioPlayer.plays.last().audioPath)
+            assertEquals("/cache/GEN_2.mp3", audioPlayer.plays.last().audioPath)
         }
 
     @Test

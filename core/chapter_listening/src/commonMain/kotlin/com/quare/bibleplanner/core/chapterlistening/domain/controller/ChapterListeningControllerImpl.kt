@@ -243,22 +243,30 @@ internal class ChapterListeningControllerImpl(
     }
 
     /*
-     * Why: the player unlocks a chosen chapter first, so it opens that one rather than working the
-     * next one out again, and plays it when the person unlocked it to listen (the video paused us).
+     * Why: the player unlocks a chosen chapter first, so it only moves if the adjacent segment is still
+     * that chapter (moving by segment, so a day reading split within one chapter still advances), and
+     * plays it when the person unlocked it to listen (the video paused us).
      */
-    override fun moveToChapter(
+    override fun moveToAdjacentChapter(
+        direction: ChapterDirectionModel,
         chapter: ChapterLocationModel,
         shouldPlay: Boolean,
     ) {
         val current = session ?: return
-        moveToSegment(
-            moved = toChapterSession(
+        launchMove {
+            val target = findAdjacentSegment(
                 current = current,
-                chapter = chapter,
-                cause = ChapterChangeCause.PLAYER,
-            ),
-            shouldPlay = shouldPlay,
-        )
+                direction = direction,
+            )
+            if (target?.chapter != chapter) return@launchMove
+            moveToSegment(
+                moved = current.copy(
+                    segment = target,
+                    chapterChangeCause = ChapterChangeCause.PLAYER,
+                ),
+                shouldPlay = shouldPlay,
+            )
+        }
     }
 
     private fun toChapterSession(
@@ -730,30 +738,19 @@ internal class ChapterListeningControllerImpl(
 
     private fun resume() {
         val current = session ?: return
-        when (current.status) {
-            ListeningStatusModel.PAUSED,
-            ListeningStatusModel.INTERRUPTED,
-            -> resumePausedSession(current)
-
-            ListeningStatusModel.FINISHED -> playFrom(
-                start = current.verses.firstOrNull()?.start ?: Duration.ZERO,
-            )
-
-            ListeningStatusModel.NEEDS_CONNECTION,
-            ListeningStatusModel.NEEDS_SIGN_IN,
-            ListeningStatusModel.VERSION_UNAVAILABLE,
-            ListeningStatusModel.AUDIO_UNAVAILABLE,
-            ListeningStatusModel.NARRATION_PAUSED,
-            -> launchLoad {
+        when {
+            current.status.isUnavailable -> launchLoad {
                 openSegment(
                     session = current,
                 )
             }
 
-            ListeningStatusModel.PLAYING,
-            ListeningStatusModel.PREPARING,
-            ListeningStatusModel.NEXT_LOCKED,
-            -> Unit
+            current.status == ListeningStatusModel.PAUSED ||
+                current.status == ListeningStatusModel.INTERRUPTED -> resumePausedSession(current)
+
+            current.status == ListeningStatusModel.FINISHED -> playFrom(
+                start = current.verses.firstOrNull()?.start ?: Duration.ZERO,
+            )
         }
     }
 

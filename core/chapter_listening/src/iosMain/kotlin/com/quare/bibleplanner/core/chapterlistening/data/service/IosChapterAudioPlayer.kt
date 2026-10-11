@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import platform.AVFoundation.AVAudioTimePitchAlgorithmSpectral
-import platform.AVFoundation.AVErrorDecodeFailed
 import platform.AVFoundation.AVErrorFailedToParse
 import platform.AVFoundation.AVErrorFileFormatNotRecognized
 import platform.AVFoundation.AVFoundationErrorDomain
@@ -50,11 +49,10 @@ import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalForeignApi::class)
 internal class IosChapterAudioPlayer : ChapterAudioPlayer {
-    // Why: only these mean the cached file itself is broken; an interrupted or failed output must not delete it.
+    // Why: only these mean the cached file itself is broken; a decoder or output failure must not delete it.
     private val unreadableFileErrorCodes = setOf(
         AVErrorFileFormatNotRecognized,
         AVErrorFailedToParse,
-        AVErrorDecodeFailed,
     )
 
     override val isSupported: Boolean = true

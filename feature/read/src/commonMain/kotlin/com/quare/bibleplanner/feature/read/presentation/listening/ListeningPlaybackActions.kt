@@ -77,19 +77,10 @@ internal class ListeningPlaybackActions(
         }
     }
 
-    private fun toToggleControl(session: ListeningSessionModel): ListeningControl {
-        if (session.isPlaying) return ListeningControl.PAUSE
-        return when (session.status) {
-            ListeningStatusModel.INTERRUPTED -> ListeningControl.RESUME
-
-            ListeningStatusModel.NEEDS_CONNECTION,
-            ListeningStatusModel.NEEDS_SIGN_IN,
-            ListeningStatusModel.VERSION_UNAVAILABLE,
-            ListeningStatusModel.AUDIO_UNAVAILABLE,
-            ListeningStatusModel.NARRATION_PAUSED,
-            -> ListeningControl.RETRY
-
-            else -> ListeningControl.PLAY
-        }
+    private fun toToggleControl(session: ListeningSessionModel): ListeningControl = when {
+        session.isPlaying -> ListeningControl.PAUSE
+        session.status == ListeningStatusModel.INTERRUPTED -> ListeningControl.RESUME
+        session.status.isUnavailable -> ListeningControl.RETRY
+        else -> ListeningControl.PLAY
     }
 }

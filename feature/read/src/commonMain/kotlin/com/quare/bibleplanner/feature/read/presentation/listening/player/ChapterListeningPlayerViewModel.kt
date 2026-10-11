@@ -85,12 +85,12 @@ internal class ChapterListeningPlayerViewModel(
             ChapterListeningPlayerUiEvent.OnNextVerseClick -> controller.nextVerse()
 
             ChapterListeningPlayerUiEvent.OnPreviousChapterClick -> openAdjacentChapter(
-                control = ListeningControl.PREVIOUS_CHAPTER,
+                direction = ChapterDirectionModel.PREVIOUS,
                 chapter = uiState.value.previousChapter,
             )
 
             ChapterListeningPlayerUiEvent.OnNextChapterClick -> openAdjacentChapter(
-                control = ListeningControl.NEXT_CHAPTER,
+                direction = ChapterDirectionModel.NEXT,
                 chapter = uiState.value.nextChapter,
             )
 
@@ -121,9 +121,14 @@ internal class ChapterListeningPlayerViewModel(
      * while paused the move only looks ahead, so the day's unlock is asked for when it is played.
      */
     private fun openAdjacentChapter(
-        control: ListeningControl,
+        direction: ChapterDirectionModel,
         chapter: ChapterLocationModel?,
     ) {
+        val control = if (direction == ChapterDirectionModel.NEXT) {
+            ListeningControl.NEXT_CHAPTER
+        } else {
+            ListeningControl.PREVIOUS_CHAPTER
+        }
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
             params = mapOf(
@@ -135,7 +140,8 @@ internal class ChapterListeningPlayerViewModel(
         if (controller.state.value.session
                 ?.isPlaying != true
         ) {
-            controller.moveToChapter(
+            controller.moveToAdjacentChapter(
+                direction = direction,
                 chapter = target,
                 shouldPlay = false,
             )
@@ -146,7 +152,8 @@ internal class ChapterListeningPlayerViewModel(
             scope = viewModelScope,
             chapter = target,
             onAllowed = {
-                controller.moveToChapter(
+                controller.moveToAdjacentChapter(
+                    direction = direction,
                     chapter = target,
                     shouldPlay = true,
                 )

@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInEx
 import com.quare.bibleplanner.core.chapterlistening.data.exception.SessionRenewalException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.user.domain.model.RemoteSessionState
 import com.quare.bibleplanner.core.user.domain.usecase.CheckRemoteSessionState
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -23,6 +24,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
@@ -36,6 +38,9 @@ import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 internal class ChapterAudioRemoteDataSourceImpl(
     private val functions: Functions,
@@ -43,8 +48,10 @@ internal class ChapterAudioRemoteDataSourceImpl(
     private val auth: Auth,
     private val json: Json,
     private val checkRemoteSessionState: CheckRemoteSessionState,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) : ChapterAudioRemoteDataSource {
     private val renewalMutex = Mutex()
+    private val expiryMargin: Duration = 1.minutes
 
     /*
      * Why: a chapter nobody has heard yet is generated during this call (~20–35 s) without sending a
@@ -90,7 +97,11 @@ internal class ChapterAudioRemoteDataSourceImpl(
                 }
                 storeChapterAudio { file.close() }
                 // Why: a stream cut short without an error would otherwise be cached as a chapter that stops early.
-                val expectedBytes = response.contentLength()
+                // Why: a compressed body's Content-Length counts the compressed bytes, which some engines keep.
+                val expectedBytes = response.contentLength().takeIf {
+                    response.headers[HttpHeaders.ContentEncoding] ==
+                        null
+                }
                 if (expectedBytes != null && writtenBytes != expectedBytes) {
                     throw IOException("The chapter audio ended after $writtenBytes of $expectedBytes bytes")
                 }
@@ -103,6 +114,8 @@ internal class ChapterAudioRemoteDataSourceImpl(
      * starts after an hour of listening with the screen off is refused until the token is renewed.
      */
     private suspend fun <T> withFreshSession(call: suspend () -> T): T {
+        // Why: after a while in the background the token has predictably expired, so it is renewed before the call.
+        if (isSessionExpiring()) renewSession(auth.currentAccessTokenOrNull())
         val usedToken = auth.currentAccessTokenOrNull()
         val result = suspendRunCatching { call() }
         val failure = result.exceptionOrNull()
@@ -117,6 +130,12 @@ internal class ChapterAudioRemoteDataSourceImpl(
      * Why: calls refused together renew the session once, since a refresh token is spent on use; one
      * the server refuses is left to the app's own session handling, which signs the person out.
      */
+    private fun isSessionExpiring(): Boolean {
+        val expiresAt = auth.currentSessionOrNull()?.expiresAt ?: return false
+        val now = currentTimestampProvider.getCurrentTimestamp().milliseconds
+        return expiresAt.toEpochMilliseconds().milliseconds - now <= expiryMargin
+    }
+
     private suspend fun renewSession(usedToken: String?) {
         renewalMutex.withLock {
             if (auth.currentAccessTokenOrNull() != usedToken) return
