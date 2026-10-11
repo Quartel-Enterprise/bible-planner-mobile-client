@@ -37,6 +37,7 @@ internal class ChapterAudioCacheDataSourceImpl(
     private val mutex = Mutex()
     private val indexPath = Path(directory.path, INDEX_FILE_NAME)
     private var loadedEntries: List<ChapterAudioCacheEntryDto>? = null
+    private var indexWrittenAt: Long? = null
 
     // Why: replaced revisions stay on disk until the next launch, so their bytes still count against the cap.
     private val retiredBytesByFileName = mutableMapOf<String, Long>()
@@ -139,14 +140,18 @@ internal class ChapterAudioCacheDataSourceImpl(
         mutex.withLock { storeChapterAudio(block) }
     }
 
-    // Why: the order only matters to evict, so a play inside the same hour doesn't rewrite the index.
+    /*
+     * Why: the order only matters to evict, so plays are saved at most once an hour, counted from the
+     * last index write rather than from each play, so a chapter replayed often still gets saved.
+     */
     private fun touch(
         entries: List<ChapterAudioCacheEntryDto>,
         entry: ChapterAudioCacheEntryDto,
     ) {
         val now = currentTimestampProvider.getCurrentTimestamp()
         val touched = entries.map { if (it == entry) it.copy(lastUsedAt = now) else it }
-        if ((now - entry.lastUsedAt).milliseconds >= touchWriteInterval) {
+        val writtenAt = indexWrittenAt
+        if (writtenAt == null || (now - writtenAt).milliseconds >= touchWriteInterval) {
             // Why: the order is only a hint for eviction, so a full disk must not keep a cached chapter from playing.
             try {
                 writeEntries(touched)
@@ -209,6 +214,7 @@ internal class ChapterAudioCacheDataSourceImpl(
             text = json.encodeToString(ChapterAudioCacheIndexDto.serializer(), ChapterAudioCacheIndexDto(entries)),
         )
         SystemFileSystem.atomicMove(partialPath, indexPath)
+        indexWrittenAt = currentTimestampProvider.getCurrentTimestamp()
     }
 
     // Why: a cleanup failure must not hide the download error or the cancellation it cleans up after.

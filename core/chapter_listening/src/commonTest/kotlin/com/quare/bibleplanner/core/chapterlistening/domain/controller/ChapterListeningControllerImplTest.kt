@@ -1473,7 +1473,7 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN an expired session WHEN an account without access signs in THEN ends the session`() =
+    fun `GIVEN an expired session WHEN an account without access signs in THEN asks to unlock the chapter`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1491,7 +1491,8 @@ internal class ChapterListeningControllerImplTest {
             authenticatedUserId.value = "user-2"
 
             // Then
-            assertNull(session)
+            assertEquals(ListeningStatusModel.NEXT_LOCKED, session?.status)
+            assertEquals(genesisOne, session?.lockedSegment?.chapter)
             assertTrue(audioPlayer.plays.isEmpty())
         }
 

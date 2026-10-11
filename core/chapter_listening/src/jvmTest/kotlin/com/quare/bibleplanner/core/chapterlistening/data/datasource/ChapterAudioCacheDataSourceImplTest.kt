@@ -237,6 +237,23 @@ internal class ChapterAudioCacheDataSourceImplTest {
     }
 
     @Test
+    fun `GIVEN a chapter replayed every half hour WHEN an hour passed since the last save THEN saves the play`() =
+        runTest {
+            // Given
+            val dataSource = createDataSource(maxBytes = MAX_BYTES)
+            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            now = 30 * 60 * 1000L
+            dataSource.find(genesisOne)
+
+            // When
+            now = 70 * 60 * 1000L
+            dataSource.find(genesisOne)
+
+            // Then
+            assertTrue(readIndex().contains("\"last_used_at\":$now"))
+        }
+
+    @Test
     fun `GIVEN a saved chapter WHEN removing it THEN deletes its files`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)

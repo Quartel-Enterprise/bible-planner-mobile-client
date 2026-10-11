@@ -457,6 +457,26 @@ internal class ChapterAudioRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a manifest that cannot be read WHEN getting the audio THEN skips downloading the audio`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json")) respondJson("{}") else respondOk()(request)
+            },
+        )
+
+        // When
+        val result = repository.loadChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE), result)
+        assertEquals(2, requests.size)
+    }
+
+    @Test
     fun `GIVEN the worker refuses the token WHEN downloading THEN asks to sign in`() = runTest {
         // Given
         prepareScenario(

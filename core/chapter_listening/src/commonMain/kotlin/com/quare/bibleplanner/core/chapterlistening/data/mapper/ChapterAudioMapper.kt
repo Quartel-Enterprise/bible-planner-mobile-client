@@ -13,8 +13,11 @@ internal class ChapterAudioMapper(
     // Why: a verse without a heading may leave the key out instead of sending null.
     private val manifestJson = Json(json) { explicitNulls = false }
 
+    fun parse(manifest: String): ChapterAudioManifestDto =
+        manifestJson.decodeFromString(ChapterAudioManifestDto.serializer(), manifest)
+
     fun map(cached: CachedChapterAudio): ChapterAudioModel {
-        val manifest = manifestJson.decodeFromString(ChapterAudioManifestDto.serializer(), cached.manifest)
+        val manifest = parse(cached.manifest)
         return ChapterAudioModel(
             audioPath = cached.audioPath,
             verses = manifest.verses.map { verse ->

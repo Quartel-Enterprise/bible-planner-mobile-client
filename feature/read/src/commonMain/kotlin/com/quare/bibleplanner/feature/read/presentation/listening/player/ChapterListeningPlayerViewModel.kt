@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListenin
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -133,9 +132,9 @@ internal class ChapterListeningPlayerViewModel(
             ),
         )
         val target = chapter ?: return
-        val status = controller.state.value.session
-            ?.status
-        if (status != ListeningStatusModel.PLAYING && status != ListeningStatusModel.PREPARING) {
+        if (controller.state.value.session
+                ?.isPlaying != true
+        ) {
             controller.moveToChapter(
                 chapter = target,
                 shouldPlay = false,

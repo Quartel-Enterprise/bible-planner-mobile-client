@@ -179,6 +179,8 @@ internal class ChapterAudioRepositoryImpl(
         chapterKey: String,
     ): CachedChapterAudio {
         val manifest = remoteDataSource.downloadText(response.manifestUrl)
+        // Why: a manifest that can't be read would fail after every full download, so it is checked first.
+        chapterAudioMapper.parse(manifest)
         return cacheDataSource.save(
             chapterKey = chapterKey,
             fileName = toFileName(response.audioUrl),

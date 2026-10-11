@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.controller.ChapterListeningController
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
@@ -25,7 +26,7 @@ internal class ListeningPlaybackActions(
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
             params = mapOf(
-                AnalyticsParams.CONTROL to toToggleControl(session.status).key,
+                AnalyticsParams.CONTROL to toToggleControl(session).key,
                 AnalyticsParams.SURFACE to surface.key,
             ),
         )
@@ -76,18 +77,19 @@ internal class ListeningPlaybackActions(
         }
     }
 
-    private fun toToggleControl(status: ListeningStatusModel): ListeningControl = when (status) {
-        ListeningStatusModel.PLAYING, ListeningStatusModel.PREPARING -> ListeningControl.PAUSE
+    private fun toToggleControl(session: ListeningSessionModel): ListeningControl {
+        if (session.isPlaying) return ListeningControl.PAUSE
+        return when (session.status) {
+            ListeningStatusModel.INTERRUPTED -> ListeningControl.RESUME
 
-        ListeningStatusModel.INTERRUPTED -> ListeningControl.RESUME
+            ListeningStatusModel.NEEDS_CONNECTION,
+            ListeningStatusModel.NEEDS_SIGN_IN,
+            ListeningStatusModel.VERSION_UNAVAILABLE,
+            ListeningStatusModel.AUDIO_UNAVAILABLE,
+            ListeningStatusModel.NARRATION_PAUSED,
+            -> ListeningControl.RETRY
 
-        ListeningStatusModel.NEEDS_CONNECTION,
-        ListeningStatusModel.NEEDS_SIGN_IN,
-        ListeningStatusModel.VERSION_UNAVAILABLE,
-        ListeningStatusModel.AUDIO_UNAVAILABLE,
-        ListeningStatusModel.NARRATION_PAUSED,
-        -> ListeningControl.RETRY
-
-        else -> ListeningControl.PLAY
+            else -> ListeningControl.PLAY
+        }
     }
 }

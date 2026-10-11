@@ -114,14 +114,12 @@ internal class ChapterListeningControllerImpl(
     private var refreshJob: Job? = null
     private var hasTrackedStart = false
     private var hasPrefetched = false
+    private var evictJob: Job? = null
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
     private val session: ListeningSessionModel?
         get() = state.value.session
-
-    private val ListeningSessionModel.isPlaying: Boolean
-        get() = status == ListeningStatusModel.PLAYING || status == ListeningStatusModel.PREPARING
 
     init {
         scope.launch { settingsRepository.observe().collect(::applySettings) }
@@ -446,6 +444,7 @@ internal class ChapterListeningControllerImpl(
             session = session,
             status = ListeningStatusModel.PREPARING,
         )
+        evictJob?.join()
         val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = session.bibleVersionId,
             chapter = session.segment.chapter,
@@ -643,8 +642,9 @@ internal class ChapterListeningControllerImpl(
     private fun resumeAfterSignIn() {
         val current = session ?: return
         if (current.status != ListeningStatusModel.NEEDS_SIGN_IN) return
+        // Why: right after a sign-in the Pro status may not be known yet, so a closed chapter asks to unlock, not stop.
         launchMove {
-            if (isOpen(current.segment)) resume() else stop()
+            if (isOpen(current.segment)) resume() else showLocked(current)
         }
     }
 
@@ -781,13 +781,18 @@ internal class ChapterListeningControllerImpl(
                 }
                 return@launchMove
             }
-            trackLocked(current.segment)
-            updateSession {
-                it.copy(
-                    status = ListeningStatusModel.NEXT_LOCKED,
-                    lockedSegment = current.segment,
-                )
-            }
+            showLocked(current)
+        }
+    }
+
+    // Why: the locked state's unlock button goes through the gate, which checks the access again.
+    private fun showLocked(current: ListeningSessionModel) {
+        trackLocked(current.segment)
+        updateSession {
+            it.copy(
+                status = ListeningStatusModel.NEXT_LOCKED,
+                lockedSegment = current.segment,
+            )
         }
     }
 
@@ -1052,7 +1057,10 @@ internal class ChapterListeningControllerImpl(
             name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
             params = toChapterParams(current) + mapOf(AnalyticsParams.REASON to PLAYBACK_FAILED_REASON),
         )
-        if (isFileUnreadable && failedAudioPath != null) scope.launch { chapterAudioRepository.evict(failedAudioPath) }
+        // Why: a retry waits for this, so it can't find the broken file still in the cache.
+        if (isFileUnreadable && failedAudioPath != null) {
+            evictJob = scope.launch { chapterAudioRepository.evict(failedAudioPath) }
+        }
     }
 
     private fun handleRemoteCommand(command: ListeningRemoteCommand) {

@@ -14,18 +14,14 @@ import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAud
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetRewardedListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetTodayListeningDay
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetChapterListeningAccessUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetFreeListeningDailyLimitUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetListeningChapterTitleUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetRewardedListeningDailyLimitUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetTodayListeningDayUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.ObserveIsChapterListeningEnabledUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.RecordChapterListeningUnlockUseCase
@@ -83,8 +79,6 @@ val chapterListeningModule = module {
     factoryOf(::ListeningDateProvider)
     factoryOf(::GetListeningTimeUseCase)
     factoryOf(::GetChapterListeningAccessUseCase).bind<GetChapterListeningAccess>()
-    factoryOf(::GetFreeListeningDailyLimitUseCase).bind<GetFreeListeningDailyLimit>()
-    factoryOf(::GetRewardedListeningDailyLimitUseCase).bind<GetRewardedListeningDailyLimit>()
     factoryOf(::RecordChapterListeningUnlockUseCase).bind<RecordChapterListeningUnlock>()
     factoryOf(::ObserveIsChapterListeningEnabledUseCase).bind<ObserveIsChapterListeningEnabled>()
     factoryOf(::GetTodayListeningDayUseCase).bind<GetTodayListeningDay>()
