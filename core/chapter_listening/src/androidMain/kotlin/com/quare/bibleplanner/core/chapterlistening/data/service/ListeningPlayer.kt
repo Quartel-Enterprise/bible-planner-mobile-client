@@ -124,7 +124,7 @@ internal class ListeningPlayer(
         return Futures.immediateVoidFuture()
     }
 
-    // Why: ExoPlayer pauses itself on focus loss and unplugged headphones; the controller must hear about it.
+    // Why: ExoPlayer pauses itself on focus loss; the controller must hear about it.
     private inner class InterruptionListener(
         private val exoPlayer: ExoPlayer,
     ) : Player.Listener {
@@ -134,9 +134,9 @@ internal class ListeningPlayer(
             playWhenReady: Boolean,
             reason: Int,
         ) {
-            val isSystemPause = reason == PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS ||
-                reason == PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY
-            if (!playWhenReady && isSystemPause) events.interrupt(AudioInterruptionModel.PAUSE_REQUESTED)
+            if (!playWhenReady && reason == PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS) {
+                events.interrupt(AudioInterruptionModel.PAUSE_REQUESTED)
+            }
         }
 
         override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) {

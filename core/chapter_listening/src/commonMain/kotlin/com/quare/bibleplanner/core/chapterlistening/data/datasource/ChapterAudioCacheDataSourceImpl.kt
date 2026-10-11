@@ -163,6 +163,7 @@ internal class ChapterAudioCacheDataSourceImpl(
                 writeEntries(touched)
             } catch (exception: IOException) {
                 Logger.w(exception) { "Could not save when a cached chapter was played" }
+                loadedEntries = touched
             }
         } else {
             loadedEntries = touched
@@ -222,8 +223,8 @@ internal class ChapterAudioCacheDataSourceImpl(
         emptyList()
     }
 
+    // Why: the entries in memory change only once they are on disk, so a failed write leaves both in step.
     private fun writeEntries(entries: List<ChapterAudioCacheEntryDto>) {
-        loadedEntries = entries
         SystemFileSystem.createDirectories(directory.path)
         val partialPath = Path(directory.path, "$INDEX_FILE_NAME$PARTIAL_EXTENSION")
         writeText(
@@ -234,6 +235,7 @@ internal class ChapterAudioCacheDataSourceImpl(
             source = partialPath,
             destination = indexPath,
         )
+        loadedEntries = entries
         indexWrittenAt = currentTimestampProvider.getCurrentTimestamp()
     }
 

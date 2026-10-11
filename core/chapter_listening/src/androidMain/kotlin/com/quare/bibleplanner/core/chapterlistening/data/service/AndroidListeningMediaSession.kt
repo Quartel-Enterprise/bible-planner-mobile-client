@@ -20,9 +20,8 @@ import kotlinx.coroutines.flow.Flow
 /*
  * Why: connecting a MediaController is what starts the MediaSessionService; Media3 then moves it to
  * the foreground with the media notification while the chapter plays, which keeps the process alive
- * with the screen off. The ExoPlayer handles audio focus and unplugged headphones while it plays;
- * the session listens for unplugged headphones on its own too, since the ExoPlayer is paused while
- * the next chapter loads or during the gap before it.
+ * with the screen off. The ExoPlayer handles audio focus while it plays; the session alone listens
+ * for unplugged headphones, which also covers the next chapter loading and the gap before it.
  */
 internal class AndroidListeningMediaSession(
     private val context: Context,
