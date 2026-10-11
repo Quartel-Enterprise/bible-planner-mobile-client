@@ -194,8 +194,8 @@ internal class ChapterListeningPlayerViewModelTest {
                 "togglePlayPause",
                 "previousVerse",
                 "nextVerse",
-                "previousChapter",
-                "nextChapter",
+                "moveToChapter:1",
+                "moveToChapter:3",
                 "skipToVerse:1",
                 "setSpeed:1.25",
                 "setSleepTimer:end_of_chapter",
@@ -258,7 +258,7 @@ internal class ChapterListeningPlayerViewModelTest {
             viewModel.onEvent(ChapterListeningPlayerUiEvent.OnNextChapterClick)
 
             // Then
-            assertEquals(listOf("nextChapter"), controller.calls)
+            assertEquals(listOf("moveToChapter:3"), controller.calls)
             assertTrue(commands.isEmpty())
         }
 

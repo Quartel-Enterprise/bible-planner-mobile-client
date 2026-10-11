@@ -88,13 +88,11 @@ internal class ChapterListeningPlayerViewModel(
             ChapterListeningPlayerUiEvent.OnPreviousChapterClick -> openAdjacentChapter(
                 control = ListeningControl.PREVIOUS_CHAPTER,
                 chapter = uiState.value.previousChapter,
-                open = controller::previousChapter,
             )
 
             ChapterListeningPlayerUiEvent.OnNextChapterClick -> openAdjacentChapter(
                 control = ListeningControl.NEXT_CHAPTER,
                 chapter = uiState.value.nextChapter,
-                open = controller::nextChapter,
             )
 
             is ChapterListeningPlayerUiEvent.OnSeek -> controller.skipToVerse(event.verseIndex)
@@ -126,7 +124,6 @@ internal class ChapterListeningPlayerViewModel(
     private fun openAdjacentChapter(
         control: ListeningControl,
         chapter: ChapterLocationModel?,
-        open: () -> Unit,
     ) {
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
@@ -139,13 +136,14 @@ internal class ChapterListeningPlayerViewModel(
         val status = controller.state.value.session
             ?.status
         if (status != ListeningStatusModel.PLAYING && status != ListeningStatusModel.PREPARING) {
-            open()
+            controller.moveToChapter(target)
             return
         }
+        // Why: the chapter unlocked is the one opened, even if the session moved on meanwhile.
         gate.request(
             scope = viewModelScope,
             chapter = target,
-            onAllowed = open,
+            onAllowed = { controller.moveToChapter(target) },
         )
     }
 

@@ -11,8 +11,6 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-private const val CHAPTER_AUDIO_DIRECTORY = "chapter_audio"
-
 // Why: listening is off on these platforms, so the cache directory is never touched and needs no real location yet.
 internal actual val platformChapterListeningModule: Module = module {
     single { ChapterAudioCacheDirectory(Path(CHAPTER_AUDIO_DIRECTORY)) }

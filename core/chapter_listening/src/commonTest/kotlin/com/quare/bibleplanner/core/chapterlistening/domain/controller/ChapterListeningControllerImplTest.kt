@@ -258,6 +258,47 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
+    fun `GIVEN a pause while the next chapter is looked up WHEN the chapter ends THEN does not start the next one`() =
+        runTest(testDispatcher) {
+            // Given
+            val accessGate = CompletableDeferred<Unit>()
+            prepareScenario(accessGate = accessGate)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val playCount = audioPlayer.plays.size
+            audioPlayer.finish()
+
+            // When
+            controller.togglePlayPause()
+            accessGate.complete(Unit)
+            advanceTimeBy(chapterGap + 1.milliseconds)
+
+            // Then
+            assertEquals(genesisTwo, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertEquals(playCount, audioPlayer.plays.size)
+        }
+
+    @Test
+    fun `GIVEN a chosen chapter WHEN moving to it while playing THEN opens that chapter`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        controller.moveToChapter(genesisThree)
+
+        // Then
+        assertEquals(genesisThree, session?.segment?.chapter)
+        assertEquals("/cache/GEN_3.mp3", audioPlayer.plays.last().audioPath)
+    }
+
+    @Test
     fun `GIVEN auto next off WHEN the chapter ends THEN stops at its end`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isAutoNextEnabled = false)
@@ -1558,6 +1599,7 @@ internal class ChapterListeningControllerImplTest {
         failure: ChapterAudioFailureModel? = null,
         isAutoNextEnabled: Boolean = true,
         lockedChapters: Set<ChapterLocationModel> = emptySet(),
+        accessGate: CompletableDeferred<Unit>? = null,
         canActivate: Boolean = true,
         isAccessCheckFailing: Boolean = false,
     ) {
@@ -1587,6 +1629,7 @@ internal class ChapterListeningControllerImplTest {
             },
             getSelectedVersionIdFlow = { flowOf("ACF") },
             getChapterListeningAccess = { chapter ->
+                accessGate?.await()
                 if (isAccessCheckFailing) error("Remote config unavailable")
                 if (chapter in lockedChapters) {
                     ChapterListeningAccessModel.UnlockAvailable(

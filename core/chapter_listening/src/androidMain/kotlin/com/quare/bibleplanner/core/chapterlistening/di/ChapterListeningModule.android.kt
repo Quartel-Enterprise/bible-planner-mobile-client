@@ -14,8 +14,6 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-private const val CHAPTER_AUDIO_DIRECTORY = "chapter_audio"
-
 internal actual val platformChapterListeningModule: Module = module {
     single { ChapterAudioCacheDirectory(Path(androidContext().cacheDir.path, CHAPTER_AUDIO_DIRECTORY)) }
     single { createListeningExoPlayer(androidContext()) }

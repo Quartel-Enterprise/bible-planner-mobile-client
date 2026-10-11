@@ -68,8 +68,12 @@ internal class ListeningPlayer(
             .setMediaMetadata(
                 MediaMetadata
                     .Builder()
-                    .setTitle(current.chapterTitle)
-                    .setArtist(current.subtitle)
+                    .setTitle(
+                        current.verseNumber?.let { number ->
+                            "${current.chapterTitle}:$number"
+                        } ?: current.chapterTitle,
+                    ).setArtist(current.subtitle)
+                    .setAlbumTitle(current.chapterTitle)
                     .build(),
                 // Why: until the file loads its length is unknown, rather than a segment length in other units.
             ).setDurationUs(if (isLoading) C.TIME_UNSET else loadedDurationUs)

@@ -6,11 +6,11 @@ Listening was asked for but the chapter's audio could not be loaded, so the play
 
 ## When it fires
 
-The player opens a chapter whose audio is neither cached on the device nor returned by the `get-chapter-audio` function.
+The player opens a chapter whose audio is neither cached on the device nor returned by the `get-chapter-audio` function, or whose audio has none of the segment's verses. It also fires when the player fails to play a loaded file, which can happen again on each retry of the same chapter.
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackOpenedSegment`, once per chapter opened.
+`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackOpenedSegment` once per chapter opened, and `onPlaybackFailed` (reason `playback_failed`) once per failed playback.
 
 ## Parameters
 

@@ -13,7 +13,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.controller.ChapterLis
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
@@ -46,6 +45,7 @@ private const val CHAPTER_AUDIO_HTTP_CLIENT = "chapter_audio_http_client"
 private const val CONNECT_TIMEOUT_MILLIS = 15_000L
 private const val SOCKET_TIMEOUT_MILLIS = 30_000L
 private const val CACHE_MAX_BYTES = 300L * 1024 * 1024
+internal const val CHAPTER_AUDIO_DIRECTORY = "chapter_audio"
 
 val chapterListeningModule = module {
     includes(platformChapterListeningModule)
@@ -81,7 +81,6 @@ val chapterListeningModule = module {
     factoryOf(::ChapterAudioMapper)
     singleOf(::ChapterAudioRepositoryImpl).bind<ChapterAudioRepository>()
     factoryOf(::ListeningDateProvider)
-    factoryOf(::EstimateListeningTimeUseCase)
     factoryOf(::GetListeningTimeUseCase)
     factoryOf(::GetChapterListeningAccessUseCase).bind<GetChapterListeningAccess>()
     factoryOf(::GetFreeListeningDailyLimitUseCase).bind<GetFreeListeningDailyLimit>()

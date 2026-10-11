@@ -17,12 +17,9 @@ internal fun getListeningMinutes(
     verseTexts: List<String>,
     speed: Float,
 ): Int {
-    val estimateListeningTime = EstimateListeningTimeUseCase()
-    val total = estimateListeningTime(
-        wordCounts = verseTexts.map(estimateListeningTime::countWords),
-        verseIndex = 0,
-        verseProgress = 0f,
+    val total = EstimateListeningTimeUseCase()(
+        verseTexts = verseTexts,
         speed = speed,
-    ).total
+    )
     return (total.inWholeSeconds.toFloat() / SECONDS_PER_MINUTE).roundToInt().coerceAtLeast(1)
 }

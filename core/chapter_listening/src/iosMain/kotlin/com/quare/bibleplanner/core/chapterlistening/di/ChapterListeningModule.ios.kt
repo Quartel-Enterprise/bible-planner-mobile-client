@@ -14,8 +14,6 @@ import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 
-private const val CHAPTER_AUDIO_DIRECTORY = "chapter_audio"
-
 internal actual val platformChapterListeningModule: Module = module {
     single {
         val caches = NSSearchPathForDirectoriesInDomains(

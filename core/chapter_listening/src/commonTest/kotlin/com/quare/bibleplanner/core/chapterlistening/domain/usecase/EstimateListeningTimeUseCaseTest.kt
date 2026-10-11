@@ -2,30 +2,24 @@ package com.quare.bibleplanner.core.chapterlistening.domain.usecase
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal class EstimateListeningTimeUseCaseTest {
     private val useCase = EstimateListeningTimeUseCase()
-    private val wordCounts = listOf(5, 5)
 
     @Test
-    fun `GIVEN two verses of five words WHEN halfway through the second THEN estimates the time at the voice pace`() {
+    fun `GIVEN two verses of five words WHEN estimating THEN reads them at the voice pace`() {
         // Given
-        val verseIndex = 1
+        val verseTexts = listOf("one two three four five", "six seven eight nine ten")
 
         // When
         val time = useCase(
-            wordCounts = wordCounts,
-            verseIndex = verseIndex,
-            verseProgress = 0.5f,
+            verseTexts = verseTexts,
             speed = 1f,
         )
 
         // Then
-        assertEquals(3.seconds, time.elapsed)
-        assertEquals(4.seconds, time.total)
-        assertEquals(1.seconds, time.remaining)
+        assertEquals(4.seconds, time)
     }
 
     @Test
@@ -35,43 +29,26 @@ internal class EstimateListeningTimeUseCaseTest {
 
         // When
         val time = useCase(
-            wordCounts = wordCounts,
-            verseIndex = 0,
-            verseProgress = 0f,
+            verseTexts = listOf("one two three four five", "six seven eight nine ten"),
             speed = speed,
         )
 
         // Then
-        assertEquals(2.seconds, time.total)
-        assertEquals(Duration.ZERO, time.elapsed)
+        assertEquals(2.seconds, time)
     }
 
     @Test
-    fun `GIVEN a verse past its end WHEN estimating THEN never reports negative time left`() {
+    fun `GIVEN a verse with extra spaces WHEN estimating THEN ignores the blanks`() {
         // Given
-        val verseProgress = 3f
+        val verseTexts = listOf("  six  seven eight nine ten ")
 
         // When
         val time = useCase(
-            wordCounts = wordCounts,
-            verseIndex = 5,
-            verseProgress = verseProgress,
+            verseTexts = verseTexts,
             speed = 1f,
         )
 
         // Then
-        assertEquals(Duration.ZERO, time.remaining)
-    }
-
-    @Test
-    fun `GIVEN a verse with extra spaces WHEN counting its words THEN ignores the blanks`() {
-        // Given
-        val text = "  six  seven eight nine ten "
-
-        // When
-        val wordCount = useCase.countWords(text)
-
-        // Then
-        assertEquals(5, wordCount)
+        assertEquals(2.seconds, time)
     }
 }
