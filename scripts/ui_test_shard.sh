@@ -6,11 +6,13 @@
 # their src/androidDeviceTest directory, the same one that makes build-logic run their commonTest
 # on a device, so a new module joins a shard without anyone editing the workflow.
 #
-# Shard 0 is :shared's. Its end-to-end flows drive the whole app from launch and are by far the
-# longest module on the device, several times any screen module, so no layout can make the job
-# finish sooner than :shared alone takes. The screen modules are dealt round-robin over the other
-# shards; together they take longer than :shared, so the layout pays off from three shards on. With
-# a single shard, everything runs in it.
+# On Android (assemble, connected) shard 0 is :shared's. Its end-to-end flows drive the whole app
+# from launch and are by far the longest module on the device, several times any screen module, so
+# no layout can make the job finish sooner than :shared alone takes. The screen modules are dealt
+# round-robin over the other shards; together they take longer than :shared, so the layout pays
+# off from three shards on. With a single shard, everything runs in it. On the JVM and on iOS,
+# where :shared is not the slow module (iOS does not run it at all), every module is dealt
+# round-robin.
 #
 #   desktop    runs the shard's tests on the JVM; pass -PuiTests=only to keep only the UI ones
 #   assemble   builds the test APKs of the shard, so it can run before the emulator exists
@@ -46,19 +48,26 @@ shift 3
 END_TO_END_DIR="shared"
 
 # The search runs in a subshell at the project root, so the paths are relative and the folders
-# above the checkout stay out of the filters, while the caller's working directory is untouched: a
-# relative path among the Gradle arguments means what it would with ./gradlew. A fixed locale, so
-# a shard holds the same modules on the runner and on a developer's machine.
+# above the checkout stay out of the filters. A fixed locale, so a shard holds the same modules on
+# the runner and on a developer's machine.
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ALL_MODULE_DIRS=$(cd "$PROJECT_ROOT" && find . -type d -path '*/src/androidDeviceTest' -not -path '*/build/*' \
     -not -path './.claude/*' \
     | sed -E 's#^\./##; s#/src/androidDeviceTest$##' \
     | LC_ALL=C sort)
 
-MODULE_DIRS=$(awk -v e2e="$END_TO_END_DIR" -v shard="$SHARD_INDEX" -v count="$SHARD_COUNT" '
+case "$MODE" in
+    assemble | connected) E2E_ALONE=1 ;;
+    *) E2E_ALONE=0 ;;
+esac
+[ "$MODE" = "ios" ] && SKIPPED="$END_TO_END_DIR" || SKIPPED=""
+MODULE_DIRS=$(awk -v e2e="$END_TO_END_DIR" -v alone="$E2E_ALONE" -v skipped="$SKIPPED" \
+    -v shard="$SHARD_INDEX" -v count="$SHARD_COUNT" '
+    $0 == skipped { next }
     count == 1 { print; next }
-    $0 == e2e { if (shard == 0) print; next }
-    { screen++; if (shard > 0 && (screen - 1) % (count - 1) == shard - 1) print }
+    alone && $0 == e2e { if (shard == 0) print; next }
+    alone { dealt++; if (shard > 0 && (dealt - 1) % (count - 1) == shard - 1) print; next }
+    { dealt++; if ((dealt - 1) % count == shard) print }
 ' <<< "$ALL_MODULE_DIRS")
 
 TASKS=""
@@ -68,7 +77,7 @@ for MODULE_DIR in $MODULE_DIRS; do
         desktop) TASKS="$TASKS $MODULE:jvmTest" ;;
         assemble) TASKS="$TASKS $MODULE:assembleAndroidDeviceTest" ;;
         connected) TASKS="$TASKS $MODULE:connectedAndroidDeviceTest" ;;
-        ios) [ "$MODULE_DIR" = "$END_TO_END_DIR" ] || TASKS="$TASKS $MODULE:iosSimulatorArm64Test" ;;
+        ios) TASKS="$TASKS $MODULE:iosSimulatorArm64Test" ;;
     esac
 done
 
@@ -77,6 +86,7 @@ if [ -z "$TASKS" ]; then
     exit 1
 fi
 
-# -p builds this checkout whatever the caller's directory, which Gradle keeps for relative paths.
+# -p builds this checkout whatever the caller's directory. Gradle then reads a relative path among
+# the arguments from the project root, as it would after a cd there.
 # shellcheck disable=SC2086 # the tasks are meant to be split
 exec "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" $TASKS "$@"
