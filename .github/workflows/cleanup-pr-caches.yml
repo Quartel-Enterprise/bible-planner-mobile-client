@@ -1,17 +1,11 @@
 name: cleanup-pr-caches
 
 # The jobs on a pull request's critical path (build, the android shards and ios) write their own
-# Gradle cache, scoped to refs/pull/<number>/merge. Those entries have two lives to end here:
-#
-# - While the pull request is open, every push saves a new transforms and build cache bundle per
-#   writer job, hundreds of MB each, and the previous push's bundles serve nothing more: the next
-#   run restores the newest entry of its job. Three pushes of one pull request held 12.5 GB of the
-#   10 GB budget and pushed out the entries main had saved, so every new pull request started
-#   cold. The prune job runs once both writer workflows of a push have succeeded and deletes what
-#   that push's runs neither created nor restored, and what they restored and then replaced;
-#   scripts/prune_pr_caches.sh has the rule.
-# - Once the pull request is closed, nothing can read its entries at all, and the cleanup job
-#   deletes them.
+# Gradle cache, scoped to refs/pull/<number>/merge, and their entries have two lives to end here.
+# While the pull request is open, every push saves new bundles of hundreds of MB per writer job
+# that the next push no longer needs; the prune job deletes them once both writer workflows of a
+# push have succeeded. Once the pull request is closed, nothing can read its entries at all, and
+# the cleanup job deletes them. scripts/prune_pr_caches.sh does both and its header has the rule.
 on:
   pull_request:
     types:
@@ -28,7 +22,7 @@ on:
 permissions:
   actions: write
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   prune:
@@ -50,30 +44,27 @@ jobs:
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       RUN_ID: ${{ github.event.workflow_run.id }}
       # A branch can head more than one open pull request (one into main, one into a release
-      # branch); each has a cache scope of its own.
-      NUMBERS: ${{ join(github.event.workflow_run.pull_requests.*.number, ' ') }}
+      # branch), each with a cache scope of its own, and the list can name a pull request of a
+      # fork that builds on the branch, which this repository does not have.
+      PULL_REQUESTS: ${{ toJSON(github.event.workflow_run.pull_requests) }}
     steps:
-      # A writer job saves its cache in its post step, so the pruning waits until the latest run of
-      # each writer workflow for this push of this pull request has completed, and only prunes
-      # after a green push: a job that failed before it restored its cache would otherwise look
-      # like one that no longer exists, and lose its entries. Both workflows ignore the same paths,
-      # so a push runs both or neither; a push with a run of only one is not pruned, since the
-      # other's jobs restored nothing and their entries would look unused. Older runs of the same
-      # commit (cancelled on close, say, and reopened) and the runs of another pull request with the
-      # same head are ignored, and so is a push that is no longer the pull request's head: a newer
-      # push is restoring and saving, and its own completion prunes. The time the push's runs
-      # started is the line between the entries this push made or restored and the ones it left
-      # behind. This step comes before the checkout, which a run that stops here never needs. A
-      # failing gh call fails the step, so a broken gate shows as a red check instead of a silent
-      # skip. The run that triggered this one is complete and successful whatever the listing says
-      # of it, which can lag behind the event by a few seconds.
+      # The pruning waits until the latest run of each writer workflow for this push of this pull
+      # request has completed, since a writer job saves its cache in its post step, and only prunes
+      # a green push: a job that failed before it restored its cache would otherwise look like one
+      # that no longer exists. A push with a run of only one writer workflow is not pruned either
+      # (both ignore the same paths, so this is a guard), nor a push the pull request has moved on
+      # from: the newer push prunes. The run that triggered this one counts as complete whatever
+      # the listing says, which can lag behind the event. This step runs before the checkout, which
+      # a run that stops here never needs.
       - name: Find the push's runs
         id: push
         run: |
           runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
+          numbers=$(jq -r --arg repo "$GH_REPO" \
+            '[.[] | select(.url | test("/repos/" + $repo + "/pulls/[0-9]+$")) | .number] | join(" ")' <<< "$PULL_REQUESTS")
           targets=""
-          for number in $NUMBERS; do
+          for number in $numbers; do
             head=$(gh pr view "$number" --json headRefOid --jq '.headRefOid')
             if [ "$head" != "$HEAD_SHA" ]; then
               echo "#$number has moved on from $HEAD_SHA to $head; the newer push prunes."
@@ -92,6 +83,7 @@ jobs:
               *) echo "#$number at $HEAD_SHA: $verdict." ;;
             esac
           done
+          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
           echo "targets=${targets# }" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
@@ -113,6 +105,17 @@ jobs:
             ./scripts/prune_pr_caches.sh "refs/pull/${target%%:*}/merge" "${target#*:}" || status=1
           done
           exit "$status"
+
+      # A workflow_run run is attached to main, not to the pull request, so a red run here is
+      # invisible from the pull request; the comment is what makes a broken pruning noticed.
+      - name: Tell the pull request when the pruning failed
+        if: failure() && steps.push.outputs.numbers != ''
+        env:
+          NUMBERS: ${{ steps.push.outputs.numbers }}
+        run: |
+          for number in $NUMBERS; do
+            gh pr comment "$number" --body "The pruning of this pull request's Gradle cache failed: $GITHUB_SERVER_URL/$GH_REPO/actions/runs/$GITHUB_RUN_ID. The next green push tries again." || true
+          done
 
   cleanup:
     if: github.event_name == 'pull_request'
@@ -140,18 +143,23 @@ jobs:
             sleep 10
           done
 
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          sparse-checkout: scripts/prune_pr_caches.sh
+          sparse-checkout-cone-mode: false
+
       # Every closed pull request and not only this one: a run that outlived the wait above leaves
       # its entries behind, and the next pull request to close picks them up here.
       - name: Delete the caches of closed pull requests
         run: |
-          CACHES=$(gh cache list --limit 1000 --json id,ref \
-            --jq '.[] | select((.ref // "") | test("^refs/pull/[0-9]+/merge$")) | "\(.id) \(.ref)"')
-          NUMBERS=$(echo "$CACHES" | sed -nE 's#^[0-9]+ refs/pull/([0-9]+)/merge$#\1#p' | sort -u)
-          for NUMBER in $NUMBERS; do
-            if [ "$(gh pr view "$NUMBER" --json state --jq .state)" = "OPEN" ]; then
+          status=0
+          for number in $(gh cache list --limit 1000 --json ref \
+              --jq '[.[].ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n] | unique | .[]'); do
+            if [ "$(gh pr view "$number" --json state --jq .state)" = "OPEN" ]; then
               continue
             fi
-            echo "Deleting the caches of #$NUMBER"
-            echo "$CACHES" | awk -v ref="refs/pull/$NUMBER/merge" '$2 == ref { print $1 }' \
-              | xargs -r -n 1 gh cache delete || true
+            ./scripts/prune_pr_caches.sh --all "refs/pull/$number/merge" || status=1
           done
+          exit "$status"
