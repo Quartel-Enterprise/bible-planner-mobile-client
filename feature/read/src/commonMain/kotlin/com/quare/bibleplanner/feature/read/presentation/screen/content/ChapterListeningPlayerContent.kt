@@ -76,18 +76,14 @@ import bibleplanner.feature.read.generated.resources.listening_unlock
 import bibleplanner.feature.read.generated.resources.listening_verse_of
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.feature.read.presentation.listening.hasUnavailableAction
-import com.quare.bibleplanner.feature.read.presentation.listening.isUnavailable
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableAction
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableBody
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableTitle
+import com.quare.bibleplanner.feature.read.presentation.listening.mapper.toUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiState
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningSleepTimerUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
-import com.quare.bibleplanner.feature.read.presentation.listening.toUnavailableIcon
 import com.quare.bibleplanner.feature.read.presentation.screen.component.chapterTitle
 import com.quare.bibleplanner.feature.read.presentation.screen.component.verseReference
 import com.quare.bibleplanner.ui.component.AppSwitch
@@ -131,9 +127,10 @@ internal fun ChapterListeningPlayerContent(
                 onEvent = onEvent,
             )
         }
-        if (player.status.isUnavailable) {
+        player.status.toUnavailableCopy()?.let { copy ->
             UnavailableCard(
                 player = player,
+                copy = copy,
                 onEvent = onEvent,
             )
         }
@@ -403,6 +400,7 @@ private fun LockedCard(
 @Composable
 private fun UnavailableCard(
     player: ListeningPlayerUiModel,
+    copy: ListeningUnavailableCopy,
     onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
 ) {
     PlayerSection(verticalPadding = 12.dp) {
@@ -411,24 +409,24 @@ private fun UnavailableCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Icon(
-                imageVector = player.status.toUnavailableIcon(),
+                imageVector = copy.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.tertiary,
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = listeningUnavailableTitle(player),
+                    text = stringResource(copy.title, player.versionAbbreviation),
                     style = MaterialTheme.typography.titleSmall,
                 )
                 Text(
-                    text = listeningUnavailableBody(player.status),
+                    text = stringResource(copy.body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            if (player.status.hasUnavailableAction) {
+            copy.action?.let { action ->
                 Button(onClick = { onEvent(ChapterListeningPlayerUiEvent.OnUnavailableActionClick) }) {
-                    Text(text = listeningUnavailableAction(player.status))
+                    Text(text = stringResource(action))
                 }
             }
         }

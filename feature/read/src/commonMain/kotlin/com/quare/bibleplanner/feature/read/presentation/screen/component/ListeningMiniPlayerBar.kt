@@ -59,14 +59,11 @@ import bibleplanner.feature.read.generated.resources.listening_preparing
 import bibleplanner.feature.read.generated.resources.listening_resume
 import bibleplanner.feature.read.generated.resources.listening_unlock
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.feature.read.presentation.listening.hasUnavailableAction
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableAction
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableBody
-import com.quare.bibleplanner.feature.read.presentation.listening.listeningUnavailableTitle
+import com.quare.bibleplanner.feature.read.presentation.listening.mapper.toUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
-import com.quare.bibleplanner.feature.read.presentation.listening.toUnavailableIcon
 import org.jetbrains.compose.resources.stringResource
 
 internal const val LISTENING_MINI_PLAYER_TAG = "listening_mini_player"
@@ -120,7 +117,7 @@ internal fun ListeningMiniPlayerBar(
                 ListeningStatusModel.NEEDS_SIGN_IN,
                 ListeningStatusModel.VERSION_UNAVAILABLE,
                 ListeningStatusModel.AUDIO_UNAVAILABLE,
-                -> UnavailableContent(player, onEvent)
+                -> player.status.toUnavailableCopy()?.let { copy -> UnavailableContent(player, copy, onEvent) }
 
                 ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
 
@@ -217,25 +214,26 @@ private fun RowScope.PreparingContent(
 @Composable
 private fun RowScope.UnavailableContent(
     player: ListeningPlayerUiModel,
+    copy: ListeningUnavailableCopy,
     onEvent: (ReadListeningUiEvent) -> Unit,
 ) {
     LeadingIcon(
-        imageVector = player.status.toUnavailableIcon(),
+        imageVector = copy.icon,
         tint = MaterialTheme.colorScheme.tertiary,
     )
     PlayerTitleColumn(
-        title = listeningUnavailableTitle(player),
-        subtitle = listeningUnavailableBody(player.status),
+        title = stringResource(copy.title, player.versionAbbreviation),
+        subtitle = stringResource(copy.body),
         isAnimating = null,
         onEvent = onEvent,
     )
-    if (player.status.hasUnavailableAction) {
+    copy.action?.let { action ->
         OutlinedButton(
             modifier = Modifier.height(actionButtonHeight),
             onClick = { onEvent(ReadListeningUiEvent.OnUnavailableActionClick) },
             contentPadding = PaddingValues(horizontal = 12.dp),
         ) {
-            Text(text = listeningUnavailableAction(player.status))
+            Text(text = stringResource(action))
         }
     }
 }
