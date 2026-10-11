@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.domain.mapper.toListeningAnalyticsParams
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
@@ -72,7 +73,10 @@ internal class ChapterListeningGate(
         access: ChapterListeningAccessModel.UnlockAvailable,
         onAllowed: () -> Unit,
     ) {
-        if (!prepareRewardedUnlockOffer(access.rewardedRemainingToday)) {
+        val isVideoOffered = suspendRunCatching { prepareRewardedUnlockOffer(access.rewardedRemainingToday) }
+            .onFailure { throwable -> Logger.e(throwable) { "Could not prepare the rewarded unlock" } }
+            .getOrDefault(false)
+        if (!isVideoOffered) {
             if (access.isFreeUnlockAvailable) {
                 unlockForFree(
                     chapter = chapter,
@@ -92,7 +96,7 @@ internal class ChapterListeningGate(
         earnedJob = scope.launch {
             val result = studyUnlockResultStore.observeResult(requestKey).first()
             if (result == StudyUnlockResultModel.UNLOCKED_WITHOUT_VIDEO) trackFreeUnlock(chapter)
-            recordChapterListeningUnlock(chapter)
+            recordUnlock(chapter)
             onAllowed()
         }
         navigator.navigate(
@@ -111,8 +115,14 @@ internal class ChapterListeningGate(
         onAllowed: () -> Unit,
     ) {
         trackFreeUnlock(chapter)
-        recordChapterListeningUnlock(chapter)
+        recordUnlock(chapter)
         onAllowed()
+    }
+
+    // Why: like a failed access check, a failed write still lets the person listen to what they unlocked.
+    private suspend fun recordUnlock(chapter: ChapterLocationModel) {
+        suspendRunCatching { recordChapterListeningUnlock(chapter) }
+            .onFailure { throwable -> Logger.e(throwable) { "Could not record the listening unlock of $chapter" } }
     }
 
     private fun trackFreeUnlock(chapter: ChapterLocationModel) {

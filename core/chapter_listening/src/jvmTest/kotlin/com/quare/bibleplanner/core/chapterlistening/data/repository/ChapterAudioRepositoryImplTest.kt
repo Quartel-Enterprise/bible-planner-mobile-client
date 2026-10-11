@@ -425,6 +425,38 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN an audio stream cut short WHEN getting the audio THEN caches nothing and asks for a connection`() =
+        runTest {
+            // Given
+            prepareScenario(
+                respond = { request ->
+                    if (request.url.encodedPath.endsWith(".mp3")) {
+                        respond(
+                            content = AUDIO,
+                            status = HttpStatusCode.OK,
+                            headers = headersOf(
+                                name = HttpHeaders.ContentLength,
+                                value = "${AUDIO.length * 2}",
+                            ),
+                        )
+                    } else {
+                        respondOk()(request)
+                    }
+                },
+            )
+
+            // When
+            val result = repository.loadChapterAudio(
+                bibleVersionId = "A21",
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.NO_CONNECTION), result)
+            assertFalse(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3")))
+        }
+
+    @Test
     fun `GIVEN the worker refuses the token WHEN downloading THEN asks to sign in`() = runTest {
         // Given
         prepareScenario(

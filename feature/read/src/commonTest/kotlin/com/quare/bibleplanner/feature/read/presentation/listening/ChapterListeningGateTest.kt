@@ -212,6 +212,27 @@ internal class ChapterListeningGateTest {
         }
 
     @Test
+    fun `GIVEN the unlock cannot be saved WHEN taking the free chapter THEN still lets the person listen`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = true) },
+                isOfferPrepared = false,
+                isRecordFailing = true,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(1, allowedCount)
+        }
+
+    @Test
     fun `GIVEN an unlock left WHEN requesting THEN offers the video for this chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
@@ -304,6 +325,7 @@ internal class ChapterListeningGateTest {
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
         isRewardedUnlockEnabled: Boolean = true,
+        isRecordFailing: Boolean = false,
     ) {
         val navigator = Navigator()
         commands = mutableListOf()
@@ -312,7 +334,10 @@ internal class ChapterListeningGateTest {
         allowedCount = 0
         gate = ChapterListeningGate(
             getChapterListeningAccess = { access() },
-            recordChapterListeningUnlock = { unlocked -> recordedUnlocks += unlocked },
+            recordChapterListeningUnlock = { unlocked ->
+                if (isRecordFailing) error("Disk full")
+                recordedUnlocks += unlocked
+            },
             prepareRewardedUnlockOffer = { isOfferPrepared },
             checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
             studyUnlockResultStore = resultStore,

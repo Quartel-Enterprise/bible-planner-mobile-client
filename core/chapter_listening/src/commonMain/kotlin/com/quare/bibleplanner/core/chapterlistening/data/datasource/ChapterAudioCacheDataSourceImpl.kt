@@ -75,51 +75,52 @@ internal class ChapterAudioCacheDataSourceImpl(
     ): CachedChapterAudio = withContext(ioDispatcher) {
         val partialPath = Path(directory.path, "$fileName$PARTIAL_EXTENSION")
         storeChapterAudio { SystemFileSystem.createDirectories(directory.path) }
-        var isWritten = false
-        // Why: a cancelled or failed download must not leave a partial file that is never indexed.
+        var isIndexed = false
+        /*
+         * Why: a download that fails, or is cancelled before it is moved into the index (even while
+         * waiting for the cache lock), must not leave a partial file that is never evicted.
+         */
         try {
             writeAudio(partialPath)
-            isWritten = true
-        } finally {
-            if (!isWritten) SystemFileSystem.delete(partialPath, mustExist = false)
-        }
-        onDisk {
-            val audioPath = toAudioPath(fileName)
-            val manifestPath = toManifestPath(fileName)
-            // Why: files that never make it into the index could never be evicted.
-            try {
-                SystemFileSystem.atomicMove(partialPath, audioPath)
-                writeText(
-                    path = manifestPath,
-                    text = manifest,
-                )
-            } catch (exception: IOException) {
-                listOf(partialPath, audioPath, manifestPath).forEach { path ->
-                    SystemFileSystem.delete(path, mustExist = false)
+            onDisk {
+                val audioPath = toAudioPath(fileName)
+                val manifestPath = toManifestPath(fileName)
+                // Why: files that never make it into the index could never be evicted.
+                try {
+                    SystemFileSystem.atomicMove(partialPath, audioPath)
+                    writeText(
+                        path = manifestPath,
+                        text = manifest,
+                    )
+                } catch (exception: IOException) {
+                    listOf(partialPath, audioPath, manifestPath).forEach(::deleteQuietly)
+                    throw exception
                 }
-                throw exception
+                val entry = ChapterAudioCacheEntryDto(
+                    chapterKey = chapterKey,
+                    fileName = fileName,
+                    bytes = sizeOf(audioPath) + sizeOf(manifestPath),
+                    lastUsedAt = currentTimestampProvider.getCurrentTimestamp(),
+                )
+                // Why: a replaced revision may still be playing, so its files stay until the next launch drops them.
+                val (replaced, others) = loadEntries().partition { it.chapterKey == chapterKey }
+                replaced
+                    .filter { it.fileName != fileName }
+                    .forEach { retired -> retiredBytesByFileName[retired.fileName] = retired.bytes }
+                val kept = findEntriesToKeep(
+                    entries = others,
+                    reservedBytes = entry.bytes + retiredBytesByFileName.values.sum(),
+                )
+                (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
+                writeEntries(kept + entry)
+                isIndexed = true
+                CachedChapterAudio(
+                    audioPath = audioPath.toString(),
+                    manifest = manifest,
+                )
             }
-            val entry = ChapterAudioCacheEntryDto(
-                chapterKey = chapterKey,
-                fileName = fileName,
-                bytes = sizeOf(audioPath) + sizeOf(manifestPath),
-                lastUsedAt = currentTimestampProvider.getCurrentTimestamp(),
-            )
-            // Why: a replaced revision may still be playing, so its files stay until the next launch drops them.
-            val (replaced, others) = loadEntries().partition { it.chapterKey == chapterKey }
-            replaced
-                .filter { it.fileName != fileName }
-                .forEach { retired -> retiredBytesByFileName[retired.fileName] = retired.bytes }
-            val kept = findEntriesToKeep(
-                entries = others,
-                reservedBytes = entry.bytes + retiredBytesByFileName.values.sum(),
-            )
-            (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
-            writeEntries(kept + entry)
-            CachedChapterAudio(
-                audioPath = audioPath.toString(),
-                manifest = manifest,
-            )
+        } finally {
+            if (!isIndexed) deleteQuietly(partialPath)
         }
     }
 
@@ -208,6 +209,15 @@ internal class ChapterAudioCacheDataSourceImpl(
             text = json.encodeToString(ChapterAudioCacheIndexDto.serializer(), ChapterAudioCacheIndexDto(entries)),
         )
         SystemFileSystem.atomicMove(partialPath, indexPath)
+    }
+
+    // Why: a cleanup failure must not hide the download error or the cancellation it cleans up after.
+    private fun deleteQuietly(path: Path) {
+        try {
+            SystemFileSystem.delete(path, mustExist = false)
+        } catch (exception: IOException) {
+            Logger.w(exception) { "Could not delete the partial chapter audio $path" }
+        }
     }
 
     private fun deleteFiles(fileName: String) {

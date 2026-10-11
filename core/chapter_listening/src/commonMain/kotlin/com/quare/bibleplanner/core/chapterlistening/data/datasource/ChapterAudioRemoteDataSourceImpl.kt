@@ -23,12 +23,14 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -75,17 +77,23 @@ internal class ChapterAudioRemoteDataSourceImpl(
             get(url) { response ->
                 val channel = response.bodyAsChannel()
                 val file = storeChapterAudio { SystemFileSystem.sink(destination).buffered() }
+                var writtenBytes = 0L
                 // Why: the last buffered bytes are flushed on close, so a full disk can surface only there.
                 try {
                     while (!channel.exhausted()) {
                         val chunk = channel.readRemaining(CHUNK_BYTES)
-                        storeChapterAudio { file.transferFrom(chunk) }
+                        writtenBytes += storeChapterAudio { file.transferFrom(chunk) }
                     }
                 } catch (exception: Throwable) {
                     file.closeQuietly()
                     throw exception
                 }
                 storeChapterAudio { file.close() }
+                // Why: a stream cut short without an error would otherwise be cached as a chapter that stops early.
+                val expectedBytes = response.contentLength()
+                if (expectedBytes != null && writtenBytes != expectedBytes) {
+                    throw IOException("The chapter audio ended after $writtenBytes of $expectedBytes bytes")
+                }
             }
         }
     }

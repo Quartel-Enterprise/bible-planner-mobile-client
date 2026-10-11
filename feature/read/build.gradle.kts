@@ -59,6 +59,7 @@ kotlin {
             implementation(libs.compose.components.resources)
 
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kermit)
 
             // DataStore
             implementation(libs.datastore.preferences)
