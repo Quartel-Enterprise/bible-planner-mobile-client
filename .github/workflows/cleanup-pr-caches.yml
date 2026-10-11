@@ -43,13 +43,15 @@ jobs:
     # completes last and, when they complete together, both: the group then runs them one after
     # the other, and the second finds nothing left to delete.
     concurrency:
-      group: prune-pr-caches-${{ github.event.workflow_run.pull_requests[0].number }}
+      group: prune-pr-caches-${{ github.event.workflow_run.head_sha }}
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       RUN_ID: ${{ github.event.workflow_run.id }}
-      NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+      # A branch can head more than one open pull request (one into main, one into a release
+      # branch); each has a cache scope of its own.
+      NUMBERS: ${{ join(github.event.workflow_run.pull_requests.*.number, ' ') }}
     steps:
       # A writer job saves its cache in its post step, so the pruning waits until the latest run of
       # each writer workflow for this push of this pull request has completed, and only prunes
@@ -68,36 +70,49 @@ jobs:
       - name: Find the push's runs
         id: push
         run: |
-          head=$(gh pr view "$NUMBER" --json headRefOid --jq '.headRefOid')
-          if [ "$head" != "$HEAD_SHA" ]; then
-            echo "#$NUMBER has moved on from $HEAD_SHA to $head; the newer push prunes."
-            exit 0
-          fi
-          verdict=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
-            --jq "[.workflow_runs[] | select(.pull_requests | any(.number == $NUMBER))
-                   | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]
-                   | [\"build-and-test\", \"ui-tests\"] as \$writers
-                   | map(select(.name | IN(\$writers[]))) | group_by(.name) | map(max_by(.created_at))
-                   | if length < (\$writers | length) then \"only one writer workflow ran; nothing to prune for this push\"
-                     elif any(.status != \"completed\") then \"a writer workflow has not completed; its completion prunes\"
-                     elif any(.conclusion != \"success\") then \"a writer workflow did not succeed; the next green push prunes\"
-                     else \"start=\" + (map(.created_at) | min) end")
-          case "$verdict" in
-            start=*) echo "$verdict" >> "$GITHUB_OUTPUT" ;;
-            *) echo "#$NUMBER at $HEAD_SHA: $verdict." ;;
-          esac
+          runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
+            --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
+          targets=""
+          for number in $NUMBERS; do
+            head=$(gh pr view "$number" --json headRefOid --jq '.headRefOid')
+            if [ "$head" != "$HEAD_SHA" ]; then
+              echo "#$number has moved on from $HEAD_SHA to $head; the newer push prunes."
+              continue
+            fi
+            verdict=$(jq -r --argjson number "$number" '
+              ["build-and-test", "ui-tests"] as $writers
+              | map(select((.pull_requests | any(.number == $number)) and (.name | IN($writers[]))))
+              | group_by(.name) | map(max_by(.created_at))
+              | if length < ($writers | length) then "only one writer workflow ran; nothing to prune for this push"
+                elif any(.status != "completed") then "a writer workflow has not completed; its completion prunes"
+                elif any(.conclusion != "success") then "a writer workflow did not succeed; the next green push prunes"
+                else "start=" + (map(.created_at) | min) end' <<< "$runs")
+            case "$verdict" in
+              start=*) targets="$targets $number:${verdict#start=}" ;;
+              *) echo "#$number at $HEAD_SHA: $verdict." ;;
+            esac
+          done
+          echo "targets=${targets# }" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
-        if: steps.push.outputs.start != ''
+        if: steps.push.outputs.targets != ''
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
           sparse-checkout: scripts/prune_pr_caches.sh
           sparse-checkout-cone-mode: false
 
+      # A failure on one pull request's scope does not skip the others.
       - name: Prune the entries this push no longer needs
-        if: steps.push.outputs.start != ''
-        run: ./scripts/prune_pr_caches.sh "refs/pull/$NUMBER/merge" "${{ steps.push.outputs.start }}"
+        if: steps.push.outputs.targets != ''
+        env:
+          TARGETS: ${{ steps.push.outputs.targets }}
+        run: |
+          status=0
+          for target in $TARGETS; do
+            ./scripts/prune_pr_caches.sh "refs/pull/${target%%:*}/merge" "${target#*:}" || status=1
+          done
+          exit "$status"
 
   cleanup:
     if: github.event_name == 'pull_request'

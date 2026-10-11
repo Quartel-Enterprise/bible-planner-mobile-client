@@ -22,8 +22,7 @@
 # An entry stays when the latest run created it, or restored it: its last access is then at or
 # after the run started. Anything older than the run that nothing restored goes. A transforms,
 # build cache or home entry that the run restored and then replaced goes too, and the count tells
-# which: the entries of one kind on one platform (the version field, a hash of the paths and the
-# platform, tells Linux from macOS) are one restored and one saved per job, so when the run saved
+# which: the entries of one kind on one platform are one restored and one saved per job, so when the run saved
 # exactly as many as it restored, every job replaced its own, and the restored ones are the
 # previous push's. When it saved fewer, a job kept its bundle (the iOS transforms rarely change)
 # or failed to save; when it saved more, a job saved without restoring from this scope (its entry
@@ -57,7 +56,11 @@ ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBy
 
 # Every entry with the seconds since the run started, negative when it predates the run, and its
 # kind (the key without the content hash or the commit); then, per kind and platform, whether the
-# run replaced what it restored, and from that whether the entry goes.
+# run replaced what it restored, and from that whether the entry goes. The bundle keys carry no
+# platform; the version field does, by way of the cached paths it hashes, which hold the runner's
+# home directory (/home/runner on Linux, /Users/runner on macOS). Should those paths ever match
+# across platforms, the two would share a group, and a bundle kept on one platform could cancel
+# out an extra save on the other.
 CLASSIFIED=$(jq --arg start "$RUN_START" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
     ($start | seconds) as $t
@@ -66,12 +69,12 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
         accessed: ((.lastAccessedAt | seconds) - $t),
         kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; ""))
     })
-    | map(. + { replacedEachPush: (.kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) })
     | group_by([.kind, .version])
     | map(
-        ([.[] | select(.created >= 0)] | length) as $saved
+        (.[0].kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) as $replacedEachPush
+        | ([.[] | select(.created >= 0)] | length) as $saved
         | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
-        | map(. + { replaced: (.replacedEachPush and $saved == $restored) }))
+        | map(. + { replaced: ($replacedEachPush and $saved == $restored) }))
     | add // []
     | map(. + { delete: (.created < 0 and (.accessed < 0 or .replaced)) })' <<< "$ENTRIES")
 
