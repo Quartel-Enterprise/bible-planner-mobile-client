@@ -91,14 +91,15 @@ internal class ReadingPlanUiTest {
 ```
 
 `scripts/ui_test_shard.sh` prints those tasks for every module that has device tests, which is
-what CI runs (`desktop`, `connected` or `ios`):
+what CI runs (`desktop`, `connected` or `ios`). It exits with an error when the shard has no module,
+which a plain command substitution would hide from Gradle, so run it the way the workflow does:
 
 ```bash
-./gradlew $(./scripts/ui_test_shard.sh desktop 0 1) -PuiTests=only
+tasks=$(./scripts/ui_test_shard.sh desktop 0 1) && ./gradlew $tasks -PuiTests=only
 ```
 
 ```bash
-./gradlew $(./scripts/ui_test_shard.sh connected 0 1)
+tasks=$(./scripts/ui_test_shard.sh connected 0 1) && ./gradlew $tasks
 ```
 
 ## On an Android device

@@ -98,7 +98,7 @@ On a task emulator, install `shared/build/outputs/apk/androidTest/shared-android
 
 `:shared` has a `src/androidDeviceTest` directory, so `scripts/ui_test_shard.sh` puts it in the
 `desktop` and `android` jobs of `ui-tests` like every screen module, except that on Android it gets
-shard 0 to itself: the flows take longer on the device than the screen modules together (see
+shard 0 to itself: the flows are by far the longest module on the device (see
 [CI](../ci.md#ui-tests)). The script leaves it out of the `ios` job, and the build filters the flows
 out of `iosSimulatorArm64Test`: they switch tabs, and on iOS the main tabs are Calf's native
 `UITabBar`, outside the Compose semantics tree. They still compile for iOS, so the iOS test source

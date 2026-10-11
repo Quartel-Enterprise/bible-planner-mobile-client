@@ -57,10 +57,12 @@ jobs:
 
   # The device runs one module's tests at a time, so that phase grows with every module and is the
   # longest part of this job. Each shard boots its own emulator. Shard 0 runs :shared alone, whose
-  # end-to-end flows take longer on the device than the screen modules together, and the other
-  # shards deal the screen modules between them; scripts/ui_test_shard.sh does the dealing, so
-  # nothing here needs editing when a module is added. To add a shard, add the next index to
-  # matrix.shard: the script gets the count from the size of the matrix.
+  # end-to-end flows are by far the longest module on the device, so no shard can finish before
+  # it; the other shards deal the screen modules between them, which together take longer than
+  # :shared, so three shards is the minimum that pays. scripts/ui_test_shard.sh does the dealing,
+  # so nothing here needs editing when a module is added. To add a shard, add the next index to
+  # matrix.shard: the script gets the count from strategy.job-total, which is the size of the
+  # matrix as long as shard stays its only axis.
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 45
