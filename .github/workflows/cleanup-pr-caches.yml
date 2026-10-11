@@ -1,20 +1,75 @@
 name: cleanup-pr-caches
 
-# The build job of build-and-test lets a pull request write its own Gradle cache, scoped to
-# refs/pull/<number>/merge. Nothing can read those entries once the pull request is closed, and
-# left alone they sit in the 10 GB budget until they push out the entries main and the next pull
-# request restore from.
+# The jobs on a pull request's critical path (build, the android shards and ios) write their own
+# Gradle cache, scoped to refs/pull/<number>/merge. Those entries have two lives to end here:
+#
+# - While the pull request is open, every push saves a new transforms and build cache bundle per
+#   writer job, hundreds of MB each, and the previous push's bundles serve nothing more: the next
+#   run restores the newest entry of its job. Three pushes of one pull request held 12.5 GB of the
+#   10 GB budget and pushed out the entries main had saved, so every new pull request started
+#   cold. The prune job runs once both writer workflows of a push have completed and deletes what
+#   that push's runs neither created nor restored, and what they restored and then replaced;
+#   scripts/prune_pr_caches.sh has the rule.
+# - Once the pull request is closed, nothing can read its entries at all, and the cleanup job
+#   deletes them.
 on:
   pull_request:
     types:
       - closed
+  workflow_run:
+    workflows:
+      - build-and-test
+      - ui-tests
+    types:
+      - completed
 
 permissions:
   actions: write
+  contents: read
   pull-requests: read
 
 jobs:
+  prune:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    # Both writer workflows complete within minutes of each other, and the one to finish last does
+    # the pruning: two runs for the same push would otherwise list and delete the same entries.
+    concurrency:
+      group: prune-pr-caches-${{ github.event.workflow_run.head_sha }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      # A writer job saves its cache in its post step, so the pruning waits until every writer
+      # workflow of this push has completed; the run that completes last gets past this step. The
+      # time the push's runs started is the line between the entries this push made or restored
+      # and the ones it left behind.
+      - name: Prune the entries this push no longer needs
+        run: |
+          runs=$(gh run list --commit "$HEAD_SHA" --event pull_request --limit 50 \
+            --json workflowName,status,createdAt \
+            --jq '[.[] | select(.workflowName == "build-and-test" or .workflowName == "ui-tests")]')
+          if jq -e 'any(.status != "completed")' <<< "$runs" > /dev/null; then
+            echo "A writer workflow of $HEAD_SHA is still running; its completion prunes."
+            exit 0
+          fi
+          number=$(gh pr list --state open --search "$HEAD_SHA" --json number,headRefOid \
+            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number")
+          if [ -z "$number" ]; then
+            echo "No open pull request has $HEAD_SHA as its head: a newer push prunes, or the cleanup job does."
+            exit 0
+          fi
+          start=$(jq -r 'map(.createdAt) | min' <<< "$runs")
+          ./scripts/prune_pr_caches.sh "refs/pull/$number/merge" "$start"
+
   cleanup:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}

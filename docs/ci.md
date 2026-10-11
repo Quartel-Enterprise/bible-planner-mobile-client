@@ -21,10 +21,29 @@ saved on `main`, which holds little more than the ruleset jar, and ran all 1227 
 no cache hit. On `main` the fallback stays on, so a new job's first run starts from another job's
 entry instead of from nothing.
 
-Pull request entries are never cleaned up while the pull request is open, because each push would
-save a new entry of hundreds of MB. When it closes, `cleanup-pr-caches` cancels its runs that are
+`cleanup-pr-caches` keeps a pull request's entries within what its latest push uses. setup-gradle
+saves one small home entry per job and commit, and a bundle per directory of the Gradle user home,
+keyed by content: a bundle that did not change (the dependencies, say) is restored by the next push
+and not saved again, while the transforms and build cache bundles change on every push and each push
+saves a new one per writer job, hundreds of MB each. Once both writer workflows of a push have
+completed, the `prune` job runs [`scripts/prune_pr_caches.sh`](../scripts/prune_pr_caches.sh) with
+the time that push's runs started: an entry stays when the runs created it, or restored it and did
+not replace it; the rest goes. Whether a restored transforms, build cache or home entry was replaced
+comes from a count: the entries of one kind on one platform are one restored and one saved per job,
+so when the push saved at least as many as it restored, every job replaced its own. The pruning is
+skipped when a job with an entry on the pull request saved none in that push, since it still needs
+its previous bundles. Before this, three pushes of one pull request held 12.5 GB of the budget and
+had pushed out `main`'s entries for `build`, the `android` shards and `ios`, so every new pull
+request started cold. When the pull request closes, the `cleanup` job cancels its runs that are
 still going and waits for them, since a cancelled job still saves its cache in the post step, and
 then deletes the entries of every closed pull request.
+
+The script can be tried by hand without deleting anything, with a pull request's cache scope and
+the start time of its latest run:
+
+```bash
+./scripts/prune_pr_caches.sh --dry-run refs/pull/585/merge 2026-10-11T12:57:50Z
+```
 
 The `GRADLE_ENCRYPTION_KEY` secret encrypts the configuration cache. Without it the configuration
 cache is dropped between runs and every job configures the build from scratch.
