@@ -72,8 +72,9 @@ jobs:
       # a green push: a job that failed before it restored its cache would otherwise look like one
       # that no longer exists. A push with a run of only one writer workflow is not pruned either
       # (both ignore the same paths, so this is a guard), nor a push that a newer push with writer
-      # runs has superseded: that push prunes. A newer push without writer runs (docs only, say)
-      # changes nothing in the cache, so the latest push that ran them is still pruned. The start is
+      # runs has superseded, wherever the head is now: that push prunes. A newer push without
+      # writer runs (docs only, say) changes nothing in the cache, so the latest push that ran
+      # them is still pruned. The start is
       # the run's creation time, which a re-run keeps: the jobs that passed in the first attempt
       # saved their entries before the re-run began. The run that triggered this one counts as
       # complete whatever the listing says, which can lag behind the event. This step runs before
@@ -87,14 +88,6 @@ jobs:
             --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
           targets=""
           while read -r number head; do
-            if [ "$head" != "$HEAD_SHA" ]; then
-              newer=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$head&event=pull_request&per_page=100" \
-                --jq "[.workflow_runs[] | select((.pull_requests | any(.number == $number)) and (.name | IN(\"build-and-test\", \"ui-tests\")))] | length")
-              if [ "$newer" != "0" ]; then
-                echo "#$number has moved on from $HEAD_SHA to $head, which has writer runs of its own; that push prunes."
-                continue
-              fi
-            fi
             # A run that lists no pull request lost its association when the head moved on; it
             # is still this push's.
             verdict=$(jq -r --argjson number "$number" '
@@ -106,9 +99,20 @@ jobs:
                 elif any(.conclusion != "success") then "a writer workflow did not succeed; the next green push prunes"
                 else "start=" + (map(.created_at) | min) end' <<< "$runs")
             case "$verdict" in
-              start=*) targets="$targets $number:${verdict#start=}" ;;
-              *) echo "#$number at $HEAD_SHA: $verdict." ;;
+              start=*) start=${verdict#start=} ;;
+              *) echo "#$number at $HEAD_SHA: $verdict."; continue ;;
             esac
+            if [ "$head" != "$HEAD_SHA" ]; then
+              # Writer runs of the branch created after this push's: a newer push is, or was,
+              # restoring and saving, whatever commit is the head by now.
+              newer=$(gh api "repos/$GH_REPO/actions/runs?event=pull_request&branch=$HEAD_BRANCH&created=>$start&per_page=100" \
+                --jq "[.workflow_runs[] | select(.head_sha != \"$HEAD_SHA\" and (.name | IN(\"build-and-test\", \"ui-tests\")))] | length")
+              if [ "$newer" != "0" ]; then
+                echo "#$number has moved on from $HEAD_SHA to $head, and a newer push has writer runs; that push prunes."
+                continue
+              fi
+            fi
+            targets="$targets $number:$start"
           done < <(jq -r '.[] | "\(.number) \(.headRefOid)"' <<< "$PULL_REQUESTS")
           echo "targets=${targets# }" >> "$GITHUB_OUTPUT"
 

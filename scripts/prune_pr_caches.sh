@@ -82,6 +82,8 @@ else
     [ "$#" -eq 2 ] || usage
     REF="$1"
     RUN_START="$2"
+    # A pull request's scope only: the rule would strip main of what every pull request restores.
+    case "$REF" in refs/pull/[0-9]*/merge) ;; *) usage ;; esac
     case "$RUN_START" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;; *) usage ;; esac
     LISTING=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
     ENTRIES="$LISTING"
