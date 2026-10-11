@@ -59,10 +59,10 @@ jobs:
       - name: Find the pull requests
         id: pull_requests
         run: |
-          pull_requests=$(gh pr list --state open --limit 1000 --json number,headRefName,headRefOid,isCrossRepository \
-            --jq --arg branch "$HEAD_BRANCH" --arg sha "$HEAD_SHA" \
-            '[.[] | select(((.isCrossRepository | not) and .headRefName == $branch) or .headRefOid == $sha)]')
-          echo "pull_requests=$(jq -c '.' <<< "$pull_requests")" >> "$GITHUB_OUTPUT"
+          open=$(gh pr list --state open --limit 1000 --json number,headRefName,headRefOid,isCrossRepository)
+          pull_requests=$(jq -c --arg branch "$HEAD_BRANCH" --arg sha "$HEAD_SHA" \
+            '[.[] | select(((.isCrossRepository | not) and .headRefName == $branch) or .headRefOid == $sha)]' <<< "$open")
+          echo "pull_requests=$pull_requests" >> "$GITHUB_OUTPUT"
           echo "numbers=$(jq -r 'map(.number) | join(" ")' <<< "$pull_requests")" >> "$GITHUB_OUTPUT"
 
       # The pruning waits until the latest run of each writer workflow for this push of this pull
