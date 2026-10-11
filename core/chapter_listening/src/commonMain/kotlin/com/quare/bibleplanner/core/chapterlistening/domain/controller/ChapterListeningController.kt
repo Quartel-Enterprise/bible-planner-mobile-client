@@ -40,7 +40,10 @@ interface ChapterListeningController {
 
     fun previousChapter()
 
-    fun moveToChapter(chapter: ChapterLocationModel)
+    fun moveToChapter(
+        chapter: ChapterLocationModel,
+        shouldPlay: Boolean,
+    )
 
     suspend fun getAdjacentChapter(direction: ChapterDirectionModel): ChapterLocationModel?
 

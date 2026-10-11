@@ -83,8 +83,11 @@ internal class FakeChapterListeningController(
         calls += "nextChapter"
     }
 
-    override fun moveToChapter(chapter: ChapterLocationModel) {
-        calls += "moveToChapter:${chapter.chapterNumber}"
+    override fun moveToChapter(
+        chapter: ChapterLocationModel,
+        shouldPlay: Boolean,
+    ) {
+        calls += "moveToChapter:${chapter.chapterNumber}:$shouldPlay"
     }
 
     override fun previousChapter() {

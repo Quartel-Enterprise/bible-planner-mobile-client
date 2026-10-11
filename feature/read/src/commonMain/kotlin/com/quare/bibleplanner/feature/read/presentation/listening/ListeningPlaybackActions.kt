@@ -85,6 +85,7 @@ internal class ListeningPlaybackActions(
         ListeningStatusModel.NEEDS_SIGN_IN,
         ListeningStatusModel.VERSION_UNAVAILABLE,
         ListeningStatusModel.AUDIO_UNAVAILABLE,
+        ListeningStatusModel.NARRATION_PAUSED,
         -> ListeningControl.RETRY
 
         else -> ListeningControl.PLAY

@@ -136,14 +136,22 @@ internal class ChapterListeningPlayerViewModel(
         val status = controller.state.value.session
             ?.status
         if (status != ListeningStatusModel.PLAYING && status != ListeningStatusModel.PREPARING) {
-            controller.moveToChapter(target)
+            controller.moveToChapter(
+                chapter = target,
+                shouldPlay = false,
+            )
             return
         }
         // Why: the chapter unlocked is the one opened, even if the session moved on meanwhile.
         gate.request(
             scope = viewModelScope,
             chapter = target,
-            onAllowed = { controller.moveToChapter(target) },
+            onAllowed = {
+                controller.moveToChapter(
+                    chapter = target,
+                    shouldPlay = true,
+                )
+            },
         )
     }
 

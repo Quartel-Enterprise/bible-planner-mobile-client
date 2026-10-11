@@ -4,10 +4,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.VolumeOff
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.listening_audio_unavailable_body
 import bibleplanner.feature.read.generated.resources.listening_audio_unavailable_title
+import bibleplanner.feature.read.generated.resources.listening_narration_paused_body
+import bibleplanner.feature.read.generated.resources.listening_narration_paused_title
 import bibleplanner.feature.read.generated.resources.listening_no_connection_body
 import bibleplanner.feature.read.generated.resources.listening_no_connection_title
 import bibleplanner.feature.read.generated.resources.listening_retry
@@ -50,6 +53,14 @@ internal fun ListeningStatusModel.toUnavailableCopy(): ListeningUnavailableCopy?
         title = Res.string.listening_audio_unavailable_title,
         body = Res.string.listening_audio_unavailable_body,
         action = Res.string.listening_retry,
+    )
+
+    // Why: retrying can't help until the monthly generation budget resets, so there is no action.
+    ListeningStatusModel.NARRATION_PAUSED -> ListeningUnavailableCopy(
+        icon = Icons.Rounded.Schedule,
+        title = Res.string.listening_narration_paused_title,
+        body = Res.string.listening_narration_paused_body,
+        action = null,
     )
 
     ListeningStatusModel.PREPARING,

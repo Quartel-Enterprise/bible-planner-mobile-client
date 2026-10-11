@@ -9,6 +9,7 @@ enum class ListeningStatusModel {
     NEEDS_SIGN_IN,
     VERSION_UNAVAILABLE,
     AUDIO_UNAVAILABLE,
+    NARRATION_PAUSED,
     NEXT_LOCKED,
     FINISHED,
 }

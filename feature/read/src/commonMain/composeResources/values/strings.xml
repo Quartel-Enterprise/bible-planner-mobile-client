@@ -111,6 +111,8 @@
     <string name="listening_version_unavailable_body">Pick another Bible version to listen</string>
     <string name="listening_audio_unavailable_title">Audio unavailable</string>
     <string name="listening_audio_unavailable_body">This chapter couldn't be loaded right now</string>
+    <string name="listening_narration_paused_title">Narration paused for now</string>
+    <string name="listening_narration_paused_body">New chapters come back next month. Chapters already narrated still play.</string>
     <string name="listening_retry">Try again</string>
     <string name="listening_ai_voice">Narrated by AI-generated voices</string>
 </resources>

@@ -111,6 +111,8 @@
     <string name="listening_version_unavailable_body">Elige otra versión de la Biblia para escuchar</string>
     <string name="listening_audio_unavailable_title">Audio no disponible</string>
     <string name="listening_audio_unavailable_body">No se pudo cargar este capítulo ahora</string>
+    <string name="listening_narration_paused_title">Narración en pausa por ahora</string>
+    <string name="listening_narration_paused_body">Los capítulos nuevos vuelven el mes que viene. Los ya narrados siguen sonando.</string>
     <string name="listening_retry">Reintentar</string>
     <string name="listening_ai_voice">Narrado por voces generadas por IA</string>
 </resources>

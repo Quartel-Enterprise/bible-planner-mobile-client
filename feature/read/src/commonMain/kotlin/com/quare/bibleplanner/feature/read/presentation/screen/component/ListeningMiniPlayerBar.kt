@@ -118,6 +118,7 @@ internal fun ListeningMiniPlayerBar(
                 ListeningStatusModel.NEEDS_SIGN_IN,
                 ListeningStatusModel.VERSION_UNAVAILABLE,
                 ListeningStatusModel.AUDIO_UNAVAILABLE,
+                ListeningStatusModel.NARRATION_PAUSED,
                 -> player.status.toUnavailableCopy()?.let { copy -> UnavailableContent(player, copy, onEvent) }
 
                 ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)

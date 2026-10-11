@@ -113,6 +113,7 @@ internal class ChapterListeningControllerImpl(
     private var prefetchingChapter: ChapterLocationModel? = null
     private var refreshJob: Job? = null
     private var hasTrackedStart = false
+    private var hasPrefetched = false
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
@@ -180,23 +181,14 @@ internal class ChapterListeningControllerImpl(
     override fun followReader(chapter: ChapterLocationModel) {
         val current = session ?: return
         if (current.segment.chapter == chapter || current.lockedSegment?.chapter == chapter) return
-        val daySegment = current.day?.segments?.find { it.chapter == chapter }
-        val base = if (daySegment == null) {
-            current.copy(
-                mode = ListeningModeModel.CHAPTER,
-                day = null,
-            )
-        } else {
-            current
-        }
-        val target = daySegment ?: toWholeChapter(chapter)
+        val followed = toChapterSession(
+            current = current,
+            chapter = chapter,
+            cause = ChapterChangeCause.READER,
+        )
         // Why: a chapter the person only opened to read must not stop the one they are listening to.
         launchMove {
-            if (!isOpen(target)) return@launchMove
-            val followed = base.copy(
-                segment = target,
-                chapterChangeCause = ChapterChangeCause.READER,
-            )
+            if (!isOpen(followed.segment)) return@launchMove
             // Why: read after the checks, so a pause made while they ran is kept.
             if (session?.isPlaying == true) {
                 startLoad {
@@ -252,13 +244,42 @@ internal class ChapterListeningControllerImpl(
         moveChapter(ChapterDirectionModel.NEXT)
     }
 
-    // Why: the player unlocks a chosen chapter first, so it must open that one and not work the next out again.
-    override fun moveToChapter(chapter: ChapterLocationModel) {
+    /*
+     * Why: the player unlocks a chosen chapter first, so it opens that one rather than working the
+     * next one out again, and plays it when the person unlocked it to listen (the video paused us).
+     */
+    override fun moveToChapter(
+        chapter: ChapterLocationModel,
+        shouldPlay: Boolean,
+    ) {
         val current = session ?: return
-        val daySegment = current.day?.segments?.find { it.chapter == chapter }
         moveToSegment(
-            current = if (daySegment == null) current.copy(mode = ListeningModeModel.CHAPTER, day = null) else current,
-            target = daySegment ?: toWholeChapter(chapter),
+            moved = toChapterSession(
+                current = current,
+                chapter = chapter,
+                cause = ChapterChangeCause.PLAYER,
+            ),
+            shouldPlay = shouldPlay,
+        )
+    }
+
+    private fun toChapterSession(
+        current: ListeningSessionModel,
+        chapter: ChapterLocationModel,
+        cause: ChapterChangeCause,
+    ): ListeningSessionModel {
+        val daySegment = current.day?.segments?.find { it.chapter == chapter }
+        val base = if (daySegment == null) {
+            current.copy(
+                mode = ListeningModeModel.CHAPTER,
+                day = null,
+            )
+        } else {
+            current
+        }
+        return base.copy(
+            segment = daySegment ?: toWholeChapter(chapter),
+            chapterChangeCause = cause,
         )
     }
 
@@ -345,10 +366,22 @@ internal class ChapterListeningControllerImpl(
      */
     private fun showUnloaded(session: ListeningSessionModel) {
         loadJob?.cancel()
+        resetSession(
+            session = session,
+            status = ListeningStatusModel.PAUSED,
+        )?.let(::refreshLeftChapter)
+    }
+
+    // Why: returns the session being left, whose revision is checked once leaving it can't compete with a download.
+    private fun resetSession(
+        session: ListeningSessionModel,
+        status: ListeningStatusModel,
+    ): ListeningSessionModel? {
         cancelPrefetchUnlessFor(session.segment.chapter)
-        findLeftSession(session.segment.chapter)?.let(::refreshLeftChapter)
+        val left = findLeftSession(session.segment.chapter)
         silencePlayer()
         hasTrackedStart = false
+        hasPrefetched = false
         audio = null
         position = Duration.ZERO
         state.update {
@@ -357,11 +390,12 @@ internal class ChapterListeningControllerImpl(
                     verses = emptyList(),
                     verseIndex = 0,
                     verseProgress = 0f,
-                    status = ListeningStatusModel.PAUSED,
+                    status = status,
                     lockedSegment = null,
                 ),
             )
         }
+        return left
     }
 
     private fun launchLoad(block: suspend () -> Unit) {
@@ -408,23 +442,10 @@ internal class ChapterListeningControllerImpl(
         session: ListeningSessionModel,
         leadingSilence: Duration = Duration.ZERO,
     ) {
-        cancelPrefetchUnlessFor(session.segment.chapter)
-        val leftSession = findLeftSession(session.segment.chapter)
-        silencePlayer()
-        hasTrackedStart = false
-        audio = null
-        position = Duration.ZERO
-        state.update {
-            it.copy(
-                session = session.copy(
-                    verses = emptyList(),
-                    verseIndex = 0,
-                    verseProgress = 0f,
-                    status = ListeningStatusModel.PREPARING,
-                    lockedSegment = null,
-                ),
-            )
-        }
+        val leftSession = resetSession(
+            session = session,
+            status = ListeningStatusModel.PREPARING,
+        )
         val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = session.bibleVersionId,
             chapter = session.segment.chapter,
@@ -471,7 +492,6 @@ internal class ChapterListeningControllerImpl(
                 leadingSilence = leadingSilence,
             )
         }
-        if (verses.isNotEmpty()) prefetchNextSegment()
     }
 
     private fun findLeftSession(nextChapter: ChapterLocationModel): ListeningSessionModel? {
@@ -534,14 +554,10 @@ internal class ChapterListeningControllerImpl(
 
     private fun toStatus(failure: ChapterAudioFailureModel): ListeningStatusModel = when (failure) {
         ChapterAudioFailureModel.NO_CONNECTION -> ListeningStatusModel.NEEDS_CONNECTION
-
         ChapterAudioFailureModel.NOT_SIGNED_IN -> ListeningStatusModel.NEEDS_SIGN_IN
-
         ChapterAudioFailureModel.VERSION_NOT_ENABLED -> ListeningStatusModel.VERSION_UNAVAILABLE
-
-        ChapterAudioFailureModel.BUDGET_REACHED,
-        ChapterAudioFailureModel.UNAVAILABLE,
-        -> ListeningStatusModel.AUDIO_UNAVAILABLE
+        ChapterAudioFailureModel.BUDGET_REACHED -> ListeningStatusModel.NARRATION_PAUSED
+        ChapterAudioFailureModel.UNAVAILABLE -> ListeningStatusModel.AUDIO_UNAVAILABLE
     }
 
     private fun trackOpenedSegment(
@@ -649,6 +665,11 @@ internal class ChapterListeningControllerImpl(
         showPosition(start)
         updateSession { it.copy(status = ListeningStatusModel.PLAYING) }
         trackStartOnce(current)
+        // Why: the next chapter may be generated on the server, so it is fetched once this one actually plays.
+        if (!hasPrefetched) {
+            hasPrefetched = true
+            prefetchNextSegment()
+        }
         playbackJob = scope.launch {
             delay(leadingSilence)
             audioPlayer.play(
@@ -722,6 +743,7 @@ internal class ChapterListeningControllerImpl(
             ListeningStatusModel.NEEDS_SIGN_IN,
             ListeningStatusModel.VERSION_UNAVAILABLE,
             ListeningStatusModel.AUDIO_UNAVAILABLE,
+            ListeningStatusModel.NARRATION_PAUSED,
             -> launchLoad {
                 openSegment(
                     session = current,
@@ -816,28 +838,27 @@ internal class ChapterListeningControllerImpl(
                 direction = direction,
             ) ?: return@launchMove
             moveToSegment(
-                current = current,
-                target = target,
+                moved = current.copy(
+                    segment = target,
+                    chapterChangeCause = ChapterChangeCause.PLAYER,
+                ),
+                shouldPlay = false,
             )
         }
     }
 
     private fun moveToSegment(
-        current: ListeningSessionModel,
-        target: ListeningSegmentModel,
+        moved: ListeningSessionModel,
+        shouldPlay: Boolean,
     ) {
         launchMove {
-            val moved = current.copy(
-                segment = target,
-                chapterChangeCause = ChapterChangeCause.PLAYER,
-            )
             /*
              * Why: a skip from the notification or the headset cannot show the unlock, so it keeps a
              * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
              */
-            if (session?.isPlaying == true) {
-                if (!isOpen(target)) {
-                    trackLocked(target)
+            if (shouldPlay || session?.isPlaying == true) {
+                if (!isOpen(moved.segment)) {
+                    trackLocked(moved.segment)
                     return@launchMove
                 }
                 startLoad {

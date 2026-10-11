@@ -7,15 +7,24 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.mp3.Mp3Extractor
 
 /*
  * Why: ExoPlayer owns audio focus, the headphones-unplugged pause and the wake lock; it is created on
- * the main looper because the controller and the media session both drive it from there.
+ * the main looper because the controller and the media session both drive it from there. Verse skips
+ * seek to the exact millisecond, which an MP3 only allows with index seeking (iOS seeks exactly too).
  */
 @OptIn(UnstableApi::class)
 internal fun createListeningExoPlayer(context: Context): ExoPlayer = ExoPlayer
-    .Builder(context)
-    .setLooper(Looper.getMainLooper())
+    .Builder(
+        context,
+        DefaultMediaSourceFactory(
+            context,
+            DefaultExtractorsFactory().setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_INDEX_SEEKING),
+        ),
+    ).setLooper(Looper.getMainLooper())
     .setAudioAttributes(
         AudioAttributes
             .Builder()
