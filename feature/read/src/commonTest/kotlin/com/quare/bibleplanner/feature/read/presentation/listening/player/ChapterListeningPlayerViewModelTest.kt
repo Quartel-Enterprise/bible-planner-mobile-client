@@ -290,6 +290,7 @@ internal class ChapterListeningPlayerViewModelTest {
             getChapterListeningAccess = { access },
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
+            checkRewardedUnlockEnabled = { true },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

@@ -50,7 +50,7 @@ internal class ListeningPlayer(
     private var nowPlaying: NowPlayingModel? = null
 
     init {
-        exoPlayer.addListener(InterruptionListener())
+        exoPlayer.addListener(InterruptionListener(exoPlayer))
     }
 
     fun show(nowPlaying: NowPlayingModel?) {
@@ -138,7 +138,9 @@ internal class ListeningPlayer(
         .inWholeMicroseconds
 
     // Why: ExoPlayer pauses itself on focus loss and unplugged headphones; the controller must hear about it.
-    private inner class InterruptionListener : Player.Listener {
+    private inner class InterruptionListener(
+        private val exoPlayer: ExoPlayer,
+    ) : Player.Listener {
         private var isTransientlySuppressed = false
 
         override fun onPlayWhenReadyChanged(
@@ -154,6 +156,8 @@ internal class ListeningPlayer(
             val isTransient = playbackSuppressionReason == PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS
             if (isTransient == isTransientlySuppressed) return
             isTransientlySuppressed = isTransient
+            // Why: a focus lost for good also lifts the suppression, but paused; that is a pause, not the call ending.
+            if (!isTransient && !exoPlayer.playWhenReady) return
             interruptionChannel.trySend(
                 if (isTransient) AudioInterruptionModel.BEGAN else AudioInterruptionModel.ENDED,
             )

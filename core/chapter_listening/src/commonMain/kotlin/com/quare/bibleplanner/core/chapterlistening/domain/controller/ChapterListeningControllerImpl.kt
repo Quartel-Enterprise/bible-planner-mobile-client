@@ -22,7 +22,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepT
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVerseModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVersionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
@@ -141,13 +140,12 @@ internal class ChapterListeningControllerImpl(
         shouldForceCanonOrder: Boolean,
     ) {
         launchLoad {
-            val version = getListeningVersion() ?: return@launchLoad
             openSegment(
                 session = createSession(
                     mode = ListeningModeModel.CHAPTER,
                     day = null,
                     segment = toWholeChapter(chapter),
-                    version = version,
+                    bibleVersionId = getListeningVersion(),
                     shouldForceCanonOrder = shouldForceCanonOrder,
                 ),
                 shouldPlay = true,
@@ -162,13 +160,12 @@ internal class ChapterListeningControllerImpl(
     ) {
         val segment = day.segments.find { it.chapter == chapter } ?: day.segments.firstOrNull() ?: return
         launchLoad {
-            val version = getListeningVersion() ?: return@launchLoad
             openSegment(
                 session = createSession(
                     mode = ListeningModeModel.DAY_READING,
                     day = day,
                     segment = segment,
-                    version = version,
+                    bibleVersionId = getListeningVersion(),
                     shouldForceCanonOrder = false,
                 ),
                 shouldPlay = true,
@@ -332,14 +329,13 @@ internal class ChapterListeningControllerImpl(
         mode: ListeningModeModel,
         day: ListeningDayModel?,
         segment: ListeningSegmentModel,
-        version: ListeningVersionModel,
+        bibleVersionId: String,
         shouldForceCanonOrder: Boolean,
     ): ListeningSessionModel = ListeningSessionModel(
         mode = mode,
         day = day,
         segment = segment,
-        bibleVersionId = version.id,
-        languageTag = version.languageTag,
+        bibleVersionId = bibleVersionId,
         shouldForceCanonOrder = shouldForceCanonOrder,
         verses = emptyList(),
         verseIndex = 0,
@@ -355,8 +351,6 @@ internal class ChapterListeningControllerImpl(
         shouldPlay: Boolean,
         leadingSilence: Duration,
     ) {
-        // Why: the previous prefetch may be checking this very chapter for a newer revision that replaces its file.
-        prefetchJob?.cancel()
         silencePlayer()
         audio = null
         position = Duration.ZERO
@@ -416,7 +410,20 @@ internal class ChapterListeningControllerImpl(
                 leadingSilence = leadingSilence,
             )
         }
-        if (loadedAudio != null) prefetchNextSegment()
+        if (loadedAudio != null) {
+            refresh(session)
+            prefetchNextSegment()
+        }
+    }
+
+    // Why: a cached chapter is checked once per launch for a corrected revision, which plays from the next time on.
+    private fun refresh(session: ListeningSessionModel) {
+        scope.launch {
+            chapterAudioRepository.refresh(
+                bibleVersionId = session.bibleVersionId,
+                chapter = session.segment.chapter,
+            )
+        }
     }
 
     private suspend fun toListeningVerses(
@@ -503,8 +510,7 @@ internal class ChapterListeningControllerImpl(
 
     /*
      * Why: the next chapter is downloaded (and generated, the first time anyone asks for it) while
-     * this one plays, so moving on doesn't wait for it; a locked one is left alone. A cached one is
-     * checked for a newer revision here, while it isn't the file being played.
+     * this one plays, so moving on doesn't wait for it; a locked one is left alone.
      */
     private fun prefetchNextSegment() {
         val current = session ?: return
@@ -603,9 +609,10 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
+    // Why: an interrupted chapter that is paused for good (another app took the audio) must not resume after.
     private fun pause() {
         val current = session ?: return
-        if (!current.isPlaying) return
+        if (!current.isPlaying && current.status != ListeningStatusModel.INTERRUPTED) return
         silencePlayer()
         updateSession { it.copy(status = ListeningStatusModel.PAUSED) }
     }
@@ -800,10 +807,6 @@ internal class ChapterListeningControllerImpl(
             }
             return
         }
-        refreshLeftChapter(
-            session = current,
-            next = next,
-        )
         openSegment(
             session = current.copy(
                 segment = next,
@@ -813,23 +816,6 @@ internal class ChapterListeningControllerImpl(
             shouldPlay = true,
             leadingSilence = chapterGap,
         )
-    }
-
-    /*
-     * Why: a newer revision replaces the cached file, so only a chapter the session is leaving is
-     * checked; one that stays finished or locked may still be played again from that file.
-     */
-    private fun refreshLeftChapter(
-        session: ListeningSessionModel,
-        next: ListeningSegmentModel,
-    ) {
-        if (next.chapter == session.segment.chapter) return
-        scope.launch {
-            chapterAudioRepository.refresh(
-                bibleVersionId = session.bibleVersionId,
-                chapter = session.segment.chapter,
-            )
-        }
     }
 
     private fun finish(finishedChapter: ChapterLocationModel) {

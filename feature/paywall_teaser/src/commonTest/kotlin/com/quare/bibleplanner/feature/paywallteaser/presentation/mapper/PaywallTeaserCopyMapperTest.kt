@@ -23,7 +23,7 @@ internal class PaywallTeaserCopyMapperTest {
         val reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR
 
         // When
-        val copy = reason.toCopy(isRewardedUnlockEnabled = false)
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(
@@ -42,7 +42,7 @@ internal class PaywallTeaserCopyMapperTest {
         val reason = PaywallTeaserReason.CHAPTER_STUDY_LIMIT
 
         // When
-        val copy = reason.toCopy(isRewardedUnlockEnabled = false)
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(
@@ -56,12 +56,12 @@ internal class PaywallTeaserCopyMapperTest {
     }
 
     @Test
-    fun `GIVEN rewarded videos on WHEN mapping the listening limit THEN mentions the video`() {
+    fun `GIVEN the listening limit WHEN mapping it THEN mentions the video`() {
         // Given
         val reason = PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
 
         // When
-        val copy = reason.toCopy(isRewardedUnlockEnabled = true)
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(
@@ -75,12 +75,12 @@ internal class PaywallTeaserCopyMapperTest {
     }
 
     @Test
-    fun `GIVEN rewarded videos off WHEN mapping the listening limit THEN only mentions the free chapter`() {
+    fun `GIVEN the free listening limit WHEN mapping it THEN only mentions the free chapter`() {
         // Given
-        val reason = PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
+        val reason = PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
 
         // When
-        val copy = reason.toCopy(isRewardedUnlockEnabled = false)
+        val copy = reason.toCopy()
 
         // Then
         assertEquals(Res.string.paywall_teaser_chapter_listening_limit_body_free, copy.body)

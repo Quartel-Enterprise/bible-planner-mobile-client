@@ -10,6 +10,7 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.prepareGet
@@ -36,10 +37,13 @@ internal class ChapterAudioRemoteDataSourceImpl(
     private val auth: Auth,
     private val json: Json,
 ) : ChapterAudioRemoteDataSource {
+    private val serverErrorStatuses = 500..599
+
     /*
      * Why: a chapter nobody has heard yet is generated during this call (~20–35 s) without sending a
      * byte, and a request for one already being generated waits up to 45 s on the server, both past
-     * the client's 30 s request and OkHttp's 10 s read defaults.
+     * the client's 30 s request and OkHttp's 10 s read defaults. Only the request timeout applies,
+     * since Supabase reports any other timeout as the missing connection a failed request means.
      */
     override suspend fun fetchChapterAudio(request: ChapterAudioRequestDto): ChapterAudioResponseDto =
         withFreshSession {
@@ -48,7 +52,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
                 setBody(json.encodeToString(ChapterAudioRequestDto.serializer(), request))
                 timeout {
                     requestTimeoutMillis = FUNCTION_TIMEOUT_MILLIS
-                    socketTimeoutMillis = FUNCTION_TIMEOUT_MILLIS
+                    socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
                 }
             }
             json.decodeFromString(ChapterAudioResponseDto.serializer(), response.bodyAsText())
@@ -90,15 +94,23 @@ internal class ChapterAudioRemoteDataSourceImpl(
      * starts after an hour of listening with the screen off is refused until the token is renewed.
      */
     private suspend fun <T> withFreshSession(call: suspend () -> T): T {
+        val usedToken = auth.currentAccessTokenOrNull()
         val result = suspendRunCatching { call() }
         val failure = result.exceptionOrNull()
         if (failure == null || !isUnauthorized(failure) || auth.currentSessionOrNull() == null) {
             return result.getOrThrow()
         }
-        suspendRunCatching { auth.refreshCurrentSession() }.getOrElse { throwable ->
-            throw if (throwable is RestException) NotSignedInException() else throwable
-        }
+        if (auth.currentAccessTokenOrNull() == usedToken) renewSession()
         return call()
+    }
+
+    // Why: like Supabase's own auto refresh, a refused refresh token ends the session, so the person can sign in again.
+    private suspend fun renewSession() {
+        suspendRunCatching { auth.refreshCurrentSession() }.onFailure { throwable ->
+            if (throwable !is RestException || throwable.statusCode in serverErrorStatuses) throw throwable
+            auth.clearSession()
+            throw NotSignedInException()
+        }
     }
 
     private fun isUnauthorized(throwable: Throwable): Boolean = when (throwable) {

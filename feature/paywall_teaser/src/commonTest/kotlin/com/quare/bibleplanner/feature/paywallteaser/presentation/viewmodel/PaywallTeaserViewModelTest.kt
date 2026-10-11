@@ -19,7 +19,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class PaywallTeaserViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -107,27 +106,11 @@ internal class PaywallTeaserViewModelTest {
         )
     }
 
-    @Test
-    fun `GIVEN rewarded videos switched on WHEN opening the teaser THEN says so`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isRewardedUnlockEnabled = true)
-
-        // When
-        val isEnabled = viewModel.isRewardedUnlockEnabled.value
-
-        // Then
-        assertTrue(isEnabled)
-    }
-
-    private fun TestScope.prepareScenario(
-        reason: PaywallTeaserReason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR,
-        isRewardedUnlockEnabled: Boolean = false,
-    ) {
+    private fun TestScope.prepareScenario(reason: PaywallTeaserReason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR) {
         trackedEvents = mutableListOf()
         viewModel = PaywallTeaserViewModel(
             route = PaywallTeaserNavRoute(reason),
             navigator = navigator,
-            checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { navigator.commands.collect { commands += it } }

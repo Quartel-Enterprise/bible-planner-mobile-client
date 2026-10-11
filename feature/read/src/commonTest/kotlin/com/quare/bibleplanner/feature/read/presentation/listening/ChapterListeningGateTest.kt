@@ -141,6 +141,7 @@ internal class ChapterListeningGateTest {
             prepareScenario(
                 access = { createUnlockAvailable(isFreeUnlockAvailable = false) },
                 isOfferPrepared = false,
+                isRewardedUnlockEnabled = false,
             )
 
             // When
@@ -153,7 +154,7 @@ internal class ChapterListeningGateTest {
             // Then
             assertEquals(
                 listOf<NavigationCommand>(
-                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_LIMIT)),
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT)),
                 ),
                 commands,
             )
@@ -218,6 +219,7 @@ internal class ChapterListeningGateTest {
     private fun TestScope.prepareScenario(
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
+        isRewardedUnlockEnabled: Boolean = true,
     ) {
         val navigator = Navigator()
         commands = mutableListOf()
@@ -228,6 +230,7 @@ internal class ChapterListeningGateTest {
             getChapterListeningAccess = { access() },
             recordChapterListeningUnlock = { unlocked -> recordedUnlocks += unlocked },
             prepareRewardedUnlockOffer = { isOfferPrepared },
+            checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
             studyUnlockResultStore = resultStore,
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

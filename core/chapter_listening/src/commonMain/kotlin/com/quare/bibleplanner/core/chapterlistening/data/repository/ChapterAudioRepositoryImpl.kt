@@ -21,8 +21,10 @@ import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestTimeoutException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
@@ -40,6 +42,7 @@ internal class ChapterAudioRepositoryImpl(
 
     // Why: playing a chapter while it is being prefetched waits for that download, but never for another chapter's.
     private val downloadLocks = mutableMapOf<String, Mutex>()
+    private val downloadLockHolders = mutableMapOf<String, Int>()
 
     // Why: a cached chapter is checked against the server once per launch, so a corrected revision replaces it.
     private val checkedChapterKeys = mutableSetOf<String>()
@@ -56,7 +59,7 @@ internal class ChapterAudioRepositoryImpl(
         findCached(chapterKey)?.let { cached -> return cached }
         // Why: a chapter still being prefetched is awaited, not asked of the server a second time.
         return suspendRunCatching {
-            val cached = lockFor(chapterKey).withLock {
+            val cached = withChapterLock(chapterKey) {
                 cacheDataSource.find(chapterKey) ?: download(
                     request = request,
                     chapterKey = chapterKey,
@@ -82,7 +85,7 @@ internal class ChapterAudioRepositoryImpl(
         if (!isFirstCheck) return
         suspendRunCatching {
             val response = remoteDataSource.fetchChapterAudio(request)
-            lockFor(chapterKey).withLock {
+            withChapterLock(chapterKey) {
                 val cached = cacheDataSource.find(chapterKey)
                 if (cached != null && cached.fileName != toFileName(response.audioUrl)) {
                     save(
@@ -124,8 +127,30 @@ internal class ChapterAudioRepositoryImpl(
     private fun toChapterKey(request: ChapterAudioRequestDto): String =
         listOf(request.version, request.book, request.chapter).joinToString(KEY_SEPARATOR)
 
-    private suspend fun lockFor(chapterKey: String): Mutex = stateMutex.withLock {
-        downloadLocks.getOrPut(chapterKey, ::Mutex)
+    // Why: a lock no one holds or waits for is dropped, so listening through whole books doesn't keep one per chapter.
+    private suspend fun <T> withChapterLock(
+        chapterKey: String,
+        block: suspend () -> T,
+    ): T {
+        val lock = stateMutex.withLock {
+            downloadLockHolders[chapterKey] = (downloadLockHolders[chapterKey] ?: 0) + 1
+            downloadLocks.getOrPut(chapterKey, ::Mutex)
+        }
+        try {
+            return lock.withLock { block() }
+        } finally {
+            withContext(NonCancellable) {
+                stateMutex.withLock {
+                    val holders = (downloadLockHolders[chapterKey] ?: 1) - 1
+                    if (holders == 0) {
+                        downloadLockHolders -= chapterKey
+                        downloadLocks -= chapterKey
+                    } else {
+                        downloadLockHolders[chapterKey] = holders
+                    }
+                }
+            }
+        }
     }
 
     private suspend fun findCached(chapterKey: String): ChapterAudioResultModel? {

@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
+import com.quare.bibleplanner.core.studyunlock.domain.usecase.IsRewardedUnlockEnabled
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +28,7 @@ internal class ChapterListeningGate(
     private val getChapterListeningAccess: GetChapterListeningAccess,
     private val recordChapterListeningUnlock: RecordChapterListeningUnlock,
     private val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,
+    private val checkRewardedUnlockEnabled: IsRewardedUnlockEnabled,
     private val studyUnlockResultStore: StudyUnlockResultStore,
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
@@ -117,8 +119,15 @@ internal class ChapterListeningGate(
         onAllowed()
     }
 
-    private fun openPaywallTeaser() {
-        navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_LIMIT))
+    // Why: with rewarded videos switched off, the day's chapter was free, so the teaser mustn't speak of a video.
+    private suspend fun openPaywallTeaser() {
+        val isRewardedUnlockEnabled = suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
+        val reason = if (isRewardedUnlockEnabled) {
+            PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
+        } else {
+            PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
+        }
+        navigator.navigate(PaywallTeaserNavRoute(reason))
     }
 
     private companion object {

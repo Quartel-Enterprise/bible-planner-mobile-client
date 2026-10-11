@@ -429,7 +429,7 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a cached chapter with a newer revision on the server WHEN refreshing THEN replaces the file`() =
+    fun `GIVEN a cached chapter with a newer revision on the server WHEN refreshing THEN serves the new file`() =
         runTest {
             // Given
             prepareScenario(respond = respondOk())
@@ -446,8 +446,14 @@ internal class ChapterAudioRepositoryImplTest {
             )
 
             // Then
-            assertFalse(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3")))
-            assertTrue(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-2_GENESIS_1.mp3")))
+            val result = repository.getChapterAudio(
+                bibleVersionId = "A21",
+                chapter = genesisOne,
+            )
+            assertEquals(
+                Path(directory, "A21_cast-pt-1_1.0.0-2_GENESIS_1.mp3").toString(),
+                (result as ChapterAudioResultModel.Ready).audio.audioPath,
+            )
         }
 
     @Test

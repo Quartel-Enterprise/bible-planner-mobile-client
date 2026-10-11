@@ -100,10 +100,8 @@ internal class ChapterAudioCacheDataSourceImpl(
                 bytes = sizeOf(audioPath) + sizeOf(manifestPath),
                 lastUsedAt = currentTimestampProvider.getCurrentTimestamp(),
             )
+            // Why: a replaced revision may still be playing, so its files stay until the next launch drops them.
             val others = loadEntries().filter { it.chapterKey != chapterKey }
-            loadEntries()
-                .filter { it.chapterKey == chapterKey && it.fileName != fileName }
-                .forEach(::deleteFiles)
             val kept = findEntriesToKeep(
                 entries = others,
                 reservedBytes = entry.bytes,
@@ -165,16 +163,28 @@ internal class ChapterAudioCacheDataSourceImpl(
     private fun loadEntries(): List<ChapterAudioCacheEntryDto> =
         loadedEntries ?: readEntries().also { loadedEntries = it }
 
+    /*
+     * Why: the index is read once per launch, by the find that precedes every download, so no file
+     * is being written or played yet; files it doesn't know about (replaced revisions, downloads cut
+     * short by the app being killed, everything when it can't be read) could never be evicted.
+     */
     private fun readEntries(): List<ChapterAudioCacheEntryDto> {
         if (!SystemFileSystem.exists(indexPath)) return emptyList()
-        return try {
+        val entries = try {
             json.decodeFromString(ChapterAudioCacheIndexDto.serializer(), readText(indexPath)).entries
         } catch (exception: SerializationException) {
-            // Why: files the index no longer knows about could never be evicted, so they go with it.
             Logger.w(exception) { "Unreadable chapter audio cache index, clearing the cache" }
-            SystemFileSystem.list(directory.path).forEach { path -> SystemFileSystem.delete(path, mustExist = false) }
             emptyList()
         }
+        val knownNames = entries
+            .flatMap { entry ->
+                listOf(toAudioPath(entry.fileName).name, toManifestPath(entry.fileName).name)
+            }.toSet() + INDEX_FILE_NAME
+        SystemFileSystem
+            .list(directory.path)
+            .filter { path -> path.name !in knownNames }
+            .forEach { path -> SystemFileSystem.delete(path, mustExist = false) }
+        return entries
     }
 
     private fun writeEntries(entries: List<ChapterAudioCacheEntryDto>) {

@@ -16,8 +16,6 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.analytics)
-            implementation(projects.core.studyUnlock)
-            implementation(projects.core.utils)
 
             // UI
             implementation(projects.ui.component)

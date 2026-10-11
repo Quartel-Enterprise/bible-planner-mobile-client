@@ -83,7 +83,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
     }
 
     @Test
-    fun `GIVEN a new revision of a chapter WHEN saving it THEN replaces the old files`() = runTest {
+    fun `GIVEN a new revision of a chapter WHEN saving it THEN serves it and keeps the playing file`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
         dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
@@ -92,10 +92,29 @@ internal class ChapterAudioCacheDataSourceImplTest {
         dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
 
         // Then
-        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1_v1.mp3")))
-        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1_v1.json")))
+        assertTrue(SystemFileSystem.exists(Path(directory, "GEN_1_v1.mp3")))
         assertEquals(Path(directory, "GEN_1_v2.mp3").toString(), dataSource.find(genesisOne)?.audioPath)
     }
+
+    @Test
+    fun `GIVEN a replaced revision and a cut download WHEN the next launch reads the cache THEN deletes them`() =
+        runTest {
+            // Given
+            val dataSource = createDataSource(maxBytes = MAX_BYTES)
+            dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
+            dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
+            SystemFileSystem.sink(Path(directory, "GEN_2.mp3.part")).buffered().use { it.writeString("half") }
+
+            // When
+            val cached = createDataSource(maxBytes = MAX_BYTES).find(genesisOne)
+
+            // Then
+            assertEquals(Path(directory, "GEN_1_v2.mp3").toString(), cached?.audioPath)
+            assertEquals(
+                setOf("GEN_1_v2.mp3", "GEN_1_v2.json", "index.json"),
+                SystemFileSystem.list(directory).map(Path::name).toSet(),
+            )
+        }
 
     @Test
     fun `GIVEN a full cache WHEN saving another chapter THEN drops the least recently played one`() = runTest {

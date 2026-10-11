@@ -30,7 +30,6 @@ internal fun listeningSession(
         day = day,
         segment = segment,
         bibleVersionId = "web",
-        languageTag = "en-US",
         shouldForceCanonOrder = false,
         verses = listOf(
             ListeningVerseModel(number = 1, text = "one two three four five", start = Duration.ZERO, end = 2.seconds),

@@ -7,7 +7,6 @@ data class ListeningSessionModel(
     val day: ListeningDayModel?,
     val segment: ListeningSegmentModel,
     val bibleVersionId: String,
-    val languageTag: String,
     val shouldForceCanonOrder: Boolean,
     val verses: List<ListeningVerseModel>,
     val verseIndex: Int,

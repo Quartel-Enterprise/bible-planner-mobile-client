@@ -19,7 +19,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVersionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
@@ -419,6 +418,26 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
+    fun `GIVEN an interrupted chapter WHEN another app takes the audio for good THEN stays paused`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+
+            // When
+            mediaSession.interruptions.emit(AudioInterruptionModel.PAUSE_REQUESTED)
+            mediaSession.interruptions.emit(AudioInterruptionModel.ENDED)
+
+            // Then
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertEquals(1, audioPlayer.plays.size)
+        }
+
+    @Test
     fun `GIVEN a paused chapter WHEN another interruption ends THEN stays paused`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -512,7 +531,7 @@ internal class ChapterListeningControllerImplTest {
 
         // Then
         assertEquals(listOf(genesisOne, genesisTwo), audioRepository.requests)
-        assertEquals(listOf(genesisTwo), audioRepository.refreshed)
+        assertEquals(listOf(genesisOne, genesisTwo), audioRepository.refreshed)
     }
 
     @Test
@@ -1156,37 +1175,18 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chapter that stays finished WHEN it ends THEN keeps its file for a replay`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(isAutoNextEnabled = false)
-            controller.startChapter(
-                chapter = genesisOne,
-                shouldForceCanonOrder = false,
-            )
-
-            // When
-            audioPlayer.finish()
-
-            // Then
-            assertTrue(audioRepository.refreshed.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN auto next on WHEN the chapter ends THEN checks the chapter it left`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter WHEN it loads THEN checks it for a newer revision`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(isAutoNextEnabled = false)
+
+        // When
         controller.startChapter(
             chapter = genesisOne,
             shouldForceCanonOrder = false,
         )
 
-        // When
-        audioPlayer.finish()
-        advanceTimeBy(2.seconds)
-
         // Then
-        assertTrue(genesisOne in audioRepository.refreshed)
+        assertEquals(listOf(genesisOne), audioRepository.refreshed)
     }
 
     @Test
@@ -1203,7 +1203,7 @@ internal class ChapterListeningControllerImplTest {
 
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
-            assertEquals(listOf(genesisTwo), audioRepository.refreshed)
+            assertTrue(genesisTwo in audioRepository.refreshed)
         }
 
     @Test
@@ -1318,12 +1318,7 @@ internal class ChapterListeningControllerImplTest {
             getChapterVerseTexts = { chapter ->
                 versesByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
             },
-            getListeningVersion = {
-                ListeningVersionModel(
-                    id = "ACF",
-                    languageTag = "pt-BR",
-                )
-            },
+            getListeningVersion = { "ACF" },
             getChapterListeningAccess = { chapter ->
                 if (isAccessCheckFailing) error("Remote config unavailable")
                 if (chapter in lockedChapters) {

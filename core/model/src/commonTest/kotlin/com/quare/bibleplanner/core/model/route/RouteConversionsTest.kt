@@ -147,6 +147,7 @@ internal class RouteConversionsTest {
                 "highlight_custom_color",
                 "chapter_study_limit",
                 "chapter_listening_limit",
+                "chapter_listening_free_limit",
             ),
             keys,
         )

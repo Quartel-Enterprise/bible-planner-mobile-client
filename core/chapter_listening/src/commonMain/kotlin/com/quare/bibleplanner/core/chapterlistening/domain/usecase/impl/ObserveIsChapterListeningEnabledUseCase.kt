@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 
 // Why: the server refuses versions outside the same Remote Config list, so the entry is hidden for them.
 internal class ObserveIsChapterListeningEnabledUseCase(
@@ -29,15 +28,11 @@ internal class ObserveIsChapterListeningEnabledUseCase(
                 key = CLOUD_VERSIONS_KEY,
                 default = DEFAULT_CLOUD_VERSIONS,
             ),
-            observeSelectedVersionId(),
+            bibleRepository.getSelectedVersionIdFlow(),
         ) { isEnabled, cloudVersions, versionId ->
-            isEnabled && versionId != null && versionId.uppercase() in toVersionIds(cloudVersions)
+            isEnabled && versionId.uppercase() in toVersionIds(cloudVersions)
         }.distinctUntilChanged()
     }
-
-    private fun observeSelectedVersionId(): Flow<String?> = bibleRepository
-        .getBiblesFlow()
-        .map { bibles -> bibles.find { bible -> bible.isSelected }?.version?.id }
 
     private fun toVersionIds(cloudVersions: String): Set<String> = cloudVersions
         .split(VERSION_SEPARATOR)
