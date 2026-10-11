@@ -1615,6 +1615,7 @@ internal class ChapterListeningControllerImplTest {
 
             // Then
             assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertEquals(listOf(genesisOneAudio.audioPath), audioRepository.evicted)
             assertEquals(
                 "no_verses",
                 trackedEvents.last { (name, _) -> name == "chapter_listening_audio_unavailable" }.second["reason"],

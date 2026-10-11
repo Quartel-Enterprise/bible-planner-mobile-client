@@ -480,6 +480,10 @@ internal class ChapterListeningControllerImpl(
 
             else -> ListeningStatusModel.PAUSED
         }
+        // Why: dropped from the cache, so a retry fetches the server's manifest instead of the same one.
+        if (loadedAudio != null && verses.isEmpty()) {
+            evictJob = scope.launch { chapterAudioRepository.evict(loadedAudio.audioPath) }
+        }
         audio = loadedAudio
         position = verses.firstOrNull()?.start ?: Duration.ZERO
         updateSession {

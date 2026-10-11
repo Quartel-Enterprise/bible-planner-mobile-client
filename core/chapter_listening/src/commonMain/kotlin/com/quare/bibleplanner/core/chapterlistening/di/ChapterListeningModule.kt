@@ -62,7 +62,7 @@ val chapterListeningModule = module {
     single<ChapterAudioRemoteDataSource> {
         ChapterAudioRemoteDataSourceImpl(
             functions = get(),
-            httpClient = get(named(CHAPTER_AUDIO_HTTP_CLIENT)),
+            httpClient = lazy { get(named(CHAPTER_AUDIO_HTTP_CLIENT)) },
             auth = get(),
             json = get(),
             checkRemoteSessionState = get(),

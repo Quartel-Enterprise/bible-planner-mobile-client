@@ -797,7 +797,7 @@ internal class ChapterAudioRepositoryImplTest {
         repository = ChapterAudioRepositoryImpl(
             remoteDataSource = ChapterAudioRemoteDataSourceImpl(
                 functions = client.functions,
-                httpClient = HttpClient(engine),
+                httpClient = lazyOf(HttpClient(engine)),
                 auth = client.auth,
                 json = json,
                 currentTimestampProvider = { now },

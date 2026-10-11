@@ -90,14 +90,6 @@ internal class ChapterListeningGate(
                 onAllowed = onAllowed,
             )
 
-            // Why: unlocks are still left when only the video failed to load, so the sheet says so and offers Pro.
-            access.rewardedRemainingToday > 0 && isRewardedUnlockEnabled() -> openUnlockSheet(
-                scope = scope,
-                chapter = chapter,
-                access = access,
-                onAllowed = onAllowed,
-            )
-
             else -> openPaywallTeaser(access.allowance)
         }
     }

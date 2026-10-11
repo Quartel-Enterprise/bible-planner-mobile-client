@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import platform.AVFoundation.AVAudioTimePitchAlgorithmSpectral
 import platform.AVFoundation.AVErrorFailedToParse
+import platform.AVFoundation.AVErrorFileFailedToParse
 import platform.AVFoundation.AVErrorFileFormatNotRecognized
 import platform.AVFoundation.AVFoundationErrorDomain
 import platform.AVFoundation.AVPlayer
@@ -53,6 +54,7 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     private val unreadableFileErrorCodes = setOf(
         AVErrorFileFormatNotRecognized,
         AVErrorFailedToParse,
+        AVErrorFileFailedToParse,
     )
 
     override val isSupported: Boolean = true

@@ -44,7 +44,8 @@ import kotlin.time.Duration.Companion.minutes
 
 internal class ChapterAudioRemoteDataSourceImpl(
     private val functions: Functions,
-    private val httpClient: HttpClient,
+    // Why: built on the first download, so opening the reader alone builds no HTTP engine.
+    private val httpClient: Lazy<HttpClient>,
     private val auth: Auth,
     private val json: Json,
     private val checkRemoteSessionState: CheckRemoteSessionState,
@@ -171,7 +172,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
         read: suspend (HttpResponse) -> T,
     ): T {
         val token = auth.currentAccessTokenOrNull() ?: throw NotSignedInException()
-        return httpClient.prepareGet(url) { bearerAuth(token) }.execute { response ->
+        return httpClient.value.prepareGet(url) { bearerAuth(token) }.execute { response ->
             if (!response.status.isSuccess()) throw ChapterAudioDownloadException(response.status.value)
             read(response)
         }
