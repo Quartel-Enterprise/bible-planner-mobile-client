@@ -54,15 +54,17 @@ jobs:
       # A writer job saves its cache in its post step, so the pruning waits until the latest run of
       # each writer workflow for this push of this pull request has completed, and only prunes
       # after a green push: a job that failed before it restored its cache would otherwise look
-      # like one that no longer exists, and lose its entries. Older runs of the same commit
-      # (cancelled on close, say, and reopened) and the runs of another pull request with the same
-      # head are ignored, and so is a push that is no longer the pull request's head: a newer push
-      # is restoring and saving, and its own completion prunes. The time the push's runs started is
-      # the line between the entries this push made or restored and the ones it left behind. This
-      # step comes before the checkout, which a run that stops here never needs. A failing gh call
-      # fails the step, so a broken gate shows as a red check instead of a silent skip. The run
-      # that triggered this one is complete and successful whatever the listing says of it, which
-      # can lag behind the event by a few seconds.
+      # like one that no longer exists, and lose its entries. Both workflows ignore the same paths,
+      # so a push runs both or neither; a push with a run of only one is not pruned, since the
+      # other's jobs restored nothing and their entries would look unused. Older runs of the same
+      # commit (cancelled on close, say, and reopened) and the runs of another pull request with the
+      # same head are ignored, and so is a push that is no longer the pull request's head: a newer
+      # push is restoring and saving, and its own completion prunes. The time the push's runs
+      # started is the line between the entries this push made or restored and the ones it left
+      # behind. This step comes before the checkout, which a run that stops here never needs. A
+      # failing gh call fails the step, so a broken gate shows as a red check instead of a silent
+      # skip. The run that triggered this one is complete and successful whatever the listing says
+      # of it, which can lag behind the event by a few seconds.
       - name: Find the push's runs
         id: push
         run: |
@@ -71,26 +73,19 @@ jobs:
             echo "#$NUMBER has moved on from $HEAD_SHA to $head; the newer push prunes."
             exit 0
           fi
-          runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
+          verdict=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq "[.workflow_runs[] | select(.pull_requests | any(.number == $NUMBER))
-                   | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
-          start=""
-          for workflow in build-and-test ui-tests; do
-            run=$(jq -c --arg workflow "$workflow" '[.[] | select(.name == $workflow)] | max_by(.created_at)' <<< "$runs")
-            if [ "$run" = "null" ] || [ "$(jq -r '.status' <<< "$run")" != "completed" ]; then
-              echo "The latest $workflow run of #$NUMBER at $HEAD_SHA has not completed; its completion prunes."
-              exit 0
-            fi
-            if [ "$(jq -r '.conclusion' <<< "$run")" != "success" ]; then
-              echo "The latest $workflow run of #$NUMBER at $HEAD_SHA did not succeed; the next green push prunes."
-              exit 0
-            fi
-            created=$(jq -r '.created_at' <<< "$run")
-            if [ -z "$start" ] || [[ "$created" < "$start" ]]; then
-              start=$created
-            fi
-          done
-          echo "start=$start" >> "$GITHUB_OUTPUT"
+                   | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]
+                   | [\"build-and-test\", \"ui-tests\"] as \$writers
+                   | map(select(.name | IN(\$writers[]))) | group_by(.name) | map(max_by(.created_at))
+                   | if length < (\$writers | length) then \"only one writer workflow ran; nothing to prune for this push\"
+                     elif any(.status != \"completed\") then \"a writer workflow has not completed; its completion prunes\"
+                     elif any(.conclusion != \"success\") then \"a writer workflow did not succeed; the next green push prunes\"
+                     else \"start=\" + (map(.created_at) | min) end")
+          case "$verdict" in
+            start=*) echo "$verdict" >> "$GITHUB_OUTPUT" ;;
+            *) echo "#$NUMBER at $HEAD_SHA: $verdict." ;;
+          esac
 
       - name: Checkout code
         if: steps.push.outputs.start != ''

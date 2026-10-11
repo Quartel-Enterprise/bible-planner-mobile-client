@@ -29,10 +29,10 @@
 # or failed to save; when it saved more, a job saved without restoring from this scope (its entry
 # was evicted, or a new shard); in both cases nothing says which, so they all stay until a later
 # run stops restoring them. The run that the push cancelled still saves in its post steps, right
-# after the new run started: its home entries carry the previous commit, and whatever was created
-# up to the last of them counts as the previous push's and goes. Should a job of the new push have
-# restored one of those late entries (its home was the newest when a long-queued job started), that
-# job rebuilds the bundle once on the next push.
+# after the new run started; those entries count as this push's. A bundle among them that this
+# push needed has the same content and the same key, so this push restored it or named it instead
+# of saving its own; one it did not need adds to the saved count, which only keeps the restored
+# ones one more push, and is deleted by the next push as never restored.
 set -euo pipefail
 
 usage() {
@@ -55,36 +55,28 @@ case "$RUN_START" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9]
 ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt \
     | jq 'map(select(.key | test("^(gradle|konan)-")))')
 
-# Every entry with the seconds since the run started, negative when it predates the run; its kind
-# (the key without the content hash or the commit) and, for a home entry, its job and commit. The
-# commit of the newest home entry is this push's; entries created up to the last home entry of
-# another commit were saved by the cancelled run of the previous push, and count as older than the
-# run and not restored: a fresh entry's last access can trail its creation by a few seconds with
-# nothing having read it, so the access time says nothing about them. Then, per kind and platform,
-# whether the run replaced what it restored.
+# Every entry with the seconds since the run started, negative when it predates the run, and its
+# kind (the key without the content hash or the commit); then, per kind and platform, whether the
+# run replaced what it restored, and from that whether the entry goes.
 CLASSIFIED=$(jq --arg start "$RUN_START" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
     ($start | seconds) as $t
     | map(. + {
         created: ((.createdAt | seconds) - $t),
         accessed: ((.lastAccessedAt | seconds) - $t),
-        kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; "")),
-        job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end),
-        commit: (.key | capture("-(?<sha>[0-9a-f]{40})$")? // {} | .sha)
+        kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; ""))
     })
-    | ([.[] | select(.job != null and .created >= 0)] | max_by(.created) | .commit) as $thisPush
-    | ([.[] | select(.job != null and .created >= 0 and .commit != $thisPush) | .created] | max // -1) as $cancelledUntil
-    | map(if .created >= 0 and .created <= $cancelledUntil then .created = -1 | .accessed = -1 else . end)
     | map(. + { replacedEachPush: (.kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) })
     | group_by([.kind, .version])
     | map(
         ([.[] | select(.created >= 0)] | length) as $saved
         | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
         | map(. + { replaced: (.replacedEachPush and $saved == $restored) }))
-    | add // []' <<< "$ENTRIES")
+    | add // []
+    | map(. + { delete: (.created < 0 and (.accessed < 0 or .replaced)) })' <<< "$ENTRIES")
 
 TO_DELETE=$(jq -r '
-    map(select(.created < 0 and (.accessed < 0 or .replaced)))
+    map(select(.delete))
     | sort_by(.createdAt)
     | .[] | [.id, (.sizeInBytes / 1000000 | round), .createdAt[0:19], .lastAccessedAt[0:19], .key] | @tsv
 ' <<< "$CLASSIFIED")
@@ -95,7 +87,7 @@ if [ -z "$TO_DELETE" ]; then
 fi
 
 TOTAL_MB=$(awk -F'\t' '{ sum += $2 } END { print sum }' <<< "$TO_DELETE")
-KEPT_MB=$(jq '[.[] | select(.created >= 0 or (.accessed >= 0 and (.replaced | not))) | .sizeInBytes] | add // 0 | . / 1000000 | round' <<< "$CLASSIFIED")
+KEPT_MB=$(jq '[.[] | select(.delete | not) | .sizeInBytes] | add // 0 | . / 1000000 | round' <<< "$CLASSIFIED")
 echo "Pruning $(wc -l <<< "$TO_DELETE" | tr -d ' ') entries, $TOTAL_MB MB, of $REF; keeping $KEPT_MB MB"
 printf '%s\n' "$TO_DELETE" | awk -F'\t' '{ printf "  %5d MB  created %s  accessed %s  %s\n", $2, $3, $4, $5 }'
 
