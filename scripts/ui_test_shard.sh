@@ -77,5 +77,6 @@ if [ -z "$TASKS" ]; then
     exit 1
 fi
 
+# -p builds this checkout whatever the caller's directory, which Gradle keeps for relative paths.
 # shellcheck disable=SC2086 # the tasks are meant to be split
-exec "$PROJECT_ROOT/gradlew" $TASKS "$@"
+exec "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" $TASKS "$@"

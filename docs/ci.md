@@ -9,7 +9,7 @@ repository's 10 GB cache budget:
 - **`main`** always writes. Every pull request restores from those entries.
 - **`GRADLE_CACHE_WRITE_ON_PULL_REQUESTS=true`** lets a job write on a pull request too, scoped to
   that pull request's ref, so the next push compiles only what changed. The jobs on the critical
-  path set it: `build`, the three `android` shards and `ios` of `ui-tests`. `unit-tests` stays
+  path set it: `build`, the `android` shards and `ios` of `ui-tests`. `unit-tests` stays
   read-only and restores `main`'s entry.
 - **`GRADLE_CACHE_READ_ONLY=true`** never writes, even on `main`. It is for jobs that barely use
   Gradle (`ktlint`, `module-graph`): their small entries would take up the budget, and since
@@ -194,7 +194,7 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
 - **`desktop`** runs them on the JVM with `-PuiTests=only`, which leaves the unit tests of the same
   modules to `unit-tests`. Only the modules with UI tests and what they depend on compile here.
 
-- **`android`** has three shards, and each boots its own API 35 `x86_64` emulator with KVM. Shard 0
+- **`android`** runs in shards, three today, and each boots its own API 35 `x86_64` emulator with KVM. Shard 0
   runs `:shared` alone, and the script deals the screen modules round-robin to the other shards;
   to add one, add the next index to `matrix.shard`, since the workflow passes the size of the
   matrix (`strategy.job-total`) to the script as the count. `:shared` is on its own because its
