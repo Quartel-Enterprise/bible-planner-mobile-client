@@ -11,6 +11,8 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVer
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.user.domain.model.RemoteSessionState
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.MemoryCodeVerifierCache
 import io.github.jan.supabase.auth.MemorySessionManager
@@ -18,6 +20,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
 import io.ktor.client.HttpClient
@@ -648,6 +651,18 @@ internal class ChapterAudioRepositoryImplTest {
                 httpClient = HttpClient(engine),
                 auth = client.auth,
                 json = json,
+                checkRemoteSessionState = {
+                    suspendRunCatching { client.auth.refreshCurrentSession() }.fold(
+                        onSuccess = { RemoteSessionState.ACTIVE },
+                        onFailure = { throwable ->
+                            if (throwable is RestException && throwable.statusCode in 400..499) {
+                                RemoteSessionState.REVOKED
+                            } else {
+                                RemoteSessionState.UNKNOWN
+                            }
+                        },
+                    )
+                },
             ),
             cacheDataSource = ChapterAudioCacheDataSourceImpl(
                 directory = ChapterAudioCacheDirectory(directory),

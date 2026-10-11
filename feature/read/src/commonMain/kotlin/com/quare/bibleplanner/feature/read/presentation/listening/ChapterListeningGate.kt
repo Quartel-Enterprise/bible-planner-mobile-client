@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -30,6 +31,7 @@ internal class ChapterListeningGate(
     private val recordChapterListeningUnlock: RecordChapterListeningUnlock,
     private val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,
     private val checkRewardedUnlockEnabled: IsRewardedUnlockEnabled,
+    private val getFreeListeningDailyLimit: GetFreeListeningDailyLimit,
     private val studyUnlockResultStore: StudyUnlockResultStore,
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
@@ -125,13 +127,14 @@ internal class ChapterListeningGate(
         )
     }
 
-    // Why: with rewarded videos switched off, the day's chapter was free, so the teaser mustn't speak of a video.
+    // Why: the teaser only speaks of the videos or the free chapter that today's configuration offers.
     private suspend fun openPaywallTeaser() {
         val isRewardedUnlockEnabled = suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
-        val reason = if (isRewardedUnlockEnabled) {
-            PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
-        } else {
-            PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
+        val freeDailyLimit = suspendRunCatching { getFreeListeningDailyLimit() }.getOrDefault(0)
+        val reason = when {
+            isRewardedUnlockEnabled -> PaywallTeaserReason.CHAPTER_LISTENING_LIMIT
+            freeDailyLimit > 0 -> PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT
+            else -> PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY
         }
         navigator.navigate(PaywallTeaserNavRoute(reason))
     }

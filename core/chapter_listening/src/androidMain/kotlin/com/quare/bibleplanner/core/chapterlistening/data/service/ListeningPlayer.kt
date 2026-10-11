@@ -78,6 +78,8 @@ internal class ListeningPlayer(
         return forwarded
             .buildUpon()
             .setAvailableCommands(availableCommands)
+            // Why: the controller reports a failed file itself, and Media3 only accepts an error while idle.
+            .setPlayerError(null)
             .setPlaylist(listOf(item))
             .setCurrentMediaItemIndex(0)
             .setContentPositionMs(

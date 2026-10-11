@@ -43,5 +43,6 @@ private fun PaywallTeaserReason.toPaywallEntrySource(): PaywallEntrySource = whe
 
     PaywallTeaserReason.CHAPTER_LISTENING_LIMIT,
     PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT,
+    PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY,
     -> PaywallEntrySource.CHAPTER_LISTENING
 }

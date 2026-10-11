@@ -162,6 +162,32 @@ internal class ChapterListeningGateTest {
         }
 
     @Test
+    fun `GIVEN no video and no free chapter configured WHEN the limit is reached THEN opens the Pro only teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { ChapterListeningAccessModel.LimitReached },
+                isRewardedUnlockEnabled = false,
+                freeDailyLimit = 0,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY)),
+                ),
+                commands,
+            )
+        }
+
+    @Test
     fun `GIVEN an unlock left WHEN requesting THEN offers the video for this chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
@@ -240,6 +266,7 @@ internal class ChapterListeningGateTest {
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
         isRewardedUnlockEnabled: Boolean = true,
+        freeDailyLimit: Int = 1,
     ) {
         val navigator = Navigator()
         commands = mutableListOf()
@@ -251,6 +278,7 @@ internal class ChapterListeningGateTest {
             recordChapterListeningUnlock = { unlocked -> recordedUnlocks += unlocked },
             prepareRewardedUnlockOffer = { isOfferPrepared },
             checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
+            getFreeListeningDailyLimit = { freeDailyLimit },
             studyUnlockResultStore = resultStore,
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

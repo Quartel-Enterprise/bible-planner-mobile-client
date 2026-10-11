@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
@@ -20,6 +21,7 @@ internal class GetChapterListeningAccessUseCase(
     private val unlockRepository: ChapterListeningUnlockRepository,
     private val dateProvider: ListeningDateProvider,
     private val getIntRemoteConfig: GetIntRemoteConfig,
+    private val getFreeListeningDailyLimit: GetFreeListeningDailyLimit,
 ) : GetChapterListeningAccess {
     override suspend fun invoke(chapter: ChapterLocationModel): ChapterListeningAccessModel {
         if (getAuthenticatedUserId() == null) return ChapterListeningAccessModel.LoginRequired
@@ -31,11 +33,7 @@ internal class GetChapterListeningAccessUseCase(
             default = DEFAULT_REWARDED_DAILY_LIMIT,
         )
         val rewardedRemaining = (dailyLimit - unlockedChapters.size).coerceAtLeast(0)
-        val freeDailyLimit = getIntRemoteConfig(
-            key = FREE_DAILY_LIMIT_KEY,
-            default = DEFAULT_FREE_DAILY_LIMIT,
-        )
-        val isFreeUnlockAvailable = unlockedChapters.size < freeDailyLimit
+        val isFreeUnlockAvailable = unlockedChapters.size < getFreeListeningDailyLimit()
         return if (rewardedRemaining > 0 || isFreeUnlockAvailable) {
             ChapterListeningAccessModel.UnlockAvailable(
                 rewardedRemainingToday = rewardedRemaining,
@@ -49,7 +47,5 @@ internal class GetChapterListeningAccessUseCase(
     private companion object {
         const val REWARDED_DAILY_LIMIT_KEY = "listening_rewarded_daily_limit"
         const val DEFAULT_REWARDED_DAILY_LIMIT = 1
-        const val FREE_DAILY_LIMIT_KEY = "listening_free_daily_limit"
-        const val DEFAULT_FREE_DAILY_LIMIT = 1
     }
 }

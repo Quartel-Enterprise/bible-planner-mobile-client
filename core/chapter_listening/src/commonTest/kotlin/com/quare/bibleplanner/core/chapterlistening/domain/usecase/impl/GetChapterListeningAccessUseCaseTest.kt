@@ -191,17 +191,19 @@ internal class GetChapterListeningAccessUseCaseTest {
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
         )
+        val remoteConfig = FakeGetIntRemoteConfig(
+            mapOf(
+                "listening_rewarded_daily_limit" to dailyLimit,
+                "listening_free_daily_limit" to freeDailyLimit,
+            ),
+        )
         useCase = GetChapterListeningAccessUseCase(
             getAuthenticatedUserId = { "user-1".takeIf { isSignedIn } },
             isProUser = { isPro },
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
-            getIntRemoteConfig = FakeGetIntRemoteConfig(
-                mapOf(
-                    "listening_rewarded_daily_limit" to dailyLimit,
-                    "listening_free_daily_limit" to freeDailyLimit,
-                ),
-            ),
+            getIntRemoteConfig = remoteConfig,
+            getFreeListeningDailyLimit = GetFreeListeningDailyLimitUseCase(remoteConfig),
         )
     }
 }

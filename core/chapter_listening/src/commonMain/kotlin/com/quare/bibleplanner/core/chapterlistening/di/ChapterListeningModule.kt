@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterLis
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetFreeListeningDailyLimit
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetTodayListeningDay
@@ -22,6 +23,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDate
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetChapterListeningAccessUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetFreeListeningDailyLimitUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetListeningChapterTitleUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetTodayListeningDayUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.ObserveIsChapterListeningEnabledUseCase
@@ -62,6 +64,7 @@ val chapterListeningModule = module {
             httpClient = get(named(CHAPTER_AUDIO_HTTP_CLIENT)),
             auth = get(),
             json = get(),
+            checkRemoteSessionState = get(),
         )
     }
     single<ChapterAudioCacheDataSource> {
@@ -78,6 +81,7 @@ val chapterListeningModule = module {
     factoryOf(::EstimateListeningTimeUseCase)
     factoryOf(::GetListeningTimeUseCase)
     factoryOf(::GetChapterListeningAccessUseCase).bind<GetChapterListeningAccess>()
+    factoryOf(::GetFreeListeningDailyLimitUseCase).bind<GetFreeListeningDailyLimit>()
     factoryOf(::RecordChapterListeningUnlockUseCase).bind<RecordChapterListeningUnlock>()
     factoryOf(::ObserveIsChapterListeningEnabledUseCase).bind<ObserveIsChapterListeningEnabled>()
     factoryOf(::GetTodayListeningDayUseCase).bind<GetTodayListeningDay>()

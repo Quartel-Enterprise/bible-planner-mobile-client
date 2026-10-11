@@ -5,6 +5,7 @@ import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_ch
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_body_free
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_title
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_pro_only_body
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_body
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_title
@@ -84,5 +85,17 @@ internal class PaywallTeaserCopyMapperTest {
 
         // Then
         assertEquals(Res.string.paywall_teaser_chapter_listening_limit_body_free, copy.body)
+    }
+
+    @Test
+    fun `GIVEN the Pro only listening reason WHEN mapping it THEN speaks of neither videos nor free chapters`() {
+        // Given
+        val reason = PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY
+
+        // When
+        val copy = reason.toCopy()
+
+        // Then
+        assertEquals(Res.string.paywall_teaser_chapter_listening_pro_only_body, copy.body)
     }
 }

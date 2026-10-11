@@ -7,9 +7,10 @@ import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioD
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
+import com.quare.bibleplanner.core.user.domain.model.RemoteSessionState
+import com.quare.bibleplanner.core.user.domain.usecase.CheckRemoteSessionState
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeoutConfig
@@ -25,6 +26,7 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
+import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -36,9 +38,8 @@ internal class ChapterAudioRemoteDataSourceImpl(
     private val httpClient: HttpClient,
     private val auth: Auth,
     private val json: Json,
+    private val checkRemoteSessionState: CheckRemoteSessionState,
 ) : ChapterAudioRemoteDataSource {
-    private val serverErrorStatuses = 500..599
-
     /*
      * Why: a chapter nobody has heard yet is generated during this call (~20–35 s) without sending a
      * byte, and a request for one already being generated waits up to 45 s on the server, both past
@@ -102,10 +103,15 @@ internal class ChapterAudioRemoteDataSourceImpl(
 
     // Why: like Supabase's own auto refresh, a refused refresh token ends the session, so the person can sign in again.
     private suspend fun renewSession() {
-        suspendRunCatching { auth.refreshCurrentSession() }.onFailure { throwable ->
-            if (throwable !is RestException || throwable.statusCode in serverErrorStatuses) throw throwable
-            auth.clearSession()
-            throw NotSignedInException()
+        when (checkRemoteSessionState()) {
+            RemoteSessionState.ACTIVE -> Unit
+
+            RemoteSessionState.REVOKED -> {
+                auth.clearSession()
+                throw NotSignedInException()
+            }
+
+            RemoteSessionState.UNKNOWN -> throw IOException("Could not renew the session")
         }
     }
 

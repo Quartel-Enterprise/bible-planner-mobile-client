@@ -122,7 +122,8 @@ internal class ChapterAudioRepositoryImpl(
     ): ChapterAudioRequestDto = ChapterAudioRequestDto(
         book = bookIdWireNameMapper.map(chapter.bookId),
         chapter = chapter.chapterNumber,
-        version = bibleVersionId,
+        // Why: a version picked long ago may be stored in lower case, but the server lists them in upper case.
+        version = bibleVersionId.uppercase(),
     )
 
     private fun toChapterKey(request: ChapterAudioRequestDto): String =

@@ -559,6 +559,7 @@ internal class ReadListeningViewModelTest {
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
             checkRewardedUnlockEnabled = { true },
+            getFreeListeningDailyLimit = { 1 },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },

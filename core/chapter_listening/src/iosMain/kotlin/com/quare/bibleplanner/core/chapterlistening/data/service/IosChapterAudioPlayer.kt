@@ -16,6 +16,7 @@ import platform.AVFoundation.AVFoundationErrorDomain
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
+import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeErrorKey
 import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
 import platform.AVFoundation.audioTimePitchAlgorithm
@@ -29,6 +30,7 @@ import platform.AVFoundation.setRate
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.CoreMedia.kCMTimeZero
+import platform.Foundation.NSError
 import platform.Foundation.NSNotification
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSOperationQueue
@@ -63,14 +65,17 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
 
     init {
         observe(AVPlayerItemDidPlayToEndTimeNotification) { send(ChapterAudioPlayerEvent.Ended(playbackId)) }
-        observe(AVPlayerItemFailedToPlayToEndTimeNotification) { reportFailure() }
+        // Why: a file that fails partway through carries its error in the notification, not on the item.
+        observe(AVPlayerItemFailedToPlayToEndTimeNotification) { notification ->
+            reportFailure(notification.userInfo?.get(AVPlayerItemFailedToPlayToEndTimeErrorKey) as? NSError)
+        }
     }
 
     // Why: an item that fails to open posts no notification, only its status changes, and the controller reads this every few hundred ms.
     override val position: Duration
         get() {
             val item = loadedItem ?: return Duration.ZERO
-            if (item.status == AVPlayerItemStatusFailed) reportFailure()
+            if (item.status == AVPlayerItemStatusFailed) reportFailure(item.error)
             seekTarget?.let { target -> return target }
             val seconds = CMTimeGetSeconds(player.currentTime())
             return if (seconds.isNaN()) Duration.ZERO else seconds.seconds
@@ -124,10 +129,9 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
         loadedPath = null
     }
 
-    private fun reportFailure() {
+    private fun reportFailure(error: NSError?) {
         if (hasReportedFailure) return
         hasReportedFailure = true
-        val error = loadedItem?.error
         Logger.e { "Could not play the chapter audio: ${error?.localizedDescription}" }
         loadedPath = null
         val isAvFoundationError = error != null && error.domain == AVFoundationErrorDomain
@@ -141,14 +145,14 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
 
     private fun observe(
         name: String?,
-        onEvent: () -> Unit,
+        onEvent: (NSNotification) -> Unit,
     ) {
         NSNotificationCenter.defaultCenter.addObserverForName(
             name = name,
             `object` = null,
             queue = NSOperationQueue.mainQueue,
         ) { notification: NSNotification? ->
-            if (notification?.`object` == loadedItem) onEvent()
+            if (notification != null && notification.`object` == loadedItem) onEvent(notification)
         }
     }
 

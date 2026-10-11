@@ -151,7 +151,6 @@ internal class ChapterListeningControllerImpl(
                     bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = shouldForceCanonOrder,
                 ),
-                shouldPlay = true,
                 leadingSilence = Duration.ZERO,
             )
         }
@@ -171,7 +170,6 @@ internal class ChapterListeningControllerImpl(
                     bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = false,
                 ),
-                shouldPlay = true,
                 leadingSilence = Duration.ZERO,
             )
         }
@@ -197,11 +195,11 @@ internal class ChapterListeningControllerImpl(
                 segment = target,
                 chapterChangeCause = ChapterChangeCause.READER,
             )
-            if (current.isPlaying) {
+            // Why: read after the checks, so a pause made while they ran is kept.
+            if (session?.isPlaying == true) {
                 startLoad {
                     openSegment(
                         session = followed,
-                        shouldPlay = true,
                         leadingSilence = Duration.ZERO,
                     )
                 }
@@ -221,7 +219,6 @@ internal class ChapterListeningControllerImpl(
                     chapterChangeCause = ChapterChangeCause.PLAYER,
                     lockedSegment = null,
                 ),
-                shouldPlay = true,
                 leadingSilence = Duration.ZERO,
             )
         }
@@ -396,7 +393,6 @@ internal class ChapterListeningControllerImpl(
 
     private suspend fun openSegment(
         session: ListeningSessionModel,
-        shouldPlay: Boolean,
         leadingSilence: Duration,
     ) {
         silencePlayer()
@@ -408,8 +404,7 @@ internal class ChapterListeningControllerImpl(
                     verses = emptyList(),
                     verseIndex = 0,
                     verseProgress = 0f,
-                    // Why: a chapter opened while paused must not show as playing to the system during the load.
-                    status = if (shouldPlay) ListeningStatusModel.PREPARING else ListeningStatusModel.PAUSED,
+                    status = ListeningStatusModel.PREPARING,
                     lockedSegment = null,
                 ),
             )
@@ -691,7 +686,6 @@ internal class ChapterListeningControllerImpl(
             -> launchLoad {
                 openSegment(
                     session = current,
-                    shouldPlay = true,
                     leadingSilence = Duration.ZERO,
                 )
             }
@@ -711,7 +705,6 @@ internal class ChapterListeningControllerImpl(
             launchLoad {
                 openSegment(
                     session = current,
-                    shouldPlay = true,
                     leadingSilence = Duration.ZERO,
                 )
             }
@@ -777,11 +770,10 @@ internal class ChapterListeningControllerImpl(
                 segment = target,
                 chapterChangeCause = ChapterChangeCause.PLAYER,
             )
-            if (current.isPlaying) {
+            if (session?.isPlaying == true) {
                 startLoad {
                     openSegment(
                         session = moved,
-                        shouldPlay = true,
                         leadingSilence = Duration.ZERO,
                     )
                 }
@@ -883,7 +875,6 @@ internal class ChapterListeningControllerImpl(
                 chapterChangeCause = ChapterChangeCause.PLAYER,
                 finishedChapter = finishedChapter,
             ),
-            shouldPlay = true,
             leadingSilence = chapterGap,
         )
     }

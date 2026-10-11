@@ -5,6 +5,8 @@ import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_ch
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_body_free
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_title
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_pro_only_body
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_pro_only_title
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_body
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_title
@@ -36,6 +38,12 @@ internal fun PaywallTeaserReason.toCopy(): PaywallTeaserCopy = when (this) {
     PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT -> PaywallTeaserCopy(
         title = Res.string.paywall_teaser_chapter_listening_limit_title,
         body = Res.string.paywall_teaser_chapter_listening_limit_body_free,
+        dismiss = Res.string.paywall_teaser_chapter_listening_limit_dismiss,
+    )
+
+    PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY -> PaywallTeaserCopy(
+        title = Res.string.paywall_teaser_chapter_listening_pro_only_title,
+        body = Res.string.paywall_teaser_chapter_listening_pro_only_body,
         dismiss = Res.string.paywall_teaser_chapter_listening_limit_dismiss,
     )
 }

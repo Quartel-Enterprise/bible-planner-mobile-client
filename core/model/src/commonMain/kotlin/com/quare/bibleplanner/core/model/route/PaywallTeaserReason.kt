@@ -8,6 +8,7 @@ enum class PaywallTeaserReason {
     CHAPTER_STUDY_LIMIT,
     CHAPTER_LISTENING_LIMIT,
     CHAPTER_LISTENING_FREE_LIMIT,
+    CHAPTER_LISTENING_PRO_ONLY,
     ;
 
     val key: String

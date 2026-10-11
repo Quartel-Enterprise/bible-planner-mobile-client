@@ -57,7 +57,6 @@ internal class ChapterAudioCacheDataSourceImpl(
             entry = entry,
         )
         CachedChapterAudio(
-            fileName = entry.fileName,
             audioPath = audioPath.toString(),
             manifest = readText(manifestPath),
         )
@@ -118,7 +117,6 @@ internal class ChapterAudioCacheDataSourceImpl(
             (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
             writeEntries(kept + entry)
             CachedChapterAudio(
-                fileName = fileName,
                 audioPath = audioPath.toString(),
                 manifest = manifest,
             )
