@@ -12,9 +12,6 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningRemoteCommand
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlin.time.Duration.Companion.milliseconds
 
 /*
@@ -26,14 +23,9 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @OptIn(UnstableApi::class)
 internal class ListeningPlayer(
+    private val events: ListeningPlayerEvents,
     exoPlayer: ExoPlayer,
 ) : ForwardingSimpleBasePlayer(exoPlayer) {
-    private val commandChannel = Channel<ListeningRemoteCommand>(Channel.UNLIMITED)
-    val commands: Flow<ListeningRemoteCommand> = commandChannel.receiveAsFlow()
-
-    private val interruptionChannel = Channel<AudioInterruptionModel>(Channel.UNLIMITED)
-    val interruptions: Flow<AudioInterruptionModel> = interruptionChannel.receiveAsFlow()
-
     private val availableCommands = Player.Commands
         .Builder()
         .addAll(
@@ -58,7 +50,7 @@ internal class ListeningPlayer(
     }
 
     fun send(command: ListeningRemoteCommand) {
-        commandChannel.trySend(command)
+        events.send(command)
     }
 
     override fun getState(): State {
@@ -79,15 +71,9 @@ internal class ListeningPlayer(
                     .setTitle(current.chapterTitle)
                     .setArtist(current.subtitle)
                     .build(),
-            ).setDurationUs(
-                if (isLoading ||
-                    loadedDurationUs == C.TIME_UNSET
-                ) {
-                    toDurationUs(current)
-                } else {
-                    loadedDurationUs
-                },
-            ).setIsSeekable(true)
+                // Why: until the file loads its length is unknown, rather than a segment length in other units.
+            ).setDurationUs(if (isLoading) C.TIME_UNSET else loadedDurationUs)
+            .setIsSeekable(true)
             .build()
         return forwarded
             .buildUpon()
@@ -132,8 +118,6 @@ internal class ListeningPlayer(
         return Futures.immediateVoidFuture()
     }
 
-    private fun toDurationUs(nowPlaying: NowPlayingModel): Long = nowPlaying.time.total.inWholeMicroseconds
-
     // Why: ExoPlayer pauses itself on focus loss and unplugged headphones; the controller must hear about it.
     private inner class InterruptionListener(
         private val exoPlayer: ExoPlayer,
@@ -146,7 +130,7 @@ internal class ListeningPlayer(
         ) {
             val isSystemPause = reason == PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS ||
                 reason == PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY
-            if (!playWhenReady && isSystemPause) interruptionChannel.trySend(AudioInterruptionModel.PAUSE_REQUESTED)
+            if (!playWhenReady && isSystemPause) events.interrupt(AudioInterruptionModel.PAUSE_REQUESTED)
         }
 
         override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) {
@@ -155,9 +139,7 @@ internal class ListeningPlayer(
             isTransientlySuppressed = isTransient
             // Why: a focus lost for good also lifts the suppression, but paused; that is a pause, not the call ending.
             if (!isTransient && !exoPlayer.playWhenReady) return
-            interruptionChannel.trySend(
-                if (isTransient) AudioInterruptionModel.BEGAN else AudioInterruptionModel.ENDED,
-            )
+            events.interrupt(if (isTransient) AudioInterruptionModel.BEGAN else AudioInterruptionModel.ENDED)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.studyunlock.domain.store
 
+import com.quare.bibleplanner.core.studyunlock.domain.model.StudyUnlockResultModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -57,6 +58,20 @@ internal class StudyUnlockResultStoreTest {
 
             // Then
             assertEquals(0, notifications)
+        }
+
+    @Test
+    fun `GIVEN an observer WHEN its request is unlocked without a video THEN it learns how`() =
+        runTest(UnconfinedTestDispatcher()) {
+            // Given
+            val results = mutableListOf<StudyUnlockResultModel>()
+            backgroundScope.launch { store.observeResult(REQUEST_KEY).collect { result -> results += result } }
+
+            // When
+            store.publishUnlockedWithoutVideo(REQUEST_KEY)
+
+            // Then
+            assertEquals(listOf(StudyUnlockResultModel.UNLOCKED_WITHOUT_VIDEO), results)
         }
 
     private companion object {

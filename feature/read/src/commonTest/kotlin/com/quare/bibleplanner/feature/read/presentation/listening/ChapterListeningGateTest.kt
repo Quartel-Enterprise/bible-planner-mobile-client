@@ -208,6 +208,26 @@ internal class ChapterListeningGateTest {
             // Then
             assertEquals(listOf(chapter), recordedUnlocks)
             assertEquals(1, allowedCount)
+            assertTrue(trackedEvents.none { (name, _) -> name == "chapter_listening_free_unlocked" })
+        }
+
+    @Test
+    fun `GIVEN the video offered WHEN unlocked without a video in the sheet THEN tracks the free unlock`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // When
+            resultStore.publishUnlockedWithoutVideo(requestKey)
+
+            // Then
+            assertEquals(listOf(chapter), recordedUnlocks)
+            assertEquals("chapter_listening_free_unlocked", trackedEvents.single().first)
         }
 
     private fun createUnlockAvailable(isFreeUnlockAvailable: Boolean): ChapterListeningAccessModel =

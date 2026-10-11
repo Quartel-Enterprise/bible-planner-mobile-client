@@ -74,9 +74,11 @@ sealed interface ChapterListeningPlayerUiEvent : UiEvent {
     }
 
     data object OnUnlockClick : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_UNLOCK_CLICKED,
-            params = mapOf(AnalyticsParams.SURFACE to ListeningSurface.PLAYER.key),
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_UNLOCK_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
+            ),
         )
     }
 

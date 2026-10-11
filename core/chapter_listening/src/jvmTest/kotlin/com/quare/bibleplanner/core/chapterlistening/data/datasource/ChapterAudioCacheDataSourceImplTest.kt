@@ -97,6 +97,25 @@ internal class ChapterAudioCacheDataSourceImplTest {
     }
 
     @Test
+    fun `GIVEN a replaced revision still on disk WHEN saving another chapter THEN counts its bytes`() = runTest {
+        // Given
+        val dataSource = createDataSource(maxBytes = 3 * (100L + manifest.length))
+        now = 1
+        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        now = 2
+        dataSource.save(genesisTwo, fileName = "GEN_2_v1", audioBytes = 100)
+        dataSource.save(genesisTwo, fileName = "GEN_2_v2", audioBytes = 100)
+
+        // When
+        now = 3
+        dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 100)
+
+        // Then
+        assertNull(dataSource.find(genesisOne))
+        assertNotNull(dataSource.find(genesisTwo))
+    }
+
+    @Test
     fun `GIVEN a replaced revision and a cut download WHEN the next launch reads the cache THEN deletes them`() =
         runTest {
             // Given

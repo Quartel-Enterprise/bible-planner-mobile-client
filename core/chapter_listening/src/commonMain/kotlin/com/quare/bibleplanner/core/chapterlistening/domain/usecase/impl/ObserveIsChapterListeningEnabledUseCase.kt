@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveBooleanRemoteConfig
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 // Why: the server refuses versions outside the same Remote Config list, so the entry is hidden for them.
 internal class ObserveIsChapterListeningEnabledUseCase(
     private val audioPlayer: ChapterAudioPlayer,
-    private val bibleRepository: BibleRepository,
+    private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
     private val observeBooleanRemoteConfig: ObserveBooleanRemoteConfig,
     private val observeStringRemoteConfig: ObserveStringRemoteConfig,
 ) : ObserveIsChapterListeningEnabled {
@@ -28,7 +28,7 @@ internal class ObserveIsChapterListeningEnabledUseCase(
                 key = CLOUD_VERSIONS_KEY,
                 default = DEFAULT_CLOUD_VERSIONS,
             ),
-            bibleRepository.getSelectedVersionIdFlow(),
+            getSelectedVersionIdFlow(),
         ) { isEnabled, cloudVersions, versionId ->
             isEnabled && versionId.uppercase() in toVersionIds(cloudVersions)
         }.distinctUntilChanged()

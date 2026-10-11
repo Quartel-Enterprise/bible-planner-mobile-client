@@ -104,7 +104,7 @@ internal class StudyUnlockViewModel(
             params = surfaceParams,
         )
         navigator.navigateBack()
-        resultStore.publishEarned(route.requestKey)
+        resultStore.publishUnlockedWithoutVideo(route.requestKey)
     }
 
     private fun onRewardEarned() {

@@ -104,7 +104,10 @@ internal class ChapterListeningPlayerViewModel(
 
             is ChapterListeningPlayerUiEvent.OnAutoNextToggle -> controller.setAutoNextEnabled(event.isEnabled)
 
-            ChapterListeningPlayerUiEvent.OnUnlockClick -> playbackActions.unlockLockedChapter(viewModelScope)
+            ChapterListeningPlayerUiEvent.OnUnlockClick -> playbackActions.unlockLockedChapter(
+                scope = viewModelScope,
+                surface = ListeningSurface.PLAYER,
+            )
 
             ChapterListeningPlayerUiEvent.OnDismiss -> navigator.navigateBack()
         }

@@ -19,8 +19,6 @@ import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
-import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.http.Url
 import kotlinx.coroutines.NonCancellable
@@ -222,11 +220,11 @@ internal class ChapterAudioRepositoryImpl(
                 ChapterAudioFailureModel.UNAVAILABLE
             }
 
-            // Why: a request that times out reached the network, and the server may still be generating the chapter.
-            is HttpRequestTimeoutException,
-            is ConnectTimeoutException,
-            is SocketTimeoutException,
-            -> ChapterAudioFailureModel.UNAVAILABLE
+            /*
+             * Why: only the function call has a request timeout, and one that runs out reached a server
+             * that may still be generating the chapter; a connection that never opens or stalls is offline.
+             */
+            is HttpRequestTimeoutException -> ChapterAudioFailureModel.UNAVAILABLE
 
             is HttpRequestException -> ChapterAudioFailureModel.NO_CONNECTION
 

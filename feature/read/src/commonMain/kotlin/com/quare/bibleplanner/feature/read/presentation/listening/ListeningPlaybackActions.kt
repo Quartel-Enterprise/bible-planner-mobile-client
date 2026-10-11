@@ -32,10 +32,17 @@ internal class ListeningPlaybackActions(
         controller.togglePlayPause()
     }
 
-    fun unlockLockedChapter(scope: CoroutineScope) {
+    fun unlockLockedChapter(
+        scope: CoroutineScope,
+        surface: ListeningSurface,
+    ) {
         val locked = controller.state.value.session
             ?.lockedSegment
             ?.chapter ?: return
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_UNLOCK_CLICKED,
+            params = mapOf(AnalyticsParams.SURFACE to surface.key),
+        )
         gate.request(
             scope = scope,
             chapter = locked,

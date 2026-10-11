@@ -17,14 +17,12 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListe
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningVersion
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetTodayListeningDay
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.RecordChapterListeningUnlock
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetChapterListeningAccessUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetListeningChapterTitleUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetListeningVersionUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetTodayListeningDayUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.ObserveIsChapterListeningEnabledUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.RecordChapterListeningUnlockUseCase
@@ -84,7 +82,6 @@ val chapterListeningModule = module {
     factoryOf(::ObserveIsChapterListeningEnabledUseCase).bind<ObserveIsChapterListeningEnabled>()
     factoryOf(::GetTodayListeningDayUseCase).bind<GetTodayListeningDay>()
     factoryOf(::GetListeningChapterTitleUseCase).bind<GetListeningChapterTitle>()
-    factoryOf(::GetListeningVersionUseCase).bind<GetListeningVersion>()
     // Why: the player calls back on its own threads, and the controller's state is only touched on main.
     single<ChapterListeningController> {
         ChapterListeningControllerImpl(
@@ -95,7 +92,7 @@ val chapterListeningModule = module {
             chapterAudioRepository = get(),
             observeAuthenticatedUserId = get(),
             getChapterVerseTexts = get(),
-            getListeningVersion = get(),
+            getSelectedVersionIdFlow = get(),
             getChapterListeningAccess = get(),
             getAdjacentListeningChapter = get(),
             getListeningChapterTitle = get(),

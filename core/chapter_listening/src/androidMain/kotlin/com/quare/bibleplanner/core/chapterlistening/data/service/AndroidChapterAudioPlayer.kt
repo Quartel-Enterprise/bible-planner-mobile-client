@@ -16,7 +16,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class AndroidChapterAudioPlayer(
-    private val player: ExoPlayer,
+    createPlayer: () -> ExoPlayer,
 ) : ChapterAudioPlayer {
     override val isSupported: Boolean = true
 
@@ -26,9 +26,8 @@ internal class AndroidChapterAudioPlayer(
     private var loadedPath: String? = null
     private var playbackId = 0
 
-    init {
-        player.addListener(PlaybackListener())
-    }
+    // Why: created on the first play, so checking support or opening the reader never builds an ExoPlayer.
+    private val player: ExoPlayer by lazy { createPlayer().also { it.addListener(PlaybackListener()) } }
 
     override val position: Duration
         get() = if (loadedPath == null) Duration.ZERO else player.currentPosition.milliseconds

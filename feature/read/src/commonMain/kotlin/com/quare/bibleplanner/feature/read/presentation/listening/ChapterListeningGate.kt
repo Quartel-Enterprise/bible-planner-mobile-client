@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.studyunlock.domain.model.StudyUnlockResultModel
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.IsRewardedUnlockEnabled
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
@@ -88,7 +89,8 @@ internal class ChapterListeningGate(
         ).joinToString(REQUEST_KEY_SEPARATOR)
         earnedJob?.cancel()
         earnedJob = scope.launch {
-            studyUnlockResultStore.observeEarned(requestKey).first()
+            val result = studyUnlockResultStore.observeResult(requestKey).first()
+            if (result == StudyUnlockResultModel.UNLOCKED_WITHOUT_VIDEO) trackFreeUnlock(chapter)
             recordChapterListeningUnlock(chapter)
             onAllowed()
         }
@@ -107,6 +109,12 @@ internal class ChapterListeningGate(
         chapter: ChapterLocationModel,
         onAllowed: () -> Unit,
     ) {
+        trackFreeUnlock(chapter)
+        recordChapterListeningUnlock(chapter)
+        onAllowed()
+    }
+
+    private fun trackFreeUnlock(chapter: ChapterLocationModel) {
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
             params = mapOf(
@@ -115,8 +123,6 @@ internal class ChapterListeningGate(
                 AnalyticsParams.CHAPTER_NUMBER to chapter.chapterNumber,
             ),
         )
-        recordChapterListeningUnlock(chapter)
-        onAllowed()
     }
 
     // Why: with rewarded videos switched off, the day's chapter was free, so the teaser mustn't speak of a video.

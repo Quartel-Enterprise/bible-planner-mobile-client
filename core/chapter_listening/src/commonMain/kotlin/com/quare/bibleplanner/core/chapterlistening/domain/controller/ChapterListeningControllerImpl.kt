@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.chapterlistening.domain.controller
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTexts
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
@@ -31,7 +32,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetAdjacentLi
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningVersion
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,7 +69,7 @@ internal class ChapterListeningControllerImpl(
     private val settingsRepository: ChapterListeningSettingsRepository,
     private val chapterAudioRepository: ChapterAudioRepository,
     private val getChapterVerseTexts: GetChapterVerseTexts,
-    private val getListeningVersion: GetListeningVersion,
+    private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
     private val getChapterListeningAccess: GetChapterListeningAccess,
     private val getAdjacentListeningChapter: GetAdjacentListeningChapter,
     private val getListeningChapterTitle: GetListeningChapterTitle,
@@ -147,7 +148,7 @@ internal class ChapterListeningControllerImpl(
                     mode = ListeningModeModel.CHAPTER,
                     day = null,
                     segment = toWholeChapter(chapter),
-                    bibleVersionId = getListeningVersion(),
+                    bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = shouldForceCanonOrder,
                 ),
                 shouldPlay = true,
@@ -167,7 +168,7 @@ internal class ChapterListeningControllerImpl(
                     mode = ListeningModeModel.DAY_READING,
                     day = day,
                     segment = segment,
-                    bibleVersionId = getListeningVersion(),
+                    bibleVersionId = getSelectedVersionIdFlow().first(),
                     shouldForceCanonOrder = false,
                 ),
                 shouldPlay = true,
@@ -192,15 +193,20 @@ internal class ChapterListeningControllerImpl(
         // Why: a chapter the person only opened to read must not stop the one they are listening to.
         launchMove {
             if (!isOpen(target)) return@launchMove
-            startLoad {
-                openSegment(
-                    session = base.copy(
-                        segment = target,
-                        chapterChangeCause = ChapterChangeCause.READER,
-                    ),
-                    shouldPlay = current.isPlaying,
-                    leadingSilence = Duration.ZERO,
-                )
+            val followed = base.copy(
+                segment = target,
+                chapterChangeCause = ChapterChangeCause.READER,
+            )
+            if (current.isPlaying) {
+                startLoad {
+                    openSegment(
+                        session = followed,
+                        shouldPlay = true,
+                        leadingSilence = Duration.ZERO,
+                    )
+                }
+            } else {
+                showUnloaded(followed)
             }
         }
     }
@@ -322,6 +328,29 @@ internal class ChapterListeningControllerImpl(
         detachedStopJob = scope.launch {
             delay(detachedStopDelay)
             if (attachedReaders == 0) stop()
+        }
+    }
+
+    /*
+     * Why: each chapter loaded is a server call that may generate audio and a download, so a chapter
+     * only swiped to while paused waits until the person plays it.
+     */
+    private fun showUnloaded(session: ListeningSessionModel) {
+        loadJob?.cancel()
+        prefetchJob?.cancel()
+        silencePlayer()
+        audio = null
+        position = Duration.ZERO
+        state.update {
+            it.copy(
+                session = session.copy(
+                    verses = emptyList(),
+                    verseIndex = 0,
+                    verseProgress = 0f,
+                    status = ListeningStatusModel.PAUSED,
+                    lockedSegment = null,
+                ),
+            )
         }
     }
 
@@ -546,10 +575,11 @@ internal class ChapterListeningControllerImpl(
             direction = ChapterDirectionModel.NEXT,
         ) ?: return
         if (!isOpen(next)) return
-        chapterAudioRepository.getChapterAudio(
+        val result = chapterAudioRepository.getChapterAudio(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,
         )
+        if (result !is ChapterAudioResultModel.Ready) return
         chapterAudioRepository.refresh(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,
@@ -667,9 +697,17 @@ internal class ChapterListeningControllerImpl(
     }
 
     private fun resumePausedSession(current: ListeningSessionModel) {
-        // Why: verses are only empty while the segment loads, and the load starts playing once it sees PREPARING.
-        if (current.verses.isEmpty()) {
+        // Why: a segment still loading starts playing once it sees PREPARING; one never loaded is loaded now.
+        if (current.verses.isEmpty() && loadJob?.isActive == true) {
             updateSession { it.copy(status = ListeningStatusModel.PREPARING) }
+        } else if (current.verses.isEmpty()) {
+            launchLoad {
+                openSegment(
+                    session = current,
+                    shouldPlay = true,
+                    leadingSilence = Duration.ZERO,
+                )
+            }
         } else {
             playFrom(
                 start = position,

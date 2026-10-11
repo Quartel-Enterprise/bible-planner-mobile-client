@@ -18,12 +18,16 @@ import kotlinx.coroutines.flow.Flow
  */
 internal class AndroidListeningMediaSession(
     private val context: Context,
-    private val player: ListeningPlayer,
+    private val createPlayer: () -> ListeningPlayer,
+    events: ListeningPlayerEvents,
 ) : ListeningMediaSession {
-    override val commands: Flow<ListeningRemoteCommand> = player.commands
-    override val interruptions: Flow<AudioInterruptionModel> = player.interruptions
+    override val commands: Flow<ListeningRemoteCommand> = events.commands
+    override val interruptions: Flow<AudioInterruptionModel> = events.interruptions
 
     private var controllerFuture: ListenableFuture<MediaController>? = null
+
+    // Why: built with the first chapter shown, so opening the reader alone never creates the ExoPlayer.
+    private var player: ListeningPlayer? = null
 
     override fun requestActivation(): Boolean {
         if (controllerFuture == null) {
@@ -37,11 +41,12 @@ internal class AndroidListeningMediaSession(
     }
 
     override fun update(nowPlaying: NowPlayingModel) {
-        player.show(nowPlaying)
+        val shownPlayer = player ?: createPlayer().also { created -> player = created }
+        shownPlayer.show(nowPlaying)
     }
 
     override fun deactivate() {
-        player.show(null)
+        player?.show(null)
         controllerFuture?.let(MediaController::releaseFuture)
         controllerFuture = null
     }

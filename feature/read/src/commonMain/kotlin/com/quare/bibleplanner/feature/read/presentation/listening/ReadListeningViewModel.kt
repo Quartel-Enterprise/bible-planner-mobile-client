@@ -145,7 +145,10 @@ internal class ReadListeningViewModel(
                 surface = ListeningSurface.MINI_PLAYER,
             )
 
-            ReadListeningUiEvent.OnUnlockNextClick -> playbackActions.unlockLockedChapter(viewModelScope)
+            ReadListeningUiEvent.OnUnlockNextClick -> playbackActions.unlockLockedChapter(
+                scope = viewModelScope,
+                surface = ListeningSurface.MINI_PLAYER,
+            )
 
             ReadListeningUiEvent.OnFinishOfferDismissClick -> controller.dismissFinishOffer()
 

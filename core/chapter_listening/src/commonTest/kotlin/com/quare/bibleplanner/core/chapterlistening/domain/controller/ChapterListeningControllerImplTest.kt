@@ -34,6 +34,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -647,7 +648,7 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a paused chapter WHEN the reader opens another one THEN never shows it as playing while loading`() =
+    fun `GIVEN a paused chapter WHEN the reader opens another one THEN follows it without loading its audio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -656,14 +657,51 @@ internal class ChapterListeningControllerImplTest {
                 shouldForceCanonOrder = false,
             )
             controller.togglePlayPause()
-            audioRepository.gate = CompletableDeferred()
 
             // When
-            controller.followReader(genesisTwo)
+            controller.followReader(genesisThree)
 
             // Then
+            assertEquals(genesisThree, session?.segment?.chapter)
             assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertFalse(genesisThree in audioRepository.requests)
             assertFalse(mediaSession.updates.last().isPlaying)
+        }
+
+    @Test
+    fun `GIVEN a followed chapter never loaded WHEN playing THEN loads and plays it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        controller.togglePlayPause()
+        controller.followReader(genesisThree)
+
+        // When
+        controller.togglePlayPause()
+
+        // Then
+        assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        assertEquals("/cache/GEN_3.mp3", audioPlayer.plays.last().audioPath)
+    }
+
+    @Test
+    fun `GIVEN the next chapter fails to prefetch WHEN a chapter loads THEN does not check it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            audioRepository.failingChapters = setOf(genesisTwo)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertFalse(genesisTwo in audioRepository.refreshed)
         }
 
     @Test
@@ -1362,7 +1400,7 @@ internal class ChapterListeningControllerImplTest {
             getChapterVerseTexts = { chapter ->
                 versesByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
             },
-            getListeningVersion = { "ACF" },
+            getSelectedVersionIdFlow = { flowOf("ACF") },
             getChapterListeningAccess = { chapter ->
                 if (isAccessCheckFailing) error("Remote config unavailable")
                 if (chapter in lockedChapters) {
@@ -1443,6 +1481,7 @@ private class FakeChapterAudioRepository(
 ) : ChapterAudioRepository {
     var failure: ChapterAudioFailureModel? = null
     var gate: CompletableDeferred<Unit>? = null
+    var failingChapters: Set<ChapterLocationModel> = emptySet()
     val requests = mutableListOf<ChapterLocationModel>()
     val refreshed = mutableListOf<ChapterLocationModel>()
     val evicted = mutableListOf<String>()
@@ -1453,6 +1492,7 @@ private class FakeChapterAudioRepository(
     ): ChapterAudioResultModel {
         requests += chapter
         gate?.await()
+        if (chapter in failingChapters) return ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE)
         return failure?.let(ChapterAudioResultModel::Failed)
             ?: ChapterAudioResultModel.Ready(audioByChapter.getValue(chapter))
     }

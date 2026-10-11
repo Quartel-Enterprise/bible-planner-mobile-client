@@ -1,14 +1,9 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.model.VersionModel
-import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
-import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveBooleanRemoteConfig
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveStringRemoteConfig
-import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -120,26 +115,9 @@ internal class ObserveIsChapterListeningEnabledUseCaseTest {
     ) {
         booleanRemoteConfig = FakeObserveBooleanRemoteConfig(isEnabled)
         stringRemoteConfig = FakeObserveStringRemoteConfig(cloudVersions)
-        val bible = BibleModel(
-            version = VersionModel(
-                id = selectedVersionId,
-                name = selectedVersionId.uppercase(),
-                version = "1",
-                language = Language.PORTUGUESE_BRAZIL,
-                chapters = 1189,
-                size = null,
-            ),
-            downloadedChapters = 1189,
-            downloadStatus = DownloadStatusModel.NotStarted,
-            isSelected = true,
-            hasPendingUpdate = false,
-        )
         useCase = ObserveIsChapterListeningEnabledUseCase(
             audioPlayer = SupportAudioPlayer(isSupported),
-            bibleRepository = FakeBibleRepository(
-                bibles = listOf(bible),
-                selectedVersionId = selectedVersionId,
-            ),
+            getSelectedVersionIdFlow = { flowOf(selectedVersionId) },
             observeBooleanRemoteConfig = booleanRemoteConfig,
             observeStringRemoteConfig = stringRemoteConfig,
         )

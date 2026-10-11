@@ -38,6 +38,9 @@ internal class ChapterAudioCacheDataSourceImpl(
     private val indexPath = Path(directory.path, INDEX_FILE_NAME)
     private var loadedEntries: List<ChapterAudioCacheEntryDto>? = null
 
+    // Why: replaced revisions stay on disk until the next launch, so their bytes still count against the cap.
+    private var retiredBytes = 0L
+
     override suspend fun find(chapterKey: String): CachedChapterAudio? = onDisk {
         val entries = loadEntries()
         val entry = entries.find { it.chapterKey == chapterKey } ?: return@onDisk null
@@ -102,10 +105,11 @@ internal class ChapterAudioCacheDataSourceImpl(
                 lastUsedAt = currentTimestampProvider.getCurrentTimestamp(),
             )
             // Why: a replaced revision may still be playing, so its files stay until the next launch drops them.
-            val others = loadEntries().filter { it.chapterKey != chapterKey }
+            val (replaced, others) = loadEntries().partition { it.chapterKey == chapterKey }
+            retiredBytes += replaced.filter { it.fileName != fileName }.sumOf(ChapterAudioCacheEntryDto::bytes)
             val kept = findEntriesToKeep(
                 entries = others,
-                reservedBytes = entry.bytes,
+                reservedBytes = entry.bytes + retiredBytes,
             )
             (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
             writeEntries(kept + entry)
