@@ -141,10 +141,10 @@ runs:
           --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)"
           --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
 
-    # The Stop hook leaves a marker with the url of the review it posted. Without it, the findings of
-    # Claude's last message (extract-findings.py reads the ```json fence) are posted here instead, with
-    # the workflow's token, and a notice when there is no findings list (a timeout, a refusal, a skill
-    # that stopped early), so the pull request always shows the run.
+    # The Stop hook leaves a marker with the url of the review it posted, and a log of what it saw.
+    # Without the marker, the findings of Claude's last message (extract-findings.py reads the ```json
+    # fence) are posted here instead, with the workflow's token, and a notice when there is no findings
+    # list (a timeout, a refusal, a skill that stopped early), so the pull request always shows the run.
     - name: Post the findings when the hook didn't
       if: always() && steps.claude.outputs.execution_file != ''
       shell: bash
@@ -154,6 +154,11 @@ runs:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
+        if [ -f .github/actions/claude-review/.hook-log ]; then
+          cat .github/actions/claude-review/.hook-log
+        else
+          echo "The Stop hook left no log: it didn't run."
+        fi
         if [ -f .github/actions/claude-review/.posted ]; then
           echo "The review was posted from the session: $(cat .github/actions/claude-review/.posted)"
           exit 0
