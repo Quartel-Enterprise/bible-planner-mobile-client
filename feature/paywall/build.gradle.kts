@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.chapterListening)
             implementation(projects.core.plan)
             implementation(projects.core.user)
 

@@ -14,6 +14,8 @@ import bibleplanner.feature.paywall.generated.resources.feature_ai_chat
 import bibleplanner.feature.paywall.generated.resources.feature_ai_chat_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study
 import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study_subtext
+import bibleplanner.feature.paywall.generated.resources.feature_chapter_listening
+import bibleplanner.feature.paywall.generated.resources.feature_chapter_listening_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors
 import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes
@@ -23,6 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PremiumFeaturesList(
     maxFreeNotes: Int?,
+    isChapterListeningAvailable: Boolean,
     itemSpacing: Dp,
     iconSize: Dp,
     modifier: Modifier = Modifier,
@@ -47,6 +50,15 @@ internal fun PremiumFeaturesList(
             subtitleColor = subtitleColor,
             iconSize = iconSize,
         )
+        if (isChapterListeningAvailable) {
+            PremiumFeatureItem(
+                text = stringResource(Res.string.feature_chapter_listening),
+                subtext = stringResource(Res.string.feature_chapter_listening_subtext),
+                titleColor = titleColor,
+                subtitleColor = subtitleColor,
+                iconSize = iconSize,
+            )
+        }
         PremiumFeatureItem(
             text = stringResource(Res.string.feature_ad_free),
             subtext = stringResource(Res.string.feature_ad_free_subtext),

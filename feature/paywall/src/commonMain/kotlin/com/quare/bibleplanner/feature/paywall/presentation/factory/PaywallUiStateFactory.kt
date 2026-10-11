@@ -10,17 +10,21 @@ import bibleplanner.feature.paywall.generated.resources.plan_monthly
 import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
 import bibleplanner.feature.paywall.generated.resources.year
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetOfferingsResultUseCase
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import kotlinx.coroutines.flow.first
 
 class PaywallUiStateFactory(
     private val getOfferingsResult: GetOfferingsResultUseCase,
     private val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
+    private val observeIsChapterListeningEnabled: ObserveIsChapterListeningEnabled,
 ) {
     data class PaywallInitializationResult(
         val uiState: PaywallUiState,
@@ -29,6 +33,9 @@ class PaywallUiStateFactory(
 
     suspend fun create(storeName: String): PaywallInitializationResult {
         val maxFreeNotes = getMaxFreeNotesAmount()
+        // Why: listening is only sold where it exists (mobile, switched on, a version with narration).
+        val isChapterListeningAvailable = suspendRunCatching { observeIsChapterListeningEnabled().first() }
+            .getOrDefault(false)
         return getOfferingsResult().fold(
             onSuccess = { offerings ->
                 val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
@@ -63,6 +70,7 @@ class PaywallUiStateFactory(
                             isPurchasing = false,
                             storeName = storeName,
                             maxFreeNotes = maxFreeNotes,
+                            isChapterListeningAvailable = isChapterListeningAvailable,
                         ),
                         storePackages = offerings,
                     )
