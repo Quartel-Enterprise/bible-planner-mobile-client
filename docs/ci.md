@@ -22,10 +22,23 @@ saved on `main`, which holds little more than the ruleset jar, and ran all 1227 
 no cache hit. On `main` the fallback stays on, so a new job's first run starts from another job's
 entry instead of from nothing.
 
-Pull request entries are never cleaned up while the pull request is open, because each push would
-save a new entry of hundreds of MB. When it closes, `cleanup-pr-caches` cancels its runs that are
-still going and waits for them, since a cancelled job still saves its cache in the post step, and
-then deletes the entries of every closed pull request.
+`cleanup-pr-caches` keeps a pull request's entries within what its latest push uses, and deletes
+them all when it closes. Every push saves a new transforms and build cache bundle per writer job,
+hundreds of MB each, that the next push no longer needs, since it restores the newest home entry of
+its job and that one names the newest bundles; before this, three pushes of one pull request held
+12.5 GB of the budget and had pushed out `main`'s entries for `build`, the `android` shards and
+`ios`, so every new pull request started cold. Once both writer workflows of a push have succeeded,
+the `prune` job runs [`scripts/prune_pr_caches.sh`](../scripts/prune_pr_caches.sh) with the time
+that push's runs started; the rule, what stays and what goes and the cases it cannot tell apart, is
+in the script's header. It can be tried by hand without deleting anything:
+
+```bash
+./scripts/prune_pr_caches.sh --dry-run refs/pull/585/merge 2026-10-11T12:57:50Z
+```
+
+When the pull request closes, the `cleanup` job cancels its runs that are still going and waits
+for them, since a cancelled job still saves its cache in the post step, and then runs the script
+with `--closed`, which deletes the entries of every closed pull request.
 
 The `GRADLE_ENCRYPTION_KEY` secret encrypts the configuration cache. Without it the configuration
 cache is dropped between runs and every job configures the build from scratch.
@@ -64,7 +77,9 @@ error that names the secret.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
 `merge-when-green.yml` too. A workflow missing from it still blocks the merge while running, but its
-completion does not trigger one.
+completion does not trigger one. When it is one of the workflows that write the Gradle cache on pull
+requests, update the `workflow_run` list and the `WRITERS` variable of `cleanup-pr-caches.yml` as
+well, or the pruning stops without an error.
 
 ## AI review
 
