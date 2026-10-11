@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Deletes the Gradle cache entries of a pull request that its latest push no longer needs, or,
-# with --all, every entry of a closed pull request:
+# with --closed, every entry of every closed pull request:
 #   ./scripts/prune_pr_caches.sh --dry-run refs/pull/585/merge 2026-10-11T12:57:50Z
-#   ./scripts/prune_pr_caches.sh --all refs/pull/585/merge
+#   ./scripts/prune_pr_caches.sh --closed
 # The cleanup-pr-caches workflow runs the first form once every writer workflow of a push has
 # succeeded, with the time that push's runs started, and the second when a pull request closes.
 #
@@ -27,8 +27,10 @@
 #   a push restored showed the time of that push's first minutes when this was written), and the
 #   pruning runs minutes after the last restore.
 # - Anything older than the push that nothing restored goes.
-# - A transforms, build cache or home entry that the push restored and then replaced goes too,
-#   and a count tells which: the entries of one kind on one platform are one restored and one
+# - A home entry carries its job in its key, so of a job's home entries only the newest stays: the
+#   next push restores that one.
+# - A transforms or build cache entry that the push restored and then replaced goes too, and a
+#   count tells which: the entries of one kind on one platform are one restored and one
 #   saved per job, so when the push saved exactly as many as it restored, every job replaced its
 #   own, and the restored ones are the previous push's. When it saved fewer, a job kept its bundle
 #   (the iOS transforms rarely change) or failed to save; when it saved more, a job saved without
@@ -47,62 +49,76 @@ set -euo pipefail
 
 usage() {
     echo "Usage: $0 [--dry-run] <ref> <run-start>" >&2
-    echo "       $0 [--dry-run] --all <ref>" >&2
+    echo "       $0 [--dry-run] --closed" >&2
     echo "  ref        the cache scope, refs/pull/<number>/merge" >&2
     echo "  run-start  when the latest run of the ref started, ISO 8601 in UTC (2026-10-11T12:57:50Z)" >&2
-    echo "  --all      every entry of the ref, for a closed pull request" >&2
+    echo "  --closed   every entry of every closed pull request" >&2
     exit 1
 }
 
 DRY_RUN=false
-ALL=false
+CLOSED=false
 POSITIONAL=()
 for ARG in "$@"; do
     case "$ARG" in
         --dry-run) DRY_RUN=true ;;
-        --all) ALL=true ;;
+        --closed) CLOSED=true ;;
         --*) usage ;;
         *) POSITIONAL+=("$ARG") ;;
     esac
 done
 set -- "${POSITIONAL[@]+"${POSITIONAL[@]}"}"
-if [ "$ALL" = true ]; then
-    [ "$#" -eq 1 ] || usage
-    REF="$1"
+if [ "$CLOSED" = true ]; then
+    [ "$#" -eq 0 ] || usage
+    REF="the closed pull requests"
     RUN_START=""
+    # One listing of the repository; the entries of a pull request that is still open are left out.
+    ENTRIES=$(gh cache list --limit 1000 --json id,key,ref,version,sizeInBytes,createdAt,lastAccessedAt \
+        | jq 'map(select(.ref // "" | test("^refs/pull/[0-9]+/merge$")))')
+    for NUMBER in $(jq -r '[.[].ref | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n] | unique | .[]' <<< "$ENTRIES"); do
+        if [ "$(gh pr view "$NUMBER" --json state --jq '.state')" = "OPEN" ]; then
+            ENTRIES=$(jq --arg ref "refs/pull/$NUMBER/merge" 'map(select(.ref != $ref))' <<< "$ENTRIES")
+        fi
+    done
 else
     [ "$#" -eq 2 ] || usage
     REF="$1"
     RUN_START="$2"
     case "$RUN_START" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;; *) usage ;; esac
+    ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
 fi
-
-ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
 
 # Every entry with the seconds since the run started, negative when it predates the run, and its
 # kind (the key without the content hash or the commit); then, per kind and platform, whether the
-# run replaced what it restored, and from that whether the entry goes. With --all, every entry
-# goes, the ones of other workflows included. The bundle keys carry no
+# run replaced what it restored, and from that whether the entry goes; a home entry goes when its
+# job has a newer one. With --closed, every entry goes, the ones of other workflows included. The
+# bundle keys carry no
 # platform; the version field does, by way of the cached paths it hashes, which hold the runner's
 # home directory (/home/runner on Linux, /Users/runner on macOS). Should those paths ever match
 # across platforms, the two would share a group, and a bundle kept on one platform could cancel
 # out an extra save on the other.
-CLASSIFIED=$(jq --arg start "$RUN_START" --argjson all "$ALL" '
+CLASSIFIED=$(jq --arg start "$RUN_START" --argjson closed "$CLOSED" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
-    if $all then map(. + { delete: true }) else
+    if $closed then map(. + { delete: true }) else
     ($start | seconds) as $t
     | map(select(.key | test("^(gradle|konan)-")))
     | map(. + {
         created: ((.createdAt | seconds) - $t),
         accessed: ((.lastAccessedAt | seconds) - $t),
-        kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; ""))
+        kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; "")),
+        job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end)
     })
-    | group_by([.kind, .version])
+    | group_by([.kind, .version, .job])
     | map(
-        (.[0].kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) as $replacedEachPush
-        | ([.[] | select(.created >= 0)] | length) as $saved
-        | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
-        | map(. + { replaced: ($replacedEachPush and $saved == $restored) }))
+        if .[0].job != null then
+            (max_by(.createdAt) | .id) as $newest
+            | map(. + { replaced: (.id != $newest) })
+        else
+            (.[0].kind | IN("gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) as $replacedEachPush
+            | ([.[] | select(.created >= 0)] | length) as $saved
+            | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
+            | map(. + { replaced: ($replacedEachPush and $saved == $restored) })
+        end)
     | add // []
     | map(. + { delete: (.created < 0 and (.accessed < 0 or .replaced)) })
     end' <<< "$ENTRIES")
@@ -110,7 +126,7 @@ CLASSIFIED=$(jq --arg start "$RUN_START" --argjson all "$ALL" '
 TO_DELETE=$(jq -r '
     map(select(.delete))
     | sort_by(.createdAt)
-    | .[] | [.id, (.sizeInBytes / 1000000 | round), .createdAt[0:19], .lastAccessedAt[0:19], .key] | @tsv
+    | .[] | [.id, (.sizeInBytes / 1000000 | round), .createdAt[0:19], .lastAccessedAt[0:19], ((.ref // "") + " " + .key)] | @tsv
 ' <<< "$CLASSIFIED")
 
 if [ -z "$TO_DELETE" ]; then

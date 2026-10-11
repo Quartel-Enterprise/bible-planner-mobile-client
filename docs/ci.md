@@ -38,7 +38,7 @@ in the script's header. It can be tried by hand without deleting anything:
 
 When the pull request closes, the `cleanup` job cancels its runs that are still going and waits
 for them, since a cancelled job still saves its cache in the post step, and then runs the script
-with `--all` for every closed pull request that still has entries.
+with `--closed`, which deletes the entries of every closed pull request.
 
 The `GRADLE_ENCRYPTION_KEY` secret encrypts the configuration cache. Without it the configuration
 cache is dropped between runs and every job configures the build from scratch.

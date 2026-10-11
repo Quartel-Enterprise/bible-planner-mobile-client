@@ -58,8 +58,8 @@ jobs:
       - name: Find the pull requests
         id: pull_requests
         run: |
-          numbers=$(jq -r --arg repo "$GH_REPO" \
-            '[.[] | select(.url | test("/repos/" + $repo + "/pulls/[0-9]+$")) | .number] | join(" ")' <<< "$PULL_REQUESTS")
+          numbers=$(jq -r --arg repo "$GITHUB_API_URL/repos/$GH_REPO" \
+            '[.[] | select(.base.repo.url == $repo) | .number] | join(" ")' <<< "$PULL_REQUESTS")
           echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
 
       # The pruning waits until the latest run of each writer workflow for this push of this pull
@@ -68,10 +68,11 @@ jobs:
       # that no longer exists. A push with a run of only one writer workflow is not pruned either
       # (both ignore the same paths, so this is a guard), nor a push that a newer push with writer
       # runs has superseded: that push prunes. A newer push without writer runs (docs only, say)
-      # changes nothing in the cache, so the latest push that ran them is still pruned. A re-run
-      # keeps a run's creation time, so the start of its latest attempt is what counts. The run that
-      # triggered this one counts as complete whatever the listing says, which can lag behind the
-      # event. This step runs before the checkout, which a run that stops here never needs.
+      # changes nothing in the cache, so the latest push that ran them is still pruned. The start is
+      # the run's creation time, which a re-run keeps: the jobs that passed in the first attempt
+      # saved their entries before the re-run began. The run that triggered this one counts as
+      # complete whatever the listing says, which can lag behind the event. This step runs before
+      # the checkout, which a run that stops here never needs.
       - name: Find the push's runs
         id: push
         env:
@@ -97,7 +98,7 @@ jobs:
               | if length < ($writers | length) then "only one writer workflow ran; nothing to prune for this push"
                 elif any(.status != "completed") then "a writer workflow has not completed; its completion prunes"
                 elif any(.conclusion != "success") then "a writer workflow did not succeed; the next green push prunes"
-                else "start=" + (map(.run_started_at) | min) end' <<< "$runs")
+                else "start=" + (map(.created_at) | min) end' <<< "$runs")
             case "$verdict" in
               start=*) targets="$targets $number:${verdict#start=}" ;;
               *) echo "#$number at $HEAD_SHA: $verdict." ;;
@@ -171,9 +172,12 @@ jobs:
             sleep 10
           done
 
+      # The script of main, not of the closing pull request's merge commit, which github.sha is on
+      # this event.
       - name: Checkout code
         uses: actions/checkout@v5
         with:
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           sparse-checkout: scripts/prune_pr_caches.sh
           sparse-checkout-cone-mode: false
@@ -181,13 +185,4 @@ jobs:
       # Every closed pull request and not only this one: a run that outlived the wait above leaves
       # its entries behind, and the next pull request to close picks them up here.
       - name: Delete the caches of closed pull requests
-        run: |
-          status=0
-          for number in $(gh cache list --limit 1000 --json ref \
-              --jq '[.[].ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n] | unique | .[]'); do
-            if [ "$(gh pr view "$number" --json state --jq .state)" = "OPEN" ]; then
-              continue
-            fi
-            ./scripts/prune_pr_caches.sh --all "refs/pull/$number/merge" || status=1
-          done
-          exit "$status"
+        run: ./scripts/prune_pr_caches.sh --closed
