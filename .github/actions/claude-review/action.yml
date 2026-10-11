@@ -71,6 +71,7 @@ runs:
     # draft marked ready a second time, a review on request after new pushes) are handed to it, for it
     # not to raise the same issues again: the inline comments, and the bodies of the reviews that
     # listed findings GitHub couldn't anchor to a line.
+    # The list is a help, not a condition: a GitHub error here only leaves it short.
     - id: earlier
       shell: bash
       env:
@@ -81,11 +82,13 @@ runs:
         comments=$(
           gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
-              | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"'
+              | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"' \
+            || echo "::warning::The earlier inline comments couldn't be read, so the review isn't told about them." >&2
           gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
               | .body | select(test("^### Code review\\s+\\d+ finding"))
-              | split("\n\n")[2:] | map(gsub("\\s+"; " ") | .[0:300]) | .[] | select(. != "") | "- " + .'
+              | split("\n\n(?=[0-9]+\\. )"; null)[1:] | .[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
+            || echo "::warning::The earlier review bodies couldn't be read, so the review isn't told about them." >&2
         )
         {
           echo "text<<EARLIER_COMMENTS_END"
@@ -103,8 +106,9 @@ runs:
     # put on the skill's command line, the instructions below would become part of its target.
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
-    # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
-    # pull request number from the ref the workflow checked out. The gh and git commands are the read-only
+    # the Stop hook (settings) and the posting step read from Claude's last message. The hook runs from
+    # the project directory, wherever the session's shell went, and gets the pull request number and
+    # the reviewed commits from the runner's environment. The gh and git commands are the read-only
     # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
     # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
     # here when the review needs it.
@@ -120,7 +124,7 @@ runs:
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": ".github/actions/claude-review/stop-hook.sh", "timeout": 180}]}]}}
+          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "cd \"${CLAUDE_PROJECT_DIR:-$GITHUB_WORKSPACE}\" && .github/actions/claude-review/stop-hook.sh", "timeout": 180}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `high ${{ github.event.pull_request.number }}` as its
@@ -151,6 +155,8 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |

@@ -2,8 +2,7 @@
 
 The reply ends with the findings in a ```json fence: the last such fence is read, whatever its case,
 with or without a closing fence (a reply cut short), or with the fence on the same line as the
-array's end. A reply that is nothing but the array, or holds one between its first "[" and its last
-"]", counts too. Usage: extract-findings.py < reply.txt
+array's end. A reply that is nothing but the array counts too. Usage: extract-findings.py < reply.txt
 """
 import json
 import re
@@ -16,9 +15,6 @@ candidates = [
 ]
 candidates.reverse()
 candidates.append(text)
-first, last = text.find("["), text.rfind("]")
-if 0 <= first < last:
-    candidates.append(text[first:last + 1])
 for candidate in candidates:
     candidate = candidate.strip()
     if candidate.endswith("```"):

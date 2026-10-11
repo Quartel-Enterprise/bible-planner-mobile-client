@@ -2,31 +2,38 @@
 # Posts the findings of a Claude review as one pull request review, so GitHub sends one notification
 # and the comments arrive together, instead of one review per finding. Usage:
 #
-#   RUN_URL=<url of the run> post-review.sh <pr-number> <<'JSON'
+#   PR_HEAD_SHA=<reviewed head> PR_BASE_SHA=<its base> post-review.sh <pr-number> <<'JSON'
 #   [{"file": "a/b.kt", "line": 12, "summary": "...", "failure_scenario": "...", "category": "correctness"}]
 #   JSON
 #
 # The objects are the ones the /code-review skill returns; "path" is read in place of "file" and
 # "body" in place of the summary and failure scenario. "line" is the line in the new version of the
-# file; "start_line" makes the comment span lines. GitHub only anchors a comment to a line inside the
-# pull request's diff, and refuses the whole review when one isn't, so the findings on other lines
-# (the recipe reports bugs on unchanged lines of a touched function on purpose) go in the review body
-# instead, and the rest stay inline. An empty array posts a review saying nothing was found, and
-# anything that isn't an array of findings posts a notice, so the pull request always shows the
-# review ran. Only a GitHub error that outlasts the retries fails the script.
+# file; "start_line" makes the comment span lines. The review is anchored to the reviewed head commit
+# (PR_HEAD_SHA, else the pull request's current head), so a push during the review doesn't move the
+# comments. GitHub only anchors a comment to a line inside a diff hunk of that commit, and refuses the
+# whole review when one isn't, so the findings on other lines (the recipe reports bugs on unchanged
+# lines of a touched function on purpose), the ones without a usable file and line, and all of them
+# when the diff can't be read, go in the review body instead, and the rest stay inline. An empty
+# array posts a review saying nothing was found, and anything that isn't an array posts a notice, so
+# the pull request always shows the review ran. Only a GitHub error that outlasts the retries fails
+# the script.
 set -euo pipefail
 
 pr=$1
 repo=${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set}
 run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID:-}}
 [ -n "${GITHUB_RUN_ID:-}" ] || run_url=""
+head_sha=${PR_HEAD_SHA:-}
+base_sha=${PR_BASE_SHA:-}
 input=$(cat)
+
+warn() { echo "::warning::$*" >&2; }
 
 # Posts the review payload on stdin and prints its url. Transient errors are retried; a 422, GitHub
 # refusing the payload, returns 22 right away so the caller can post the findings another way.
 post() {
   local payload attempt out
-  payload=$(cat)
+  payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)')
   for attempt in 1 2 3; do
     if out=$(gh api --method POST "repos/$repo/pulls/$pr/reviews" --input - --jq .html_url <<< "$payload" 2>&1); then
       echo "$out"
@@ -42,55 +49,69 @@ post() {
   return 1
 }
 
-notice() {
-  echo "::warning::$1, so only a notice was posted." >&2
-  jq -n --arg why "$1" --arg url "$run_url" '{event: "COMMENT", body: ("### Code review\n\n" + $why
+if ! jq -e 'type == "array"' <<< "$input" > /dev/null 2>&1; then
+  warn "The review ended without a findings list, so only a notice was posted."
+  jq -n --arg url "$run_url" '{event: "COMMENT", body: ("### Code review\n\nThe review ended without a findings list"
     + (if $url != "" then "; see [the run](" + $url + ")." else "." end))}' | post
-}
-
-if ! findings=$(jq -ce 'select(type == "array")
-    | select(all(.[]; type == "object"
-      and ((.path // .file) | type) == "string"
-      and ((.line // .end_line) | type) == "number"))' <<< "$input" 2> /dev/null); then
-  notice "The review ended without a findings list"
   exit 0
 fi
 
-findings=$(jq -c '[.[] | {
-    path: (.path // .file),
-    line: (.line // .end_line),
-    start_line: (.start_line // null),
+# One shape for every finding; a number given as text still counts.
+findings=$(jq -c '[.[] | select(type == "object") | {
+    path: ((.path // .file) | if type == "string" and . != "" then . else null end),
+    line: ((.line // .end_line) | tonumber? // null),
+    start_line: ((.start_line // null) | tonumber? // null),
     body: (.body // (
       "**" + (.summary // "Finding") + "**"
       + (if .failure_scenario then "\n\n" + .failure_scenario else "" end)
       + (if .category then "\n\n_" + .category + "_" else "" end)))
-  }]' <<< "$findings")
+  }]' <<< "$input")
+total=$(jq 'length' <<< "$findings")
 
-if [ "$(jq 'length' <<< "$findings")" -eq 0 ]; then
+if [ "$total" -eq 0 ]; then
   jq -n '{event: "COMMENT", body: "### Code review\n\nNo findings."}' | post
   exit 0
 fi
 
-# The lines GitHub can anchor a comment to: the new-file lines of the pull request's diff hunks.
-hunks=$(gh pr diff "$pr" --repo "$repo" | awk '
-  /^\+\+\+ / { path = substr($2, 3); next }
-  /^@@ / { split($3, range, ","); start = substr(range[1], 2); length_ = (range[2] == "" ? 1 : range[2])
-           if (length_ > 0) printf "%s\t%d\t%d\n", path, start, start + length_ - 1 }' |
-  jq -R -s -c '[split("\n")[] | select(. != "") | split("\t") | {path: .[0], from: (.[1] | tonumber), to: (.[2] | tonumber)}]')
+# The lines GitHub can anchor a comment to: the new-file lines of the diff hunks between the base
+# and the reviewed head. Without a readable diff, every finding goes in the body.
+if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
+  if shas=$(gh pr view "$pr" --repo "$repo" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid' 2>&1); then
+    read -r head_sha base_sha <<< "$shas"
+  else
+    warn "The pull request's commits couldn't be read ($(tr '\n' ' ' <<< "$shas" | cut -c1-200)), so the findings were posted in the review body."
+  fi
+fi
+hunks='[]'
+if [ -n "$head_sha" ] && [ -n "$base_sha" ]; then
+  # shellcheck disable=SC2016 # $file is jq's, not the shell's
+  if ! hunks=$(gh api --paginate "repos/$repo/compare/$base_sha...$head_sha?per_page=100" \
+      --jq '.files[]? | .filename as $file | (.patch // "")
+        | [match("(?m)^@@ -[0-9]+(?:,[0-9]+)? \\+([0-9]+)(?:,([0-9]+))? @@"; "g")]
+        | .[] | {path: $file, from: (.captures[0].string | tonumber),
+                 to: ((.captures[0].string | tonumber) + ((.captures[1].string // "1") | tonumber) - 1)}
+        | select(.to >= .from)' 2> /dev/null | jq -s -c '.'); then
+    warn "The diff of the reviewed commit couldn't be read, so the findings were posted in the review body."
+    hunks='[]'
+  fi
+fi
 
-# A finding whose line is in a hunk is an inline comment; one whose start line isn't loses the span.
+# A finding whose line is in a hunk is an inline comment; a span has to start in that same hunk.
 split=$(jq -c --argjson hunks "$hunks" '
-  def covers($path; $line): any($hunks[]; .path == $path and .from <= $line and $line <= .to);
-  map(if .start_line != null and (.start_line >= .line or (covers(.path; .start_line) | not))
-      then .start_line = null else . end)
-  | {inline: map(select(covers(.path; .line))), body: map(select(covers(.path; .line) | not))}' <<< "$findings")
+  def hunk($path; $line): first($hunks[] | select(.path == $path and .from <= $line and $line <= .to)) // null;
+  map(. as $f | hunk($f.path; $f.line) as $h
+    | if $h == null then .start_line = null
+      elif .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null
+      else . end
+    | . + {anchored: ($h != null)})
+  | {inline: map(select(.anchored)), body: map(select(.anchored | not))}' <<< "$findings")
 inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")
-total=$(jq 'length' <<< "$findings")
 inline_count=$(jq 'length' <<< "$inline")
 
 as_list() {
-  jq -r 'to_entries | map("\(.key + 1). `\(.value.path):\(.value.line)`\n\n\(.value.body)") | join("\n\n")'
+  jq -r 'to_entries | map("\(.key + 1). " + (if .value.path then "`\(.value.path)" + (if .value.line then ":\(.value.line)" else "" end) + "`" else "(no file)" end)
+    + "\n\n\(.value.body)") | join("\n\n")'
 }
 
 if [ "$inline_count" -gt 0 ]; then
@@ -113,7 +134,7 @@ $(as_list <<< "$outside")"
   elif [ $? -ne 22 ]; then
     exit 1
   fi
-  echo "::warning::GitHub refused the inline comments, so the findings were posted as one review body." >&2
+  warn "GitHub refused the inline comments, so the findings were posted as one review body."
 fi
 
 body="### Code review
