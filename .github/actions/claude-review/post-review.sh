@@ -6,6 +6,12 @@
 #   [{"file": "a/b.kt", "line": 12, "summary": "...", "failure_scenario": "...", "category": "correctness"}]
 #   JSON
 #
+#   STARTED=<when the review started> post-review.sh --already <pr-number>
+#
+# The second form only looks for a review this script posted on the reviewed commit since the given
+# time (the one test the hook and the action's posting step share) and prints its url, exiting 1 when
+# there is none.
+#
 # The objects are the ones the /code-review skill returns; "path" is read in place of "file" and
 # "body" in place of the summary and failure scenario. "line" is the line in the new version of the
 # file; "start_line" makes the comment span lines. The review is anchored to the reviewed head commit
@@ -20,6 +26,11 @@
 # always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
 set -euo pipefail
 
+mode=post
+if [ "${1:-}" = --already ]; then
+  mode=already
+  shift
+fi
 pr=$1
 repo=${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set}
 run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID:-}}
@@ -27,9 +38,34 @@ run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GI
 head_sha=${PR_HEAD_SHA:-}
 base_sha=${PR_BASE_SHA:-}
 started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-input=$(cat)
 
 warn() { echo "::warning::$*" >&2; }
+
+# The reviewed commits, when the caller didn't name them: the pull request's current head and base.
+# Known before anything is posted, so every review carries its commit and can be recognised later.
+if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
+  if shas=$(gh pr view "$pr" --repo "$repo" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid' 2>&1); then
+    read -r head_sha base_sha <<< "$shas"
+  else
+    warn "The pull request's commits couldn't be read ($(tr '\n' ' ' <<< "$shas" | cut -c1-200))."
+  fi
+fi
+
+# Prints the url of a review this script posted on the reviewed commit since $1, if any.
+already_posted() {
+  local url
+  [ -n "$head_sha" ] || return 1
+  url=$(HEAD_SHA="$head_sha" SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
+    --jq '.[] | select(.commit_id == env.HEAD_SHA and .submitted_at >= env.SINCE
+      and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1) || return 1
+  [ -n "$url" ] && echo "$url"
+}
+
+if [ "$mode" = already ]; then
+  already_posted "${STARTED:?STARTED is not set}"
+  exit $?
+fi
+input=$(cat)
 
 # Posts the review payload on stdin and prints its url. Transient errors are retried, but creating a
 # review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit
@@ -49,10 +85,7 @@ post() {
       return 22
     fi
     [ "$attempt" -lt 3 ] && sleep $((attempt * 5))
-    already=$(HEAD_SHA="$head_sha" STARTED="$started" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
-      --jq 'select(env.HEAD_SHA != "") | .[] | select(.commit_id == env.HEAD_SHA and .submitted_at >= env.STARTED
-        and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1 || true)
-    if [ -n "$already" ]; then
+    if already=$(already_posted "$started"); then
       echo "$already"
       return 0
     fi
@@ -73,10 +106,10 @@ findings=$(jq -c '[.[] | select(type == "object") | {
     path: ((.path // .file) | if type == "string" and . != "" then . else null end),
     line: ((.line // .end_line) | tonumber? // null),
     start_line: ((.start_line // null) | tonumber? // null),
-    body: (.body // (
-      "**" + (.summary // "Finding") + "**"
-      + (if .failure_scenario then "\n\n" + .failure_scenario else "" end)
-      + (if .category then "\n\n_" + .category + "_" else "" end)))
+    body: ((.body // (
+      "**" + (.summary // "Finding" | tostring) + "**"
+      + (if .failure_scenario then "\n\n" + (.failure_scenario | tostring) else "" end)
+      + (if .category then "\n\n_" + (.category | tostring) + "_" else "" end))) | tostring)
   }]' <<< "$input")
 total=$(jq 'length' <<< "$findings")
 
@@ -87,13 +120,6 @@ fi
 
 # The lines GitHub can anchor a comment to: the new-file lines of the diff hunks between the base
 # and the reviewed head. Without a readable diff, every finding goes in the body.
-if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
-  if shas=$(gh pr view "$pr" --repo "$repo" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid' 2>&1); then
-    read -r head_sha base_sha <<< "$shas"
-  else
-    warn "The pull request's commits couldn't be read ($(tr '\n' ' ' <<< "$shas" | cut -c1-200)), so the findings were posted in the review body."
-  fi
-fi
 hunks='[]'
 if [ -n "$head_sha" ] && [ -n "$base_sha" ]; then
   # shellcheck disable=SC2016 # $file is jq's, not the shell's
@@ -114,15 +140,19 @@ split=$(jq -c --argjson hunks "$hunks" '
   def hunk($path; $line): first($hunks[] | select(.path == $path and .from <= $line and $line <= .to)) // null;
   def nearest($path; $line): [$hunks[] | select(.path == $path)]
     | if length == 0 then null else min_by(if $line < .from then .from - $line else $line - .to end) end;
-  map(. as $f | hunk($f.path; $f.line) as $h | nearest($f.path; $f.line) as $n
-    | if $h != null then
-        (if .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null else . end)
-        + {anchored: true}
-      elif $f.line != null and $n != null then
-        {path, line: (if $f.line < $n.from then $n.from else $n.to end), start_line: null,
-         body: ("_On line \($f.line), outside the diff; anchored to the nearest changed line._\n\n" + .body),
-         anchored: true}
-      else . + {anchored: false} end)
+  map(. as $f
+    | if $f.line == null or $f.path == null then . + {anchored: false}
+      else hunk($f.path; $f.line) as $h
+      | if $h != null then
+          (if .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null else . end)
+          + {anchored: true}
+        else nearest($f.path; $f.line) as $n
+        | if $n == null then . + {anchored: false}
+          else {path, line: (if $f.line < $n.from then $n.from else $n.to end), start_line: null,
+                body: ("_On line \($f.line), outside the diff; anchored to the nearest changed line._\n\n" + .body),
+                anchored: true} end
+        end
+      end)
   | {inline: map(select(.anchored)), body: map(select(.anchored | not))}' <<< "$findings")
 inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")

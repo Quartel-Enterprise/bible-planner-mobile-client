@@ -17,6 +17,12 @@ note() { echo "stop-hook: $*" | tee -a "$log" >&2; }
 
 input=$(cat)
 
+# One review per session: a Stop that fires again posts nothing more.
+if [ -f "$dir/.posted" ]; then
+  note "the review is already posted ($(cat "$dir/.posted")), nothing more to do"
+  exit 0
+fi
+
 # The runner's environment reaches the session: the pull request number comes from the ref the
 # workflow checked out (refs/pull/<number>/merge), and the reviewed commits from the event payload.
 pr=${PR_NUMBER:-$(sed -n 's#^refs/pull/\([0-9]*\)/merge$#\1#p' <<< "${GITHUB_REF:-}")}
@@ -61,6 +67,13 @@ done <<< "$replies"
 
 if [ -z "$findings" ]; then
   note "no findings list, the action's posting step takes over"
+  exit 0
+fi
+
+# A review posted since the review started (a Stop that fired twice without the marker) counts too.
+if [ -f "$dir/.started" ] && url=$(STARTED="$(cat "$dir/.started")" "$dir/post-review.sh" --already "$pr"); then
+  echo "$url" > "$dir/.posted"
+  note "a review was already posted since the review started: $url"
   exit 0
 fi
 

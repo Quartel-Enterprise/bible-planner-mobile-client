@@ -119,9 +119,10 @@ runs:
         mkdir -p "$dir"
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
           .github/actions/claude-review/extract-findings.py "$dir/"
+        date -u +%Y-%m-%dT%H:%M:%SZ > "$dir/.started"
         {
           echo "dir=$dir"
-          echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "started=$(cat "$dir/.started")"
         } >> "$GITHUB_OUTPUT"
 
     # The same review as the create-pr skill runs before the pull request opens, the /code-review
@@ -176,9 +177,10 @@ runs:
     # with the workflow's token, and a notice when there is no findings list (a refusal, a skill that
     # stopped early, a session that never ran: an expired token), so the pull request shows the run.
     # The one case with no notice is the job's timeout: GitHub cancels the job, and no step runs after
-    # that; the failed check is the signal.
+    # that; the failed check is the signal. A cancelled run (a newer run of the same pull request took
+    # its place, or someone stopped it) posts nothing either.
     - name: Post the findings when the hook didn't
-      if: always() && steps.tools.outputs.dir != ''
+      if: ${{ !cancelled() && steps.tools.outputs.dir != '' }}
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
@@ -199,10 +201,7 @@ runs:
           echo "The review was posted from the session: $(cat "$TOOLS/.posted")"
           exit 0
         fi
-        posted=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" \
-          --jq '.[] | select(.user.login == "claude[bot]" and .commit_id == env.PR_HEAD_SHA and .submitted_at >= env.STARTED) | .html_url' \
-          || true)
-        if [ -n "$posted" ]; then
+        if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
           echo "The review was posted from the session, without a marker: $posted"
           exit 0
         fi
