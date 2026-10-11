@@ -307,6 +307,7 @@ internal class ChapterListeningPlayerViewModelTest {
                             gate = gate,
                             navigator = navigator,
                             trackEvent = trackEvent,
+                            getAuthenticatedUserId = { null },
                         ),
                         navigator = navigator,
                         playerUiModelMapper = ListeningPlayerUiModelMapper(GetListeningTimeUseCase()),

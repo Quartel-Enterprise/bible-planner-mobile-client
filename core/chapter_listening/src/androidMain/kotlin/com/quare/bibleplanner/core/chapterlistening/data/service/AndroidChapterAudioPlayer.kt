@@ -58,14 +58,8 @@ internal class AndroidChapterAudioPlayer(
         if (loadedPath != null) player.setPlaybackSpeed(speed)
     }
 
-    /*
-     * Why: during a transient focus loss (a call) ExoPlayer is already silent and plays on by itself
-     * once the focus returns; pausing it here would give the focus up for good.
-     */
     override fun pause() {
-        if (loadedPath == null) return
-        if (player.playbackSuppressionReason == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) return
-        player.pause()
+        if (loadedPath != null) player.pause()
     }
 
     override fun release() {

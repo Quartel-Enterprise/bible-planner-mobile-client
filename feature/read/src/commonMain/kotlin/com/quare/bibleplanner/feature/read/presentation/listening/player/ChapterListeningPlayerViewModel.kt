@@ -96,7 +96,8 @@ internal class ChapterListeningPlayerViewModel(
             is ChapterListeningPlayerUiEvent.OnSpeedClick -> controller.setSpeed(event.speed)
 
             ChapterListeningPlayerUiEvent.OnUnavailableActionClick -> playbackActions.handleUnavailableAction(
-                ListeningSurface.PLAYER,
+                scope = viewModelScope,
+                surface = ListeningSurface.PLAYER,
             )
 
             is ChapterListeningPlayerUiEvent.OnSleepTimerClick -> controller.setSleepTimer(event.option)

@@ -366,6 +366,42 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
+    fun `GIVEN a chapter playing WHEN a call interrupts it THEN leaves the player to the system`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val pauseCount = audioPlayer.pauseCount
+
+            // When
+            mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+
+            // Then
+            assertEquals(pauseCount, audioPlayer.pauseCount)
+        }
+
+    @Test
+    fun `GIVEN an interrupted chapter WHEN opening another one THEN pauses the player`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+        val pauseCount = audioPlayer.pauseCount
+
+        // When
+        controller.nextChapter()
+
+        // Then
+        assertTrue(audioPlayer.pauseCount > pauseCount)
+    }
+
+    @Test
     fun `GIVEN an interrupted chapter WHEN the interruption ends THEN plays on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1120,7 +1156,7 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chapter that finished WHEN moving on THEN checks the finished and the prefetched chapters`() =
+    fun `GIVEN a chapter that stays finished WHEN it ends THEN keeps its file for a replay`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(isAutoNextEnabled = false)
@@ -1133,7 +1169,41 @@ internal class ChapterListeningControllerImplTest {
             audioPlayer.finish()
 
             // Then
-            assertEquals(listOf(genesisOne), audioRepository.refreshed)
+            assertTrue(audioRepository.refreshed.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN auto next on WHEN the chapter ends THEN checks the chapter it left`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        audioPlayer.finish()
+        advanceTimeBy(2.seconds)
+
+        // Then
+        assertTrue(genesisOne in audioRepository.refreshed)
+    }
+
+    @Test
+    fun `GIVEN the access check fails WHEN prefetching the next chapter THEN keeps playing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isAccessCheckFailing = true)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+            assertEquals(listOf(genesisTwo), audioRepository.refreshed)
         }
 
     @Test
@@ -1222,6 +1292,7 @@ internal class ChapterListeningControllerImplTest {
         isAutoNextEnabled: Boolean = true,
         lockedChapters: Set<ChapterLocationModel> = emptySet(),
         canActivate: Boolean = true,
+        isAccessCheckFailing: Boolean = false,
     ) {
         audioPlayer = FakeChapterAudioPlayer()
         audioRepository = FakeChapterAudioRepository(audioByChapter)
@@ -1254,6 +1325,7 @@ internal class ChapterListeningControllerImplTest {
                 )
             },
             getChapterListeningAccess = { chapter ->
+                if (isAccessCheckFailing) error("Remote config unavailable")
                 if (chapter in lockedChapters) {
                     ChapterListeningAccessModel.UnlockAvailable(
                         rewardedRemainingToday = 1,
@@ -1282,6 +1354,7 @@ private class FakeChapterAudioPlayer : ChapterAudioPlayer {
     val plays = mutableListOf<PlayCall>()
     var speed: Float? = null
     var releaseCount = 0
+    var pauseCount = 0
 
     fun emit(event: ChapterAudioPlayerEvent) {
         eventFlow.tryEmit(event)
@@ -1311,6 +1384,7 @@ private class FakeChapterAudioPlayer : ChapterAudioPlayer {
     }
 
     override fun pause() {
+        pauseCount++
     }
 
     override fun release() {

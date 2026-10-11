@@ -355,6 +355,8 @@ internal class ChapterListeningControllerImpl(
         shouldPlay: Boolean,
         leadingSilence: Duration,
     ) {
+        // Why: the previous prefetch may be checking this very chapter for a newer revision that replaces its file.
+        prefetchJob?.cancel()
         silencePlayer()
         audio = null
         position = Duration.ZERO
@@ -509,20 +511,25 @@ internal class ChapterListeningControllerImpl(
         if (current.mode != ListeningModeModel.DAY_READING && !state.value.settings.isAutoNextEnabled) return
         prefetchJob?.cancel()
         prefetchJob = scope.launch {
-            val next = findAdjacentSegment(
-                current = current,
-                direction = ChapterDirectionModel.NEXT,
-            ) ?: return@launch
-            if (!isOpen(next)) return@launch
-            chapterAudioRepository.getChapterAudio(
-                bibleVersionId = current.bibleVersionId,
-                chapter = next.chapter,
-            )
-            chapterAudioRepository.refresh(
-                bibleVersionId = current.bibleVersionId,
-                chapter = next.chapter,
-            )
+            suspendRunCatching { prefetch(current) }
+                .onFailure { throwable -> Logger.w(throwable) { "Could not prefetch the next chapter audio" } }
         }
+    }
+
+    private suspend fun prefetch(current: ListeningSessionModel) {
+        val next = findAdjacentSegment(
+            current = current,
+            direction = ChapterDirectionModel.NEXT,
+        ) ?: return
+        if (!isOpen(next)) return
+        chapterAudioRepository.getChapterAudio(
+            bibleVersionId = current.bibleVersionId,
+            chapter = next.chapter,
+        )
+        chapterAudioRepository.refresh(
+            bibleVersionId = current.bibleVersionId,
+            chapter = next.chapter,
+        )
     }
 
     // Why: a session that expired mid-listening picks up again once the person signs back in.
@@ -725,15 +732,24 @@ internal class ChapterListeningControllerImpl(
             val step = if (direction == ChapterDirectionModel.NEXT) 1 else -1
             return day.segments.getOrNull(index + step)
         }
-        return getAdjacentListeningChapter(
-            chapter = current.segment.chapter,
-            direction = direction,
-            shouldForceCanonOrder = current.shouldForceCanonOrder,
-        )?.let(::toWholeChapter)
+        return suspendRunCatching {
+            getAdjacentListeningChapter(
+                chapter = current.segment.chapter,
+                direction = direction,
+                shouldForceCanonOrder = current.shouldForceCanonOrder,
+            )
+        }.onFailure { throwable -> Logger.e(throwable) { "Could not find the $direction listening chapter" } }
+            .getOrNull()
+            ?.let(::toWholeChapter)
     }
 
-    private suspend fun isOpen(segment: ListeningSegmentModel): Boolean =
-        getChapterListeningAccess(segment.chapter) is ChapterListeningAccessModel.Open
+    // Why: like the reader's gate, a failed access check lets the person listen; the server's budget caps the cost.
+    private suspend fun isOpen(segment: ListeningSegmentModel): Boolean {
+        val access = suspendRunCatching { getChapterListeningAccess(segment.chapter) }
+            .onFailure { throwable -> Logger.e(throwable) { "Could not check the access to ${segment.chapter}" } }
+            .getOrDefault(ChapterListeningAccessModel.Open)
+        return access is ChapterListeningAccessModel.Open
+    }
 
     private fun trackLocked(segment: ListeningSegmentModel) {
         trackEvent(
@@ -749,12 +765,6 @@ internal class ChapterListeningControllerImpl(
     private suspend fun onSegmentFinished() {
         val current = session ?: return
         val finishedChapter = current.segment.chapter
-        scope.launch {
-            chapterAudioRepository.refresh(
-                bibleVersionId = current.bibleVersionId,
-                chapter = finishedChapter,
-            )
-        }
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_COMPLETED,
             params = toChapterParams(current),
@@ -790,6 +800,10 @@ internal class ChapterListeningControllerImpl(
             }
             return
         }
+        refreshLeftChapter(
+            session = current,
+            next = next,
+        )
         openSegment(
             session = current.copy(
                 segment = next,
@@ -799,6 +813,23 @@ internal class ChapterListeningControllerImpl(
             shouldPlay = true,
             leadingSilence = chapterGap,
         )
+    }
+
+    /*
+     * Why: a newer revision replaces the cached file, so only a chapter the session is leaving is
+     * checked; one that stays finished or locked may still be played again from that file.
+     */
+    private fun refreshLeftChapter(
+        session: ListeningSessionModel,
+        next: ListeningSegmentModel,
+    ) {
+        if (next.chapter == session.segment.chapter) return
+        scope.launch {
+            chapterAudioRepository.refresh(
+                bibleVersionId = session.bibleVersionId,
+                chapter = session.segment.chapter,
+            )
+        }
     }
 
     private fun finish(finishedChapter: ChapterLocationModel) {
@@ -814,12 +845,16 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
-    // Why: the position read here is where a later resume picks up, so it is taken before the player pauses.
     private fun silencePlayer() {
+        stopFollowingPlayback()
+        audioPlayer.pause()
+    }
+
+    // Why: the position read here is where a later resume picks up, so it is taken before the player pauses.
+    private fun stopFollowingPlayback() {
         if (startedPlaybackId == playbackId) position = audioPlayer.position
         playbackId++
         playbackJob?.cancel()
-        audioPlayer.pause()
     }
 
     private fun ensureSleepTimerTicking() {
@@ -900,10 +935,14 @@ internal class ChapterListeningControllerImpl(
         if (session?.status == ListeningStatusModel.INTERRUPTED) resume()
     }
 
+    /*
+     * Why: the system already silenced the player, and on Android pausing it here would give the audio
+     * focus up for good, so the call ending would never be reported.
+     */
     private fun interrupt() {
         val current = session ?: return
         if (!current.isPlaying) return
-        silencePlayer()
+        stopFollowingPlayback()
         updateSession { it.copy(status = ListeningStatusModel.INTERRUPTED) }
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_INTERRUPTED,

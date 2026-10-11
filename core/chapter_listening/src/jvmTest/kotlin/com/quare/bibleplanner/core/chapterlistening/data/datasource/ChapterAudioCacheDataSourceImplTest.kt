@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.chapterlistening.data.datasource
 
+import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
 import com.quare.bibleplanner.core.chapterlistening.data.model.ChapterAudioCacheDirectory
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.buffered
@@ -196,6 +197,22 @@ internal class ChapterAudioCacheDataSourceImplTest {
         // Then
         assertTrue(SystemFileSystem.list(directory).isEmpty())
         assertNull(dataSource.find(genesisOne))
+    }
+
+    @Test
+    fun `GIVEN a manifest that cannot be written WHEN saving THEN leaves no audio file behind`() = runTest {
+        // Given
+        val dataSource = createDataSource(maxBytes = MAX_BYTES)
+        SystemFileSystem.createDirectories(Path(directory, "GEN_1.json"))
+
+        // When
+        assertFailsWith<ChapterAudioStorageException> {
+            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        }
+
+        // Then
+        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1.mp3")))
+        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1.mp3.part")))
     }
 
     private fun readIndex(): String = java.io.File(directory.toString(), "index.json").readText()

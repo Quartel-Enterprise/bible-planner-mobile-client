@@ -79,12 +79,20 @@ internal class ChapterAudioCacheDataSourceImpl(
         mutex.withLock {
             val audioPath = toAudioPath(fileName)
             val manifestPath = toManifestPath(fileName)
-            store {
-                SystemFileSystem.atomicMove(partialPath, audioPath)
-                writeText(
-                    path = manifestPath,
-                    text = manifest,
-                )
+            // Why: files that never make it into the index could never be evicted.
+            try {
+                store {
+                    SystemFileSystem.atomicMove(partialPath, audioPath)
+                    writeText(
+                        path = manifestPath,
+                        text = manifest,
+                    )
+                }
+            } catch (exception: ChapterAudioStorageException) {
+                listOf(partialPath, audioPath, manifestPath).forEach { path ->
+                    SystemFileSystem.delete(path, mustExist = false)
+                }
+                throw exception
             }
             val entry = ChapterAudioCacheEntryDto(
                 chapterKey = chapterKey,

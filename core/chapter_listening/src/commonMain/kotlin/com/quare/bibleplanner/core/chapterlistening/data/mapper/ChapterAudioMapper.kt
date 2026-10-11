@@ -8,10 +8,13 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class ChapterAudioMapper(
-    private val json: Json,
+    json: Json,
 ) {
+    // Why: a verse without a heading may leave the key out instead of sending null.
+    private val manifestJson = Json(json) { explicitNulls = false }
+
     fun map(cached: CachedChapterAudio): ChapterAudioModel {
-        val manifest = json.decodeFromString(ChapterAudioManifestDto.serializer(), cached.manifest)
+        val manifest = manifestJson.decodeFromString(ChapterAudioManifestDto.serializer(), cached.manifest)
         return ChapterAudioModel(
             audioPath = cached.audioPath,
             verses = manifest.verses.map { verse ->

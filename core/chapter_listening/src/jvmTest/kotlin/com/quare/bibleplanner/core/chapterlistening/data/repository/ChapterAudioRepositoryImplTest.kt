@@ -151,6 +151,60 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN an expired access token WHEN getting the audio THEN renews it and downloads the chapter`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                val isRenewed = request.headers[HttpHeaders.Authorization] == "Bearer renewed-token"
+                when {
+                    request.url.encodedPath.endsWith("/token") -> respondJson(RENEWED_SESSION)
+
+                    isRenewed || request.url.host == AUDIO_HOST -> respondOk()(request)
+
+                    else -> respondFunction(
+                        status = HttpStatusCode.Unauthorized,
+                        body = """{"error":"Unauthorized"}""",
+                    )(request)
+                }
+            },
+        )
+
+        // When
+        val result = repository.getChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        assertTrue(result is ChapterAudioResultModel.Ready)
+        assertEquals("Bearer renewed-token", requests.last().authorization)
+    }
+
+    @Test
+    fun `GIVEN a manifest that leaves out the headings WHEN getting the audio THEN reads the verses`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json")) {
+                    respondJson(MANIFEST.replace(""""heading":null,""", ""))
+                } else {
+                    respondOk()(request)
+                }
+            },
+        )
+
+        // When
+        val result = repository.getChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        val audio = (result as ChapterAudioResultModel.Ready).audio
+        assertEquals(null, audio.verses.first().headingStart)
+    }
+
+    @Test
     fun `GIVEN a 403 from the function WHEN getting the audio THEN says the version has no narration`() = runTest {
         // Given
         prepareScenario(
@@ -295,10 +349,10 @@ internal class ChapterAudioRepositoryImplTest {
         // Given
         prepareScenario(
             respond = { request ->
-                if (request.url.host == AUDIO_HOST) {
-                    respond(content = "", status = HttpStatusCode.Unauthorized)
-                } else {
-                    respondOk()(request)
+                when {
+                    request.url.host == AUDIO_HOST -> respond(content = "", status = HttpStatusCode.Unauthorized)
+                    request.url.encodedPath.endsWith("/token") -> respondJson(RENEWED_SESSION)
+                    else -> respondOk()(request)
                 }
             },
         )
@@ -419,6 +473,31 @@ internal class ChapterAudioRepositoryImplTest {
         // Then
         assertEquals(1, requests.size)
         assertTrue(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3")))
+    }
+
+    @Test
+    fun `GIVEN a check that failed offline WHEN refreshing again THEN asks the server again`() = runTest {
+        // Given
+        prepareScenario(respond = respondOk())
+        repository.getChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+        prepareScenario(respond = { throw IOException("offline") })
+        repository.refresh(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+        prepareScenario(respond = respondOk(revision = "1.0.0-2"))
+
+        // When
+        repository.refresh(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        assertTrue(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-2_GENESIS_1.mp3")))
     }
 
     @Test
@@ -561,6 +640,9 @@ internal class ChapterAudioRepositoryImplTest {
             """{"audio_url":"https://audio.test/A21/cast-pt-1/1.0.0-1/GENESIS/1.mp3",""" +
                 """"manifest_url":"https://audio.test/A21/cast-pt-1/1.0.0-1/GENESIS/1.json",""" +
                 """"duration_ms":14000,"cast":"pt-1"}"""
+        const val RENEWED_SESSION =
+            """{"access_token":"renewed-token","refresh_token":"renewed-refresh","expires_in":3600,""" +
+                """"token_type":"bearer","user":{"id":"user-1","aud":"authenticated"}}"""
         const val MANIFEST =
             """{"cast":"pt-1","audio_version":1,"duration_ms":14000,"title":null,"superscription":null,"verses":[""" +
                 """{"number":1,"start_ms":2000,"duration_ms":3500,"heading":null,"parts":[],"words":[[0,50,125]]},""" +

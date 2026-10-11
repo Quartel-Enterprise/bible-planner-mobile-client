@@ -54,12 +54,11 @@ internal class ChapterAudioRepositoryImpl(
         )
         val chapterKey = toChapterKey(request)
         findCached(chapterKey)?.let { cached -> return cached }
+        // Why: a chapter still being prefetched is awaited, not asked of the server a second time.
         return suspendRunCatching {
-            val response = remoteDataSource.fetchChapterAudio(request)
-            stateMutex.withLock { checkedChapterKeys += chapterKey }
             val cached = lockFor(chapterKey).withLock {
-                cacheDataSource.find(chapterKey) ?: save(
-                    response = response,
+                cacheDataSource.find(chapterKey) ?: download(
+                    request = request,
                     chapterKey = chapterKey,
                 )
             }
@@ -92,7 +91,11 @@ internal class ChapterAudioRepositoryImpl(
                     )
                 }
             }
-        }.onFailure { throwable -> Logger.w(throwable) { "Could not check the cached audio of $chapterKey" } }
+        }.onFailure { throwable ->
+            // Why: a check that failed (offline, say) is tried again the next time, not skipped until the next launch.
+            stateMutex.withLock { checkedChapterKeys -= chapterKey }
+            Logger.w(throwable) { "Could not check the cached audio of $chapterKey" }
+        }
     }
 
     override suspend fun evict(
@@ -132,8 +135,23 @@ internal class ChapterAudioRepositoryImpl(
         return suspendRunCatching { ChapterAudioResultModel.Ready(chapterAudioMapper.map(cached)) }
             .onFailure { throwable ->
                 Logger.e(throwable) { "Unreadable cached manifest of $chapterKey" }
-                cacheDataSource.remove(chapterKey)
+                suspendRunCatching { cacheDataSource.remove(chapterKey) }
+                    .onFailure { removeFailure ->
+                        Logger.e(removeFailure) { "Could not drop the audio of $chapterKey" }
+                    }
             }.getOrNull()
+    }
+
+    private suspend fun download(
+        request: ChapterAudioRequestDto,
+        chapterKey: String,
+    ): CachedChapterAudio {
+        val response = remoteDataSource.fetchChapterAudio(request)
+        stateMutex.withLock { checkedChapterKeys += chapterKey }
+        return save(
+            response = response,
+            chapterKey = chapterKey,
+        )
     }
 
     private suspend fun save(

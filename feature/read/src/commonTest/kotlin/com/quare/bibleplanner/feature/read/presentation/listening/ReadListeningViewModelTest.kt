@@ -272,6 +272,26 @@ internal class ReadListeningViewModelTest {
         }
 
     @Test
+    fun `GIVEN a refused session while still signed in WHEN tapping the unavailable action THEN retries it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                session = listeningSession(
+                    chapter = genesisOne,
+                    status = ListeningStatusModel.NEEDS_SIGN_IN,
+                ),
+                authenticatedUserId = "user-1",
+            )
+
+            // When
+            viewModel.onEvent(ReadListeningUiEvent.OnUnavailableActionClick)
+
+            // Then
+            assertEquals(listOf("togglePlayPause"), controller.calls)
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a chapter that needs a connection WHEN tapping the unavailable action THEN retries it`() =
         runTest(testDispatcher) {
             // Given
@@ -498,6 +518,7 @@ internal class ReadListeningViewModelTest {
         access: ChapterListeningAccessModel = ChapterListeningAccessModel.Open,
         isVerticalReadingEnabled: Boolean = false,
         isEnabled: Boolean = true,
+        authenticatedUserId: String? = null,
     ) {
         controller = FakeChapterListeningController(session = session)
         followRequests = ListeningFollowRequests()
@@ -556,6 +577,7 @@ internal class ReadListeningViewModelTest {
                             gate = gate,
                             navigator = navigator,
                             trackEvent = trackEvent,
+                            getAuthenticatedUserId = { authenticatedUserId },
                         ),
                         followRequests = followRequests,
                         navigator = navigator,

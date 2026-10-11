@@ -7,15 +7,18 @@ import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningControl
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningSurface
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 internal class ListeningPlaybackActions(
     private val controller: ChapterListeningController,
     private val gate: ChapterListeningGate,
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
+    private val getAuthenticatedUserId: GetAuthenticatedUserId,
 ) {
     fun togglePlayPause(surface: ListeningSurface) {
         val session = controller.state.value.session ?: return
@@ -40,18 +43,30 @@ internal class ListeningPlaybackActions(
         )
     }
 
-    // Why: the session only ends mid-listening when it expired, so the person goes straight to signing in again.
-    fun handleUnavailableAction(surface: ListeningSurface) {
+    /*
+     * Why: the server refuses a session that ended, so the person signs in again; one still signed in
+     * (the refused token was renewed since) only needs to try again.
+     */
+    fun handleUnavailableAction(
+        scope: CoroutineScope,
+        surface: ListeningSurface,
+    ) {
         val session = controller.state.value.session ?: return
         if (session.status != ListeningStatusModel.NEEDS_SIGN_IN) {
             togglePlayPause(surface)
             return
         }
-        trackEvent(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
-            params = mapOf(AnalyticsParams.SURFACE to surface.key),
-        )
-        navigator.navigate(LoginNavRoute(notifyResultViaSnackbar = true))
+        scope.launch {
+            if (getAuthenticatedUserId() != null) {
+                togglePlayPause(surface)
+                return@launch
+            }
+            trackEvent(
+                name = AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
+                params = mapOf(AnalyticsParams.SURFACE to surface.key),
+            )
+            navigator.navigate(LoginNavRoute(notifyResultViaSnackbar = true))
+        }
     }
 
     private fun toToggleControl(status: ListeningStatusModel): ListeningControl = when (status) {
