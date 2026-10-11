@@ -103,6 +103,8 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
             hasReportedFailure = false
         }
         if (loadedItem?.status != AVPlayerItemStatusReadyToPlay) {
+            // Why: a seek still pending on the replaced item must not clear this start when it completes.
+            seekCount++
             seekTarget = position
             pendingStartSpeed = speed
             return

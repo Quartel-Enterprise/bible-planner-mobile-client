@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
+import com.quare.bibleplanner.core.chapterlistening.domain.mapper.toListeningAnalyticsParams
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
@@ -14,7 +15,6 @@ import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.studyunlock.domain.model.StudyUnlockResultModel
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
@@ -118,11 +118,7 @@ internal class ChapterListeningGate(
     private fun trackFreeUnlock(chapter: ChapterLocationModel) {
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
-            params = mapOf(
-                AnalyticsParams.BOOK_ID to chapter.bookId.name
-                    .lowercase(),
-                AnalyticsParams.CHAPTER_NUMBER to chapter.chapterNumber,
-            ),
+            params = chapter.toListeningAnalyticsParams(),
         )
     }
 

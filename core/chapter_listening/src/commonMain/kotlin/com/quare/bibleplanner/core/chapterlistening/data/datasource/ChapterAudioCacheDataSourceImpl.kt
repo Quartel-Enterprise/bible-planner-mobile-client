@@ -146,7 +146,12 @@ internal class ChapterAudioCacheDataSourceImpl(
         val now = currentTimestampProvider.getCurrentTimestamp()
         val touched = entries.map { if (it == entry) it.copy(lastUsedAt = now) else it }
         if ((now - entry.lastUsedAt).milliseconds >= touchWriteInterval) {
-            writeEntries(touched)
+            // Why: the order is only a hint for eviction, so a full disk must not keep a cached chapter from playing.
+            try {
+                writeEntries(touched)
+            } catch (exception: IOException) {
+                Logger.w(exception) { "Could not save when a cached chapter was played" }
+            }
         } else {
             loadedEntries = touched
         }

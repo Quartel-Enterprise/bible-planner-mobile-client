@@ -238,6 +238,31 @@ internal class ChapterListeningPlayerViewModelTest {
         }
 
     @Test
+    fun `GIVEN a paused chapter WHEN skipping to a locked one THEN moves without spending an unlock`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                session = listeningSession(
+                    chapter = genesisTwo,
+                    status = ListeningStatusModel.PAUSED,
+                ),
+                access = ChapterListeningAccessModel.LimitReached(
+                    ListeningAllowanceModel(
+                        hasRewardedUnlocks = true,
+                        hasFreeUnlocks = true,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ChapterListeningPlayerUiEvent.OnNextChapterClick)
+
+            // Then
+            assertEquals(listOf("nextChapter"), controller.calls)
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the last chapter of the order WHEN skipping forward THEN does nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(session = listeningSession(chapter = genesisThree))

@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.chapterlistening.domain.controller
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTexts
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
+import com.quare.bibleplanner.core.chapterlistening.domain.mapper.toListeningAnalyticsParams
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
@@ -554,12 +555,8 @@ internal class ChapterListeningControllerImpl(
         )
     }
 
-    private fun toChapterParams(session: ListeningSessionModel): Map<String, Any> = mapOf(
-        AnalyticsParams.MODE to session.mode.key,
-        AnalyticsParams.BOOK_ID to session.segment.chapter.bookId.name
-            .lowercase(),
-        AnalyticsParams.CHAPTER_NUMBER to session.segment.chapter.chapterNumber,
-    )
+    private fun toChapterParams(session: ListeningSessionModel): Map<String, Any> =
+        mapOf(AnalyticsParams.MODE to session.mode.key) + session.segment.chapter.toListeningAnalyticsParams()
 
     private fun applySettings(settings: ChapterListeningSettingsModel) {
         state.update { it.copy(settings = settings) }
@@ -731,17 +728,34 @@ internal class ChapterListeningControllerImpl(
         if (current.verses.isEmpty() && loadJob?.isActive == true) {
             updateSession { it.copy(status = ListeningStatusModel.PREPARING) }
         } else if (current.verses.isEmpty()) {
-            launchLoad {
-                openSegment(
-                    session = current,
-                    leadingSilence = Duration.ZERO,
-                )
-            }
+            loadUnloaded(current)
         } else {
             playFrom(
                 start = position,
                 leadingSilence = Duration.ZERO,
             )
+        }
+    }
+
+    // Why: a chapter moved to while paused wasn't unlocked yet, so playing it goes through the unlock first.
+    private fun loadUnloaded(current: ListeningSessionModel) {
+        launchMove {
+            if (isOpen(current.segment)) {
+                startLoad {
+                    openSegment(
+                        session = current,
+                        leadingSilence = Duration.ZERO,
+                    )
+                }
+                return@launchMove
+            }
+            trackLocked(current.segment)
+            updateSession {
+                it.copy(
+                    status = ListeningStatusModel.NEXT_LOCKED,
+                    lockedSegment = current.segment,
+                )
+            }
         }
     }
 
@@ -793,16 +807,19 @@ internal class ChapterListeningControllerImpl(
                 current = current,
                 direction = direction,
             ) ?: return@launchMove
-            // Why: a skip from the notification or the headset cannot show the unlock, so it keeps the chapter playing.
-            if (!isOpen(target)) {
-                trackLocked(target)
-                return@launchMove
-            }
             val moved = current.copy(
                 segment = target,
                 chapterChangeCause = ChapterChangeCause.PLAYER,
             )
+            /*
+             * Why: a skip from the notification or the headset cannot show the unlock, so it keeps a
+             * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
+             */
             if (session?.isPlaying == true) {
+                if (!isOpen(target)) {
+                    trackLocked(target)
+                    return@launchMove
+                }
                 startLoad {
                     openSegment(
                         session = moved,
@@ -855,11 +872,7 @@ internal class ChapterListeningControllerImpl(
     private fun trackLocked(segment: ListeningSegmentModel) {
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_LOCKED,
-            params = mapOf(
-                AnalyticsParams.BOOK_ID to segment.chapter.bookId.name
-                    .lowercase(),
-                AnalyticsParams.CHAPTER_NUMBER to segment.chapter.chapterNumber,
-            ),
+            params = segment.chapter.toListeningAnalyticsParams(),
         )
     }
 
@@ -981,6 +994,10 @@ internal class ChapterListeningControllerImpl(
         silencePlayer()
         audio = null
         updateSession { it.copy(status = ListeningStatusModel.AUDIO_UNAVAILABLE) }
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
+            params = toChapterParams(current) + mapOf(AnalyticsParams.REASON to PLAYBACK_FAILED_REASON),
+        )
         if (isFileUnreadable && failedAudioPath != null) scope.launch { chapterAudioRepository.evict(failedAudioPath) }
     }
 
@@ -1067,5 +1084,6 @@ internal class ChapterListeningControllerImpl(
         const val RESTART_VERSE_PROGRESS = 0.25f
         const val SLEEP_TIMER_COUNTDOWN = "countdown"
         const val NO_VERSES_REASON = "no_verses"
+        const val PLAYBACK_FAILED_REASON = "playback_failed"
     }
 }

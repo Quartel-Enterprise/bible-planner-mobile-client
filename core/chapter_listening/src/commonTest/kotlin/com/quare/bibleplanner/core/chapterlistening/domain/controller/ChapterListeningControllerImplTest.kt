@@ -1241,6 +1241,51 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
+    fun `GIVEN a paused chapter WHEN skipping to a locked one and playing THEN asks to unlock it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisThree))
+            controller.startChapter(
+                chapter = genesisTwo,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            controller.nextChapter()
+
+            // When
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(ListeningStatusModel.NEXT_LOCKED, session?.status)
+            assertEquals(genesisThree, session?.lockedSegment?.chapter)
+            assertFalse(genesisThree in audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN a playback failure WHEN it fails THEN tracks the audio as unavailable`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        audioPlayer.emit(
+            ChapterAudioPlayerEvent.Failed(
+                playbackId = audioPlayer.plays.last().playbackId,
+                isFileUnreadable = false,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            "playback_failed",
+            trackedEvents.last { (name, _) -> name == "chapter_listening_audio_unavailable" }.second["reason"],
+        )
+    }
+
+    @Test
     fun `GIVEN a playback failing for another reason WHEN it fails THEN keeps the cached file`() =
         runTest(testDispatcher) {
             // Given

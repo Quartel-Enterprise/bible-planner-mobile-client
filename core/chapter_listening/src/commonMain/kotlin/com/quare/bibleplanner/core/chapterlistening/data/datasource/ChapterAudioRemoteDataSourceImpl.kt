@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioRequest
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioResponseDto
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioDownloadException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.SessionRenewalException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
 import com.quare.bibleplanner.core.user.domain.model.RemoteSessionState
@@ -28,7 +29,6 @@ import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -114,8 +114,11 @@ internal class ChapterAudioRemoteDataSourceImpl(
             if (auth.currentAccessTokenOrNull() != usedToken) return
             when (checkRemoteSessionState()) {
                 RemoteSessionState.ACTIVE -> Unit
+
                 RemoteSessionState.REVOKED -> throw NotSignedInException()
-                RemoteSessionState.UNKNOWN -> throw IOException("Could not renew the session")
+
+                // Why: a rate limit or an auth server error is not the missing connection an IOException reads as.
+                RemoteSessionState.UNKNOWN -> throw SessionRenewalException()
             }
         }
     }

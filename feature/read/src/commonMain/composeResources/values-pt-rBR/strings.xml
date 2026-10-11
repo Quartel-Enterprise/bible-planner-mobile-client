@@ -70,7 +70,7 @@
     <string name="listening_mini_finished">Capítulo concluído · toque para ouvir de novo</string>
     <string name="listening_mini_not_loaded">Pausado · toque em play para ouvir</string>
     <string name="listening_locked_title">Continuar em %1$s</string>
-    <string name="listening_locked_body">Libere com um vídeo ou com o Pro</string>
+    <string name="listening_locked_body">Libere para continuar ouvindo ou assine o Pro</string>
     <string name="listening_unlock">Liberar</string>
     <string name="listening_back_to_verse">Voltar ao versículo atual · %1$s</string>
     <string name="listening_finish_offer_title">%1$s concluído</string>

@@ -222,6 +222,21 @@ internal class ChapterAudioCacheDataSourceImplTest {
     }
 
     @Test
+    fun `GIVEN an index that cannot be saved WHEN finding a chapter played long ago THEN still serves it`() = runTest {
+        // Given
+        val dataSource = createDataSource(maxBytes = MAX_BYTES)
+        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        SystemFileSystem.createDirectories(Path(directory, "index.json.part"))
+        now = 2 * 60 * 60 * 1000L
+
+        // When
+        val cached = dataSource.find(genesisOne)
+
+        // Then
+        assertNotNull(cached)
+    }
+
+    @Test
     fun `GIVEN a saved chapter WHEN removing it THEN deletes its files`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)

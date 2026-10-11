@@ -70,7 +70,7 @@
     <string name="listening_mini_finished">Chapter finished · play to hear it again</string>
     <string name="listening_mini_not_loaded">Paused · tap play to listen</string>
     <string name="listening_locked_title">Continue in %1$s</string>
-    <string name="listening_locked_body">Unlock it with a video or with Pro</string>
+    <string name="listening_locked_body">Unlock it to keep listening, or get Pro</string>
     <string name="listening_unlock">Unlock</string>
     <string name="listening_back_to_verse">Back to the current verse · %1$s</string>
     <string name="listening_finish_offer_title">%1$s finished</string>

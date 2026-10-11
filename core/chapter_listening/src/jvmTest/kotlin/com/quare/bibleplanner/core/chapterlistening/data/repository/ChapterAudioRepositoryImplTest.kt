@@ -210,6 +210,36 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN an auth server error while renewing the session WHEN getting the audio THEN says it is unavailable`() =
+        runTest {
+            // Given
+            prepareScenario(
+                respond = { request ->
+                    if (request.url.encodedPath.endsWith("/token")) {
+                        respondFunction(
+                            status = HttpStatusCode.InternalServerError,
+                            body = """{"error":"down"}""",
+                        )(request)
+                    } else {
+                        respondFunction(
+                            status = HttpStatusCode.Unauthorized,
+                            body = """{"error":"Unauthorized"}""",
+                        )(request)
+                    }
+                },
+            )
+
+            // When
+            val result = repository.loadChapterAudio(
+                bibleVersionId = "A21",
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE), result)
+        }
+
+    @Test
     fun `GIVEN a manifest that leaves out the headings WHEN getting the audio THEN reads the verses`() = runTest {
         // Given
         prepareScenario(

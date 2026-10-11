@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListenin
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -118,7 +119,10 @@ internal class ChapterListeningPlayerViewModel(
         }
     }
 
-    // Why: asking before moving keeps the current chapter playing when the next one turns out locked.
+    /*
+     * Why: asking before moving keeps the current chapter playing when the next one turns out locked;
+     * while paused the move only looks ahead, so the day's unlock is asked for when it is played.
+     */
     private fun openAdjacentChapter(
         control: ListeningControl,
         chapter: ChapterLocationModel?,
@@ -131,9 +135,16 @@ internal class ChapterListeningPlayerViewModel(
                 AnalyticsParams.SURFACE to ListeningSurface.PLAYER.key,
             ),
         )
+        val target = chapter ?: return
+        val status = controller.state.value.session
+            ?.status
+        if (status != ListeningStatusModel.PLAYING && status != ListeningStatusModel.PREPARING) {
+            open()
+            return
+        }
         gate.request(
             scope = viewModelScope,
-            chapter = chapter ?: return,
+            chapter = target,
             onAllowed = open,
         )
     }
