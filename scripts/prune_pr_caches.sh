@@ -72,10 +72,11 @@ if [ "$CLOSED" = true ]; then
     [ "$#" -eq 0 ] || usage
     REF="the closed pull requests"
     RUN_START=""
-    # One listing of the repository and one of the open pull requests, whose entries are left out;
-    # either call failing fails the script rather than widening the sweep.
-    OPEN=$(gh pr list --state open --limit 1000 --json number --jq '[.[].number]')
+    # One listing of the repository, then one of the open pull requests, whose entries are left
+    # out; either call failing fails the script rather than widening the sweep. The cache first: a
+    # pull request opened between the two calls can only have entries newer than the listing.
     LISTING=$(gh cache list --limit 1000 --json id,key,ref,version,sizeInBytes,createdAt,lastAccessedAt)
+    OPEN=$(gh pr list --state open --limit 1000 --json number --jq '[.[].number]')
     ENTRIES=$(jq --argjson open "$OPEN" '
         map(select((.ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n | tonumber) as $n | ($open | index($n)) == null))' <<< "$LISTING")
 else
