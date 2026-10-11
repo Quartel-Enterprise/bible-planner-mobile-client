@@ -90,16 +90,15 @@ internal class ReadingPlanUiTest {
 ./gradlew :feature:reading_plan:connectedAndroidDeviceTest
 ```
 
-`scripts/ui_test_shard.sh` prints those tasks for every module that has device tests, which is
-what CI runs (`desktop`, `connected` or `ios`), and with `--run` hands them to Gradle itself along
-with any arguments that follow, the way the workflow does:
+`scripts/ui_test_shard.sh` runs those tasks for every module that has device tests, which is what
+CI runs (`desktop`, `connected` or `ios`), with any Gradle arguments that follow the shard:
 
 ```bash
-./scripts/ui_test_shard.sh --run desktop 0 1 -PuiTests=only
+./scripts/ui_test_shard.sh desktop 0 1 -PuiTests=only
 ```
 
 ```bash
-./scripts/ui_test_shard.sh --run connected 0 1
+./scripts/ui_test_shard.sh connected 0 1
 ```
 
 ## On an Android device

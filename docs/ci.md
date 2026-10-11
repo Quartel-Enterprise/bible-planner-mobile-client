@@ -199,16 +199,16 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
   to add one, add the next index to `matrix.shard`, since the workflow passes the size of the
   matrix (`strategy.job-total`) to the script as the count. `:shared` is on its own because its
   [end-to-end flows](testing/end-to-end-tests.md) drive the whole app from launch and are by far
-  the longest module on the device, several times any screen module, so no shard can finish before
-  it. The screen modules together take longer than `:shared`, so the layout needs at least three
-  shards to pay: measured in October 2026, `:shared` took 3 to 4 minutes, the nine screen modules
-  about 6 together, and the shard that held `:shared` with four of them ran 2 to 3 minutes longer
-  than the other one on every run. A shard with no module makes the script fail; the steps call it
-  with `--run`, which hands Gradle the tasks itself, since `./gradlew` with no task would run
-  `help` and pass without a test. A shard assembles its test APKs before the emulator boots: that
-  gives Gradle all four cores, and a compile error fails the job before the SDK download and the
-  boot. The emulator and its system image are installed in their own step, with three attempts,
-  because the emulator runner fails the job on the first corrupt download. The tests run with
+  the longest module on the device, several times any screen module, so no layout can make the job
+  finish sooner than `:shared` alone takes. The screen modules together take longer than
+  `:shared`, so the layout needs at least three shards to pay: measured in October 2026, `:shared`
+  took 3 to 4 minutes, the nine screen modules about 6 together, and the shard that held `:shared`
+  with four of them ran 2 to 3 minutes longer than the other one on every run. The script runs
+  Gradle itself and fails on a shard with no module: `./gradlew` with no task would run `help` and
+  pass without a test. A shard assembles its test APKs before the emulator boots: that gives
+  Gradle all four cores, and a compile error fails the job before the SDK download and the boot.
+  The emulator and its system image are installed in their own step, with three attempts, because
+  the emulator runner fails the job on the first corrupt download. The tests run with
   `--max-workers=1`, so one module at a time drives the emulator and the log stays readable. The
   step has a 25-minute timeout, under the job's 45: a hung run then still uploads its reports.
 - **`ios`** runs the same modules on the iOS simulator of a `macos-latest` runner, which costs
