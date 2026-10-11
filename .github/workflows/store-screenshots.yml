@@ -8,7 +8,8 @@ name: store screenshots
 # to republish the Play listing between releases, or to validate a change to the generators.
 #
 # Rendering and uploading are separate jobs: the render is the slow half and Play's API the flaky
-# one, so re-running a failed upload sends the images that were already rendered.
+# one, so re-running a failed upload sends the images that were already rendered. The upload is one
+# job per locale, so a locale Play refused is the only one sent again.
 on:
   workflow_dispatch:
     inputs:
@@ -30,6 +31,8 @@ jobs:
     name: Render
     runs-on: ubuntu-latest
     environment: Production
+    outputs:
+      locales: ${{ steps.locales.outputs.locales }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -52,7 +55,13 @@ jobs:
       - name: Render the screenshots
         run: ./gradlew stagePlayStoreScreenshots
 
-      # What the upload job sends, and what is left to look at after a validate-only run. Only the
+      # The upload jobs' matrix, as a JSON array: read off what was staged, so the list of locales
+      # lives in the root build.gradle.kts alone (playStoreLocales).
+      - name: List the staged locales
+        id: locales
+        run: echo "locales=$(find fastlane/metadata/android -mindepth 2 -maxdepth 2 -type d -name images | awk -F/ '{ print $(NF - 1) }' | sort | jq -Rcn '[inputs]')" >> "$GITHUB_OUTPUT"
+
+      # What the upload jobs send, and what is left to look at after a validate-only run. Only the
       # images: the listing copy next to them is versioned, so the upload job has it from its own
       # checkout. The App Store shots are rendered on the iOS simulator, so they are staged by the
       # release's macOS job, not here.
@@ -64,11 +73,21 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+  # One job per locale: supply sends a locale's screenshots through a Play edit of its own and
+  # commits it at the end, so a locale Play refuses costs that locale alone — 2.12.1's upload lost
+  # all five to a 5xx on es-419's 21st image — and "Re-run failed jobs" sends only it again. They
+  # run one after the other because Play keeps a single edit active per app: two uploads at once
+  # would step on each other's.
   upload:
-    name: Upload to Google Play
+    name: Upload ${{ matrix.locale }} to Google Play
     needs: render
     runs-on: ubuntu-latest
     environment: Production
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(needs.render.outputs.locales) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -88,16 +107,17 @@ jobs:
           PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
         run: printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
 
-      # The artifact is rooted at the locales, so it lands back where the render job staged it.
+      # The artifact is rooted at the locales, so it lands back where the render job staged it. The
+      # whole of it: the lane picks this job's locale out.
       - name: Download the rendered screenshots
         uses: actions/download-artifact@v8
         with:
           name: store-screenshots
           path: fastlane/metadata/android
 
-      # Only the listing assets — no artifact, no track, no metadata.
+      # Only the listing assets of this locale — no artifact, no track, no metadata.
       - name: Upload the screenshots to Google Play
-        run: fastlane android upload_screenshots skip_render:true
+        run: fastlane android upload_screenshots skip_render:true locale:${{ matrix.locale }}
         env:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           VALIDATE_ONLY: ${{ inputs.validate_only }}

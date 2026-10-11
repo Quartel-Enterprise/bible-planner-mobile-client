@@ -11,6 +11,7 @@ opt_out_usage
 skip_docs
 
 require "json"
+require "tmpdir"
 
 APP_BUNDLE_ID    = "com.quare.bibleplanner.BiblePlanner".freeze
 WIDGET_BUNDLE_ID = "com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget".freeze
@@ -27,12 +28,17 @@ PLAY_API_APP_URL = "https://androidpublisher.googleapis.com/androidpublisher/v3/
 PLAY_CHANGELOG_MAX_CHARS = 500
 APP_STORE_RELEASE_NOTES_MAX_CHARS = 4000
 
-# How often, and how far apart, the App Store screenshot upload is tried again when App Store
-# Connect has not yet finished deleting the screenshot sets it replaces — see
-# retrying_screenshot_set_race.
+# How often, and how far apart, a store's screenshot upload is tried again — see retrying_on and
+# the two upload_screenshots lanes. App Store Connect has not always finished deleting the
+# screenshot sets deliver replaces:
 SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
 SCREENSHOT_SET_RACE_ATTEMPTS = 3
 SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
+# And Google Play's API answers a 5xx now and then, which supply reports as the server's error once
+# its own HTTP retries run out:
+PLAY_SERVER_ERROR_MESSAGE = "Google Api Error: Server error".freeze
+PLAY_SERVER_ERROR_ATTEMPTS = 3
+PLAY_SERVER_ERROR_WAIT_SECONDS = 30
 
 # Appended on its own line when items had to be dropped to fit the limit.
 TRUNCATION_SUFFIX = {
@@ -263,26 +269,41 @@ platform :android do
   desc "Runs whenever: Play keeps the listing separate from the release, so this needs no version."
   desc "Options: skip_render (true|false) — upload what is already staged under"
   desc "fastlane/metadata/android/, which is how CI hands over the images a job of its own rendered."
+  desc "locale (e.g. es-419) — upload that locale's screenshots alone and leave the other locales as"
+  desc "they are; CI runs one upload per locale, so a locale Play refused is sent again on its own."
   lane :upload_screenshots do |options|
     repo_root = File.expand_path("..")
     metadata_path = File.join(repo_root, "fastlane/metadata/android")
 
     gradle(task: "stagePlayStoreScreenshots", project_dir: repo_root) unless options[:skip_render]
-    ensure_screenshots_staged(File.join(metadata_path, "*", "images", "*", "*.png"))
 
-    upload_to_play_store(
-      package_name: ANDROID_PACKAGE,
-      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
-      metadata_path: metadata_path,
-      # Listing assets only: no artifact, no track, nothing else about the listing.
-      skip_upload_aab: true,
-      skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: false,
-      validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
-    )
+    with_locale_only(metadata_path, options[:locale]) do |path|
+      ensure_screenshots_staged(File.join(path, "*", "images", "*", "*.png"))
+
+      # supply sends everything through one Play edit and commits it at the end, so a failure —
+      # 2.12.1's upload died on a 5xx from Play's API at es-419's 21st image, after supply's own
+      # HTTP retries — throws the whole edit away and the next attempt starts over: there is no
+      # partial state to clean up first.
+      retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+        upload_to_play_store(
+          package_name: ANDROID_PACKAGE,
+          json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
+          metadata_path: path,
+          # Listing assets only: no artifact, no track, nothing else about the listing.
+          skip_upload_aab: true,
+          skip_upload_apk: true,
+          skip_upload_metadata: true,
+          skip_upload_changelogs: true,
+          skip_upload_images: true,
+          skip_upload_screenshots: false,
+          # Compares each staged image's SHA-256 with what Play holds and sends only the ones that
+          # differ, in place of clearing every shelf and uploading all of them: a release whose
+          # screenshots did not change, or a re-run of an upload that already landed, sends nothing.
+          sync_image_upload: true,
+          validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
+        )
+      end
+    end
   end
 
   desc "Upload the Play Data safety form from fastlane/metadata/android/data_safety.csv"
@@ -513,6 +534,9 @@ platform :ios do
   desc "before the release submits. APP_VERSION names the editable version, created if missing."
   desc "Options: skip_render (true|false) — upload what is already staged under"
   desc "fastlane/screenshots/, which is how CI hands over the images a job of its own rendered."
+  desc "locale (e.g. es-MX) — upload that locale's screenshots alone and leave the other locales as"
+  desc "they are, without the tidy-up and the check of `finish_screenshots`; CI runs one upload per"
+  desc "locale and `finish_screenshots` once after the last of them."
   lane :upload_screenshots do |options|
     repo_root = File.expand_path("..")
     screenshots_path = File.join(repo_root, "fastlane/screenshots")
@@ -527,43 +551,29 @@ platform :ios do
 
     # Renders every screen on the iOS simulator first, so this needs a Mac with Xcode.
     gradle(task: "stageAppStoreScreenshots", project_dir: repo_root) unless options[:skip_render]
-    ensure_screenshots_staged(File.join(screenshots_path, "*", "*.png"))
 
+    if options[:locale]
+      upload_app_store_screenshots(api_key, screenshots_path, options[:locale])
+      next
+    end
+
+    # Run by hand for every locale at once, this is also the last upload: tidy up and check the
+    # version here, the way CI's finish job does after its last per-locale upload. The check runs
+    # even when the upload failed, since that is when a locale can be left empty; the dedupe only
+    # after an upload that landed, so an error of its own never hides the upload's.
     begin
-      retrying_screenshot_set_race do
-        upload_to_app_store(
-          api_key: api_key,
-          app_identifier: APP_BUNDLE_ID,
-          # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
-          # unset, deliver falls back to the latest editable version.
-          app_version: ENV["APP_VERSION"],
-          screenshots_path: screenshots_path,
-          # Listing assets only: no binary, no metadata, no review submission.
-          skip_binary_upload: true,
-          skip_metadata: true,
-          skip_screenshots: false,
-          submit_for_review: false,
-          force: true,
-          precheck_include_in_app_purchases: false,
-          overwrite_screenshots: true,
-        )
-      end
-
+      upload_app_store_screenshots(api_key, screenshots_path, nil)
       dedupe_app_store_screenshots
     ensure
-      # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
-      # so a run that fails partway — like the "Screenshot Set Already Exists!" race once its
-      # retries run out — can leave a locale with none at all. The workflow
-      # hands this to the `submit` lane's job, which then skips submit_for_review instead of having
-      # Apple reject the review submission outright with a bare "is not in valid state".
       report_app_store_screenshots_completeness(app_store_listing_locales)
     end
   end
 
-  desc "Remove duplicate screenshots from the editable App Store version, keeping each shelf's first."
-  desc "deliver re-uploads a screenshot when App Store Connect has not yet published its checksum,"
-  desc "so an upload that in fact landed comes out twice; upload_screenshots runs this itself."
-  lane :dedupe_screenshots do
+  desc "Tidy the editable App Store version up once upload_screenshots has run for every locale:"
+  desc "remove the duplicate screenshots deliver leaves behind, keeping each shelf's first, and report"
+  desc "whether every locale still has screenshots at all. CI runs it after the last per-locale upload;"
+  desc "run it by hand while a version is editable."
+  lane :finish_screenshots do
     app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -571,7 +581,7 @@ platform :ios do
       is_key_content_base64: true,
       set_spaceship_token: true,
     )
-    dedupe_app_store_screenshots
+    finish_app_store_screenshots
   end
 end
 
@@ -664,24 +674,86 @@ rescue => e
   nil
 end
 
+# Yields `path` as it is when `locale` is nil, or a temporary copy of it holding only `locale`'s
+# folder: supply and deliver both upload every locale they find under the folder they are given and
+# leave the others alone, so this is how one lane uploads either the whole listing or one locale of
+# it. A locale with no folder stops here, before anything reaches the store.
+def with_locale_only(path, locale)
+  return yield(path) if locale.nil?
+
+  source = File.join(path, locale)
+  unless File.directory?(source)
+    staged = File.directory?(path) ? Dir.children(path).select { |name| File.directory?(File.join(path, name)) }.sort : []
+    UI.user_error!("No staged screenshots for #{locale} under #{path} (staged: #{staged.empty? ? 'nothing' : staged.join(', ')})")
+  end
+
+  Dir.mktmpdir("screenshots-#{locale}-") do |dir|
+    FileUtils.cp_r(source, File.join(dir, locale))
+    yield(dir)
+  end
+end
+
+# Uploads the staged App Store screenshots — every locale, or `locale` alone — to the editable
+# version, creating it when APP_VERSION names one that does not exist yet.
+#
 # deliver deletes the version's screenshots and then recreates each locale's screenshot sets, but
 # App Store Connect finishes deleting a set a little after it reports it gone. A set recreated too
 # soon is refused with "Screenshot Set Already Exists!" (2.9.1 and 2.10.0 both lost their release
 # submission to it) and deliver gives up on the whole upload. Waiting and running deliver again
-# recovers: it deletes whatever the failed attempt uploaded and starts over on settled sets. Any
-# other error, or the race outlasting every attempt, is raised as before.
-def retrying_screenshot_set_race
+# recovers: it deletes whatever the failed attempt uploaded and starts over on settled sets.
+def upload_app_store_screenshots(api_key, screenshots_path, locale)
+  with_locale_only(screenshots_path, locale) do |path|
+    ensure_screenshots_staged(File.join(path, "*", "*.png"))
+
+    retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
+      upload_to_app_store(
+        api_key: api_key,
+        app_identifier: APP_BUNDLE_ID,
+        # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
+        # unset, deliver falls back to the latest editable version.
+        app_version: ENV["APP_VERSION"],
+        screenshots_path: path,
+        # Listing assets only: no binary, no metadata, no review submission.
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: false,
+        submit_for_review: false,
+        force: true,
+        precheck_include_in_app_purchases: false,
+        overwrite_screenshots: true,
+      )
+    end
+  end
+end
+
+# What comes after the last screenshot upload: the duplicates deliver leaves behind go, and the
+# version is checked for a locale left with no screenshots at all. The check runs even when the
+# dedupe fails, since it is what keeps the `submit` lane's job from a submission Apple would reject.
+def finish_app_store_screenshots
+  dedupe_app_store_screenshots
+ensure
+  # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
+  # so an upload that failed partway — the "Screenshot Set Already Exists!" race once its retries
+  # ran out, say — can leave a locale with none at all. The workflow hands this to the `submit`
+  # lane's job, which then skips submit_for_review instead of having Apple reject the review
+  # submission outright with a bare "is not in valid state".
+  report_app_store_screenshots_completeness(app_store_listing_locales)
+end
+
+# Runs the block again when it fails with an error whose message includes `message`: `attempts`
+# times in all, `wait_seconds` apart. Any other error, or the last attempt failing, is raised as
+# before.
+def retrying_on(message, attempts:, wait_seconds:)
   attempt = 1
   begin
     yield
   rescue => e
-    raise unless e.message.include?(SCREENSHOT_SET_RACE_MESSAGE) && attempt < SCREENSHOT_SET_RACE_ATTEMPTS
+    raise unless e.message.include?(message) && attempt < attempts
 
     UI.important(
-      "App Store Connect still holds a deleted screenshot set (attempt #{attempt} of " \
-      "#{SCREENSHOT_SET_RACE_ATTEMPTS}), uploading again in #{SCREENSHOT_SET_RACE_WAIT_SECONDS}s",
+      "#{e.message.lines.first.strip} (attempt #{attempt} of #{attempts}), trying again in #{wait_seconds}s",
     )
-    sleep(SCREENSHOT_SET_RACE_WAIT_SECONDS)
+    sleep(wait_seconds)
     attempt += 1
     retry
   end
