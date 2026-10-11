@@ -55,14 +55,17 @@ usage() {
 }
 
 DRY_RUN=false
-if [ "${1:-}" = "--dry-run" ]; then
-    DRY_RUN=true
-    shift
-fi
 ALL=false
-if [ "${1:-}" = "--all" ]; then
-    ALL=true
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --dry-run) DRY_RUN=true ;;
+        --all) ALL=true ;;
+        --*) usage ;;
+        *) break ;;
+    esac
     shift
+done
+if [ "$ALL" = true ]; then
     [ "$#" -eq 1 ] || usage
     REF="$1"
     RUN_START=""
@@ -115,7 +118,8 @@ if [ -z "$TO_DELETE" ]; then
 fi
 
 TOTAL_MB=$(awk -F'\t' '{ sum += $2 } END { print sum }' <<< "$TO_DELETE")
-KEPT_MB=$(jq '[.[] | select(.delete | not) | .sizeInBytes] | add // 0 | . / 1000000 | round' <<< "$CLASSIFIED")
+# What stays in the scope, the entries of other workflows included.
+KEPT_MB=$(jq --argjson deleted "$TOTAL_MB" '([.[].sizeInBytes] | add // 0 | . / 1000000 | round) - $deleted' <<< "$ENTRIES")
 echo "Deleting $(wc -l <<< "$TO_DELETE" | tr -d ' ') entries, $TOTAL_MB MB, of $REF; keeping $KEPT_MB MB"
 printf '%s\n' "$TO_DELETE" | awk -F'\t' '{ printf "  %5d MB  created %s  accessed %s  %s\n", $2, $3, $4, $5 }'
 
