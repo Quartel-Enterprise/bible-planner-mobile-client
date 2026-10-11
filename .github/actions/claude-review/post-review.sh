@@ -37,7 +37,10 @@ run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GI
 [ -n "${GITHUB_RUN_ID:-}" ] || run_url=""
 head_sha=${PR_HEAD_SHA:-}
 base_sha=${PR_BASE_SHA:-}
-started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Two minutes early: the runner's clock may be ahead of GitHub's, and a review that GitHub took just
+# before has to count (see post).
+started=$(date -u -d '2 minutes ago' +%Y-%m-%dT%H:%M:%SZ 2> /dev/null || date -u -v-2M +%Y-%m-%dT%H:%M:%SZ)
+export WORKSPACE=${GITHUB_WORKSPACE:-}
 
 warn() { echo "::warning::$*" >&2; }
 
@@ -45,7 +48,9 @@ warn() { echo "::warning::$*" >&2; }
 # Known before anything is posted, so every review carries its commit and can be recognised later.
 if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
   if shas=$(gh pr view "$pr" --repo "$repo" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid' 2>&1); then
-    read -r head_sha base_sha <<< "$shas"
+    read -r current_head current_base <<< "$shas"
+    head_sha=${head_sha:-$current_head}
+    base_sha=${base_sha:-$current_base}
   else
     warn "The pull request's commits couldn't be read ($(tr '\n' ' ' <<< "$shas" | cut -c1-200))."
   fi
@@ -71,7 +76,8 @@ input=$(cat)
 # review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit
 # since the script started means GitHub took the request whose answer was lost, and counts as posted.
 # A 422, GitHub refusing the payload, returns 22 right away so the caller can post the findings
-# another way.
+# another way; a body-only review refused with its commit (gone after a force-push) is posted once
+# more on the pull request's current head instead.
 post() {
   local payload attempt out already
   payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)')
@@ -81,6 +87,11 @@ post() {
       return 0
     fi
     if grep -q 'HTTP 422' <<< "$out"; then
+      if jq -e 'has("commit_id") and (has("comments") | not)' <<< "$payload" > /dev/null; then
+        warn "GitHub refused the review on the reviewed commit, so it was posted on the pull request's current head."
+        payload=$(jq -c 'del(.commit_id)' <<< "$payload")
+        continue
+      fi
       echo "$out" >&2
       return 22
     fi
@@ -103,7 +114,9 @@ fi
 
 # One shape for every finding; a number given as text still counts.
 findings=$(jq -c '[.[] | select(type == "object") | {
-    path: ((.path // .file) | if type == "string" and . != "" then . else null end),
+    path: ((.path // .file)
+      | if type == "string" then (if env.WORKSPACE != "" then ltrimstr(env.WORKSPACE + "/") else . end) | ltrimstr("./") else null end
+      | if . == "" then null else . end),
     line: ((.line // .end_line) | tonumber? // null),
     start_line: ((.start_line // null) | tonumber? // null),
     body: ((.body // (

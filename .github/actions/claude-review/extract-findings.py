@@ -9,18 +9,30 @@ import re
 import sys
 
 text = sys.stdin.read()
-candidates = [
-    match.group(1)
-    for match in re.finditer(r"```[ \t]*json[ \t]*\r?\n(.*?)(?:\r?\n[ \t]*```|\Z)", text, re.I | re.S)
-]
+opening = re.compile(r"^[ \t]*```[ \t]*json[ \t]*$", re.I)
+closing = re.compile(r"^[ \t]*```[ \t]*$")
+candidates = []
+block = None
+for line in text.splitlines():
+    if block is None:
+        if opening.match(line):
+            block = []
+    elif closing.match(line):
+        candidates.append("\n".join(block))
+        block = None
+    elif line.rstrip().endswith("```"):
+        block.append(line.rstrip()[:-3])
+        candidates.append("\n".join(block))
+        block = None
+    else:
+        block.append(line)
+if block is not None:
+    candidates.append("\n".join(block))
 candidates.reverse()
 candidates.append(text)
 for candidate in candidates:
-    candidate = candidate.strip()
-    if candidate.endswith("```"):
-        candidate = candidate[:-3].rstrip()
     try:
-        value = json.loads(candidate)
+        value = json.loads(candidate.strip())
     except ValueError:
         continue
     if isinstance(value, list):

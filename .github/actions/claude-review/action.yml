@@ -76,7 +76,8 @@ runs:
     # listed findings GitHub couldn't anchor to a line.
     # The list is a help, not a condition: a GitHub error here only leaves it short. gh runs its --jq
     # filters with gojq, whose regexes (RE2) have no lookahead, so the numbered findings of a review
-    # body are grouped paragraph by paragraph instead.
+    # body are grouped paragraph by paragraph instead; only a paragraph in post-review.sh's own form
+    # ("1. `path:line`" or "1. (no file)") starts a finding, a numbered list inside one doesn't.
     - id: earlier
       shell: bash
       env:
@@ -93,7 +94,7 @@ runs:
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
               | .body | select(test("^### Code review\\s+[0-9]+ finding"))
               | split("\n\n")[1:]
-              | reduce .[] as $paragraph ([]; if ($paragraph | test("^[0-9]+\\. ")) then . + [$paragraph]
+              | reduce .[] as $paragraph ([]; if ($paragraph | test("^[0-9]+\\. (`|\\(no file\\))")) then . + [$paragraph]
                   elif length > 0 then .[-1] += " " + $paragraph else . end)
               | .[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
             || echo "::warning::The earlier review bodies couldn't be read, so the review isn't told about them." >&2
