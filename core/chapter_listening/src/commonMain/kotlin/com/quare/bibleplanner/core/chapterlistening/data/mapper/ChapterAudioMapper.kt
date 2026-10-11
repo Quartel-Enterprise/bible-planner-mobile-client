@@ -16,19 +16,24 @@ internal class ChapterAudioMapper(
     fun parse(manifest: String): ChapterAudioManifestDto =
         manifestJson.decodeFromString(ChapterAudioManifestDto.serializer(), manifest)
 
-    fun map(cached: CachedChapterAudio): ChapterAudioModel {
-        val manifest = parse(cached.manifest)
-        return ChapterAudioModel(
-            audioPath = cached.audioPath,
-            verses = manifest.verses.map { verse ->
-                ChapterAudioVerseModel(
-                    number = verse.number,
-                    headingStart = verse.heading?.startMs?.milliseconds,
-                    start = verse.startMs.milliseconds,
-                    end = (verse.startMs + verse.durationMs).milliseconds,
-                )
-            },
-            duration = manifest.durationMs.milliseconds,
-        )
-    }
+    fun map(cached: CachedChapterAudio): ChapterAudioModel = map(
+        audioPath = cached.audioPath,
+        manifest = parse(cached.manifest),
+    )
+
+    fun map(
+        audioPath: String,
+        manifest: ChapterAudioManifestDto,
+    ): ChapterAudioModel = ChapterAudioModel(
+        audioPath = audioPath,
+        verses = manifest.verses.map { verse ->
+            ChapterAudioVerseModel(
+                number = verse.number,
+                headingStart = verse.heading?.startMs?.milliseconds,
+                start = verse.startMs.milliseconds,
+                end = (verse.startMs + verse.durationMs).milliseconds,
+            )
+        },
+        duration = manifest.durationMs.milliseconds,
+    )
 }

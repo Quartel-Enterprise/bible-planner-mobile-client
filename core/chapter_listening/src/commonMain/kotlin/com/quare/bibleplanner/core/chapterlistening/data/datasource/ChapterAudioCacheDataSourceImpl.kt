@@ -75,6 +75,8 @@ internal class ChapterAudioCacheDataSourceImpl(
         writeAudio: suspend (Path) -> Unit,
     ): CachedChapterAudio = withContext(ioDispatcher) {
         val partialPath = Path(directory.path, "$fileName$PARTIAL_EXTENSION")
+        // Why: the first read of a launch sweeps unknown files, so it must run before this file is written.
+        onDisk { loadEntries() }
         storeChapterAudio { SystemFileSystem.createDirectories(directory.path) }
         var isIndexed = false
         /*
@@ -182,18 +184,13 @@ internal class ChapterAudioCacheDataSourceImpl(
         loadedEntries ?: readEntries().also { loadedEntries = it }
 
     /*
-     * Why: the index is read once per launch, by the find that precedes every download, so no file
-     * is being written or played yet; files it doesn't know about (replaced revisions, downloads cut
-     * short by the app being killed, everything when it can't be read) could never be evicted.
+     * Why: the index is read once per launch, before any file is written (save reads it first) or
+     * played; files it doesn't know about (replaced revisions, downloads cut short by the app being
+     * killed, everything when it is missing or can't be read) could never be evicted.
      */
     private fun readEntries(): List<ChapterAudioCacheEntryDto> {
-        if (!SystemFileSystem.exists(indexPath)) return emptyList()
-        val entries = try {
-            json.decodeFromString(ChapterAudioCacheIndexDto.serializer(), readText(indexPath)).entries
-        } catch (exception: SerializationException) {
-            Logger.w(exception) { "Unreadable chapter audio cache index, clearing the cache" }
-            emptyList()
-        }
+        if (!SystemFileSystem.exists(directory.path)) return emptyList()
+        val entries = if (SystemFileSystem.exists(indexPath)) readIndexEntries() else emptyList()
         val knownNames = entries
             .flatMap { entry ->
                 listOf(toAudioPath(entry.fileName).name, toManifestPath(entry.fileName).name)
@@ -203,6 +200,13 @@ internal class ChapterAudioCacheDataSourceImpl(
             .filter { path -> path.name !in knownNames }
             .forEach { path -> SystemFileSystem.delete(path, mustExist = false) }
         return entries
+    }
+
+    private fun readIndexEntries(): List<ChapterAudioCacheEntryDto> = try {
+        json.decodeFromString(ChapterAudioCacheIndexDto.serializer(), readText(indexPath)).entries
+    } catch (exception: SerializationException) {
+        Logger.w(exception) { "Unreadable chapter audio cache index, clearing the cache" }
+        emptyList()
     }
 
     private fun writeEntries(entries: List<ChapterAudioCacheEntryDto>) {

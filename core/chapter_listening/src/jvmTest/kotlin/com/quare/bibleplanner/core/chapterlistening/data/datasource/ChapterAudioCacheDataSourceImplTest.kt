@@ -254,6 +254,20 @@ internal class ChapterAudioCacheDataSourceImplTest {
         }
 
     @Test
+    fun `GIVEN files left without an index WHEN the next launch reads the cache THEN deletes them`() = runTest {
+        // Given
+        SystemFileSystem.createDirectories(directory)
+        SystemFileSystem.sink(Path(directory, "GEN_1.mp3.part")).buffered().use { it.writeString("half") }
+
+        // When
+        val cached = createDataSource(maxBytes = MAX_BYTES).find(genesisOne)
+
+        // Then
+        assertNull(cached)
+        assertTrue(SystemFileSystem.list(directory).isEmpty())
+    }
+
+    @Test
     fun `GIVEN a saved chapter WHEN removing it THEN deletes its files`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
@@ -359,6 +373,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a manifest that cannot be written WHEN saving THEN leaves no audio file behind`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
+        dataSource.find(genesisTwo)
         SystemFileSystem.createDirectories(Path(directory, "GEN_1.json"))
 
         // When

@@ -23,14 +23,12 @@ internal class AndroidChapterAudioPlayer(
     private val eventChannel = Channel<ChapterAudioPlayerEvent>(Channel.UNLIMITED)
     override val events: Flow<ChapterAudioPlayerEvent> = eventChannel.receiveAsFlow()
 
-    // Why: only these mean the cached file itself is broken; an audio output failure must not delete it.
+    // Why: only these mean the cached file itself is broken; a decoder or audio output failure must not delete it.
     private val unreadableFileErrorCodes = setOf(
         PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND,
         PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE,
         PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED,
         PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED,
-        PlaybackException.ERROR_CODE_DECODING_FAILED,
-        PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED,
     )
     private var loadedPath: String? = null
     private var playbackId = 0

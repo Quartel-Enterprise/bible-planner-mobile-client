@@ -26,6 +26,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetToday
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.ObserveIsChapterListeningEnabledUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.RecordChapterListeningUnlockUseCase
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +49,8 @@ val chapterListeningModule = module {
     singleOf(::ChapterListeningSettingsRepositoryImpl).bind<ChapterListeningSettingsRepository>()
     singleOf(::ChapterListeningUnlockRepositoryImpl).bind<ChapterListeningUnlockRepository>()
     single(named(CHAPTER_AUDIO_HTTP_CLIENT)) {
-        HttpClient {
+        // Why: Android carries two engines, and the timeouts and the length check assume a known one.
+        createChapterAudioHttpClient {
             // Why: a long chapter on a slow connection may take minutes, so only a stalled download times out.
             install(HttpTimeout) {
                 connectTimeoutMillis = CONNECT_TIMEOUT_MILLIS
@@ -104,3 +106,5 @@ val chapterListeningModule = module {
 }
 
 internal expect val platformChapterListeningModule: Module
+
+internal expect fun createChapterAudioHttpClient(configure: HttpClientConfig<*>.() -> Unit): HttpClient

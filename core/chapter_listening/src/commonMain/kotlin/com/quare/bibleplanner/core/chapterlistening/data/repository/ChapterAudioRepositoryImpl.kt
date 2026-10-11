@@ -10,8 +10,8 @@ import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioS
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.mapper.ChapterAudioMapper
-import com.quare.bibleplanner.core.chapterlistening.data.model.CachedChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioResultModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
@@ -59,13 +59,16 @@ internal class ChapterAudioRepositoryImpl(
         findCached(chapterKey)?.let { cached -> return cached }
         // Why: a chapter still being prefetched is awaited, not asked of the server a second time.
         return suspendRunCatching {
-            val cached = withChapterLock(chapterKey) {
-                cacheDataSource.find(chapterKey) ?: download(
+            withChapterLock(chapterKey) {
+                // Why: the cache is only a shortcut, so a cache that can't be read falls back to downloading.
+                val cached = suspendRunCatching { cacheDataSource.find(chapterKey) }
+                    .onFailure { throwable -> Logger.e(throwable) { "Could not read the cached audio of $chapterKey" } }
+                    .getOrNull()
+                cached?.let(chapterAudioMapper::map) ?: download(
                     request = request,
                     chapterKey = chapterKey,
                 )
             }
-            chapterAudioMapper.map(cached)
         }.fold(
             onSuccess = ChapterAudioResultModel::Ready,
             onFailure = { throwable -> ChapterAudioResultModel.Failed(toFailure(throwable, chapterKey)) },
@@ -165,7 +168,7 @@ internal class ChapterAudioRepositoryImpl(
     private suspend fun download(
         request: ChapterAudioRequestDto,
         chapterKey: String,
-    ): CachedChapterAudio {
+    ): ChapterAudioModel {
         val response = remoteDataSource.fetchChapterAudio(request)
         stateMutex.withLock { checkedChapterKeys += chapterKey }
         return save(
@@ -177,20 +180,24 @@ internal class ChapterAudioRepositoryImpl(
     private suspend fun save(
         response: ChapterAudioResponseDto,
         chapterKey: String,
-    ): CachedChapterAudio {
-        val manifest = remoteDataSource.downloadText(response.manifestUrl)
-        // Why: a manifest that can't be read would fail after every full download, so it is checked first.
-        chapterAudioMapper.parse(manifest)
-        return cacheDataSource.save(
+    ): ChapterAudioModel {
+        val manifestText = remoteDataSource.downloadText(response.manifestUrl)
+        // Why: a manifest that can't be read would fail after every full download, so it is parsed first, once.
+        val manifest = chapterAudioMapper.parse(manifestText)
+        val cached = cacheDataSource.save(
             chapterKey = chapterKey,
             fileName = toFileName(response.audioUrl),
-            manifest = manifest,
+            manifest = manifestText,
             writeAudio = { destination ->
                 remoteDataSource.downloadFile(
                     url = response.audioUrl,
                     destination = destination,
                 )
             },
+        )
+        return chapterAudioMapper.map(
+            audioPath = cached.audioPath,
+            manifest = manifest,
         )
     }
 
