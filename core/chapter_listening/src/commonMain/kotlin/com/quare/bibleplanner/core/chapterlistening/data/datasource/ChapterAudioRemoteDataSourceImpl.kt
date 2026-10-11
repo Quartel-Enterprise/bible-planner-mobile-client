@@ -73,7 +73,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
         }
 
     override suspend fun downloadText(url: String): String = withFreshSession {
-        get(url) { response -> response.bodyAsText() }
+        fetchFromWorker(url) { response -> response.bodyAsText() }
     }
 
     override suspend fun downloadFile(
@@ -81,7 +81,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
         destination: Path,
     ) {
         withFreshSession {
-            get(url) { response ->
+            fetchFromWorker(url) { response ->
                 val channel = response.bodyAsChannel()
                 val file = storeChapterAudio { SystemFileSystem.sink(destination).buffered() }
                 var writtenBytes = 0L
@@ -166,7 +166,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
     }
 
     // Why: the Worker serves the files only to a signed-in user, with the same token the function takes.
-    private suspend fun <T> get(
+    private suspend fun <T> fetchFromWorker(
         url: String,
         read: suspend (HttpResponse) -> T,
     ): T {

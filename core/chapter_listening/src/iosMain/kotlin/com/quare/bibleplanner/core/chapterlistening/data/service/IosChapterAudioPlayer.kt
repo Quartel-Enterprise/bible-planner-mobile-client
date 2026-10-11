@@ -62,7 +62,10 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
 
     // Why: created on the first play, so checking support or opening the reader never builds an AVPlayer.
     private val player: AVPlayer by lazy {
-        observe(AVPlayerItemDidPlayToEndTimeNotification) { send(ChapterAudioPlayerEvent.Ended(playbackId)) }
+        // Why: an end queued before a new play of the same item reseeks it arrives while that seek is pending.
+        observe(AVPlayerItemDidPlayToEndTimeNotification) {
+            if (seekTarget == null) send(ChapterAudioPlayerEvent.Ended(playbackId))
+        }
         // Why: a file that fails partway through carries its error in the notification, not on the item.
         observe(AVPlayerItemFailedToPlayToEndTimeNotification) { notification ->
             reportFailure(notification.userInfo?.get(AVPlayerItemFailedToPlayToEndTimeErrorKey) as? NSError)

@@ -87,6 +87,8 @@ internal class ChapterAudioRepositoryImpl(
         // Why: a check that failed or was cancelled (offline, the chapter changed) is tried again the next time.
         try {
             suspendRunCatching {
+                // Why: a chapter no longer cached has nothing to replace, so it costs no server call.
+                if (cacheDataSource.findFileName(chapterKey) == null) return@suspendRunCatching
                 val response = remoteDataSource.fetchChapterAudio(request)
                 withChapterLock(chapterKey) {
                     val cachedFileName = cacheDataSource.findFileName(chapterKey)

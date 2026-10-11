@@ -27,7 +27,6 @@ import kotlin.test.assertTrue
 internal class ChapterListeningGateTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
-    private val requestKey = "chapter_listening|GEN|3"
     private val resultStore = StudyUnlockResultStore()
     private lateinit var gate: ChapterListeningGate
     private lateinit var commands: MutableList<NavigationCommand>
@@ -245,22 +244,42 @@ internal class ChapterListeningGateTest {
         )
 
         // Then
+        val route = (commands.single() as NavigationCommand.Navigate).route as StudyUnlockNavRoute
         assertEquals(
-            listOf<NavigationCommand>(
-                NavigationCommand.Navigate(
-                    StudyUnlockNavRoute(
-                        surface = StudyUnlockSurface.CHAPTER_LISTENING,
-                        paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
-                        requestKey = requestKey,
-                        rewardedRemainingToday = 1,
-                        canUnlockWithoutVideo = true,
-                    ),
-                ),
+            StudyUnlockNavRoute(
+                surface = StudyUnlockSurface.CHAPTER_LISTENING,
+                paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
+                requestKey = route.requestKey,
+                rewardedRemainingToday = 1,
+                canUnlockWithoutVideo = true,
             ),
-            commands,
+            route,
         )
+        assertTrue(route.requestKey.startsWith("chapter_listening|GEN|3|"))
         assertEquals(0, allowedCount)
     }
+
+    @Test
+    fun `GIVEN two requests for the same chapter WHEN offering the video THEN gives each its own key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
+
+            // When
+            repeat(2) {
+                gate.request(
+                    scope = backgroundScope,
+                    chapter = chapter,
+                    onAllowed = { allowedCount++ },
+                )
+            }
+
+            // Then
+            val keys = commands.map { command ->
+                ((command as NavigationCommand.Navigate).route as StudyUnlockNavRoute).requestKey
+            }
+            assertEquals(2, keys.toSet().size)
+        }
 
     @Test
     fun `GIVEN the video offered WHEN the reward is earned THEN records the unlock and plays`() =
@@ -274,7 +293,7 @@ internal class ChapterListeningGateTest {
             )
 
             // When
-            resultStore.publishEarned(requestKey)
+            resultStore.publishEarned(openedRequestKey())
 
             // Then
             assertEquals(listOf(chapter), recordedUnlocks)
@@ -294,12 +313,15 @@ internal class ChapterListeningGateTest {
             )
 
             // When
-            resultStore.publishUnlockedWithoutVideo(requestKey)
+            resultStore.publishUnlockedWithoutVideo(openedRequestKey())
 
             // Then
             assertEquals(listOf(chapter), recordedUnlocks)
             assertEquals("chapter_listening_free_unlocked", trackedEvents.single().first)
         }
+
+    private fun openedRequestKey(): String =
+        ((commands.single() as NavigationCommand.Navigate).route as StudyUnlockNavRoute).requestKey
 
     private fun createUnlockAvailable(isFreeUnlockAvailable: Boolean): ChapterListeningAccessModel =
         ChapterListeningAccessModel.UnlockAvailable(

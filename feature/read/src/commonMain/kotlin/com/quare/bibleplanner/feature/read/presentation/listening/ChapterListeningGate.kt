@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 internal class ChapterListeningGate(
     private val getChapterListeningAccess: GetChapterListeningAccess,
@@ -87,10 +88,12 @@ internal class ChapterListeningGate(
             }
             return
         }
+        // Why: unique per request, so a gate whose sheet was dismissed can't take another screen's unlock.
         val requestKey = listOf(
             REQUEST_KEY_PREFIX,
             chapter.bookId.name,
             chapter.chapterNumber.toString(),
+            Random.nextLong().toString(),
         ).joinToString(REQUEST_KEY_SEPARATOR)
         earnedJob?.cancel()
         earnedJob = scope.launch {
