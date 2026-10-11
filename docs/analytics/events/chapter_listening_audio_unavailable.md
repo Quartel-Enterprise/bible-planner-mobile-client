@@ -19,7 +19,7 @@ The player opens a chapter whose audio is neither cached on the device nor retur
 | `mode` | string | `chapter` | `chapter` or `day_reading`, as in [chapter_listening_started](chapter_listening_started.md) |
 | `book_id` | string | `gen` | Book of the chapter, lowercased `BookId` |
 | `chapter_number` | int | `3` | Chapter number |
-| `reason` | string | `no_connection` | `no_connection` (offline and not cached), `not_signed_in` (the session expired), `version_not_enabled` (the version is outside `listening_cloud_versions`), `budget_reached` (the chapter has no audio yet and this month's generation budget is spent), `unavailable` (the generation or the download failed) |
+| `reason` | string | `no_connection` | `no_connection` (offline and not cached), `not_signed_in` (the session expired), `version_not_enabled` (the version is outside `listening_cloud_versions`), `budget_reached` (the chapter has no audio yet and this month's generation budget is spent), `unavailable` (the generation or the download failed), `no_verses` (the audio has none of the segment's verses) |
 
 ## Notes
 

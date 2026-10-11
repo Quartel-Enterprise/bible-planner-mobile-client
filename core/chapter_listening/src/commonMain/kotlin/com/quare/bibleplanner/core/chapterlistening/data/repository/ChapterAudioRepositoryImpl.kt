@@ -243,11 +243,13 @@ internal class ChapterAudioRepositoryImpl(
         return failure
     }
 
-    private fun toFailure(exception: RestException): ChapterAudioFailureModel = when {
-        exception.isUnauthorized() -> ChapterAudioFailureModel.NOT_SIGNED_IN
-        exception.statusCode == FORBIDDEN_STATUS -> ChapterAudioFailureModel.VERSION_NOT_ENABLED
-        readErrorCode(exception.error) == BUDGET_REACHED_CODE -> ChapterAudioFailureModel.BUDGET_REACHED
-        else -> ChapterAudioFailureModel.UNAVAILABLE
+    private fun toFailure(exception: RestException): ChapterAudioFailureModel {
+        if (exception.isUnauthorized()) return ChapterAudioFailureModel.NOT_SIGNED_IN
+        return when (readErrorCode(exception.error)) {
+            VERSION_NOT_ENABLED_CODE -> ChapterAudioFailureModel.VERSION_NOT_ENABLED
+            BUDGET_REACHED_CODE -> ChapterAudioFailureModel.BUDGET_REACHED
+            else -> ChapterAudioFailureModel.UNAVAILABLE
+        }
     }
 
     private fun readErrorCode(body: String): String? = suspendRunCatching {
@@ -265,6 +267,6 @@ internal class ChapterAudioRepositoryImpl(
         const val FILE_NAME_SEPARATOR = "_"
         const val CODE_FIELD = "code"
         const val BUDGET_REACHED_CODE = "MONTHLY_BUDGET_REACHED"
-        const val FORBIDDEN_STATUS = 403
+        const val VERSION_NOT_ENABLED_CODE = "VERSION_NOT_ENABLED"
     }
 }

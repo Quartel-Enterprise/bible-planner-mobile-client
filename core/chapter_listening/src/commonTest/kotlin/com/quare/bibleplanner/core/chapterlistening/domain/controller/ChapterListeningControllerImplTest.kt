@@ -534,7 +534,7 @@ internal class ChapterListeningControllerImplTest {
 
         // Then
         assertEquals(listOf(genesisOne, genesisTwo), audioRepository.requests)
-        assertEquals(listOf(genesisOne, genesisTwo), audioRepository.refreshed)
+        assertEquals(listOf(genesisTwo), audioRepository.refreshed)
     }
 
     @Test
@@ -1345,19 +1345,46 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chapter WHEN it loads THEN checks it for a newer revision`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(isAutoNextEnabled = false)
+    fun `GIVEN a chapter playing WHEN the session leaves it THEN checks it for a newer revision`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isAutoNextEnabled = false)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val refreshedWhilePlaying = audioRepository.refreshed.toList()
 
-        // When
-        controller.startChapter(
-            chapter = genesisOne,
-            shouldForceCanonOrder = false,
-        )
+            // When
+            controller.nextChapter()
 
-        // Then
-        assertEquals(listOf(genesisOne), audioRepository.refreshed)
-    }
+            // Then
+            assertTrue(refreshedWhilePlaying.isEmpty())
+            assertEquals(listOf(genesisOne), audioRepository.refreshed)
+        }
+
+    @Test
+    fun `GIVEN a manifest without the segment verses WHEN starting THEN shows the audio as unavailable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            controller.startDayReading(
+                day = createPartialDay(
+                    startVerse = 40,
+                    endVerse = 45,
+                ),
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertEquals(
+                "no_verses",
+                trackedEvents.last { (name, _) -> name == "chapter_listening_audio_unavailable" }.second["reason"],
+            )
+        }
 
     @Test
     fun `GIVEN the access check fails WHEN prefetching the next chapter THEN keeps playing`() =

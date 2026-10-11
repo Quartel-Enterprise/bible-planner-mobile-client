@@ -109,6 +109,8 @@ internal class ChapterListeningControllerImpl(
     private var moveJob: Job? = null
     private var playbackJob: Job? = null
     private var prefetchJob: Job? = null
+    private var prefetchingChapter: ChapterLocationModel? = null
+    private var refreshJob: Job? = null
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
@@ -260,6 +262,7 @@ internal class ChapterListeningControllerImpl(
         moveJob?.cancel()
         loadJob?.cancel()
         prefetchJob?.cancel()
+        refreshJob?.cancel()
         sleepTimerJob?.cancel()
         detachedStopJob?.cancel()
         silencePlayer()
@@ -335,6 +338,7 @@ internal class ChapterListeningControllerImpl(
     private fun showUnloaded(session: ListeningSessionModel) {
         loadJob?.cancel()
         prefetchJob?.cancel()
+        refreshLeftChapter(session.segment.chapter)
         silencePlayer()
         audio = null
         position = Duration.ZERO
@@ -395,6 +399,9 @@ internal class ChapterListeningControllerImpl(
         session: ListeningSessionModel,
         leadingSilence: Duration,
     ) {
+        // Why: a prefetch for a chapter that is no longer next would compete with the one now loading.
+        if (prefetchingChapter != session.segment.chapter) prefetchJob?.cancel()
+        refreshLeftChapter(session.segment.chapter)
         silencePlayer()
         audio = null
         position = Duration.ZERO
@@ -425,7 +432,8 @@ internal class ChapterListeningControllerImpl(
         val status = when {
             result is ChapterAudioResultModel.Failed -> toStatus(result.failure)
 
-            verses.isEmpty() -> ListeningStatusModel.FINISHED
+            // Why: a manifest with none of the segment's verses has nothing to play, which is a broken audio.
+            verses.isEmpty() -> ListeningStatusModel.AUDIO_UNAVAILABLE
 
             // Why: a play, pause or audio interruption that arrived while loading wins over how the load started.
             statusWhileLoading == ListeningStatusModel.PREPARING ||
@@ -452,18 +460,21 @@ internal class ChapterListeningControllerImpl(
                 leadingSilence = leadingSilence,
             )
         }
-        if (loadedAudio != null) {
-            refresh(session)
-            prefetchNextSegment()
-        }
+        if (verses.isNotEmpty()) prefetchNextSegment()
     }
 
-    // Why: a cached chapter is checked once per launch for a corrected revision, which plays from the next time on.
-    private fun refresh(session: ListeningSessionModel) {
-        scope.launch {
+    /*
+     * Why: a cached chapter is checked once per launch for a corrected revision, which plays from the
+     * next time on; it is checked once the session leaves it, so it never competes with its own playback.
+     */
+    private fun refreshLeftChapter(nextChapter: ChapterLocationModel) {
+        val left = session ?: return
+        if (audio == null || left.segment.chapter == nextChapter) return
+        refreshJob?.cancel()
+        refreshJob = scope.launch {
             chapterAudioRepository.refresh(
-                bibleVersionId = session.bibleVersionId,
-                chapter = session.segment.chapter,
+                bibleVersionId = left.bibleVersionId,
+                chapter = left.segment.chapter,
             )
         }
     }
@@ -524,10 +535,15 @@ internal class ChapterListeningControllerImpl(
         result: ChapterAudioResultModel,
         status: ListeningStatusModel,
     ) {
-        if (result is ChapterAudioResultModel.Failed) {
+        val unavailableReason = when {
+            result is ChapterAudioResultModel.Failed -> result.failure.name.lowercase()
+            status == ListeningStatusModel.AUDIO_UNAVAILABLE -> NO_VERSES_REASON
+            else -> null
+        }
+        if (unavailableReason != null) {
             trackEvent(
                 name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
-                params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to result.failure.name.lowercase()),
+                params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to unavailableReason),
             )
             return
         }
@@ -570,6 +586,7 @@ internal class ChapterListeningControllerImpl(
             direction = ChapterDirectionModel.NEXT,
         ) ?: return
         if (!isOpen(next)) return
+        prefetchingChapter = next.chapter
         val result = chapterAudioRepository.loadChapterAudio(
             bibleVersionId = current.bibleVersionId,
             chapter = next.chapter,
@@ -1037,5 +1054,6 @@ internal class ChapterListeningControllerImpl(
     private companion object {
         const val RESTART_VERSE_PROGRESS = 0.25f
         const val SLEEP_TIMER_COUNTDOWN = "countdown"
+        const val NO_VERSES_REASON = "no_verses"
     }
 }

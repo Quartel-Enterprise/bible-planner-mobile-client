@@ -254,6 +254,27 @@ internal class ChapterAudioRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a 403 for another reason from the function WHEN getting the audio THEN says it is unavailable`() =
+        runTest {
+            // Given
+            prepareScenario(
+                respond = respondFunction(
+                    status = HttpStatusCode.Forbidden,
+                    body = """{"error":"forbidden"}""",
+                ),
+            )
+
+            // When
+            val result = repository.loadChapterAudio(
+                bibleVersionId = "A21",
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE), result)
+        }
+
+    @Test
     fun `GIVEN the monthly budget spent from the function WHEN getting the audio THEN says the budget is spent`() =
         runTest {
             // Given

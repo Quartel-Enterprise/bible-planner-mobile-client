@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -44,6 +45,18 @@ internal class AndroidListeningMediaSession(
     // Why: built with the first chapter shown, so opening the reader alone never creates the ExoPlayer.
     private var player: ListeningPlayer? = null
 
+    /*
+     * Why: the ExoPlayer only keeps the CPU awake while it plays, but between chapters, with the screen
+     * off, the next one may still be generated and downloaded; the session holds it for as long as it
+     * reads as playing.
+     */
+    private val wakeLock: PowerManager.WakeLock by lazy {
+        context
+            .getSystemService(PowerManager::class.java)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
+            .apply { setReferenceCounted(false) }
+    }
+
     override fun requestActivation(): Boolean {
         if (controllerFuture == null) {
             controllerFuture = MediaController
@@ -64,13 +77,24 @@ internal class AndroidListeningMediaSession(
     override fun update(nowPlaying: NowPlayingModel) {
         val shownPlayer = player ?: createPlayer().also { created -> player = created }
         shownPlayer.show(nowPlaying)
+        if (nowPlaying.isPlaying) wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS) else releaseWakeLock()
     }
 
     override fun deactivate() {
         player?.show(null)
+        releaseWakeLock()
         val future = controllerFuture ?: return
         MediaController.releaseFuture(future)
         controllerFuture = null
         context.unregisterReceiver(noisyReceiver)
+    }
+
+    private fun releaseWakeLock() {
+        if (wakeLock.isHeld) wakeLock.release()
+    }
+
+    private companion object {
+        const val WAKE_LOCK_TAG = "BiblePlanner:ChapterListening"
+        const val WAKE_LOCK_TIMEOUT_MILLIS = 3L * 60 * 1000
     }
 }
