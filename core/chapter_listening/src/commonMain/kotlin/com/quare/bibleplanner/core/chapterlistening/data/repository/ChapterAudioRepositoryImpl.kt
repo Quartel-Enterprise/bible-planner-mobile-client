@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioRespons
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioDownloadException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
 import com.quare.bibleplanner.core.chapterlistening.data.mapper.ChapterAudioMapper
 import com.quare.bibleplanner.core.chapterlistening.data.model.CachedChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
@@ -21,6 +22,7 @@ import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.http.Url
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -46,6 +48,7 @@ internal class ChapterAudioRepositoryImpl(
 
     // Why: a cached chapter is checked against the server once per launch, so a corrected revision replaces it.
     private val checkedChapterKeys = mutableSetOf<String>()
+    private val checkingChapterKeys = mutableSetOf<String>()
 
     override suspend fun getChapterAudio(
         bibleVersionId: String,
@@ -81,38 +84,38 @@ internal class ChapterAudioRepositoryImpl(
             chapter = chapter,
         )
         val chapterKey = toChapterKey(request)
-        val isFirstCheck = stateMutex.withLock { checkedChapterKeys.add(chapterKey) }
-        if (!isFirstCheck) return
-        suspendRunCatching {
-            val response = remoteDataSource.fetchChapterAudio(request)
-            withChapterLock(chapterKey) {
-                val cached = cacheDataSource.find(chapterKey)
-                if (cached != null && cached.fileName != toFileName(response.audioUrl)) {
-                    save(
-                        response = response,
-                        chapterKey = chapterKey,
-                    )
+        val shouldCheck = stateMutex.withLock {
+            chapterKey !in checkedChapterKeys && checkingChapterKeys.add(chapterKey)
+        }
+        if (!shouldCheck) return
+        // Why: a check that failed or was cancelled (offline, the chapter changed) is tried again the next time.
+        try {
+            suspendRunCatching {
+                val response = remoteDataSource.fetchChapterAudio(request)
+                withChapterLock(chapterKey) {
+                    val cachedFileName = cacheDataSource.findFileName(chapterKey)
+                    if (cachedFileName != null && cachedFileName != toFileName(response.audioUrl)) {
+                        save(
+                            response = response,
+                            chapterKey = chapterKey,
+                        )
+                    }
                 }
+            }.onSuccess {
+                stateMutex.withLock { checkedChapterKeys += chapterKey }
+            }.onFailure { throwable ->
+                Logger.w(throwable) { "Could not check the cached audio of $chapterKey" }
             }
-        }.onFailure { throwable ->
-            // Why: a check that failed (offline, say) is tried again the next time, not skipped until the next launch.
-            stateMutex.withLock { checkedChapterKeys -= chapterKey }
-            Logger.w(throwable) { "Could not check the cached audio of $chapterKey" }
+        } finally {
+            withContext(NonCancellable) {
+                stateMutex.withLock { checkingChapterKeys -= chapterKey }
+            }
         }
     }
 
-    override suspend fun evict(
-        bibleVersionId: String,
-        chapter: ChapterLocationModel,
-    ) {
-        val chapterKey = toChapterKey(
-            toRequest(
-                bibleVersionId = bibleVersionId,
-                chapter = chapter,
-            ),
-        )
-        suspendRunCatching { cacheDataSource.remove(chapterKey) }
-            .onFailure { throwable -> Logger.e(throwable) { "Could not drop the cached audio of $chapterKey" } }
+    override suspend fun evict(audioPath: String) {
+        suspendRunCatching { cacheDataSource.remove(audioPath) }
+            .onFailure { throwable -> Logger.e(throwable) { "Could not drop the cached audio $audioPath" } }
     }
 
     private fun toRequest(
@@ -160,7 +163,7 @@ internal class ChapterAudioRepositoryImpl(
         return suspendRunCatching { ChapterAudioResultModel.Ready(chapterAudioMapper.map(cached)) }
             .onFailure { throwable ->
                 Logger.e(throwable) { "Unreadable cached manifest of $chapterKey" }
-                suspendRunCatching { cacheDataSource.remove(chapterKey) }
+                suspendRunCatching { cacheDataSource.remove(cached.audioPath) }
                     .onFailure { removeFailure ->
                         Logger.e(removeFailure) { "Could not drop the audio of $chapterKey" }
                     }
@@ -198,9 +201,9 @@ internal class ChapterAudioRepositoryImpl(
     }
 
     // Why: the URL path names the version, cast, text revision and chapter, so a new revision gets a new file.
-    private fun toFileName(audioUrl: String): String = audioUrl
-        .substringAfter(URL_SCHEME_SEPARATOR)
-        .substringAfter(PATH_SEPARATOR)
+    private fun toFileName(audioUrl: String): String = Url(audioUrl)
+        .encodedPath
+        .removePrefix(PATH_SEPARATOR)
         .substringBeforeLast(EXTENSION_SEPARATOR)
         .replace(PATH_SEPARATOR, FILE_NAME_SEPARATOR)
 
@@ -213,7 +216,7 @@ internal class ChapterAudioRepositoryImpl(
 
             is RestException -> toFailure(throwable)
 
-            is ChapterAudioDownloadException -> if (throwable.statusCode == UNAUTHORIZED_STATUS) {
+            is ChapterAudioDownloadException -> if (throwable.isUnauthorized()) {
                 ChapterAudioFailureModel.NOT_SIGNED_IN
             } else {
                 ChapterAudioFailureModel.UNAVAILABLE
@@ -241,16 +244,11 @@ internal class ChapterAudioRepositoryImpl(
         return failure
     }
 
-    private fun toFailure(exception: RestException): ChapterAudioFailureModel = when (exception.statusCode) {
-        UNAUTHORIZED_STATUS -> ChapterAudioFailureModel.NOT_SIGNED_IN
-
-        FORBIDDEN_STATUS -> ChapterAudioFailureModel.VERSION_NOT_ENABLED
-
-        else -> if (readErrorCode(exception.error) == BUDGET_REACHED_CODE) {
-            ChapterAudioFailureModel.BUDGET_REACHED
-        } else {
-            ChapterAudioFailureModel.UNAVAILABLE
-        }
+    private fun toFailure(exception: RestException): ChapterAudioFailureModel = when {
+        exception.isUnauthorized() -> ChapterAudioFailureModel.NOT_SIGNED_IN
+        exception.statusCode == FORBIDDEN_STATUS -> ChapterAudioFailureModel.VERSION_NOT_ENABLED
+        readErrorCode(exception.error) == BUDGET_REACHED_CODE -> ChapterAudioFailureModel.BUDGET_REACHED
+        else -> ChapterAudioFailureModel.UNAVAILABLE
     }
 
     private fun readErrorCode(body: String): String? = suspendRunCatching {
@@ -263,13 +261,11 @@ internal class ChapterAudioRepositoryImpl(
 
     private companion object {
         const val KEY_SEPARATOR = "/"
-        const val URL_SCHEME_SEPARATOR = "://"
         const val PATH_SEPARATOR = "/"
         const val EXTENSION_SEPARATOR = "."
         const val FILE_NAME_SEPARATOR = "_"
         const val CODE_FIELD = "code"
         const val BUDGET_REACHED_CODE = "MONTHLY_BUDGET_REACHED"
-        const val UNAUTHORIZED_STATUS = 401
         const val FORBIDDEN_STATUS = 403
     }
 }

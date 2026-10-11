@@ -110,6 +110,32 @@ internal class ChapterAudioRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN an audio URL with a query WHEN getting the audio THEN names the file after its path only`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json") || request.url.host == AUDIO_HOST) {
+                    respondOk()(request)
+                } else {
+                    respondJson(FUNCTION_RESPONSE.replace("1.mp3", "1.mp3?v=1.2"))
+                }
+            },
+        )
+
+        // When
+        val result = repository.getChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        assertEquals(
+            Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3").toString(),
+            (result as ChapterAudioResultModel.Ready).audio.audioPath,
+        )
+    }
+
+    @Test
     fun `GIVEN a cached chapter WHEN getting its audio again THEN serves it without the network`() = runTest {
         // Given
         prepareScenario(respond = respondOk())
@@ -517,10 +543,7 @@ internal class ChapterAudioRepositoryImplTest {
         val requestCount = requests.size
 
         // When
-        repository.evict(
-            bibleVersionId = "A21",
-            chapter = genesisOne,
-        )
+        repository.evict(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3").toString())
         repository.getChapterAudio(
             bibleVersionId = "A21",
             chapter = genesisOne,

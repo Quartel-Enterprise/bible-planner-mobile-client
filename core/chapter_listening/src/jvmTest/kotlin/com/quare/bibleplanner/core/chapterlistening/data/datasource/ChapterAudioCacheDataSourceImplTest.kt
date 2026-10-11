@@ -174,12 +174,63 @@ internal class ChapterAudioCacheDataSourceImplTest {
         dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
 
         // When
-        dataSource.remove(genesisOne)
+        dataSource.remove(Path(directory, "GEN_1.mp3").toString())
 
         // Then
         assertNull(dataSource.find(genesisOne))
         assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1.mp3")))
     }
+
+    @Test
+    fun `GIVEN a replaced revision that fails WHEN removing it THEN keeps the new one`() = runTest {
+        // Given
+        val dataSource = createDataSource(maxBytes = MAX_BYTES)
+        dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
+        dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
+
+        // When
+        dataSource.remove(Path(directory, "GEN_1_v1.mp3").toString())
+
+        // Then
+        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1_v1.mp3")))
+        assertEquals(Path(directory, "GEN_1_v2.mp3").toString(), dataSource.find(genesisOne)?.audioPath)
+    }
+
+    @Test
+    fun `GIVEN a large recent chapter over the budget WHEN saving THEN keeps the older ones that still fit`() =
+        runTest {
+            // Given
+            val dataSource = createDataSource(maxBytes = 450L + 2 * manifest.length)
+            now = 1
+            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            now = 2
+            dataSource.save(genesisTwo, fileName = "GEN_2", audioBytes = 300)
+
+            // When
+            now = 3
+            dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 250)
+
+            // Then
+            assertNotNull(dataSource.find(genesisOne))
+            assertNull(dataSource.find(genesisTwo))
+        }
+
+    @Test
+    fun `GIVEN a chapter played over an hour ago WHEN looking up its file name THEN leaves when it was played`() =
+        runTest {
+            // Given
+            val dataSource = createDataSource(maxBytes = MAX_BYTES)
+            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            val index = readIndex()
+            now = 2 * 60 * 60 * 1000L
+
+            // When
+            val fileName = dataSource.findFileName(genesisOne)
+
+            // Then
+            assertEquals("GEN_1", fileName)
+            assertEquals(index, readIndex())
+        }
 
     @Test
     fun `GIVEN an unreadable index WHEN finding a chapter THEN clears the cache`() = runTest {

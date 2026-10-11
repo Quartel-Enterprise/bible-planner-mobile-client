@@ -14,8 +14,5 @@ interface ChapterAudioRepository {
         chapter: ChapterLocationModel,
     )
 
-    suspend fun evict(
-        bibleVersionId: String,
-        chapter: ChapterLocationModel,
-    )
+    suspend fun evict(audioPath: String)
 }

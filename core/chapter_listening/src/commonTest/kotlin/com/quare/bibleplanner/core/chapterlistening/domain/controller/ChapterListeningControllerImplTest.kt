@@ -24,6 +24,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAud
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -41,6 +42,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration
@@ -624,6 +626,47 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
+    fun `GIVEN a chapter still loading WHEN the reader opens a locked one THEN the load still finishes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisTwo))
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            controller.followReader(genesisTwo)
+            audioLoaded.complete(Unit)
+
+            // Then
+            assertEquals(genesisOne, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN the reader opens another one THEN never shows it as playing while loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            audioRepository.gate = CompletableDeferred()
+
+            // When
+            controller.followReader(genesisTwo)
+
+            // Then
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertFalse(mediaSession.updates.last().isPlaying)
+        }
+
+    @Test
     fun `GIVEN a chapter playing WHEN asking for its neighbours THEN follows the reading order`() =
         runTest(testDispatcher) {
             // Given
@@ -1132,7 +1175,7 @@ internal class ChapterListeningControllerImplTest {
 
             // Then
             assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
-            assertEquals(listOf(genesisOne), audioRepository.evicted)
+            assertEquals(listOf(genesisOneAudio.audioPath), audioRepository.evicted)
         }
 
     @Test
@@ -1238,7 +1281,8 @@ internal class ChapterListeningControllerImplTest {
             val nowPlaying = mediaSession.updates.last()
             assertEquals("Genesis 1", nowPlaying.chapterTitle)
             assertEquals("ACF", nowPlaying.subtitle)
-            assertEquals(listOf(6.seconds, 4.5.seconds, 3.5.seconds), nowPlaying.verses.map { it.duration })
+            assertEquals(14.seconds, nowPlaying.time.total)
+            assertEquals(1, nowPlaying.verseNumber)
             assertTrue(nowPlaying.isPlaying)
         }
 
@@ -1335,6 +1379,7 @@ internal class ChapterListeningControllerImplTest {
                 order.getOrNull(order.indexOf(chapter) + step)
             },
             getListeningChapterTitle = { chapter -> "Genesis ${chapter.chapterNumber}" },
+            getListeningTime = GetListeningTimeUseCase(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { controller.events.collect { event -> emittedEvents += event } }
@@ -1400,7 +1445,7 @@ private class FakeChapterAudioRepository(
     var gate: CompletableDeferred<Unit>? = null
     val requests = mutableListOf<ChapterLocationModel>()
     val refreshed = mutableListOf<ChapterLocationModel>()
-    val evicted = mutableListOf<ChapterLocationModel>()
+    val evicted = mutableListOf<String>()
 
     override suspend fun getChapterAudio(
         bibleVersionId: String,
@@ -1419,11 +1464,8 @@ private class FakeChapterAudioRepository(
         refreshed += chapter
     }
 
-    override suspend fun evict(
-        bibleVersionId: String,
-        chapter: ChapterLocationModel,
-    ) {
-        evicted += chapter
+    override suspend fun evict(audioPath: String) {
+        evicted += audioPath
     }
 }
 

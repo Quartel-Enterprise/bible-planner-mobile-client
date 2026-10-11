@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.core.chapterlistening.data.datasource
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioRequestDto
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioResponseDto
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioDownloadException
-import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
 import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
+import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.exceptions.RestException
@@ -23,9 +25,7 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
-import kotlinx.io.IOException
 import kotlinx.io.Sink
-import kotlinx.io.Source
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
@@ -69,24 +69,20 @@ internal class ChapterAudioRemoteDataSourceImpl(
         withFreshSession {
             get(url) { response ->
                 val channel = response.bodyAsChannel()
-                val sink = store { SystemFileSystem.sink(destination).buffered() }
-                sink.use { file ->
+                val file = storeChapterAudio { SystemFileSystem.sink(destination).buffered() }
+                // Why: the last buffered bytes are flushed on close, so a full disk can surface only there.
+                try {
                     while (!channel.exhausted()) {
-                        write(
-                            file = file,
-                            chunk = channel.readRemaining(CHUNK_BYTES),
-                        )
+                        val chunk = channel.readRemaining(CHUNK_BYTES)
+                        storeChapterAudio { file.transferFrom(chunk) }
                     }
+                } catch (exception: Throwable) {
+                    file.closeQuietly()
+                    throw exception
                 }
+                storeChapterAudio { file.close() }
             }
         }
-    }
-
-    private fun write(
-        file: Sink,
-        chunk: Source,
-    ) {
-        store { file.transferFrom(chunk) }
     }
 
     /*
@@ -97,7 +93,7 @@ internal class ChapterAudioRemoteDataSourceImpl(
         val usedToken = auth.currentAccessTokenOrNull()
         val result = suspendRunCatching { call() }
         val failure = result.exceptionOrNull()
-        if (failure == null || !isUnauthorized(failure) || auth.currentSessionOrNull() == null) {
+        if (failure == null || !failure.isUnauthorized() || auth.currentSessionOrNull() == null) {
             return result.getOrThrow()
         }
         if (auth.currentAccessTokenOrNull() == usedToken) renewSession()
@@ -113,19 +109,6 @@ internal class ChapterAudioRemoteDataSourceImpl(
         }
     }
 
-    private fun isUnauthorized(throwable: Throwable): Boolean = when (throwable) {
-        is RestException -> throwable.statusCode == UNAUTHORIZED_STATUS
-        is ChapterAudioDownloadException -> throwable.statusCode == UNAUTHORIZED_STATUS
-        else -> false
-    }
-
-    // Why: a full disk must not be reported as the missing connection a failed read means.
-    private inline fun <T> store(block: () -> T): T = try {
-        block()
-    } catch (exception: IOException) {
-        throw ChapterAudioStorageException(exception)
-    }
-
     // Why: the Worker serves the files only to a signed-in user, with the same token the function takes.
     private suspend fun <T> get(
         url: String,
@@ -138,10 +121,13 @@ internal class ChapterAudioRemoteDataSourceImpl(
         }
     }
 
+    private fun Sink.closeQuietly() {
+        runCatching { close() }.onFailure { throwable -> Logger.w(throwable) { "Could not close the audio file" } }
+    }
+
     private companion object {
         const val FUNCTION_NAME = "get-chapter-audio"
         const val FUNCTION_TIMEOUT_MILLIS = 90_000L
         const val CHUNK_BYTES = 64L * 1024
-        const val UNAUTHORIZED_STATUS = 401
     }
 }

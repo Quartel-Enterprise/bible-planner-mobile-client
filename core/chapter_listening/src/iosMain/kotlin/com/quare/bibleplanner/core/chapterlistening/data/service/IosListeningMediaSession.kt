@@ -38,7 +38,6 @@ import platform.MediaPlayer.MPRemoteCommand
 import platform.MediaPlayer.MPRemoteCommandCenter
 import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
 import platform.darwin.NSObjectProtocol
-import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalForeignApi::class)
@@ -77,18 +76,17 @@ internal class IosListeningMediaSession : ListeningMediaSession {
 
     override fun update(nowPlaying: NowPlayingModel) {
         isPlaying = nowPlaying.isPlaying
-        val verse = nowPlaying.verses.getOrNull(nowPlaying.verseIndex)
-        val total = nowPlaying.verses.fold(Duration.ZERO) { sum, item -> sum + item.duration }
-        val elapsed = nowPlaying.verses
-            .take(nowPlaying.verseIndex)
-            .fold(nowPlaying.verseElapsed) { sum, item -> sum + item.duration }
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = mapOf<Any?, Any?>(
             MPMediaItemPropertyTitle to
-                (verse?.let { "${nowPlaying.chapterTitle}:${it.number}" } ?: nowPlaying.chapterTitle),
+                (
+                    nowPlaying.verseNumber?.let { number -> "${nowPlaying.chapterTitle}:$number" }
+                        ?: nowPlaying.chapterTitle
+                ),
             MPMediaItemPropertyArtist to nowPlaying.subtitle,
             MPMediaItemPropertyAlbumTitle to nowPlaying.chapterTitle,
-            MPMediaItemPropertyPlaybackDuration to NSNumber(total.toDouble(DurationUnit.SECONDS)),
-            MPNowPlayingInfoPropertyElapsedPlaybackTime to NSNumber(elapsed.toDouble(DurationUnit.SECONDS)),
+            MPMediaItemPropertyPlaybackDuration to NSNumber(nowPlaying.time.total.toDouble(DurationUnit.SECONDS)),
+            MPNowPlayingInfoPropertyElapsedPlaybackTime to
+                NSNumber(nowPlaying.time.elapsed.toDouble(DurationUnit.SECONDS)),
             MPNowPlayingInfoPropertyPlaybackRate to NSNumber(if (nowPlaying.isPlaying) 1.0 else 0.0),
         )
     }

@@ -23,7 +23,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepT
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
@@ -31,6 +30,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMedi
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetAdjacentListeningChapter
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningVersion
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
@@ -72,6 +72,7 @@ internal class ChapterListeningControllerImpl(
     private val getChapterListeningAccess: GetChapterListeningAccess,
     private val getAdjacentListeningChapter: GetAdjacentListeningChapter,
     private val getListeningChapterTitle: GetListeningChapterTitle,
+    private val getListeningTime: GetListeningTimeUseCase,
     private val trackEvent: TrackEvent,
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
 ) : ChapterListeningController {
@@ -104,6 +105,7 @@ internal class ChapterListeningControllerImpl(
     private var startedPlaybackId: Int? = null
     private var attachedReaders = 0
     private var loadJob: Job? = null
+    private var moveJob: Job? = null
     private var playbackJob: Job? = null
     private var prefetchJob: Job? = null
     private var sleepTimerJob: Job? = null
@@ -188,16 +190,18 @@ internal class ChapterListeningControllerImpl(
         }
         val target = daySegment ?: toWholeChapter(chapter)
         // Why: a chapter the person only opened to read must not stop the one they are listening to.
-        launchLoad {
-            if (!isOpen(target)) return@launchLoad
-            openSegment(
-                session = base.copy(
-                    segment = target,
-                    chapterChangeCause = ChapterChangeCause.READER,
-                ),
-                shouldPlay = current.isPlaying,
-                leadingSilence = Duration.ZERO,
-            )
+        launchMove {
+            if (!isOpen(target)) return@launchMove
+            startLoad {
+                openSegment(
+                    session = base.copy(
+                        segment = target,
+                        chapterChangeCause = ChapterChangeCause.READER,
+                    ),
+                    shouldPlay = current.isPlaying,
+                    leadingSilence = Duration.ZERO,
+                )
+            }
         }
     }
 
@@ -250,6 +254,7 @@ internal class ChapterListeningControllerImpl(
     }
 
     override fun stop() {
+        moveJob?.cancel()
         loadJob?.cancel()
         prefetchJob?.cancel()
         sleepTimerJob?.cancel()
@@ -321,8 +326,22 @@ internal class ChapterListeningControllerImpl(
     }
 
     private fun launchLoad(block: suspend () -> Unit) {
+        moveJob?.cancel()
+        startLoad(block)
+    }
+
+    private fun startLoad(block: suspend () -> Unit) {
         loadJob?.cancel()
         loadJob = scope.launch { block() }
+    }
+
+    /*
+     * Why: a chapter change is checked (is there one, is it unlocked) before it cancels the load in
+     * progress, so a refused change leaves that load to finish instead of a session stuck loading.
+     */
+    private fun launchMove(block: suspend () -> Unit) {
+        moveJob?.cancel()
+        moveJob = scope.launch { block() }
     }
 
     private fun createSession(
@@ -360,7 +379,8 @@ internal class ChapterListeningControllerImpl(
                     verses = emptyList(),
                     verseIndex = 0,
                     verseProgress = 0f,
-                    status = ListeningStatusModel.PREPARING,
+                    // Why: a chapter opened while paused must not show as playing to the system during the load.
+                    status = if (shouldPlay) ListeningStatusModel.PREPARING else ListeningStatusModel.PAUSED,
                     lockedSegment = null,
                 ),
             )
@@ -383,11 +403,9 @@ internal class ChapterListeningControllerImpl(
 
             verses.isEmpty() -> ListeningStatusModel.FINISHED
 
-            // Why: a pause or an audio interruption that arrived while loading must win over the start request.
-            statusWhileLoading == ListeningStatusModel.PAUSED ||
+            // Why: a play, pause or audio interruption that arrived while loading wins over how the load started.
+            statusWhileLoading == ListeningStatusModel.PREPARING ||
                 statusWhileLoading == ListeningStatusModel.INTERRUPTED -> statusWhileLoading
-
-            shouldPlay -> ListeningStatusModel.PREPARING
 
             else -> ListeningStatusModel.PAUSED
         }
@@ -700,24 +718,26 @@ internal class ChapterListeningControllerImpl(
 
     private fun moveChapter(direction: ChapterDirectionModel) {
         val current = session ?: return
-        launchLoad {
+        launchMove {
             val target = findAdjacentSegment(
                 current = current,
                 direction = direction,
-            ) ?: return@launchLoad
+            ) ?: return@launchMove
             // Why: a skip from the notification or the headset cannot show the unlock, so it keeps the chapter playing.
             if (!isOpen(target)) {
                 trackLocked(target)
-                return@launchLoad
+                return@launchMove
             }
-            openSegment(
-                session = current.copy(
-                    segment = target,
-                    chapterChangeCause = ChapterChangeCause.PLAYER,
-                ),
-                shouldPlay = current.isPlaying,
-                leadingSilence = Duration.ZERO,
-            )
+            startLoad {
+                openSegment(
+                    session = current.copy(
+                        segment = target,
+                        chapterChangeCause = ChapterChangeCause.PLAYER,
+                    ),
+                    shouldPlay = current.isPlaying,
+                    leadingSilence = Duration.ZERO,
+                )
+            }
         }
     }
 
@@ -884,15 +904,11 @@ internal class ChapterListeningControllerImpl(
     private fun onPlaybackFailed() {
         val current = session ?: return
         Logger.e { "Chapter audio playback failed for ${current.segment.chapter}" }
+        val failedAudioPath = audio?.audioPath
         silencePlayer()
         audio = null
         updateSession { it.copy(status = ListeningStatusModel.AUDIO_UNAVAILABLE) }
-        scope.launch {
-            chapterAudioRepository.evict(
-                bibleVersionId = current.bibleVersionId,
-                chapter = current.segment.chapter,
-            )
-        }
+        if (failedAudioPath != null) scope.launch { chapterAudioRepository.evict(failedAudioPath) }
     }
 
     private fun handleRemoteCommand(command: ListeningRemoteCommand) {
@@ -941,21 +957,18 @@ internal class ChapterListeningControllerImpl(
         val chapterTitle = chapterTitles.getOrPut(current.segment.chapter) {
             getListeningChapterTitle(current.segment.chapter)
         }
-        val speed = state.settings.speed.toDouble()
-        val verseDurations = current.verses.map { verse -> (verse.end - verse.start) / speed }
-        val verseElapsed =
-            verseDurations.getOrElse(current.verseIndex) { Duration.ZERO } * current.verseProgress.toDouble()
+        val time = getListeningTime(
+            verses = current.verses,
+            verseIndex = current.verseIndex,
+            verseProgress = current.verseProgress,
+            speed = state.settings.speed,
+        )
         return NowPlayingModel(
             chapterTitle = chapterTitle,
             subtitle = current.bibleVersionId.uppercase(),
-            verses = current.verses.mapIndexed { index, verse ->
-                NowPlayingVerseModel(
-                    number = verse.number,
-                    duration = verseDurations[index],
-                )
-            },
-            verseIndex = current.verseIndex,
-            verseElapsed = verseElapsed.inWholeSeconds.seconds,
+            verseNumber = current.verses.getOrNull(current.verseIndex)?.number,
+            // Why: whole seconds, so the 200 ms position ticks don't republish the system player every time.
+            time = time.copy(elapsed = time.elapsed.inWholeSeconds.seconds),
             // Why: a chapter change passes through PREPARING, and reporting it as paused would drop the foreground service.
             isPlaying = current.isPlaying,
         )

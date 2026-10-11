@@ -15,7 +15,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 /*
@@ -133,9 +132,7 @@ internal class ListeningPlayer(
         return Futures.immediateVoidFuture()
     }
 
-    private fun toDurationUs(nowPlaying: NowPlayingModel): Long = nowPlaying.verses
-        .fold(Duration.ZERO) { total, verse -> total + verse.duration }
-        .inWholeMicroseconds
+    private fun toDurationUs(nowPlaying: NowPlayingModel): Long = nowPlaying.time.total.inWholeMicroseconds
 
     // Why: ExoPlayer pauses itself on focus loss and unplugged headphones; the controller must hear about it.
     private inner class InterruptionListener(

@@ -3,7 +3,7 @@ package com.quare.bibleplanner.core.chapterlistening.data.datasource
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioCacheEntryDto
 import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioCacheIndexDto
-import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.model.CachedChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.model.ChapterAudioCacheDirectory
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
@@ -38,26 +38,29 @@ internal class ChapterAudioCacheDataSourceImpl(
     private val indexPath = Path(directory.path, INDEX_FILE_NAME)
     private var loadedEntries: List<ChapterAudioCacheEntryDto>? = null
 
-    override suspend fun find(chapterKey: String): CachedChapterAudio? = withContext(ioDispatcher) {
-        mutex.withLock {
-            val entries = loadEntries()
-            val entry = entries.find { it.chapterKey == chapterKey } ?: return@withLock null
-            val audioPath = toAudioPath(entry.fileName)
-            val manifestPath = toManifestPath(entry.fileName)
-            if (!SystemFileSystem.exists(audioPath) || !SystemFileSystem.exists(manifestPath)) {
-                writeEntries(entries - entry)
-                return@withLock null
-            }
-            touch(
-                entries = entries,
-                entry = entry,
-            )
-            CachedChapterAudio(
-                fileName = entry.fileName,
-                audioPath = audioPath.toString(),
-                manifest = readText(manifestPath),
-            )
+    override suspend fun find(chapterKey: String): CachedChapterAudio? = onDisk {
+        val entries = loadEntries()
+        val entry = entries.find { it.chapterKey == chapterKey } ?: return@onDisk null
+        val audioPath = toAudioPath(entry.fileName)
+        val manifestPath = toManifestPath(entry.fileName)
+        if (!SystemFileSystem.exists(audioPath) || !SystemFileSystem.exists(manifestPath)) {
+            writeEntries(entries - entry)
+            return@onDisk null
         }
+        touch(
+            entries = entries,
+            entry = entry,
+        )
+        CachedChapterAudio(
+            fileName = entry.fileName,
+            audioPath = audioPath.toString(),
+            manifest = readText(manifestPath),
+        )
+    }
+
+    // Why: only compares revisions, so it neither reads the manifest nor counts as playing the chapter.
+    override suspend fun findFileName(chapterKey: String): String? = onDisk {
+        loadEntries().find { it.chapterKey == chapterKey }?.fileName
     }
 
     override suspend fun save(
@@ -66,8 +69,8 @@ internal class ChapterAudioCacheDataSourceImpl(
         manifest: String,
         writeAudio: suspend (Path) -> Unit,
     ): CachedChapterAudio = withContext(ioDispatcher) {
-        store { SystemFileSystem.createDirectories(directory.path) }
         val partialPath = Path(directory.path, "$fileName$PARTIAL_EXTENSION")
+        storeChapterAudio { SystemFileSystem.createDirectories(directory.path) }
         var isWritten = false
         // Why: a cancelled or failed download must not leave a partial file that is never indexed.
         try {
@@ -76,19 +79,17 @@ internal class ChapterAudioCacheDataSourceImpl(
         } finally {
             if (!isWritten) SystemFileSystem.delete(partialPath, mustExist = false)
         }
-        mutex.withLock {
+        onDisk {
             val audioPath = toAudioPath(fileName)
             val manifestPath = toManifestPath(fileName)
             // Why: files that never make it into the index could never be evicted.
             try {
-                store {
-                    SystemFileSystem.atomicMove(partialPath, audioPath)
-                    writeText(
-                        path = manifestPath,
-                        text = manifest,
-                    )
-                }
-            } catch (exception: ChapterAudioStorageException) {
+                SystemFileSystem.atomicMove(partialPath, audioPath)
+                writeText(
+                    path = manifestPath,
+                    text = manifest,
+                )
+            } catch (exception: IOException) {
                 listOf(partialPath, audioPath, manifestPath).forEach { path ->
                     SystemFileSystem.delete(path, mustExist = false)
                 }
@@ -106,8 +107,8 @@ internal class ChapterAudioCacheDataSourceImpl(
                 entries = others,
                 reservedBytes = entry.bytes,
             )
-            (others - kept.toSet()).forEach(::deleteFiles)
-            store { writeEntries(kept + entry) }
+            (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
+            writeEntries(kept + entry)
             CachedChapterAudio(
                 fileName = fileName,
                 audioPath = audioPath.toString(),
@@ -116,14 +117,18 @@ internal class ChapterAudioCacheDataSourceImpl(
         }
     }
 
-    override suspend fun remove(chapterKey: String) {
-        withContext(ioDispatcher) {
-            mutex.withLock {
-                val (removed, kept) = loadEntries().partition { it.chapterKey == chapterKey }
-                removed.forEach(::deleteFiles)
-                writeEntries(kept)
-            }
+    // Why: removing by file, not by chapter, keeps a newer revision saved while the broken one was playing.
+    override suspend fun remove(audioPath: String) {
+        onDisk {
+            val fileName = Path(audioPath).name.removeSuffix(AUDIO_EXTENSION)
+            val (removed, kept) = loadEntries().partition { it.fileName == fileName }
+            deleteFiles(fileName)
+            if (removed.isNotEmpty()) writeEntries(kept)
         }
+    }
+
+    private suspend fun <T> onDisk(block: () -> T): T = withContext(ioDispatcher) {
+        mutex.withLock { storeChapterAudio(block) }
     }
 
     // Why: the order only matters to evict, so a play inside the same hour doesn't rewrite the index.
@@ -140,13 +145,7 @@ internal class ChapterAudioCacheDataSourceImpl(
         }
     }
 
-    // Why: a full disk must read as a storage failure, not as the missing connection a download error means.
-    private inline fun <T> store(block: () -> T): T = try {
-        block()
-    } catch (exception: IOException) {
-        throw ChapterAudioStorageException(exception)
-    }
-
+    // Why: an older, smaller chapter that still fits is kept even when a more recent, larger one is dropped.
     private fun findEntriesToKeep(
         entries: List<ChapterAudioCacheEntryDto>,
         reservedBytes: Long,
@@ -155,8 +154,9 @@ internal class ChapterAudioCacheDataSourceImpl(
         return entries
             .sortedByDescending(ChapterAudioCacheEntryDto::lastUsedAt)
             .filter { entry ->
-                totalBytes += entry.bytes
-                totalBytes <= maxBytes
+                val fits = totalBytes + entry.bytes <= maxBytes
+                if (fits) totalBytes += entry.bytes
+                fits
             }
     }
 
@@ -198,9 +198,9 @@ internal class ChapterAudioCacheDataSourceImpl(
         SystemFileSystem.atomicMove(partialPath, indexPath)
     }
 
-    private fun deleteFiles(entry: ChapterAudioCacheEntryDto) {
-        SystemFileSystem.delete(toAudioPath(entry.fileName), mustExist = false)
-        SystemFileSystem.delete(toManifestPath(entry.fileName), mustExist = false)
+    private fun deleteFiles(fileName: String) {
+        SystemFileSystem.delete(toAudioPath(fileName), mustExist = false)
+        SystemFileSystem.delete(toManifestPath(fileName), mustExist = false)
     }
 
     private fun toAudioPath(fileName: String): Path = Path(directory.path, "$fileName$AUDIO_EXTENSION")

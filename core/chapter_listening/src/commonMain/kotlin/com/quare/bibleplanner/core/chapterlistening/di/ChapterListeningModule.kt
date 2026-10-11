@@ -99,6 +99,7 @@ val chapterListeningModule = module {
             getChapterListeningAccess = get(),
             getAdjacentListeningChapter = get(),
             getListeningChapterTitle = get(),
+            getListeningTime = get(),
             trackEvent = get(),
         )
     }

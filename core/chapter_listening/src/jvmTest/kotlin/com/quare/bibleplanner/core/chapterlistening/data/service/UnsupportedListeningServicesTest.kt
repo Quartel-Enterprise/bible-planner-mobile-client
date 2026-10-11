@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.chapterlistening.data.service
 
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningTimeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -41,9 +42,11 @@ internal class UnsupportedListeningServicesTest {
         val nowPlaying = NowPlayingModel(
             chapterTitle = "Genesis 1",
             subtitle = "KJV",
-            verses = emptyList(),
-            verseIndex = 0,
-            verseElapsed = Duration.ZERO,
+            verseNumber = null,
+            time = ListeningTimeModel(
+                elapsed = Duration.ZERO,
+                total = Duration.ZERO,
+            ),
             isPlaying = false,
         )
 

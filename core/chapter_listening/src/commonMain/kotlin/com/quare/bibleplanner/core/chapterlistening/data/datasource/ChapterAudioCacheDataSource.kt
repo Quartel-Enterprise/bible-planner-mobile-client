@@ -6,6 +6,8 @@ import kotlinx.io.files.Path
 internal interface ChapterAudioCacheDataSource {
     suspend fun find(chapterKey: String): CachedChapterAudio?
 
+    suspend fun findFileName(chapterKey: String): String?
+
     suspend fun save(
         chapterKey: String,
         fileName: String,
@@ -13,5 +15,5 @@ internal interface ChapterAudioCacheDataSource {
         writeAudio: suspend (Path) -> Unit,
     ): CachedChapterAudio
 
-    suspend fun remove(chapterKey: String)
+    suspend fun remove(audioPath: String)
 }
