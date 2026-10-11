@@ -10,14 +10,15 @@ on:
   pull_request:
     types:
       - closed
+  # No branch filter: it would match the triggering run's head branch, which for a fork's pull
+  # request can be the fork's main. The job's condition keeps the runs of pushes to main out,
+  # at the cost of a skipped run in the Actions history for each.
   workflow_run:
     workflows:
       - build-and-test
       - ui-tests
     types:
       - completed
-    branches-ignore:
-      - main
 
 permissions:
   actions: write
@@ -46,24 +47,25 @@ jobs:
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      SAME_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
       RUN_ID: ${{ github.event.workflow_run.id }}
     steps:
-      # The open pull requests this run belongs to, from one listing, before anything else, so
-      # that a failure further down can still be reported on them: the pull requests of this
-      # repository's branch, which a push that started no writer run (docs only) may have moved on
-      # from this commit, and a fork's pull request whose head is this commit. A branch can head
-      # more than one pull request (one into main, one into a release branch), each with a cache
-      # scope of its own. A fork's branch name says nothing, and a fork's jobs do write their
-      # pull request's scope, so a fork's push that started no writer run is not pruned; the next
-      # one is.
+      # The open pull requests this run belongs to, from one listing of the branch's pull requests,
+      # before anything else, so that a failure further down can still be reported on them: when
+      # the run is this repository's, its branch's own pull requests, whose head a push that
+      # started no writer run (docs only) may have moved on from this commit; and in any case a
+      # pull request whose head is this commit, which is how a fork's is found, since a fork's
+      # branch name says nothing. A branch can head more than one pull request (one into main, one
+      # into a release branch), each with a cache scope of its own. A fork's jobs do write their
+      # pull request's scope; a fork's push that started no writer run is not pruned, the next one
+      # is.
       - name: Find the pull requests
         id: pull_requests
         run: |
-          open=$(gh pr list --state open --limit 1000 --json number,headRefName,headRefOid,isCrossRepository)
-          pull_requests=$(jq -c --arg branch "$HEAD_BRANCH" --arg sha "$HEAD_SHA" \
-            '[.[] | select(((.isCrossRepository | not) and .headRefName == $branch) or .headRefOid == $sha)]' <<< "$open")
+          branch=$(gh pr list --state open --head "$HEAD_BRANCH" --limit 100 --json number,headRefName,headRefOid,isCrossRepository)
+          pull_requests=$(jq -c --arg sha "$HEAD_SHA" --argjson same "$SAME_REPOSITORY" \
+            '[.[] | select(($same and (.isCrossRepository | not)) or .headRefOid == $sha)]' <<< "$branch")
           echo "pull_requests=$pull_requests" >> "$GITHUB_OUTPUT"
-          echo "numbers=$(jq -r 'map(.number) | join(" ")' <<< "$pull_requests")" >> "$GITHUB_OUTPUT"
 
       # The pruning waits until the latest run of each writer workflow for this push of this pull
       # request has completed, since a writer job saves its cache in its post step, and only prunes
@@ -84,8 +86,7 @@ jobs:
           runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
           targets=""
-          for number in $(jq -r '.[].number' <<< "$PULL_REQUESTS"); do
-            head=$(jq -r --argjson number "$number" '.[] | select(.number == $number) | .headRefOid' <<< "$PULL_REQUESTS")
+          while read -r number head; do
             if [ "$head" != "$HEAD_SHA" ]; then
               newer=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$head&event=pull_request&per_page=100" \
                 --jq "[.workflow_runs[] | select((.pull_requests | any(.number == $number)) and (.name | IN(\"build-and-test\", \"ui-tests\")))] | length")
@@ -108,7 +109,7 @@ jobs:
               start=*) targets="$targets $number:${verdict#start=}" ;;
               *) echo "#$number at $HEAD_SHA: $verdict." ;;
             esac
-          done
+          done < <(jq -r '.[] | "\(.number) \(.headRefOid)"' <<< "$PULL_REQUESTS")
           echo "targets=${targets# }" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
@@ -140,11 +141,13 @@ jobs:
       # listing, say) on every pull request of the push. One notice per pull request: a failure
       # that persists would otherwise add a comment on every push.
       - name: Tell the pull request when the pruning failed
-        if: failure() && steps.pull_requests.outputs.numbers != ''
+        if: failure() && steps.pull_requests.outputs.pull_requests != ''
         env:
-          NUMBERS: ${{ steps.prune.outputs.failed || steps.pull_requests.outputs.numbers }}
+          FAILED: ${{ steps.prune.outputs.failed }}
+          PULL_REQUESTS: ${{ steps.pull_requests.outputs.pull_requests }}
         run: |
-          for number in $NUMBERS; do
+          numbers=${FAILED:-$(jq -r 'map(.number) | join(" ")' <<< "$PULL_REQUESTS")}
+          for number in $numbers; do
             if gh api "repos/$GH_REPO/issues/$number/comments" --paginate \
                 --jq '.[] | select(.user.login == "github-actions[bot]") | .body' | grep -q "^The pruning of this pull request"; then
               continue

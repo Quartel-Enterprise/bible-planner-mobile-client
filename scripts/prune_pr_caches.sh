@@ -75,15 +75,16 @@ if [ "$CLOSED" = true ]; then
     # One listing of the repository and one of the open pull requests, whose entries are left out;
     # either call failing fails the script rather than widening the sweep.
     OPEN=$(gh pr list --state open --limit 1000 --json number --jq '[.[].number]')
-    ENTRIES=$(gh cache list --limit 1000 --json id,key,ref,version,sizeInBytes,createdAt,lastAccessedAt \
-        | jq --argjson open "$OPEN" '
-            map(select((.ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n | tonumber) as $n | ($open | index($n)) == null))')
+    LISTING=$(gh cache list --limit 1000 --json id,key,ref,version,sizeInBytes,createdAt,lastAccessedAt)
+    ENTRIES=$(jq --argjson open "$OPEN" '
+        map(select((.ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n | tonumber) as $n | ($open | index($n)) == null))' <<< "$LISTING")
 else
     [ "$#" -eq 2 ] || usage
     REF="$1"
     RUN_START="$2"
     case "$RUN_START" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;; *) usage ;; esac
-    ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
+    LISTING=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
+    ENTRIES="$LISTING"
 fi
 
 # Every entry with the seconds since the run started, negative when it predates the run, and its
@@ -137,8 +138,9 @@ if [ -z "$TO_DELETE" ]; then
 fi
 
 TOTAL_MB=$(awk -F'\t' '{ sum += $2 } END { print sum }' <<< "$TO_DELETE")
-# What stays in the scope, the entries of other workflows included.
-KEPT_MB=$(jq --argjson deleted "$TOTAL_MB" '([.[].sizeInBytes] | add // 0 | . / 1000000 | round) - $deleted' <<< "$ENTRIES")
+# What stays of what was listed: the scope, other workflows' entries included, or with --closed the
+# whole repository.
+KEPT_MB=$(jq --argjson deleted "$TOTAL_MB" '([.[].sizeInBytes] | add // 0 | . / 1000000 | round) - $deleted' <<< "$LISTING")
 echo "Deleting $(wc -l <<< "$TO_DELETE" | tr -d ' ') entries, $TOTAL_MB MB, of $REF; keeping $KEPT_MB MB"
 printf '%s\n' "$TO_DELETE" | awk -F'\t' '{ printf "  %5d MB  created %s  accessed %s  %s\n", $2, $3, $4, $5 }'
 
