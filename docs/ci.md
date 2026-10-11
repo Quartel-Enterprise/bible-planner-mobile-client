@@ -86,7 +86,7 @@ Claude reviews pull requests at three points:
   label.
 
 The review can't read the inline comments on the pull request, so the action hands it the ones
-Claude left before (a draft marked ready a second time, a review on request), for it not to raise
+earlier reviews left (a draft marked ready a second time, a review on request), for it not to raise
 the same issues again.
 
 Both only comment: they fail only when the run itself does (an expired token, the 30-minute
@@ -140,14 +140,16 @@ so the three reviews share one recipe. At high effort it looks for correctness b
 violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
-locally. The model invokes the skill itself with the level and the pull request number, then posts
-the findings with `.github/actions/claude-review/post-review.sh`, as one review with an inline
-comment per finding (one notification), rather than with the skill's `--comment` flag, which posts
-one review per finding. When GitHub refuses an inline comment (a line outside the diff), the script
-posts the findings as one review body instead, so none is lost; with no findings it posts a review
-saying so, for the pull request to show the review ran. At high effort the skill runs its angles one
-after another in a single context, so a large pull request may take long: the workflows give it 30
-minutes.
+locally. On GitHub the model invokes the skill itself with the level and the pull request number and
+ends its reply with the findings as JSON; Claude posts nothing. A step of the action then hands that
+JSON to `.github/actions/claude-review/post-review.sh`, which posts it with the workflow's token (so
+the review comes from `github-actions`) as one review with an inline comment per finding, one
+notification, rather than through the skill's `--comment` flag, which posts one review per finding.
+When GitHub refuses an inline comment (a line outside the diff), the script posts the findings as one
+review body instead, so none is lost; with no findings it posts a review saying so, and a reply with
+no findings list (a timeout, a skill that stopped early) gets a review pointing at the run, so the
+pull request always shows the review ran. At high effort the skill runs its angles one after another
+in a single context, so a large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,
 a fixed recipe: five Sonnet agents, a shallow scan for bugs plus a `CLAUDE.md` check, nothing under

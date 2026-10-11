@@ -1,6 +1,12 @@
 name: 'Claude review'
 description: 'Reviews the pull request with the /code-review skill bundled with Claude Code, at high effort, and posts the findings as one review'
 
+# The review step only reviews. The findings come back as JSON in Claude's last message, and the
+# posting step below hands them to post-review.sh, which posts them as one pull request review with
+# the workflow's token. Claude itself posts nothing: the skill's --comment flag posts one review per
+# finding, each with its own notification, and a script run by Claude depends on a Bash allowlist the
+# action didn't honour for it.
+
 inputs:
   oauth-token:
     description: 'The CLAUDE_CODE_OAUTH_TOKEN secret.'
@@ -69,7 +75,7 @@ runs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
         comments=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
-          --jq '.[] | select(.user.login == "claude[bot]")
+          --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
             | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"')
         {
           echo "text<<EARLIER_COMMENTS_END"
@@ -86,12 +92,11 @@ runs:
     # invokes the skill itself, with the level and the pull request number as its only arguments:
     # put on the skill's command line, the instructions below would become part of its target.
     #
-    # The skill's --comment flag posts one review per finding, each with its own notification, so the
-    # findings go through post-review.sh instead, as one review. Only that script may post: the tool
-    # that posts inline comments one by one isn't allowed, nor is gh pr comment. The gh and git
-    # commands are the read-only ones the skill runs; the checkout has no history (fetch-depth 1), so
-    # the git ones only serve the diff. A command the review was denied shows as a warning on the run
-    # (last step), to be allowed here when the review needs it.
+    # Without a tool to report through, the skill returns its findings as a JSON array, which is what
+    # the posting step reads from Claude's last message. The gh and git commands are the read-only
+    # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
+    # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
+    # here when the review needs it.
     #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
@@ -108,31 +113,58 @@ runs:
           `code-review` skill once, with `high ${{ github.event.pull_request.number }}` as its
           arguments, and wait for its findings.
 
-          Report the findings only through .github/actions/claude-review/post-review.sh, run once,
-          exactly in this form:
-
-          .github/actions/claude-review/post-review.sh ${{ github.event.pull_request.number }} <<'JSON'
-          [{"path": "<file>", "line": <line in the new file>, "body": "<the issue and the fix, in Markdown>"}]
-          JSON
-
-          One object per finding, most severe first; add "start_line" when a finding spans lines. Run
-          it with `[]` when there are no findings. It posts everything as one pull request review.
-          Don't post or print the findings any other way, don't run the app, don't invoke any other
-          skill and don't edit any file.
+          End your reply with the skill's findings as a JSON array inside a ```json fence, and nothing
+          after it: one object per finding, most severe first, each with "file", "line" (in the new
+          version of the file), "summary", "failure_scenario" and "category", plus "start_line" when
+          the finding spans lines. Write `[]` when there are none. A later step posts that array as
+          one pull request review. Don't post anything to GitHub yourself, don't run the app, don't
+          invoke any other skill and don't edit any file.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Bash(.github/actions/claude-review/post-review.sh:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*)"
+          --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(cd:*)"
           --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
 
+    # Claude's last message ends with the findings in a ```json fence (the last one, should the skill
+    # print more than one); a reply that is nothing but the array counts too. Without either, the
+    # review ended without a findings list (a timeout, a refusal, a skill that stopped early): a review
+    # saying so is posted, so the pull request shows the run, and the run shows a warning.
+    - name: Post the findings as one review
+      if: always() && steps.claude.outputs.execution_file != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        result=$(jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE")
+        findings=$(awk '
+          /^[[:space:]]*```json[[:space:]]*$/ { buf = ""; inside = 1; next }
+          /^[[:space:]]*```[[:space:]]*$/ { if (inside) { last = buf; inside = 0 }; next }
+          inside { buf = buf $0 "\n" }
+          END { printf "%s", last }' <<< "$result")
+        if ! jq -e 'type == "array"' <<< "$findings" > /dev/null 2>&1; then
+          if jq -e 'type == "array"' <<< "$result" > /dev/null 2>&1; then
+            findings=$result
+          else
+            echo "::warning::The review ended without a findings list, so only a notice was posted."
+            jq -n --arg url "$RUN_URL" '{event: "COMMENT",
+              body: ("### Code review\n\nThe review ended without a findings list; see [the run](" + $url + ").")}' |
+              gh api --method POST "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --input - --jq .html_url
+            exit 0
+          fi
+        fi
+        .github/actions/claude-review/post-review.sh "$PR_NUMBER" <<< "$findings"
+
     # The action hides Claude's output, since this repository's logs are public, so a tool the review
-    # was denied doesn't show anywhere. Only the tool's name is printed, and for Bash the program and
-    # its subcommand (two for gh, whose verbs come in pairs), enough to allow it above: a word that
-    # doesn't look like one (a path, an argument, an assignment) is left out. Reading the file never
-    # fails the review.
+    # was denied doesn't show anywhere. Only the tool's name is printed, and for Bash the program (a
+    # path to a script counts), its flags and its subcommand (two for gh, whose verbs come in pairs),
+    # enough to allow it above: a word that doesn't look like one (a path argument, a value, an
+    # assignment) is left out. Reading the file never fails the review.
     - name: List the tools the review was denied
       if: always() && steps.claude.outputs.execution_file != ''
       shell: bash
@@ -144,8 +176,8 @@ runs:
             then [.tool_input.command // "" | splits("\\s+") | select(. != "")]
               | map(select(test("^[A-Za-z_][A-Za-z0-9_]*=") | not))
               | "Bash("
-                + ([(.[0] // "" | select(test("^[A-Za-z][A-Za-z0-9._-]*$")) // "?"),
-                    (.[1] // "" | select(test("^[a-z][a-z0-9-]*$"))),
+                + ([(.[0] // "" | select(test("^[A-Za-z./][A-Za-z0-9._/-]*$")) // "?"),
+                    (.[1] // "" | select(test("^(-[A-Za-z0-9-]*|[a-z][a-z0-9-]*)$"))),
                     (if .[0] == "gh" then (.[2] // "" | select(test("^[a-z][a-z0-9-]*$"))) else empty end)]
                    | join(" "))
                 + ")"
