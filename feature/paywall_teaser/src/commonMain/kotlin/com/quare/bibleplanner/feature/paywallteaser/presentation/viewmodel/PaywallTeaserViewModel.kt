@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.paywallteaser.presentation.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -8,15 +9,30 @@ import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.studyunlock.domain.usecase.IsRewardedUnlockEnabled
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 internal class PaywallTeaserViewModel(
     private val navigator: Navigator,
     route: PaywallTeaserNavRoute,
+    checkRewardedUnlockEnabled: IsRewardedUnlockEnabled,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PaywallTeaserUiEvent>(trackEvent) {
     val reason = route.reason
+
+    val isRewardedUnlockEnabled: StateFlow<Boolean>
+        field = MutableStateFlow(false)
+
+    init {
+        viewModelScope.launch {
+            isRewardedUnlockEnabled.value = suspendRunCatching { checkRewardedUnlockEnabled() }.getOrDefault(false)
+        }
+    }
 
     override fun handleEvent(event: PaywallTeaserUiEvent) {
         trackEvent(

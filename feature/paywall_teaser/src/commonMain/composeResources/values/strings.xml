@@ -9,5 +9,6 @@
     <string name="paywall_teaser_chapter_study_limit_dismiss">Not now</string>
     <string name="paywall_teaser_chapter_listening_limit_title">Today's free chapter is used</string>
     <string name="paywall_teaser_chapter_listening_limit_body">Each day you can unlock one chapter to listen to with a short video. With Pro you can listen to any chapter, as many as you want — and keep going into the next one on its own.</string>
+    <string name="paywall_teaser_chapter_listening_limit_body_free">Each day you can listen to one chapter for free. With Pro you can listen to any chapter, as many as you want — and keep going into the next one on its own.</string>
     <string name="paywall_teaser_chapter_listening_limit_dismiss">Not now</string>
 </resources>

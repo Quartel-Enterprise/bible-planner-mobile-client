@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.paywallteaser.presentation.mapper
 
 import bibleplanner.feature.paywall_teaser.generated.resources.Res
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_body
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_body_free
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_listening_limit_title
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_body
@@ -13,7 +14,7 @@ import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_hi
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserCopy
 
-internal fun PaywallTeaserReason.toCopy(): PaywallTeaserCopy = when (this) {
+internal fun PaywallTeaserReason.toCopy(isRewardedUnlockEnabled: Boolean): PaywallTeaserCopy = when (this) {
     PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR -> PaywallTeaserCopy(
         title = Res.string.paywall_teaser_highlight_custom_color_title,
         body = Res.string.paywall_teaser_highlight_custom_color_body,
@@ -28,7 +29,12 @@ internal fun PaywallTeaserReason.toCopy(): PaywallTeaserCopy = when (this) {
 
     PaywallTeaserReason.CHAPTER_LISTENING_LIMIT -> PaywallTeaserCopy(
         title = Res.string.paywall_teaser_chapter_listening_limit_title,
-        body = Res.string.paywall_teaser_chapter_listening_limit_body,
+        // Why: with rewarded videos switched off, the day's chapter is unlocked for free, not with a video.
+        body = if (isRewardedUnlockEnabled) {
+            Res.string.paywall_teaser_chapter_listening_limit_body
+        } else {
+            Res.string.paywall_teaser_chapter_listening_limit_body_free
+        },
         dismiss = Res.string.paywall_teaser_chapter_listening_limit_dismiss,
     )
 }

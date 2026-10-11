@@ -41,10 +41,11 @@ private val bodyMaxWidth = 300.dp
 @Composable
 internal fun PaywallTeaserSheet(
     reason: PaywallTeaserReason,
+    isRewardedUnlockEnabled: Boolean,
     onEvent: (PaywallTeaserUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val copy = reason.toCopy()
+    val copy = reason.toCopy(isRewardedUnlockEnabled)
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

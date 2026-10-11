@@ -9,5 +9,6 @@
     <string name="paywall_teaser_chapter_study_limit_dismiss">Ahora no</string>
     <string name="paywall_teaser_chapter_listening_limit_title">Ya usaste el capítulo gratis de hoy</string>
     <string name="paywall_teaser_chapter_listening_limit_body">Cada día puedes desbloquear un capítulo para escuchar con un video corto. Con Pro escuchas cualquier capítulo, todos los que quieras — y sigue al siguiente solo.</string>
+    <string name="paywall_teaser_chapter_listening_limit_body_free">Cada día escuchas un capítulo gratis. Con Pro escuchas cualquier capítulo, todos los que quieras — y sigue al siguiente solo.</string>
     <string name="paywall_teaser_chapter_listening_limit_dismiss">Ahora no</string>
 </resources>
