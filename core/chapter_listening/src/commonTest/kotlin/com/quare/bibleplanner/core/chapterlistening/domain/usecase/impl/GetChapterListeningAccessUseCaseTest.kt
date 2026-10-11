@@ -209,11 +209,27 @@ internal class GetChapterListeningAccessUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN the access check fails WHEN asking THEN lets the person listen`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            isProCheckFailing = true,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(ChapterListeningAccessModel.Open, access)
+    }
+
     private fun prepareScenario(
         isPro: Boolean,
         dailyLimit: Int? = null,
         freeDailyLimit: Int? = null,
         isSignedIn: Boolean = true,
+        isProCheckFailing: Boolean = false,
     ) {
         val dateProvider = ListeningDateProvider(
             currentTimestampProvider = { 0L },
@@ -232,7 +248,10 @@ internal class GetChapterListeningAccessUseCaseTest {
         )
         useCase = GetChapterListeningAccessUseCase(
             getAuthenticatedUserId = { "user-1".takeIf { isSignedIn } },
-            isProUser = { isPro },
+            isProUser = {
+                if (isProCheckFailing) error("Billing unavailable")
+                isPro
+            },
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
             getIntRemoteConfig = remoteConfig,

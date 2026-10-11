@@ -1450,6 +1450,46 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
+    fun `GIVEN a playback that failed mid chapter WHEN retrying THEN resumes where it was`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        audioPlayer.position = 8.seconds
+        audioPlayer.emit(
+            ChapterAudioPlayerEvent.Failed(
+                playbackId = audioPlayer.plays.last().playbackId,
+                isFileUnreadable = false,
+            ),
+        )
+
+        // When
+        controller.togglePlayPause()
+
+        // Then
+        assertEquals(8.seconds, audioPlayer.plays.last().position)
+    }
+
+    @Test
+    fun `GIVEN the end of chapter sleep timer WHEN a chapter plays THEN prefetches nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.setSleepTimer(ListeningSleepTimerOption.END_OF_CHAPTER)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(listOf(genesisOne), audioRepository.requests)
+        }
+
+    @Test
     fun `GIVEN a playback failure WHEN it fails THEN tracks the audio as unavailable`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1636,7 +1676,6 @@ internal class ChapterListeningControllerImplTest {
 
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
-            assertTrue(genesisTwo in audioRepository.requests)
         }
 
     @Test

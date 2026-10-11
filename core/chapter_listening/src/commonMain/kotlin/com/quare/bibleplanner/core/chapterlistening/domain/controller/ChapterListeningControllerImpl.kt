@@ -115,6 +115,10 @@ internal class ChapterListeningControllerImpl(
     private var hasTrackedStart = false
     private var hasPrefetched = false
     private var evictJob: Job? = null
+
+    // Why: a retry after a failed playback picks up where the chapter was, not at its title.
+    private var retryStart: Pair<ListeningSegmentModel, Duration>? = null
+    private val evictedEmptyChapters = mutableSetOf<ChapterLocationModel>()
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
@@ -179,10 +183,9 @@ internal class ChapterListeningControllerImpl(
     override fun followReader(chapter: ChapterLocationModel) {
         val current = session ?: return
         if (current.segment.chapter == chapter || current.lockedSegment?.chapter == chapter) return
-        val followed = toChapterSession(
+        val followed = toReaderSession(
             current = current,
             chapter = chapter,
-            cause = ChapterChangeCause.READER,
         )
         // Why: a chapter the person only opened to read must not stop the one they are listening to.
         launchMove {
@@ -269,10 +272,9 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
-    private fun toChapterSession(
+    private fun toReaderSession(
         current: ListeningSessionModel,
         chapter: ChapterLocationModel,
-        cause: ChapterChangeCause,
     ): ListeningSessionModel {
         val daySegment = current.day?.segments?.find { it.chapter == chapter }
         val base = if (daySegment == null) {
@@ -285,7 +287,7 @@ internal class ChapterListeningControllerImpl(
         }
         return base.copy(
             segment = daySegment ?: toWholeChapter(chapter),
-            chapterChangeCause = cause,
+            chapterChangeCause = ChapterChangeCause.READER,
         )
     }
 
@@ -481,11 +483,15 @@ internal class ChapterListeningControllerImpl(
             else -> ListeningStatusModel.PAUSED
         }
         // Why: dropped from the cache, so a retry fetches the server's manifest instead of the same one.
-        if (loadedAudio != null && verses.isEmpty()) {
+        // Why: once per launch, since a version whose verses really don't match would download again on every retry.
+        if (loadedAudio != null && verses.isEmpty() && evictedEmptyChapters.add(session.segment.chapter)) {
             evictJob = scope.launch { chapterAudioRepository.evict(loadedAudio.audioPath) }
         }
         audio = loadedAudio
-        position = verses.firstOrNull()?.start ?: Duration.ZERO
+        position = toStartPosition(
+            segment = session.segment,
+            verses = verses,
+        )
         updateSession {
             it.copy(
                 verses = verses,
@@ -522,6 +528,16 @@ internal class ChapterListeningControllerImpl(
                 chapter = left.segment.chapter,
             )
         }
+    }
+
+    private fun toStartPosition(
+        segment: ListeningSegmentModel,
+        verses: List<ListeningVerseModel>,
+    ): Duration {
+        val first = verses.firstOrNull() ?: return Duration.ZERO
+        val retried = retryStart?.takeIf { (retriedSegment, _) -> retriedSegment == segment }?.second
+        retryStart = null
+        return retried?.coerceIn(first.start, verses.last().end) ?: first.start
     }
 
     private suspend fun toListeningVerses(
@@ -625,6 +641,7 @@ internal class ChapterListeningControllerImpl(
     private fun prefetchNextSegment() {
         val current = session ?: return
         if (current.mode != ListeningModeModel.DAY_READING && !state.value.settings.isAutoNextEnabled) return
+        if (!willReachNextSegment(current)) return
         prefetchJob?.cancel()
         prefetchingChapter = null
         prefetchJob = scope.launch {
@@ -644,6 +661,20 @@ internal class ChapterListeningControllerImpl(
         prefetchJob?.cancel()
         prefetchingChapter = null
     }
+
+    // Why: a sleep timer that stops before the chapter ends means the next one would be fetched for nothing.
+    private fun willReachNextSegment(current: ListeningSessionModel): Boolean =
+        when (val timer = state.value.sleepTimer) {
+            ListeningSleepTimerModel.Off -> true
+
+            ListeningSleepTimerModel.EndOfChapter -> false
+
+            is ListeningSleepTimerModel.Countdown -> {
+                val end = current.verses.lastOrNull()?.end ?: Duration.ZERO
+                timer.remaining > (end - position) / state.value.settings.speed
+                    .toDouble()
+            }
+        }
 
     private suspend fun prefetch(current: ListeningSessionModel) {
         val next = findAdjacentSegment(
@@ -874,24 +905,18 @@ internal class ChapterListeningControllerImpl(
          * saved. A skip from the notification or the headset cannot show the unlock, so it keeps a
          * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
          */
-        if (shouldPlay) {
-            startLoad {
-                openSegment(
-                    session = moved,
-                )
-            }
-        } else if (session?.isPlaying == true) {
-            if (!isOpen(moved.segment)) {
-                trackLocked(moved.segment)
-                return
-            }
-            startLoad {
-                openSegment(
-                    session = moved,
-                )
-            }
-        } else {
+        if (!shouldPlay && session?.isPlaying != true) {
             showUnloaded(moved)
+            return
+        }
+        if (!shouldPlay && !isOpen(moved.segment)) {
+            trackLocked(moved.segment)
+            return
+        }
+        startLoad {
+            openSegment(
+                session = moved,
+            )
         }
     }
 
@@ -924,13 +949,8 @@ internal class ChapterListeningControllerImpl(
             ?.let(::toWholeChapter)
     }
 
-    // Why: like the reader's gate, a failed access check lets the person listen; the server's budget caps the cost.
-    private suspend fun isOpen(segment: ListeningSegmentModel): Boolean {
-        val access = suspendRunCatching { getChapterListeningAccess(segment.chapter) }
-            .onFailure { throwable -> Logger.e(throwable) { "Could not check the access to ${segment.chapter}" } }
-            .getOrDefault(ChapterListeningAccessModel.Open)
-        return access is ChapterListeningAccessModel.Open
-    }
+    private suspend fun isOpen(segment: ListeningSegmentModel): Boolean =
+        getChapterListeningAccess(segment.chapter) is ChapterListeningAccessModel.Open
 
     private fun trackLocked(segment: ListeningSegmentModel) {
         trackEvent(
@@ -1061,6 +1081,7 @@ internal class ChapterListeningControllerImpl(
         Logger.e { "Chapter audio playback failed for ${current.segment.chapter}" }
         val failedAudioPath = audio?.audioPath
         silencePlayer()
+        retryStart = current.segment to position
         audio = null
         // Why: the verses belong to the audio that failed, and the system player must not offer to seek in it.
         updateSession {

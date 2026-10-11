@@ -39,15 +39,13 @@ internal class ChapterListeningGate(
 ) {
     private var earnedJob: Job? = null
 
-    // Why: a failed access check lets the person listen, like the chapter study does; the server's monthly budget caps what that can cost.
     fun request(
         scope: CoroutineScope,
         chapter: ChapterLocationModel,
         onAllowed: () -> Unit,
     ) {
         scope.launch {
-            val access = suspendRunCatching { getChapterListeningAccess(chapter) }
-                .getOrDefault(ChapterListeningAccessModel.Open)
+            val access = getChapterListeningAccess(chapter)
             when (access) {
                 ChapterListeningAccessModel.Open -> onAllowed()
 

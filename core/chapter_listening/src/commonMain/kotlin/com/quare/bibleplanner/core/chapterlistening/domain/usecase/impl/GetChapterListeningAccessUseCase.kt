@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
@@ -9,6 +10,7 @@ import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 
 /*
  * Why: the voices are generated on the server for a signed-in user, so listening needs an account.
@@ -22,7 +24,13 @@ internal class GetChapterListeningAccessUseCase(
     private val dateProvider: ListeningDateProvider,
     private val getIntRemoteConfig: GetIntRemoteConfig,
 ) : GetChapterListeningAccess {
-    override suspend fun invoke(chapter: ChapterLocationModel): ChapterListeningAccessModel {
+    // Why: like the chapter study, a failed access check lets the person listen; the server's budget caps the cost.
+    override suspend fun invoke(chapter: ChapterLocationModel): ChapterListeningAccessModel =
+        suspendRunCatching { findAccess(chapter) }
+            .onFailure { throwable -> Logger.e(throwable) { "Could not check the listening access to $chapter" } }
+            .getOrDefault(ChapterListeningAccessModel.Open)
+
+    private suspend fun findAccess(chapter: ChapterLocationModel): ChapterListeningAccessModel {
         if (getAuthenticatedUserId() == null) return ChapterListeningAccessModel.LoginRequired
         if (isProUser()) return ChapterListeningAccessModel.Open
         val unlockedChapters = unlockRepository.getUnlockedChapters(dateProvider.today)

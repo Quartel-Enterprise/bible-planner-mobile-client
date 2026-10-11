@@ -52,22 +52,6 @@ internal class ChapterListeningGateTest {
     }
 
     @Test
-    fun `GIVEN a failing access check WHEN requesting THEN lets it play`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(access = { error("offline") })
-
-        // When
-        gate.request(
-            scope = backgroundScope,
-            chapter = chapter,
-            onAllowed = { allowedCount++ },
-        )
-
-        // Then
-        assertEquals(1, allowedCount)
-    }
-
-    @Test
     fun `GIVEN the daily unlock used WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
         // Given
         prepareScenario(access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = true) })
