@@ -154,8 +154,9 @@ another line of a changed file (the recipe reports bugs on unchanged lines of a 
 purpose) is anchored to the nearest changed line of that file, naming its own line, and still opens a
 thread; a finding in a file the diff doesn't touch goes in the review's body, which opens no thread
 and so doesn't hold the merge. With no findings the review says so, and a reply with no findings list
-(a timeout, a skill that stopped early) gets a review pointing at the run, so the pull request always
-shows the review ran. The scripts the hook runs are copied out of the checkout before the review,
+(a skill that stopped early, a session that never ran) gets a review pointing at the run, so the pull
+request shows the review ran. The exception is the job's 30-minute timeout: GitHub cancels the job
+and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the checkout before the review,
 and the model's file tools are blocked, so nothing the review does to the working tree changes what
 runs with the App's token. At high effort the skill runs its angles one after another in a single context, so a
 large pull request may take long: the workflows give it 30 minutes.

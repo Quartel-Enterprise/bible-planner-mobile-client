@@ -173,10 +173,12 @@ runs:
     # Without the marker, a review by claude[bot] on the reviewed commit since the review started still
     # counts as posted (the hook may have been killed between its post and the marker). Otherwise the
     # findings of Claude's last message (extract-findings.py reads the ```json fence) are posted here,
-    # with the workflow's token, and a notice when there is no findings list (a timeout, a refusal, a
-    # skill that stopped early), so the pull request always shows the run.
+    # with the workflow's token, and a notice when there is no findings list (a refusal, a skill that
+    # stopped early, a session that never ran: an expired token), so the pull request shows the run.
+    # The one case with no notice is the job's timeout: GitHub cancels the job, and no step runs after
+    # that; the failed check is the signal.
     - name: Post the findings when the hook didn't
-      if: always() && steps.claude.outputs.execution_file != ''
+      if: always() && steps.tools.outputs.dir != ''
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
@@ -205,6 +207,11 @@ runs:
           exit 0
         fi
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
+        if [ -z "$EXECUTION_FILE" ] || [ ! -f "$EXECUTION_FILE" ]; then
+          echo "The session left no execution file: it didn't run."
+          "$TOOLS/post-review.sh" "$PR_NUMBER" < /dev/null
+          exit 0
+        fi
         jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE" |
           python3 "$TOOLS/extract-findings.py" |
           "$TOOLS/post-review.sh" "$PR_NUMBER"

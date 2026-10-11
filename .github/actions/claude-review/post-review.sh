@@ -26,14 +26,18 @@ run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GI
 [ -n "${GITHUB_RUN_ID:-}" ] || run_url=""
 head_sha=${PR_HEAD_SHA:-}
 base_sha=${PR_BASE_SHA:-}
+started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 input=$(cat)
 
 warn() { echo "::warning::$*" >&2; }
 
-# Posts the review payload on stdin and prints its url. Transient errors are retried; a 422, GitHub
-# refusing the payload, returns 22 right away so the caller can post the findings another way.
+# Posts the review payload on stdin and prints its url. Transient errors are retried, but creating a
+# review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit
+# since the script started means GitHub took the request whose answer was lost, and counts as posted.
+# A 422, GitHub refusing the payload, returns 22 right away so the caller can post the findings
+# another way.
 post() {
-  local payload attempt out
+  local payload attempt out already
   payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)')
   for attempt in 1 2 3; do
     if out=$(gh api --method POST "repos/$repo/pulls/$pr/reviews" --input - --jq .html_url <<< "$payload" 2>&1); then
@@ -45,6 +49,13 @@ post() {
       return 22
     fi
     [ "$attempt" -lt 3 ] && sleep $((attempt * 5))
+    already=$(HEAD_SHA="$head_sha" STARTED="$started" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
+      --jq 'select(env.HEAD_SHA != "") | .[] | select(.commit_id == env.HEAD_SHA and .submitted_at >= env.STARTED
+        and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1 || true)
+    if [ -n "$already" ]; then
+      echo "$already"
+      return 0
+    fi
   done
   echo "$out" >&2
   return 1
