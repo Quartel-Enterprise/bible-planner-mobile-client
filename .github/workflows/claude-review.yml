@@ -1,14 +1,14 @@
 name: claude-review
 
-# Reviews every pull request with Claude when it opens, and posts the findings as inline comments.
-# It is a second opinion on top of the review the create-pr skill already runs before the pull
-# request opens. A draft is reviewed when it is marked ready for review instead. A reopened pull
-# request isn't: Claude has commented on it already, so the review would skip it.
+# Reviews every pull request with Claude when it opens, and posts the findings as one review with an
+# inline comment per finding. It is a second opinion on top of the review the create-pr skill already
+# runs before the pull request opens. A draft is reviewed when it is marked ready for review instead;
+# a reopened pull request isn't. A draft marked ready a second time is reviewed again, told what the
+# earlier reviews found so it doesn't repeat them.
 #
 # The review only comments: the job fails only when the run itself does (an expired token, the
-# timeout), never because of what it found. It runs once per pull request: the review skips a pull
-# request it has already commented on. Adding the ai-review label reviews it again, after new pushes
-# (claude-review-on-request).
+# timeout), never because of what it found. Pushes after the pull request opens don't review it
+# again: adding the ai-review label does (claude-review-on-request).
 on:
   pull_request:
     types:
@@ -33,8 +33,11 @@ jobs:
       issues: read
       id-token: write
     steps:
+      # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
+      # commit the comments are anchored to.
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
 
       - uses: ./.github/actions/claude-review
