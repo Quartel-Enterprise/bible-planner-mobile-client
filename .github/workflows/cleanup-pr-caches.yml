@@ -26,12 +26,10 @@ permissions:
 
 jobs:
   prune:
-    # A failed or cancelled run never gets past the gate below, so it starts no runner. A fork's
-    # jobs write no cache.
+    # A failed or cancelled run never gets past the gate below, so it starts no runner.
     if: >-
       github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -49,24 +47,23 @@ jobs:
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
       RUN_ID: ${{ github.event.workflow_run.id }}
-      # A branch can head more than one open pull request (one into main, one into a release
-      # branch), each with a cache scope of its own, and the list can name a pull request of a
-      # fork that builds on the branch, which this repository does not have.
-      PULL_REQUESTS: ${{ toJSON(github.event.workflow_run.pull_requests) }}
     steps:
-      # The pull requests of this repository among the run's, before anything else, so that a
-      # failure further down can still be reported on them. GitHub ties a run to the pull requests
-      # whose head it is, so after a push that started no writer run (docs only) the list is empty;
-      # the open pull requests of the branch are then looked up.
+      # The open pull requests this run belongs to, from one listing, before anything else, so
+      # that a failure further down can still be reported on them: the pull requests of this
+      # repository's branch, which a push that started no writer run (docs only) may have moved on
+      # from this commit, and a fork's pull request whose head is this commit. A branch can head
+      # more than one pull request (one into main, one into a release branch), each with a cache
+      # scope of its own. A fork's branch name says nothing, and a fork's jobs do write their
+      # pull request's scope, so a fork's push that started no writer run is not pruned; the next
+      # one is.
       - name: Find the pull requests
         id: pull_requests
         run: |
-          numbers=$(jq -r --arg repo "$GITHUB_API_URL/repos/$GH_REPO" \
-            '[.[] | select(.base.repo.url == $repo) | .number] | join(" ")' <<< "$PULL_REQUESTS")
-          if [ -z "$numbers" ]; then
-            numbers=$(gh pr list --state open --head "$HEAD_BRANCH" --json number --jq 'map(.number) | join(" ")')
-          fi
-          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
+          pull_requests=$(gh pr list --state open --limit 1000 --json number,headRefName,headRefOid,isCrossRepository \
+            --jq --arg branch "$HEAD_BRANCH" --arg sha "$HEAD_SHA" \
+            '[.[] | select(((.isCrossRepository | not) and .headRefName == $branch) or .headRefOid == $sha)]')
+          echo "pull_requests=$(jq -c '.' <<< "$pull_requests")" >> "$GITHUB_OUTPUT"
+          echo "numbers=$(jq -r 'map(.number) | join(" ")' <<< "$pull_requests")" >> "$GITHUB_OUTPUT"
 
       # The pruning waits until the latest run of each writer workflow for this push of this pull
       # request has completed, since a writer job saves its cache in its post step, and only prunes
@@ -82,13 +79,13 @@ jobs:
       - name: Find the push's runs
         id: push
         env:
-          NUMBERS: ${{ steps.pull_requests.outputs.numbers }}
+          PULL_REQUESTS: ${{ steps.pull_requests.outputs.pull_requests }}
         run: |
           runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
           targets=""
-          for number in $NUMBERS; do
-            head=$(gh pr view "$number" --json headRefOid --jq '.headRefOid')
+          for number in $(jq -r '.[].number' <<< "$PULL_REQUESTS"); do
+            head=$(jq -r --argjson number "$number" '.[] | select(.number == $number) | .headRefOid' <<< "$PULL_REQUESTS")
             if [ "$head" != "$HEAD_SHA" ]; then
               newer=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$head&event=pull_request&per_page=100" \
                 --jq "[.workflow_runs[] | select((.pull_requests | any(.number == $number)) and (.name | IN(\"build-and-test\", \"ui-tests\")))] | length")
@@ -156,8 +153,8 @@ jobs:
           done
 
   cleanup:
-    # The closing of a fork's pull request brings a read-only token, which can delete nothing; a
-    # fork's jobs wrote nothing, and the next same-repository close sweeps whatever is left.
+    # The closing of a fork's pull request brings a read-only token, which can delete nothing; the
+    # next same-repository close sweeps the fork's entries with the rest.
     if: >-
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository
