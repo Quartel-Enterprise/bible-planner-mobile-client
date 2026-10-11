@@ -103,12 +103,12 @@ CLASSIFIED=$(jq --arg start "$RUN_START" --argjson closed "$CLOSED" '
     # so the strings do not sort.
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
     def fraction: capture("\\.(?<f>[0-9]+)")? // {f: "0"} | ("0." + .f) | tonumber;
-    if $closed then map(. + { delete: true }) else
+    map(. + { createdExactly: ((.createdAt | seconds) + (.createdAt | fraction)) })
+    | if $closed then map(. + { delete: true }) else
     ($start | seconds) as $t
     | map(select(.key | test("^(gradle|konan)-")))
     | map(. + {
         created: ((.createdAt | seconds) - $t),
-        createdExactly: ((.createdAt | seconds) + (.createdAt | fraction)),
         accessed: ((.lastAccessedAt | seconds) - $t),
         kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; "")),
         job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end)
@@ -130,7 +130,7 @@ CLASSIFIED=$(jq --arg start "$RUN_START" --argjson closed "$CLOSED" '
 
 TO_DELETE=$(jq -r '
     map(select(.delete))
-    | sort_by(.createdAt)
+    | sort_by(.createdExactly)
     | .[] | [.id, (.sizeInBytes / 1000000 | round), .createdAt[0:19], .lastAccessedAt[0:19], ((.ref // "") + " " + .key)] | @tsv
 ' <<< "$CLASSIFIED")
 

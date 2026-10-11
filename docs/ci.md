@@ -77,7 +77,9 @@ error that names the secret.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
 `merge-when-green.yml` too. A workflow missing from it still blocks the merge while running, but its
-completion does not trigger one.
+completion does not trigger one. When it is one of the workflows that write the Gradle cache on pull
+requests, update the `workflow_run` list and the `WRITERS` variable of `cleanup-pr-caches.yml` as
+well, or the pruning stops without an error.
 
 ## AI review
 

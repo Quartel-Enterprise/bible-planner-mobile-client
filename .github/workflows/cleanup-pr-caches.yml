@@ -47,8 +47,11 @@ jobs:
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
       SAME_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
       RUN_ID: ${{ github.event.workflow_run.id }}
+      # The writer workflows, the ones the trigger above names; renaming one means both places.
+      WRITERS: build-and-test ui-tests
     steps:
       # The open pull requests this run belongs to, from one listing of the branch's pull requests,
       # before anything else, so that a failure further down can still be reported on them: when
@@ -90,8 +93,8 @@ jobs:
           while read -r number head; do
             # A run that lists no pull request lost its association when the head moved on; it
             # is still this push's.
-            verdict=$(jq -r --argjson number "$number" '
-              ["build-and-test", "ui-tests"] as $writers
+            verdict=$(jq -r --argjson number "$number" --arg writers "$WRITERS" '
+              ($writers | split(" ")) as $writers
               | map(select(((.pull_requests | length == 0) or (.pull_requests | any(.number == $number))) and (.name | IN($writers[]))))
               | group_by(.name) | map(max_by(.created_at))
               | if length < ($writers | length) then "only one writer workflow ran; nothing to prune for this push"
@@ -103,10 +106,12 @@ jobs:
               *) echo "#$number at $HEAD_SHA: $verdict."; continue ;;
             esac
             if [ "$head" != "$HEAD_SHA" ]; then
-              # Writer runs of the branch created after this push's: a newer push is, or was,
-              # restoring and saving, whatever commit is the head by now.
-              newer=$(gh api "repos/$GH_REPO/actions/runs?event=pull_request&branch=$HEAD_BRANCH&created=>$start&per_page=100" \
-                --jq "[.workflow_runs[] | select(.head_sha != \"$HEAD_SHA\" and (.name | IN(\"build-and-test\", \"ui-tests\")))] | length")
+              # Writer runs of the same branch of the same repository created after this push's:
+              # a newer push is, or was, restoring and saving, whatever commit is the head by now.
+              newer=$(gh api -X GET "repos/$GH_REPO/actions/runs" -f event=pull_request -f branch="$HEAD_BRANCH" \
+                -f created=">$start" -f per_page=100 \
+                --jq "[.workflow_runs[] | select(.head_sha != \"$HEAD_SHA\" and .head_repository.full_name == \"$HEAD_REPOSITORY\"
+                       and (.name | IN(\$ENV.WRITERS | split(\" \") | .[])))] | length")
               if [ "$newer" != "0" ]; then
                 echo "#$number has moved on from $HEAD_SHA to $head, and a newer push has writer runs; that push prunes."
                 continue
