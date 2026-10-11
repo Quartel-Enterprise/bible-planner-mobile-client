@@ -69,20 +69,21 @@ completion does not trigger one.
 
 Claude reviews pull requests at three points:
 
-- **Before it opens**, the `create-pr` skill runs `/code-review high` for correctness bugs and the
-  project's `review-conventions` skill, which checks the change against the docs under `docs/`, the
+- **Before it opens**, the `create-pr` skill runs `/code-review high`, which looks for correctness
+  bugs and for cleanups of the changed code (reuse, simplification, efficiency), and the project's
+  `review-conventions` skill, which checks the change against the docs under `docs/`, the
   product invariants listed in the skill, and the pull request description written before the
   review. Findings stop the skill until the author fixes them or chooses to go on. It is skipped
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
-- **On GitHub, when it opens**, `claude-review` posts the findings of the official `code-review`
-  plugin as inline comments, as a second opinion. A draft is reviewed when it is marked ready for
-  review instead. The review skips a pull request it has already commented on, so pushes after the
-  pull request opens, and reopening it, don't review it again.
+- **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, and
+  posts its findings as inline comments: a second opinion on the code the author pushed. A draft is
+  reviewed when it is marked ready for review instead. Pushes after the pull request opens, and
+  reopening it, don't review it again.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
-  reviews the pull request again with the same plugin, then removes the label. The plugin can't
-  read inline comments, so the workflow hands it the ones Claude left before, for it not to raise
-  the same issues again. Use it after new pushes. When another review of the pull request is still
+  reviews the pull request again the same way, then removes the label. The review can't read
+  inline comments, so the workflow hands it the ones Claude left before, for it not to raise the
+  same issues again. Use it after new pushes. When another review of the pull request is still
   running, it starts nothing and only removes the label.
 
 Both only comment: they fail only when the run itself does (an expired token, the 30-minute
@@ -123,13 +124,22 @@ the private repository `PierreVieira/bible-planner-agent-memory`. The review ste
 `AGENT_MEMORY_DEPLOY_KEY` secret, the private half of a read-only deploy key of that repository. The
 `project_*` memories and the index hold figures and ids, so they never reach the runner, and the
 review is told never to quote a convention in a comment. Without the secret, or when the checkout
-fails, the review runs without them and the run shows a warning. The official plugin's own agents
-judge findings against `CLAUDE.md`, so how much weight the memories get on GitHub is up to its
+fails, the review runs without them and the run shows a warning. The skill's own agents judge
+findings against `CLAUDE.md`, so how much weight the memories get on GitHub is up to its
 orchestrator.
 
 Locally, the `review-conventions` skill reads every memory from Claude Code's memory folder
 (`scripts/agent-memory-dir.sh`), and `create-pr` and `finish-task` push them to the private repository
 with `scripts/sync-agent-memory.sh`.
+
+Both GitHub reviews run the `/code-review` skill bundled with Claude Code, the one `create-pr` runs,
+so the three reviews share one recipe: correctness bugs, plus reuse, simplification and efficiency
+cleanups in the changed code, as far as the recipe of the model covers them. The model is what
+differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
+locally, each with its own variant of the recipe. Until October 2026 they ran
+the `code-review` plugin of the official marketplace instead, a different recipe: five Sonnet agents
+looking for bugs and `CLAUDE.md` violations only, posting nothing under 80% confidence. It answered
+"No issues found" to most pull requests the local review had findings on.
 
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
 enabling it next to these workflows would review every pull request twice.

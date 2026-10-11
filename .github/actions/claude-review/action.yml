@@ -1,5 +1,5 @@
 name: 'Claude review'
-description: 'Reviews the pull request with the official code-review plugin and posts the findings as inline comments'
+description: 'Reviews the pull request with the /code-review skill bundled with Claude Code, at high effort, and posts the findings as inline comments'
 
 inputs:
   oauth-token:
@@ -55,30 +55,41 @@ runs:
           echo "MEMORY_INSTRUCTIONS_END"
         } >> "$GITHUB_OUTPUT"
 
-    # The same review as /code-review in the create-pr skill. The --allowedTools line has to stay:
-    # the action only starts the server that posts inline comments when it names that tool. The gh
-    # commands are the ones the plugin runs, allowed for its subagents too.
+    # The same review as the create-pr skill runs before the pull request opens: the /code-review
+    # skill bundled with Claude Code, at high effort, which hunts for correctness bugs and for reuse,
+    # simplification and efficiency cleanups in the changed code, as far as the recipe of the model
+    # covers them. It reviews on Opus; locally it runs on the model of the author's session, with
+    # that model's recipe. The code-review plugin of the official marketplace, used
+    # before, is a different recipe (five Sonnet agents, bugs and CLAUDE.md violations only, nothing
+    # under 80% confidence), so it answered "No issues found" to pull requests the local review had
+    # findings on.
     #
-    # The plugin starts its review agents in the background, and the action ends the session at the
-    # first result Claude reports, which then comes before any agent has finished: the run ended
-    # green without posting anything (anthropics/claude-code-action#1646). Background tasks are
-    # turned off so the agents run in the foreground, and the tools for waiting on them are blocked.
+    # The pull request number is the review target: the skill reads it with gh from the checkout.
+    # --comment posts each finding as an inline comment through the action's inline-comment server,
+    # which only starts when --allowedTools names its tool, so that line has to stay. The gh and git
+    # commands are the read-only ones the skill and its agents run; one the review was denied shows
+    # as a warning on the run (next step), to be allowed here when the review needs it. The skill is
+    # told to stop at the comments: left alone, it may go on to check that the change runs.
+    #
+    # Some of the skill's recipes start review agents in the background (the plugin always did), and
+    # the action ends the session at the first result Claude reports, which then comes before any
+    # agent has finished: the run ended green without posting anything
+    # (anthropics/claude-code-action#1646). Background tasks are turned off so the agents run in the
+    # foreground, and the tools for waiting on them are blocked.
     - id: claude
       uses: anthropics/claude-code-action@v1
       env:
         CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: "1"
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
-        plugin_marketplaces: https://github.com/anthropics/claude-code.git
-        plugins: code-review@claude-code-plugins
         prompt: >-
-          /code-review:code-review --comment
-          ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+          /code-review high --comment ${{ github.event.pull_request.number }}
+          Stop once the findings are posted: don't run the app, invoke another skill or edit any file.
           ${{ steps.memory-instructions.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
-          --model sonnet
-          --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*)"
+          --model opus
+          --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*)"
           --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
 
     # The action hides Claude's output, since this repository's logs are public, so a tool the review

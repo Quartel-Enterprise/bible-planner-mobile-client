@@ -161,7 +161,8 @@ Two reviews run on the whole change, the commits ahead of `main` and the uncommi
 Both start with a fresh context, so they judge the change rather than the conversation that produced
 it:
 
-- `/code-review high` looks for correctness bugs.
+- `/code-review high` looks for correctness bugs and for cleanups of the changed code (reuse,
+  simplification, efficiency).
 - `review-conventions` checks the change against the docs under `docs/`, the product invariants, and
   the description from step 8.
 
