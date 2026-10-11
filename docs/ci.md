@@ -77,14 +77,17 @@ Claude reviews pull requests at three points:
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
 - **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, and
-  posts its findings as inline comments: a second opinion on the code the author pushed. A draft is
-  reviewed when it is marked ready for review instead. Pushes after the pull request opens, and
-  reopening it, don't review it again.
+  posts its findings as one review, an inline comment per finding: a second opinion on the code the
+  author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after the
+  pull request opens, and reopening it, don't review it again.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
-  reviews the pull request again the same way, then removes the label. The review can't read
-  inline comments, so the workflow hands it the ones Claude left before, for it not to raise the
-  same issues again. Use it after new pushes. When another review of the pull request is still
-  running, it starts nothing and only removes the label.
+  reviews the pull request again the same way, then removes the label. Use it after new pushes.
+  When another review of the pull request is still running, it starts nothing and only removes the
+  label.
+
+The review can't read the inline comments on the pull request, so the action hands it the ones
+Claude left before (a draft marked ready a second time, a review on request), for it not to raise
+the same issues again.
 
 Both only comment: they fail only when the run itself does (an expired token, the 30-minute
 timeout), never because of what they found. They are skipped on pull requests from forks, which get
@@ -133,13 +136,25 @@ Locally, the `review-conventions` skill reads every memory from Claude Code's me
 with `scripts/sync-agent-memory.sh`.
 
 Both GitHub reviews run the `/code-review` skill bundled with Claude Code, the one `create-pr` runs,
-so the three reviews share one recipe: correctness bugs, plus reuse, simplification and efficiency
-cleanups in the changed code, as far as the recipe of the model covers them. The model is what
+so the three reviews share one recipe. At high effort it looks for correctness bugs, `CLAUDE.md`
+violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
+wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
-locally, each with its own variant of the recipe. Until October 2026 they ran
-the `code-review` plugin of the official marketplace instead, a different recipe: five Sonnet agents
-looking for bugs and `CLAUDE.md` violations only, posting nothing under 80% confidence. It answered
-"No issues found" to most pull requests the local review had findings on.
+locally. The model invokes the skill itself with the level and the pull request number, then posts
+the findings with `.github/actions/claude-review/post-review.sh`, as one review with an inline
+comment per finding (one notification), rather than with the skill's `--comment` flag, which posts
+one review per finding. When GitHub refuses an inline comment (a line outside the diff), the script
+posts the findings as one review body instead, so none is lost; with no findings it posts a review
+saying so, for the pull request to show the review ran. At high effort the skill runs its angles one
+after another in a single context, so a large pull request may take long: the workflows give it 30
+minutes.
+
+Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,
+a fixed recipe: five Sonnet agents, a shallow scan for bugs plus a `CLAUDE.md` check, nothing under
+80% confidence, no effort level. It answered "No issues found" to most pull requests the local review
+had findings on. Two things it did are gone with it: it skipped automated or trivial pull requests,
+and it skipped a pull request it had already commented on (the earlier comments handed to the review
+now cover that case).
 
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
 enabling it next to these workflows would review every pull request twice.
