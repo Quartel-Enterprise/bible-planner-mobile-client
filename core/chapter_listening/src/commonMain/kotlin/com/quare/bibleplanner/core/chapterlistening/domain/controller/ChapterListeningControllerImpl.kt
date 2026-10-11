@@ -544,7 +544,7 @@ internal class ChapterListeningControllerImpl(
                 text = texts[verse.number].orEmpty(),
                 // Why: a whole chapter starts with its spoken title, and each verse with the heading read before it.
                 start = if (index == 0 &&
-                    segment.startVerse == null
+                    (segment.startVerse ?: 1) <= 1
                 ) {
                     Duration.ZERO
                 } else {
@@ -577,10 +577,21 @@ internal class ChapterListeningControllerImpl(
             status == ListeningStatusModel.AUDIO_UNAVAILABLE -> NO_VERSES_REASON
             else -> null
         }
-        if (unavailableReason == null) return
+        if (unavailableReason != null) {
+            trackAudioUnavailable(
+                session = session,
+                reason = unavailableReason,
+            )
+        }
+    }
+
+    private fun trackAudioUnavailable(
+        session: ListeningSessionModel,
+        reason: String,
+    ) {
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
-            params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to unavailableReason),
+            params = toChapterParams(session) + mapOf(AnalyticsParams.REASON to reason),
         )
     }
 
@@ -855,10 +866,17 @@ internal class ChapterListeningControllerImpl(
         shouldPlay: Boolean,
     ) {
         /*
-         * Why: a skip from the notification or the headset cannot show the unlock, so it keeps a
+         * Why: a move the gate allowed (shouldPlay) is open already, even if the unlock couldn't be
+         * saved. A skip from the notification or the headset cannot show the unlock, so it keeps a
          * playing chapter; while paused it only looks ahead, and the unlock is asked for on play.
          */
-        if (shouldPlay || session?.isPlaying == true) {
+        if (shouldPlay) {
+            startLoad {
+                openSegment(
+                    session = moved,
+                )
+            }
+        } else if (session?.isPlaying == true) {
             if (!isOpen(moved.segment)) {
                 trackLocked(moved.segment)
                 return
@@ -1049,9 +1067,9 @@ internal class ChapterListeningControllerImpl(
                 verseProgress = 0f,
             )
         }
-        trackEvent(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_AUDIO_UNAVAILABLE,
-            params = toChapterParams(current) + mapOf(AnalyticsParams.REASON to PLAYBACK_FAILED_REASON),
+        trackAudioUnavailable(
+            session = current,
+            reason = PLAYBACK_FAILED_REASON,
         )
         // Why: a retry waits for this, so it can't find the broken file still in the cache.
         if (isFileUnreadable && failedAudioPath != null) {

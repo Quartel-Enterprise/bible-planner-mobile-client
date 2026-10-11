@@ -1308,6 +1308,47 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
+    fun `GIVEN a day segment from the first verse WHEN playing it THEN starts with the spoken title`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            controller.startDayReading(
+                day = createPartialDay(
+                    startVerse = 1,
+                    endVerse = 2,
+                ),
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(Duration.ZERO, audioPlayer.plays.single().position)
+        }
+
+    @Test
+    fun `GIVEN a chapter the gate unlocked but could not record WHEN moving to it THEN opens it anyway`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisTwo))
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisTwo,
+                shouldPlay = true,
+            )
+
+            // Then
+            assertEquals(genesisTwo, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        }
+
+    @Test
     fun `GIVEN a partial chapter in the day WHEN its last verse ends THEN stops before the next verse`() =
         runTest(testDispatcher) {
             // Given
