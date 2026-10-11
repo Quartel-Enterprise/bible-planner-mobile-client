@@ -26,12 +26,12 @@ permissions:
 
 jobs:
   prune:
-    # A failed or cancelled run never gets past the gate below, so it starts no runner. A run from
-    # a fork lists no pull request, and a fork's jobs write no cache.
+    # A failed or cancelled run never gets past the gate below, so it starts no runner. A fork's
+    # jobs write no cache.
     if: >-
       github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' &&
-      join(github.event.workflow_run.pull_requests.*.number) != ''
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -47,19 +47,25 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
       RUN_ID: ${{ github.event.workflow_run.id }}
       # A branch can head more than one open pull request (one into main, one into a release
       # branch), each with a cache scope of its own, and the list can name a pull request of a
       # fork that builds on the branch, which this repository does not have.
       PULL_REQUESTS: ${{ toJSON(github.event.workflow_run.pull_requests) }}
     steps:
-      # The pull requests of this repository among the run's, before anything that can fail, so
-      # that a failure further down can still be reported on them.
+      # The pull requests of this repository among the run's, before anything else, so that a
+      # failure further down can still be reported on them. GitHub ties a run to the pull requests
+      # whose head it is, so after a push that started no writer run (docs only) the list is empty;
+      # the open pull requests of the branch are then looked up.
       - name: Find the pull requests
         id: pull_requests
         run: |
           numbers=$(jq -r --arg repo "$GITHUB_API_URL/repos/$GH_REPO" \
             '[.[] | select(.base.repo.url == $repo) | .number] | join(" ")' <<< "$PULL_REQUESTS")
+          if [ -z "$numbers" ]; then
+            numbers=$(gh pr list --state open --head "$HEAD_BRANCH" --json number --jq 'map(.number) | join(" ")')
+          fi
           echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
 
       # The pruning waits until the latest run of each writer workflow for this push of this pull
@@ -91,9 +97,11 @@ jobs:
                 continue
               fi
             fi
+            # A run that lists no pull request lost its association when the head moved on; it
+            # is still this push's.
             verdict=$(jq -r --argjson number "$number" '
               ["build-and-test", "ui-tests"] as $writers
-              | map(select((.pull_requests | any(.number == $number)) and (.name | IN($writers[]))))
+              | map(select(((.pull_requests | length == 0) or (.pull_requests | any(.number == $number))) and (.name | IN($writers[]))))
               | group_by(.name) | map(max_by(.created_at))
               | if length < ($writers | length) then "only one writer workflow ran; nothing to prune for this push"
                 elif any(.status != "completed") then "a writer workflow has not completed; its completion prunes"
@@ -132,14 +140,19 @@ jobs:
       # A workflow_run run is attached to main, not to the pull request, so a red run here is
       # invisible from the pull request; the comment is what makes a broken pruning noticed. A
       # failed pruning is reported on the pull requests it failed for; a failure before that (the
-      # listing, say) on every pull request of the push.
+      # listing, say) on every pull request of the push. One notice per pull request: a failure
+      # that persists would otherwise add a comment on every push.
       - name: Tell the pull request when the pruning failed
         if: failure() && steps.pull_requests.outputs.numbers != ''
         env:
           NUMBERS: ${{ steps.prune.outputs.failed || steps.pull_requests.outputs.numbers }}
         run: |
           for number in $NUMBERS; do
-            gh pr comment "$number" --body "The pruning of this pull request's Gradle cache failed: $GITHUB_SERVER_URL/$GH_REPO/actions/runs/$GITHUB_RUN_ID. The next green push tries again." || true
+            if gh api "repos/$GH_REPO/issues/$number/comments" --paginate \
+                --jq '.[] | select(.user.login == "github-actions[bot]") | .body' | grep -q "^The pruning of this pull request"; then
+              continue
+            fi
+            gh pr comment "$number" --body "The pruning of this pull request's Gradle cache failed: $GITHUB_SERVER_URL/$GH_REPO/actions/runs/$GITHUB_RUN_ID. It is tried again on every green push; this notice is posted once." || true
           done
 
   cleanup:

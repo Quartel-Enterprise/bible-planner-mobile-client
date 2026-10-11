@@ -72,14 +72,12 @@ if [ "$CLOSED" = true ]; then
     [ "$#" -eq 0 ] || usage
     REF="the closed pull requests"
     RUN_START=""
-    # One listing of the repository; the entries of a pull request that is still open are left out.
+    # One listing of the repository and one of the open pull requests, whose entries are left out;
+    # either call failing fails the script rather than widening the sweep.
+    OPEN=$(gh pr list --state open --limit 1000 --json number --jq '[.[].number]')
     ENTRIES=$(gh cache list --limit 1000 --json id,key,ref,version,sizeInBytes,createdAt,lastAccessedAt \
-        | jq 'map(select(.ref // "" | test("^refs/pull/[0-9]+/merge$")))')
-    for NUMBER in $(jq -r '[.[].ref | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n] | unique | .[]' <<< "$ENTRIES"); do
-        if [ "$(gh pr view "$NUMBER" --json state --jq '.state')" = "OPEN" ]; then
-            ENTRIES=$(jq --arg ref "refs/pull/$NUMBER/merge" 'map(select(.ref != $ref))' <<< "$ENTRIES")
-        fi
-    done
+        | jq --argjson open "$OPEN" '
+            map(select((.ref // "" | capture("^refs/pull/(?<n>[0-9]+)/merge$") | .n | tonumber) as $n | ($open | index($n)) == null))')
 else
     [ "$#" -eq 2 ] || usage
     REF="$1"
@@ -98,12 +96,16 @@ fi
 # across platforms, the two would share a group, and a bundle kept on one platform could cancel
 # out an extra save on the other.
 CLASSIFIED=$(jq --arg start "$RUN_START" --argjson closed "$CLOSED" '
+    # Whole seconds, and the fraction kept apart: GitHub gives some times with one and some without,
+    # so the strings do not sort.
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
+    def fraction: capture("\\.(?<f>[0-9]+)")? // {f: "0"} | ("0." + .f) | tonumber;
     if $closed then map(. + { delete: true }) else
     ($start | seconds) as $t
     | map(select(.key | test("^(gradle|konan)-")))
     | map(. + {
         created: ((.createdAt | seconds) - $t),
+        createdExactly: ((.createdAt | seconds) + (.createdAt | fraction)),
         accessed: ((.lastAccessedAt | seconds) - $t),
         kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; "")),
         job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end)
@@ -111,7 +113,7 @@ CLASSIFIED=$(jq --arg start "$RUN_START" --argjson closed "$CLOSED" '
     | group_by([.kind, .version, .job])
     | map(
         if .[0].job != null then
-            (max_by(.createdAt) | .id) as $newest
+            (max_by(.createdExactly) | .id) as $newest
             | map(. + { replaced: (.id != $newest) })
         else
             (.[0].kind | IN("gradle-transforms", "gradle-build-cache", "gradle-configuration-cache")) as $replacedEachPush
