@@ -48,6 +48,15 @@ jobs:
       # fork that builds on the branch, which this repository does not have.
       PULL_REQUESTS: ${{ toJSON(github.event.workflow_run.pull_requests) }}
     steps:
+      # The pull requests of this repository among the run's, before anything that can fail, so
+      # that a failure further down can still be reported on them.
+      - name: Find the pull requests
+        id: pull_requests
+        run: |
+          numbers=$(jq -r --arg repo "$GH_REPO" \
+            '[.[] | select(.url | test("/repos/" + $repo + "/pulls/[0-9]+$")) | .number] | join(" ")' <<< "$PULL_REQUESTS")
+          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
+
       # The pruning waits until the latest run of each writer workflow for this push of this pull
       # request has completed, since a writer job saves its cache in its post step, and only prunes
       # a green push: a job that failed before it restored its cache would otherwise look like one
@@ -58,13 +67,13 @@ jobs:
       # a run that stops here never needs.
       - name: Find the push's runs
         id: push
+        env:
+          NUMBERS: ${{ steps.pull_requests.outputs.numbers }}
         run: |
           runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq "[.workflow_runs[] | if .id == $RUN_ID then .status = \"completed\" | .conclusion = \"success\" else . end]")
-          numbers=$(jq -r --arg repo "$GH_REPO" \
-            '[.[] | select(.url | test("/repos/" + $repo + "/pulls/[0-9]+$")) | .number] | join(" ")' <<< "$PULL_REQUESTS")
           targets=""
-          for number in $numbers; do
+          for number in $NUMBERS; do
             head=$(gh pr view "$number" --json headRefOid --jq '.headRefOid')
             if [ "$head" != "$HEAD_SHA" ]; then
               echo "#$number has moved on from $HEAD_SHA to $head; the newer push prunes."
@@ -83,7 +92,6 @@ jobs:
               *) echo "#$number at $HEAD_SHA: $verdict." ;;
             esac
           done
-          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
           echo "targets=${targets# }" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
@@ -94,31 +102,40 @@ jobs:
           sparse-checkout: scripts/prune_pr_caches.sh
           sparse-checkout-cone-mode: false
 
-      # A failure on one pull request's scope does not skip the others.
+      # A failure on one pull request's scope does not skip the others, and is remembered for the
+      # comment below.
       - name: Prune the entries this push no longer needs
+        id: prune
         if: steps.push.outputs.targets != ''
         env:
           TARGETS: ${{ steps.push.outputs.targets }}
         run: |
-          status=0
+          failed=""
           for target in $TARGETS; do
-            ./scripts/prune_pr_caches.sh "refs/pull/${target%%:*}/merge" "${target#*:}" || status=1
+            ./scripts/prune_pr_caches.sh "refs/pull/${target%%:*}/merge" "${target#*:}" || failed="$failed ${target%%:*}"
           done
-          exit "$status"
+          echo "failed=${failed# }" >> "$GITHUB_OUTPUT"
+          [ -z "$failed" ]
 
       # A workflow_run run is attached to main, not to the pull request, so a red run here is
-      # invisible from the pull request; the comment is what makes a broken pruning noticed.
+      # invisible from the pull request; the comment is what makes a broken pruning noticed. A
+      # failed pruning is reported on the pull requests it failed for; a failure before that (the
+      # listing, say) on every pull request of the push.
       - name: Tell the pull request when the pruning failed
-        if: failure() && steps.push.outputs.numbers != ''
+        if: failure() && steps.pull_requests.outputs.numbers != ''
         env:
-          NUMBERS: ${{ steps.push.outputs.numbers }}
+          NUMBERS: ${{ steps.prune.outputs.failed || steps.pull_requests.outputs.numbers }}
         run: |
           for number in $NUMBERS; do
             gh pr comment "$number" --body "The pruning of this pull request's Gradle cache failed: $GITHUB_SERVER_URL/$GH_REPO/actions/runs/$GITHUB_RUN_ID. The next green push tries again." || true
           done
 
   cleanup:
-    if: github.event_name == 'pull_request'
+    # The closing of a fork's pull request brings a read-only token, which can delete nothing; a
+    # fork's jobs wrote nothing, and the next same-repository close sweeps whatever is left.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}

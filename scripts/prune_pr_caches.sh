@@ -74,23 +74,20 @@ else
 fi
 
 ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBytes,createdAt,lastAccessedAt)
-if [ "$ALL" = false ]; then
-    ENTRIES=$(jq 'map(select(.key | test("^(gradle|konan)-")))' <<< "$ENTRIES")
-fi
 
 # Every entry with the seconds since the run started, negative when it predates the run, and its
 # kind (the key without the content hash or the commit); then, per kind and platform, whether the
-# run replaced what it restored, and from that whether the entry goes. The bundle keys carry no
+# run replaced what it restored, and from that whether the entry goes. With --all, every entry
+# goes, the ones of other workflows included. The bundle keys carry no
 # platform; the version field does, by way of the cached paths it hashes, which hold the runner's
 # home directory (/home/runner on Linux, /Users/runner on macOS). Should those paths ever match
 # across platforms, the two would share a group, and a bundle kept on one platform could cancel
 # out an extra save on the other.
-if [ "$ALL" = true ]; then
-    CLASSIFIED=$(jq 'map(. + { delete: true })' <<< "$ENTRIES")
-else
-CLASSIFIED=$(jq --arg start "$RUN_START" '
+CLASSIFIED=$(jq --arg start "$RUN_START" --argjson all "$ALL" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
+    if $all then map(. + { delete: true }) else
     ($start | seconds) as $t
+    | map(select(.key | test("^(gradle|konan)-")))
     | map(. + {
         created: ((.createdAt | seconds) - $t),
         accessed: ((.lastAccessedAt | seconds) - $t),
@@ -103,8 +100,8 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
         | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
         | map(. + { replaced: ($replacedEachPush and $saved == $restored) }))
     | add // []
-    | map(. + { delete: (.created < 0 and (.accessed < 0 or .replaced)) })' <<< "$ENTRIES")
-fi
+    | map(. + { delete: (.created < 0 and (.accessed < 0 or .replaced)) })
+    end' <<< "$ENTRIES")
 
 TO_DELETE=$(jq -r '
     map(select(.delete))
