@@ -1,14 +1,9 @@
 package com.quare.bibleplanner.core.chapterlistening.data.service
 
-import android.content.Context
 import android.net.Uri
-import androidx.annotation.OptIn
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
@@ -20,13 +15,8 @@ import java.io.File
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/*
- * Why: the media session shows ListeningPlayer, one item per verse, and owns audio focus and the
- * noisy broadcast, so this ExoPlayer only decodes the chapter file and leaves both to it.
- */
-@OptIn(UnstableApi::class)
 internal class AndroidChapterAudioPlayer(
-    context: Context,
+    private val player: ExoPlayer,
 ) : ChapterAudioPlayer {
     override val isSupported: Boolean = true
 
@@ -36,20 +26,8 @@ internal class AndroidChapterAudioPlayer(
     private var loadedPath: String? = null
     private var playbackId = 0
 
-    private val player: ExoPlayer by lazy {
-        ExoPlayer
-            .Builder(context)
-            .setAudioAttributes(
-                AudioAttributes
-                    .Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
-                    .build(),
-                false,
-            ).setHandleAudioBecomingNoisy(false)
-            .setWakeMode(C.WAKE_MODE_LOCAL)
-            .build()
-            .apply { addListener(PlaybackListener()) }
+    init {
+        player.addListener(PlaybackListener())
     }
 
     override val position: Duration
@@ -80,8 +58,14 @@ internal class AndroidChapterAudioPlayer(
         if (loadedPath != null) player.setPlaybackSpeed(speed)
     }
 
+    /*
+     * Why: during a transient focus loss (a call) ExoPlayer is already silent and plays on by itself
+     * once the focus returns; pausing it here would give the focus up for good.
+     */
     override fun pause() {
-        if (loadedPath != null) player.pause()
+        if (loadedPath == null) return
+        if (player.playbackSuppressionReason == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) return
+        player.pause()
     }
 
     override fun release() {

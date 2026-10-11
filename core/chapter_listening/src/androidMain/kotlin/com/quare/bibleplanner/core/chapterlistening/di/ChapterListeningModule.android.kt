@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.model.ChapterAudioCache
 import com.quare.bibleplanner.core.chapterlistening.data.service.AndroidChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.data.service.AndroidListeningMediaSession
 import com.quare.bibleplanner.core.chapterlistening.data.service.ListeningPlayer
+import com.quare.bibleplanner.core.chapterlistening.data.service.createListeningExoPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
 import kotlinx.io.files.Path
@@ -17,6 +18,7 @@ private const val CHAPTER_AUDIO_DIRECTORY = "chapter_audio"
 
 internal actual val platformChapterListeningModule: Module = module {
     single { ChapterAudioCacheDirectory(Path(androidContext().cacheDir.path, CHAPTER_AUDIO_DIRECTORY)) }
+    single { createListeningExoPlayer(androidContext()) }
     singleOf(::AndroidChapterAudioPlayer).bind<ChapterAudioPlayer>()
     singleOf(::ListeningPlayer)
     singleOf(::AndroidListeningMediaSession).bind<ListeningMediaSession>()

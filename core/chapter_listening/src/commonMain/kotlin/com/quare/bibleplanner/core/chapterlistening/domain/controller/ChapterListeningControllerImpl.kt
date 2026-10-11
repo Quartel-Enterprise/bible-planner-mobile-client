@@ -666,6 +666,24 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
+    private fun seekTo(target: Duration) {
+        val current = session ?: return
+        val first = current.verses.firstOrNull() ?: return
+        val start = target.coerceIn(first.start, current.verses.last().end)
+        if (current.isPlaying) {
+            playFrom(
+                start = start,
+                leadingSilence = Duration.ZERO,
+            )
+            return
+        }
+        position = start
+        showPosition(start)
+        updateSession {
+            it.copy(status = if (it.status == ListeningStatusModel.FINISHED) ListeningStatusModel.PAUSED else it.status)
+        }
+    }
+
     private fun moveChapter(direction: ChapterDirectionModel) {
         val current = session ?: return
         launchLoad {
@@ -864,6 +882,7 @@ internal class ChapterListeningControllerImpl(
             ListeningRemoteCommand.NextVerse -> nextVerse()
             ListeningRemoteCommand.PreviousVerse -> previousVerse()
             is ListeningRemoteCommand.SkipToVerse -> moveToVerse(command.verseIndex)
+            is ListeningRemoteCommand.SeekTo -> seekTo(command.position)
             ListeningRemoteCommand.NextChapter -> nextChapter()
             ListeningRemoteCommand.PreviousChapter -> previousChapter()
         }

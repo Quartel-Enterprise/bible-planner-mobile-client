@@ -634,6 +634,46 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
+    fun `GIVEN a chapter playing WHEN the lock screen scrubs to a position THEN plays from there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(8.25.seconds))
+
+            // Then
+            assertEquals(8.25.seconds, audioPlayer.plays.last().position)
+            assertEquals(1, session?.verseIndex)
+            assertEquals(0.5f, session?.verseProgress)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN the lock screen scrubs past its end THEN moves there without playing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            val playCount = audioPlayer.plays.size
+
+            // When
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(1.minutes))
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(playCount + 1, audioPlayer.plays.size)
+            assertEquals(14.seconds, audioPlayer.plays.last().position)
+        }
+
+    @Test
     fun `GIVEN remote commands WHEN they arrive THEN drive the playback`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
