@@ -51,8 +51,8 @@ runs:
           ${{ env.GRADLE_CACHE_READ_ONLY != 'true' && github.event_name == 'pull_request' }}
         # Cleanup drops whatever a build did not touch, and a warm build touches fewer dependencies
         # and transforms than a cold one, so each push would save new entries that differ only by
-        # what is missing. Pull request entries are deleted when it closes instead, see
-        # cleanup-pr-caches.
+        # what is missing. cleanup-pr-caches prunes a pull request's entries after each green push
+        # instead, and deletes them when it closes.
         cache-cleanup: ${{ github.event_name == 'pull_request' && 'never' || 'on-success' }}
 
     - name: Make gradlew executable
