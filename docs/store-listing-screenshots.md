@@ -218,9 +218,10 @@ in the root `build.gradle.kts`; every other generator feeds both.
 ## How they reach the stores
 
 - **A production release refreshes both listings.** `release.yml` renders the iOS screenshots on a
-  macOS job of their own (`stageAppStoreScreenshots`) while the IPA builds, and a second job
-  uploads them (`fastlane ios upload_screenshots skip_render:true`) to the editable version
-  **before** the build is submitted for review — a submitted version's screenshots are locked. It
+  macOS job of their own (`stageAppStoreScreenshots`) while the IPA builds, and one job per locale
+  uploads them (`fastlane ios upload_screenshots skip_render:true locale:<code>`) to the editable
+  version **before** the build is submitted for review — a submitted version's screenshots are
+  locked. It
   calls the `store screenshots` workflow for Play (`stagePlayStoreScreenshots`, on Linux) after the
   AAB is on the production track with a completed rollout. Every screenshot job is non-blocking:
   a failure ships the release with the previous images, visibly, and never holds the binary.
@@ -231,21 +232,37 @@ in the root `build.gradle.kts`; every other generator feeds both.
   already rendered. Run by hand without `skip_render`, both `upload_screenshots` lanes still
   render first. Either way they refuse to upload from an empty folder: both stores replace the
   listing's screenshots with what is staged, so that would wipe it.
+- **Each locale is uploaded by a job of its own**, on both stores, from the list of locales the
+  render staged. Both lanes take `locale:<code>` (`fastlane android upload_screenshots
+  skip_render:true locale:es-419`) and then touch that locale alone, so a locale the store refused
+  is the only one **Re-run failed jobs** sends again; the other locales stay where they landed. The
+  jobs run one after the other, not in parallel: Play keeps a single edit active per app, so two
+  uploads at once would step on each other's, and App Store Connect's screenshot-set race below
+  only gets worse with two uploads at once.
+- **Play's 5xx answers are retried in place.** `supply` already retries each HTTP call a few
+  times, but 2.12.1's upload still died on an `Internal error encountered` from Play's API, which
+  threw away the edit with all five locales in it. The Android lane now runs the upload up to
+  three times, 30 seconds apart, when the error is the server's. It also sends only the images
+  whose SHA-256 differs from what Play holds (`sync_image_upload`), so a release whose screenshots
+  did not change, or a re-run of an upload that already landed, uploads nothing.
 - **Between releases**, the `store screenshots` workflow (Actions → *store screenshots* → Run
   workflow) republishes Play's listing on demand; App Store screenshots can only change with a new
   version. It defaults to `validate_only`, which regenerates and validates against the Play API
   without publishing, and uploads the rendered Play images as a `store-screenshots` artifact either
   way. To look at the App Store images between releases, run `collectAppStoreScreenshots` on a
   Mac.
-- **Duplicates on App Store Connect are removed after every upload.** `deliver` re-uploads a
+- **Duplicates on App Store Connect are removed after the last upload.** `deliver` re-uploads a
   screenshot when App Store Connect has not yet published its checksum, so a shelf can end up with
-  the same file twice; the iOS lane walks the editable version afterwards and drops every later
-  copy. `fastlane ios dedupe_screenshots` runs that pass on its own while a version is editable.
-- **"Screenshot Set Already Exists!" is retried in place.** `deliver` deletes the version's
+  the same file twice; `ios-screenshots-finish` walks the editable version once every locale is
+  in and drops every later copy, then checks that no locale was left without screenshots. Run by
+  hand for every locale at once, `fastlane ios upload_screenshots` does both itself;
+  `fastlane ios finish_screenshots` runs that pass on its own while a version is editable.
+- **"Screenshot Set Already Exists!" is retried in place.** `deliver` deletes a locale's
   screenshots before it uploads, and App Store Connect can still hold a deleted screenshot set when
   `deliver` recreates it. The iOS lane waits 30 seconds and runs the upload again, up to three
-  attempts. If the race outlasts them, the locales left empty keep `ios-submit` from submitting
-  the build, and re-running `ios-screenshots-upload` submits it once the upload goes through.
+  attempts. If the race outlasts them, the locale left empty keeps `ios-submit` from submitting
+  the build, and re-running that locale's `ios-screenshots-upload` job submits it once the upload
+  goes through.
 
 The Play service account needs the **Manage store presence** permission for listing uploads;
 release permissions alone let AAB uploads through while screenshot validation fails with "the

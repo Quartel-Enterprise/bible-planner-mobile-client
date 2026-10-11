@@ -55,27 +55,12 @@ jobs:
           done <<< "$runs"
           echo "found=false" >> "$GITHUB_OUTPUT"
 
-      # The plugin can't read inline review comments, so the ones Claude left before are handed to it
-      # in the prompt, for it not to raise the same issues again.
-      - name: Collect the earlier review comments
-        id: earlier
-        if: steps.in-progress.outputs.found == 'false'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          {
-            echo "comments<<EARLIER_COMMENTS_END"
-            gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
-              --jq '.[] | select(.user.login == "claude[bot]")
-                | "- \(.path):\(.line // .original_line): \(.body | gsub("\\s+"; " ") | .[0:300])"'
-            echo "EARLIER_COMMENTS_END"
-          } >> "$GITHUB_OUTPUT"
-
+      # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
+      # commit the comments are anchored to.
       - uses: actions/checkout@v6
         if: steps.in-progress.outputs.found == 'false'
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
 
       - uses: ./.github/actions/claude-review
@@ -83,12 +68,9 @@ jobs:
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
+          # The action itself hands the review what the earlier reviews found.
           instructions: |
-            The ai-review label asked for another review of this pull request. Leave the condition
-            about Claude having already commented out of step 1, including from what the step 1
-            agent is told to check. Don't flag an issue that one of these earlier Claude comments
-            already raised:
-            ${{ steps.earlier.outputs.comments }}
+            The ai-review label asked for another review of this pull request, after new pushes.
 
       # The label means "review this once", so it goes when the run ends, whatever the outcome.
       # Adding it again starts another review. A label already removed by hand is not an error.

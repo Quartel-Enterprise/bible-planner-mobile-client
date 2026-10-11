@@ -13,9 +13,9 @@ name: release
 #      installers are built on one runner per OS. A full release also refreshes
 #      both store listings' screenshots; a pre-release leaves them alone.
 #      Every stage that can fail on its own is a job of its own — build, upload,
-#      screenshot render, screenshot upload, review submission — because
-#      "Re-run failed jobs" repeats whole jobs: what already landed is not
-#      built, rendered or uploaded a second time.
+#      screenshot render, screenshot upload (one job per locale), review
+#      submission — because "Re-run failed jobs" repeats whole jobs: what
+#      already landed is not built, rendered or uploaded a second time.
 #   4. `finalize` bumps the version on a release branch, opens and squash-merges
 #      the merge-back PR into main, and publishes the GitHub release with the
 #      desktop installers attached as assets. It runs for the `all` and `mobile`
@@ -390,6 +390,8 @@ jobs:
     runs-on: macos-latest
     environment: Production
     continue-on-error: true
+    outputs:
+      locales: ${{ steps.locales.outputs.locales }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -432,6 +434,14 @@ jobs:
       - name: Render the screenshots
         run: ./gradlew stageAppStoreScreenshots
 
+      # The upload jobs' matrix, as a JSON array: read off what was staged, so the list of locales
+      # lives in the root build.gradle.kts alone (appStoreLocales). Set only when the render
+      # succeeded, which is what the upload and finish jobs key off, since a failed job with
+      # continue-on-error does not read as failed to the jobs that need it.
+      - name: List the staged locales
+        id: locales
+        run: echo "locales=$(find fastlane/screenshots -mindepth 1 -maxdepth 1 -type d | awk -F/ '{ print $NF }' | sort | jq -Rcn '[inputs]')" >> "$GITHUB_OUTPUT"
+
       - name: Upload the rendered screenshots as a build artifact
         uses: actions/upload-artifact@v7
         with:
@@ -445,19 +455,24 @@ jobs:
   # cancelling the submission by hand to touch them. APP_VERSION lets deliver create the release's
   # version when this job is the first thing to reach it.
   #
-  # deliver deletes the version's screenshots before it uploads the new ones, so a failure halfway
-  # can leave a locale with none. `screenshots_complete` tells ios-submit whether that happened —
-  # see report_app_store_screenshots_completeness in the Fastfile. Re-running this job sends the
-  # rendered images again, without rendering them again.
+  # One job per locale, so a locale App Store Connect refused is the only one sent again, and one
+  # after the other: deliver recreates a locale's screenshot sets, which is what the "Screenshot Set
+  # Already Exists!" race is about, and two uploads at once would make it worse. deliver deletes a
+  # locale's screenshots before it uploads the new ones, so a failure halfway can leave that locale
+  # with none; ios-screenshots-finish checks for that after the last locale. Re-running a failed
+  # locale's job sends its rendered images again, without rendering them again.
   ios-screenshots-upload:
-    name: iOS — upload the store listing screenshots
+    name: iOS — upload the ${{ matrix.locale }} store listing screenshots
     needs: [plan, ios-screenshots-render]
-    if: ${{ !inputs.prerelease && (inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios') }}
+    if: ${{ !inputs.prerelease && (inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios') && needs.ios-screenshots-render.outputs.locales != '' }}
     runs-on: macos-latest
     environment: Production
     continue-on-error: true
-    outputs:
-      screenshots_complete: ${{ steps.screenshots.outputs.screenshots_complete }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(needs.ios-screenshots-render.outputs.locales) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -479,22 +494,58 @@ jobs:
           name: app-store-screenshots
           path: fastlane/screenshots/
 
-      # Listing assets only: no binary, no metadata, no review submission.
+      # Listing assets of this locale only: no binary, no metadata, no review submission.
       - name: Upload the screenshots to App Store Connect
-        id: screenshots
-        run: fastlane ios upload_screenshots skip_render:true
+        run: fastlane ios upload_screenshots skip_render:true locale:${{ matrix.locale }}
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           APP_VERSION: ${{ needs.plan.outputs.version }}
 
+  # After the last locale: removes the duplicate screenshots deliver leaves behind and sets
+  # `screenshots_complete`, which tells ios-submit whether a locale was left with no screenshots at
+  # all — see report_app_store_screenshots_completeness in the Fastfile. !cancelled() because it has
+  # to run precisely when an upload failed, which is when a locale can be empty; the locales guard
+  # skips it along with the uploads when nothing was rendered.
+  ios-screenshots-finish:
+    name: iOS — check the store listing screenshots
+    needs: [ios-screenshots-render, ios-screenshots-upload]
+    if: ${{ !cancelled() && needs.ios-screenshots-render.outputs.locales != '' }}
+    runs-on: macos-latest
+    environment: Production
+    continue-on-error: true
+    outputs:
+      screenshots_complete: ${{ steps.screenshots.outputs.screenshots_complete }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Remove duplicate screenshots and check every locale has some
+        id: screenshots
+        run: fastlane ios finish_screenshots
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
   # Updates the listing and sends the uploaded build for review. It waits on the screenshot jobs
   # only to come after them: !cancelled() lets it run when they failed or, on a beta, never ran,
   # and the binary having landed is the one thing it requires.
   ios-submit:
     name: iOS — update the listing and submit for review
-    needs: [plan, ios-upload, ios-screenshots-upload]
+    needs: [plan, ios-upload, ios-screenshots-finish]
     if: ${{ !cancelled() && needs.ios-upload.result == 'success' }}
     runs-on: macos-latest
     environment: Production
@@ -526,14 +577,15 @@ jobs:
 
       # Skips the submission when a locale was left with no screenshots at all, which Apple would
       # reject: the listing is still updated and the build stays in App Store Connect. Re-running
-      # ios-screenshots-upload re-runs this job after it, and submits then.
+      # the failed locale's ios-screenshots-upload job re-runs ios-screenshots-finish and this job
+      # after it, and submits then.
       - name: Update the listing and submit for review
         run: fastlane ios submit
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review && needs.ios-screenshots-upload.outputs.screenshots_complete != 'false' }}
+          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review && needs.ios-screenshots-finish.outputs.screenshots_complete != 'false' }}
 
   desktop-build:
     name: Desktop — build the ${{ matrix.formats }}
