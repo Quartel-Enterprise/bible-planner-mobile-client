@@ -148,11 +148,16 @@ skill's `--comment` flag, which posts one review per finding. The hook runs insi
 the review comes from `claude[bot]`, with the Claude GitHub App's token the action gives the session
 and revokes when it ends. When the hook didn't post, a step of the action posts the same findings with
 the workflow's token, as `github-actions`, and the run shows a warning.
-GitHub only anchors a comment to a line inside the diff, so a finding on another line (the recipe
-reports bugs on unchanged lines of a touched function on purpose) goes in the review's body instead,
-and none is lost; with no findings the review says so, and a reply with no findings list (a timeout,
-a skill that stopped early) gets a review pointing at the run, so the pull request always shows the
-review ran. At high effort the skill runs its angles one after another in a single context, so a
+The review is anchored to the head commit the workflow checked out, so a push during the review
+doesn't move the comments. GitHub only anchors a comment to a line inside the diff, so a finding on
+another line of a changed file (the recipe reports bugs on unchanged lines of a touched function on
+purpose) is anchored to the nearest changed line of that file, naming its own line, and still opens a
+thread; a finding in a file the diff doesn't touch goes in the review's body, which opens no thread
+and so doesn't hold the merge. With no findings the review says so, and a reply with no findings list
+(a timeout, a skill that stopped early) gets a review pointing at the run, so the pull request always
+shows the review ran. The scripts the hook runs are copied out of the checkout before the review,
+and the model's file tools are blocked, so nothing the review does to the working tree changes what
+runs with the App's token. At high effort the skill runs its angles one after another in a single context, so a
 large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,

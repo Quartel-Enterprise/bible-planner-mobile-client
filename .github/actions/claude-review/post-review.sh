@@ -11,12 +11,13 @@
 # file; "start_line" makes the comment span lines. The review is anchored to the reviewed head commit
 # (PR_HEAD_SHA, else the pull request's current head), so a push during the review doesn't move the
 # comments. GitHub only anchors a comment to a line inside a diff hunk of that commit, and refuses the
-# whole review when one isn't, so the findings on other lines (the recipe reports bugs on unchanged
-# lines of a touched function on purpose), the ones without a usable file and line, and all of them
-# when the diff can't be read, go in the review body instead, and the rest stay inline. An empty
-# array posts a review saying nothing was found, and anything that isn't an array posts a notice, so
-# the pull request always shows the review ran. Only a GitHub error that outlasts the retries fails
-# the script.
+# whole review when one isn't. A finding on another line of a changed file (the recipe reports bugs on
+# unchanged lines of a touched function on purpose) is anchored to the nearest changed line of that
+# file, with its own line named, so it still opens a thread that holds the merge. The findings in
+# files the diff doesn't touch, the ones without a usable file and line, and all of them when the diff
+# can't be read, go in the review body instead; those open no thread. An empty array posts a review
+# saying nothing was found, and anything that isn't an array posts a notice, so the pull request
+# always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
 set -euo pipefail
 
 pr=$1
@@ -43,7 +44,7 @@ post() {
       echo "$out" >&2
       return 22
     fi
-    [ "$attempt" -lt 3 ] && sleep $((attempt * 15))
+    [ "$attempt" -lt 3 ] && sleep $((attempt * 5))
   done
   echo "$out" >&2
   return 1
@@ -96,14 +97,21 @@ if [ -n "$head_sha" ] && [ -n "$base_sha" ]; then
   fi
 fi
 
-# A finding whose line is in a hunk is an inline comment; a span has to start in that same hunk.
+# A finding whose line is in a hunk is an inline comment; a span has to start in that same hunk. One
+# on another line of a changed file is anchored to the nearest hunk's edge, naming its own line.
 split=$(jq -c --argjson hunks "$hunks" '
   def hunk($path; $line): first($hunks[] | select(.path == $path and .from <= $line and $line <= .to)) // null;
-  map(. as $f | hunk($f.path; $f.line) as $h
-    | if $h == null then .start_line = null
-      elif .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null
-      else . end
-    | . + {anchored: ($h != null)})
+  def nearest($path; $line): [$hunks[] | select(.path == $path)]
+    | if length == 0 then null else min_by(if $line < .from then .from - $line else $line - .to end) end;
+  map(. as $f | hunk($f.path; $f.line) as $h | nearest($f.path; $f.line) as $n
+    | if $h != null then
+        (if .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null else . end)
+        + {anchored: true}
+      elif $f.line != null and $n != null then
+        {path, line: (if $f.line < $n.from then $n.from else $n.to end), start_line: null,
+         body: ("_On line \($f.line), outside the diff; anchored to the nearest changed line._\n\n" + .body),
+         anchored: true}
+      else . + {anchored: false} end)
   | {inline: map(select(.anchored)), body: map(select(.anchored | not))}' <<< "$findings")
 inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")
@@ -121,7 +129,7 @@ $total finding(s)"
   if [ "$inline_count" -eq "$total" ]; then
     summary="$summary, as inline comments."
   else
-    summary="$summary: $inline_count as inline comments, the others below, on lines outside the diff.
+    summary="$summary: $inline_count as inline comments, the others below, in files outside the diff (they open no thread, so they don't hold the merge).
 
 $(as_list <<< "$outside")"
   fi

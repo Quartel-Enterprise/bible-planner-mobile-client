@@ -8,7 +8,10 @@ description: 'Reviews the pull request with the /code-review skill bundled with 
 # action couldn't use it. When the hook didn't post (no token, a GitHub outage), the posting step
 # below posts the same findings with the workflow's token, as github-actions. The model posts nothing
 # itself: the skill's --comment flag posts one review per finding, each with its own notification,
-# and a script run by the model depends on a Bash allowlist the action didn't honour for it.
+# and a script run by the model depends on a Bash allowlist the action didn't honour for it. The hook
+# and the scripts it runs are copied out of the checkout first, so nothing the model does to the
+# working tree (its file tools are blocked, but git diff can still write a file) changes what runs
+# with the App's token.
 
 inputs:
   oauth-token:
@@ -71,7 +74,9 @@ runs:
     # draft marked ready a second time, a review on request after new pushes) are handed to it, for it
     # not to raise the same issues again: the inline comments, and the bodies of the reviews that
     # listed findings GitHub couldn't anchor to a line.
-    # The list is a help, not a condition: a GitHub error here only leaves it short.
+    # The list is a help, not a condition: a GitHub error here only leaves it short. gh runs its --jq
+    # filters with gojq, whose regexes (RE2) have no lookahead, so the numbered findings of a review
+    # body are grouped paragraph by paragraph instead.
     - id: earlier
       shell: bash
       env:
@@ -86,8 +91,11 @@ runs:
             || echo "::warning::The earlier inline comments couldn't be read, so the review isn't told about them." >&2
           gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
-              | .body | select(test("^### Code review\\s+\\d+ finding"))
-              | split("\n\n(?=[0-9]+\\. )"; null)[1:] | .[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
+              | .body | select(test("^### Code review\\s+[0-9]+ finding"))
+              | split("\n\n")[1:]
+              | reduce .[] as $paragraph ([]; if ($paragraph | test("^[0-9]+\\. ")) then . + [$paragraph]
+                  elif length > 0 then .[-1] += " " + $paragraph else . end)
+              | .[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
             || echo "::warning::The earlier review bodies couldn't be read, so the review isn't told about them." >&2
         )
         {
@@ -100,15 +108,31 @@ runs:
           echo "EARLIER_COMMENTS_END"
         } >> "$GITHUB_OUTPUT"
 
+    # The hook and the scripts it runs live outside the checkout for the session: the model's file tools
+    # are blocked, but an allowed git diff can still write a file (--output), and the hook runs with the
+    # App's token. The step also records when the review started, for the posting step to tell a review
+    # the hook posted from one it didn't.
+    - id: tools
+      shell: bash
+      run: |
+        dir="$RUNNER_TEMP/claude-review"
+        mkdir -p "$dir"
+        cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
+          .github/actions/claude-review/extract-findings.py "$dir/"
+        {
+          echo "dir=$dir"
+          echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        } >> "$GITHUB_OUTPUT"
+
     # The same review as the create-pr skill runs before the pull request opens, the /code-review
     # skill bundled with Claude Code at high effort, on Opus (see docs/ci.md, "AI review"). The model
     # invokes the skill itself, with the level and the pull request number as its only arguments:
     # put on the skill's command line, the instructions below would become part of its target.
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
-    # the Stop hook (settings) and the posting step read from Claude's last message. The hook runs from
-    # the project directory, wherever the session's shell went, and gets the pull request number and
-    # the reviewed commits from the runner's environment. The gh and git commands are the read-only
+    # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
+    # pull request number and the reviewed commits from the runner's environment, and has time for the
+    # script's retries, so it isn't killed between a post and its marker. The gh and git commands are the read-only
     # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
     # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
     # here when the review needs it.
@@ -124,7 +148,7 @@ runs:
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "cd \"${CLAUDE_PROJECT_DIR:-$GITHUB_WORKSPACE}\" && .github/actions/claude-review/stop-hook.sh", "timeout": 180}]}]}}
+          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `high ${{ github.event.pull_request.number }}` as its
@@ -143,12 +167,14 @@ runs:
         claude_args: >-
           --model opus
           --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)"
-          --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
+          --disallowedTools "ScheduleWakeup,Monitor,SendMessage,Write,Edit,MultiEdit,NotebookEdit"
 
     # The Stop hook leaves a marker with the url of the review it posted, and a log of what it saw.
-    # Without the marker, the findings of Claude's last message (extract-findings.py reads the ```json
-    # fence) are posted here instead, with the workflow's token, and a notice when there is no findings
-    # list (a timeout, a refusal, a skill that stopped early), so the pull request always shows the run.
+    # Without the marker, a review by claude[bot] on the reviewed commit since the review started still
+    # counts as posted (the hook may have been killed between its post and the marker). Otherwise the
+    # findings of Claude's last message (extract-findings.py reads the ```json fence) are posted here,
+    # with the workflow's token, and a notice when there is no findings list (a timeout, a refusal, a
+    # skill that stopped early), so the pull request always shows the run.
     - name: Post the findings when the hook didn't
       if: always() && steps.claude.outputs.execution_file != ''
       shell: bash
@@ -159,20 +185,29 @@ runs:
         PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        TOOLS: ${{ steps.tools.outputs.dir }}
+        STARTED: ${{ steps.tools.outputs.started }}
       run: |
-        if [ -f .github/actions/claude-review/.hook-log ]; then
-          cat .github/actions/claude-review/.hook-log
+        if [ -f "$TOOLS/.hook-log" ]; then
+          cat "$TOOLS/.hook-log"
         else
           echo "The Stop hook left no log: it didn't run."
         fi
-        if [ -f .github/actions/claude-review/.posted ]; then
-          echo "The review was posted from the session: $(cat .github/actions/claude-review/.posted)"
+        if [ -f "$TOOLS/.posted" ]; then
+          echo "The review was posted from the session: $(cat "$TOOLS/.posted")"
+          exit 0
+        fi
+        posted=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" \
+          --jq '.[] | select(.user.login == "claude[bot]" and .commit_id == env.PR_HEAD_SHA and .submitted_at >= env.STARTED) | .html_url' \
+          || true)
+        if [ -n "$posted" ]; then
+          echo "The review was posted from the session, without a marker: $posted"
           exit 0
         fi
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
         jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE" |
-          python3 .github/actions/claude-review/extract-findings.py |
-          .github/actions/claude-review/post-review.sh "$PR_NUMBER"
+          python3 "$TOOLS/extract-findings.py" |
+          "$TOOLS/post-review.sh" "$PR_NUMBER"
 
     # The action hides Claude's output, since this repository's logs are public, so a tool the review
     # was denied doesn't show anywhere. Only the tool's name is printed, and for Bash the program (a
