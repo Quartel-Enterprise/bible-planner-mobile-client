@@ -31,9 +31,10 @@ the time that push's runs started: an entry stays when the runs created it, or r
 not replace it; the rest goes. Whether a restored transforms, build cache or home entry was replaced
 comes from a count: the entries of one kind on one platform are one restored and one saved per job,
 so when the push saved at least as many as it restored, every job replaced its own. The pruning is
-skipped when a job with an entry on the pull request saved none in that push, since it still needs
-its previous bundles. Before this, three pushes of one pull request held 12.5 GB of the budget and
-had pushed out `main`'s entries for `build`, the `android` shards and `ios`, so every new pull
+skipped when a job restored its entry in that push but saved none, since it still needs its previous
+bundles; a job that no longer exists, or whose key changed with the matrix, restores nothing and its
+entries go with the rest. Before this, three pushes of one pull request held 12.5 GB of the budget
+and had pushed out `main`'s entries for `build`, the `android` shards and `ios`, so every new pull
 request started cold. When the pull request closes, the `cleanup` job cancels its runs that are
 still going and waits for them, since a cancelled job still saves its cache in the post step, and
 then deletes the entries of every closed pull request.
