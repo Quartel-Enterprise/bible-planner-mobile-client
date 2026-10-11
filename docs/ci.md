@@ -32,15 +32,16 @@ request (a workflow a path filter skipped keeps what it saved earlier): an entry
 created it, or restored it and did not replace it; the rest goes. Whether a restored transforms,
 build cache or home entry was replaced comes from a count: the entries of one kind on one platform
 are one restored and one saved per job, so when the push saved exactly as many as it restored, every
-job replaced its own; fewer means a job kept its bundle, more means a job saved without restoring
-from the pull request, and either way the restored ones stay one more push. The pruning is skipped
-after a failed push, and when a job restored its entry in that push but saved none, since the job
-still needs its previous bundles; a job that no longer exists, or whose key changed with the matrix,
-restores nothing and its entries go with the rest. Before this, three pushes of one pull request
-held 12.5 GB of the budget and had pushed out `main`'s entries for `build`, the `android` shards and
-`ios`, so every new pull request started cold. When the pull request closes, the `cleanup` job
-cancels its runs that are still going and waits for them, since a cancelled job still saves its
-cache in the post step, and then deletes the entries of every closed pull request.
+job replaced its own; fewer means a job kept its bundle or failed to save it, more means a job saved
+without restoring from the pull request, and either way the restored ones stay one more push. What
+the cancelled run of the previous push saved late, after the new run started, is told apart by the
+commit in its home entries and counts as the previous push's. Nothing is pruned after a failed push,
+since a job that failed before restoring its cache would look like one that no longer exists. Before
+this, three pushes of one pull request held 12.5 GB of the budget and had pushed out `main`'s
+entries for `build`, the `android` shards and `ios`, so every new pull request started cold. When
+the pull request closes, the `cleanup` job cancels its runs that are still going and waits for them,
+since a cancelled job still saves its cache in the post step, and then deletes the entries of every
+closed pull request.
 
 The script can be tried by hand without deleting anything, with a pull request's cache scope and
 the start time of its latest run:

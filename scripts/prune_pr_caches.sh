@@ -25,14 +25,12 @@
 # which: the entries of one kind on one platform (the version field, a hash of the paths and the
 # platform, tells Linux from macOS) are one restored and one saved per job, so when the run saved
 # exactly as many as it restored, every job replaced its own, and the restored ones are the
-# previous push's. When it saved fewer, a job kept its bundle (the iOS transforms rarely change);
-# when it saved more, a job saved without restoring from this scope (its entry was evicted, or a
-# cancelled run of the previous push saved late); in both cases nothing says which, so they all
-# stay until a later run stops restoring them. The pruning is skipped when a job restored its home
-# entry in the latest run but saved none, because that job still needs its previous bundles. A
-# job that was removed or renamed (a matrix change renames the android shards) restores nothing,
-# so it does not hold the pruning up and its entries go with the rest once nothing restores them.
-
+# previous push's. When it saved fewer, a job kept its bundle (the iOS transforms rarely change)
+# or failed to save; when it saved more, a job saved without restoring from this scope (its entry
+# was evicted, or a new shard); in both cases nothing says which, so they all stay until a later
+# run stops restoring them. The run that the push cancelled still saves in its post steps, right
+# after the new run started: its home entries carry the previous commit, and whatever was created
+# up to the last of them counts as the previous push's.
 set -euo pipefail
 
 usage() {
@@ -56,7 +54,11 @@ ENTRIES=$(gh cache list --ref "$REF" --limit 1000 --json id,key,version,sizeInBy
     | jq 'map(select(.key | test("^(gradle|konan)-")))')
 
 # Every entry with the seconds since the run started, negative when it predates the run; its kind
-# (the key without the content hash or the commit) and platform; and, for a home entry, its job.
+# (the key without the content hash or the commit) and, for a home entry, its job and commit. The
+# commit of the newest home entry is this push's; entries created up to the last home entry of
+# another commit were saved by the cancelled run of the previous push, and count as older than the
+# run, restored only if something read them after they were saved. Then, per kind and platform,
+# whether the run replaced what it restored.
 CLASSIFIED=$(jq --arg start "$RUN_START" '
     def seconds: sub("\\.[0-9]+"; "") | fromdateiso8601;
     ($start | seconds) as $t
@@ -64,8 +66,14 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
         created: ((.createdAt | seconds) - $t),
         accessed: ((.lastAccessedAt | seconds) - $t),
         kind: (.key | sub("\\|.*$"; "") | sub("-[0-9a-f]{32,}$"; "") | sub("-v[0-9]+$"; "")),
-        job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end)
+        job: (if .key | startswith("gradle-home-") then .key | sub("-[0-9a-f]{40}$"; "") else null end),
+        commit: (.key | capture("-(?<sha>[0-9a-f]{40})$")? // {} | .sha)
     })
+    | ([.[] | select(.job != null and .created >= 0)] | max_by(.created) | .commit) as $thisPush
+    | ([.[] | select(.job != null and .created >= 0 and .commit != $thisPush) | .created] | max // -1) as $cancelledUntil
+    | map(if .created >= 0 and .created <= $cancelledUntil
+          then .accessed = (if .accessed > .created then .accessed else -1 end) | .created = -1
+          else . end)
     | map(. + { replacedEachPush: (.kind | IN("gradle-home", "gradle-transforms", "gradle-build-cache")) })
     | group_by([.kind, .version])
     | map(
@@ -73,16 +81,6 @@ CLASSIFIED=$(jq --arg start "$RUN_START" '
         | ([.[] | select(.created < 0 and .accessed >= 0)] | length) as $restored
         | map(. + { replaced: (.replacedEachPush and $saved == $restored) }))
     | add // []' <<< "$ENTRIES")
-
-NOT_SAVED=$(jq -r '
-    (map(select(.job != null)) | group_by(.job))
-    | map(select(all(.created < 0) and any(.accessed >= 0))) | .[][0].job
-' <<< "$CLASSIFIED")
-if [ -n "$NOT_SAVED" ]; then
-    echo "Keeping every entry of $REF: these jobs restored their cache in the run that started at $RUN_START but saved none" >&2
-    echo "$NOT_SAVED" >&2
-    exit 0
-fi
 
 TO_DELETE=$(jq -r '
     map(select(.created < 0 and (.accessed < 0 or .replaced)))
@@ -105,5 +103,15 @@ if [ "$DRY_RUN" = true ]; then
     exit 0
 fi
 
-# A delete that fails (the entry was evicted meanwhile) is no reason to keep the others.
-cut -f1 <<< "$TO_DELETE" | xargs -r -n 1 gh cache delete || true
+# An entry evicted meanwhile is already gone; any other failure, a token without actions: write
+# say, fails the script once every entry has been tried.
+STATUS=0
+while IFS= read -r ID; do
+    if ! OUTPUT=$(gh cache delete "$ID" 2>&1); then
+        case "$OUTPUT" in
+            *"HTTP 404"* | *"Not Found"*) echo "  $ID was already evicted" ;;
+            *) echo "  $ID: $OUTPUT" >&2; STATUS=1 ;;
+        esac
+    fi
+done <<< "$(cut -f1 <<< "$TO_DELETE")"
+exit "$STATUS"

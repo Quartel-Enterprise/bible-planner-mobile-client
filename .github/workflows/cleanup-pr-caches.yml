@@ -22,6 +22,8 @@ on:
       - ui-tests
     types:
       - completed
+    branches-ignore:
+      - main
 
 permissions:
   actions: write
@@ -30,79 +32,67 @@ permissions:
 
 jobs:
   prune:
-    # A failed or cancelled run never gets past the gate below, so it starts no runner.
+    # A failed or cancelled run never gets past the gate below, so it starts no runner. A run from
+    # a fork lists no pull request, and a fork's jobs write no cache.
     if: >-
       github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
+      github.event.workflow_run.conclusion == 'success' &&
+      join(github.event.workflow_run.pull_requests.*.number) != ''
     runs-on: ubuntu-latest
     # Both writer workflows complete within minutes of each other. The gate lets through whichever
     # completes last and, when they complete together, both: the group then runs them one after
     # the other, and the second finds nothing left to delete.
     concurrency:
-      group: prune-pr-caches-${{ github.event.workflow_run.head_sha }}
+      group: prune-pr-caches-${{ github.event.workflow_run.pull_requests[0].number }}
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
     steps:
       # A writer job saves its cache in its post step, so the pruning waits until the latest run of
-      # each writer workflow for this push has completed, and only prunes after a green push: a job
-      # that failed before it restored its cache would otherwise look like one that no longer
-      # exists, and lose its entries. Older runs of the same commit (cancelled on close, say, and
-      # reopened) are ignored. The time the push's runs started is the line between the entries
-      # this push made or restored and the ones it left behind. This step comes before the
-      # checkout, which a run that stops here never needs. A failing gh call fails the step, so a
-      # broken gate shows as a red check instead of a silent skip.
-      - name: Find the push's runs and pull requests
+      # each writer workflow for this push of this pull request has completed, and only prunes
+      # after a green push: a job that failed before it restored its cache would otherwise look
+      # like one that no longer exists, and lose its entries. Older runs of the same commit
+      # (cancelled on close, say, and reopened) and the runs of another pull request with the same
+      # head are ignored. The time the push's runs started is the line between the entries this
+      # push made or restored and the ones it left behind. This step comes before the checkout,
+      # which a run that stops here never needs. A failing gh call fails the step, so a broken
+      # gate shows as a red check instead of a silent skip.
+      - name: Find the push's runs
         id: push
         run: |
+          runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
+            --jq "[.workflow_runs[] | select(.pull_requests | any(.number == $NUMBER))]")
           start=""
           for workflow in build-and-test ui-tests; do
-            run=$(gh run list --commit "$HEAD_SHA" --event pull_request --workflow "$workflow" --limit 1 \
-              --json status,conclusion,createdAt --jq '.[0]')
-            if [ -z "$run" ] || [ "$run" = "null" ] || [ "$(jq -r '.status' <<< "$run")" != "completed" ]; then
-              echo "The latest $workflow run of $HEAD_SHA has not completed; its completion prunes."
+            run=$(jq -c --arg workflow "$workflow" '[.[] | select(.name == $workflow)] | max_by(.created_at)' <<< "$runs")
+            if [ "$run" = "null" ] || [ "$(jq -r '.status' <<< "$run")" != "completed" ]; then
+              echo "The latest $workflow run of #$NUMBER at $HEAD_SHA has not completed; its completion prunes."
               exit 0
             fi
             if [ "$(jq -r '.conclusion' <<< "$run")" != "success" ]; then
-              echo "The latest $workflow run of $HEAD_SHA did not succeed; the next green push prunes."
+              echo "The latest $workflow run of #$NUMBER at $HEAD_SHA did not succeed; the next green push prunes."
               exit 0
             fi
-            created=$(jq -r '.createdAt' <<< "$run")
+            created=$(jq -r '.created_at' <<< "$run")
             if [ -z "$start" ] || [[ "$created" < "$start" ]]; then
               start=$created
             fi
           done
-          numbers=$(gh pr list --state open --search "$HEAD_SHA" --json number,headRefOid \
-            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" | tr '\n' ' ')
-          if [ -z "$numbers" ]; then
-            echo "No open pull request has $HEAD_SHA as its head: a newer push prunes, or the cleanup job does."
-            exit 0
-          fi
-          echo "numbers=$numbers" >> "$GITHUB_OUTPUT"
           echo "start=$start" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
-        if: steps.push.outputs.numbers != ''
+        if: steps.push.outputs.start != ''
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
           sparse-checkout: scripts/prune_pr_caches.sh
           sparse-checkout-cone-mode: false
 
-      # More than one open pull request can share a head commit (stacked branches); each has a
-      # cache scope of its own, and a failure on one does not skip the others.
       - name: Prune the entries this push no longer needs
-        if: steps.push.outputs.numbers != ''
-        env:
-          NUMBERS: ${{ steps.push.outputs.numbers }}
-          START: ${{ steps.push.outputs.start }}
-        run: |
-          status=0
-          for number in $NUMBERS; do
-            ./scripts/prune_pr_caches.sh "refs/pull/$number/merge" "$START" || status=1
-          done
-          exit "$status"
+        if: steps.push.outputs.start != ''
+        run: ./scripts/prune_pr_caches.sh "refs/pull/$NUMBER/merge" "${{ steps.push.outputs.start }}"
 
   cleanup:
     if: github.event_name == 'pull_request'
