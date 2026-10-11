@@ -24,4 +24,4 @@ It also fires when the video is on but fails to load, and the person takes the f
 ## Notes
 
 - Free chapters count against the same daily unlocks as the rewarded ones.
-- The entry, unlock-next and player unlock clicks declare it in their `Track.Manual` names, since their branch goes through the gate.
+- The entry, unlock and player chapter-skip clicks declare it in their `Track.Manual` names, since their branch goes through the gate.

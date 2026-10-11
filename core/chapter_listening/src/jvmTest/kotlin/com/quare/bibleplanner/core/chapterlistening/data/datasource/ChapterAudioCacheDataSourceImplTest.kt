@@ -83,6 +83,41 @@ internal class ChapterAudioCacheDataSourceImplTest {
     }
 
     @Test
+    fun `GIVEN a manifest the system purged WHEN finding its chapter THEN deletes the audio left behind`() = runTest {
+        // Given
+        val dataSource = createDataSource(maxBytes = MAX_BYTES)
+        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        SystemFileSystem.delete(Path(directory, "GEN_1.json"))
+
+        // When
+        val cached = dataSource.find(genesisOne)
+
+        // Then
+        assertNull(cached)
+        assertFalse(SystemFileSystem.exists(Path(directory, "GEN_1.mp3")))
+    }
+
+    @Test
+    fun `GIVEN a replaced revision removed after failing WHEN saving another chapter THEN stops counting it`() =
+        runTest {
+            // Given
+            val dataSource = createDataSource(maxBytes = 3 * (100L + manifest.length))
+            now = 1
+            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            now = 2
+            dataSource.save(genesisTwo, fileName = "GEN_2_v1", audioBytes = 100)
+            dataSource.save(genesisTwo, fileName = "GEN_2_v2", audioBytes = 100)
+            dataSource.remove(Path(directory, "GEN_2_v1.mp3").toString())
+
+            // When
+            now = 3
+            dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 100)
+
+            // Then
+            assertNotNull(dataSource.find(genesisOne))
+        }
+
+    @Test
     fun `GIVEN a new revision of a chapter WHEN saving it THEN serves it and keeps the playing file`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)

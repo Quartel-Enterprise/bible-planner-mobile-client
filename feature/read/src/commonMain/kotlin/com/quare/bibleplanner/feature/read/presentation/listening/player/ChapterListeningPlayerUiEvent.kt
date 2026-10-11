@@ -8,6 +8,14 @@ import com.quare.bibleplanner.feature.read.presentation.listening.model.Listenin
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningSurface
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
+// Why: a skip goes through the unlock gate, which may hand out the day's free chapter.
+private val chapterSkipAnalytics: EventAnalytics = EventAnalytics.Track.Manual(
+    setOf(
+        AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+        AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
+    ),
+)
+
 sealed interface ChapterListeningPlayerUiEvent : UiEvent {
     data object OnPlayPauseClick : ChapterListeningPlayerUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
@@ -24,11 +32,11 @@ sealed interface ChapterListeningPlayerUiEvent : UiEvent {
     }
 
     data object OnPreviousChapterClick : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = createControlAnalytics(ListeningControl.PREVIOUS_CHAPTER)
+        override val analytics: EventAnalytics = chapterSkipAnalytics
     }
 
     data object OnNextChapterClick : ChapterListeningPlayerUiEvent {
-        override val analytics: EventAnalytics = createControlAnalytics(ListeningControl.NEXT_CHAPTER)
+        override val analytics: EventAnalytics = chapterSkipAnalytics
     }
 
     data class OnSeek(

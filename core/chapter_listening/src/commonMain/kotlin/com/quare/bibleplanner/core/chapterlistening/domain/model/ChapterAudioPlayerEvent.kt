@@ -9,5 +9,6 @@ sealed interface ChapterAudioPlayerEvent {
 
     data class Failed(
         override val playbackId: Int,
+        val isFileUnreadable: Boolean,
     ) : ChapterAudioPlayerEvent
 }

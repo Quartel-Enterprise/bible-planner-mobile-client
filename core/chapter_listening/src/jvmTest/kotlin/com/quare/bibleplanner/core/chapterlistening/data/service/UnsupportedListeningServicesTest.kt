@@ -47,6 +47,7 @@ internal class UnsupportedListeningServicesTest {
                 elapsed = Duration.ZERO,
                 total = Duration.ZERO,
             ),
+            isAudioLoaded = false,
             isPlaying = false,
         )
 

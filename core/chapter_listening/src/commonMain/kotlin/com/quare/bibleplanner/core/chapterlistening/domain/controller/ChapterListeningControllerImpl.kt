@@ -333,7 +333,7 @@ internal class ChapterListeningControllerImpl(
 
     /*
      * Why: each chapter loaded is a server call that may generate audio and a download, so a chapter
-     * only swiped to while paused waits until the person plays it.
+     * only swiped or skipped to while paused waits until the person plays it.
      */
     private fun showUnloaded(session: ListeningSessionModel) {
         loadJob?.cancel()
@@ -586,9 +586,16 @@ internal class ChapterListeningControllerImpl(
         )
     }
 
-    // Why: a session that expired mid-listening picks up again once the person signs back in.
+    /*
+     * Why: a session that expired mid-listening picks up again once the person signs back in; the
+     * account signed in may be another one, so its access is checked again first.
+     */
     private fun resumeAfterSignIn() {
-        if (session?.status == ListeningStatusModel.NEEDS_SIGN_IN) resume()
+        val current = session ?: return
+        if (current.status != ListeningStatusModel.NEEDS_SIGN_IN) return
+        launchMove {
+            if (isOpen(current.segment)) resume() else stop()
+        }
     }
 
     private fun playFrom(
@@ -766,15 +773,20 @@ internal class ChapterListeningControllerImpl(
                 trackLocked(target)
                 return@launchMove
             }
-            startLoad {
-                openSegment(
-                    session = current.copy(
-                        segment = target,
-                        chapterChangeCause = ChapterChangeCause.PLAYER,
-                    ),
-                    shouldPlay = current.isPlaying,
-                    leadingSilence = Duration.ZERO,
-                )
+            val moved = current.copy(
+                segment = target,
+                chapterChangeCause = ChapterChangeCause.PLAYER,
+            )
+            if (current.isPlaying) {
+                startLoad {
+                    openSegment(
+                        session = moved,
+                        shouldPlay = true,
+                        leadingSilence = Duration.ZERO,
+                    )
+                }
+            } else {
+                showUnloaded(moved)
             }
         }
     }
@@ -934,19 +946,19 @@ internal class ChapterListeningControllerImpl(
         if (event.playbackId != playbackId) return
         when (event) {
             is ChapterAudioPlayerEvent.Ended -> reachEnd(event.playbackId)
-            is ChapterAudioPlayerEvent.Failed -> onPlaybackFailed()
+            is ChapterAudioPlayerEvent.Failed -> onPlaybackFailed(event.isFileUnreadable)
         }
     }
 
     // Why: a cached file the player can't decode would fail every retry, so it is downloaded again.
-    private fun onPlaybackFailed() {
+    private fun onPlaybackFailed(isFileUnreadable: Boolean) {
         val current = session ?: return
         Logger.e { "Chapter audio playback failed for ${current.segment.chapter}" }
         val failedAudioPath = audio?.audioPath
         silencePlayer()
         audio = null
         updateSession { it.copy(status = ListeningStatusModel.AUDIO_UNAVAILABLE) }
-        if (failedAudioPath != null) scope.launch { chapterAudioRepository.evict(failedAudioPath) }
+        if (isFileUnreadable && failedAudioPath != null) scope.launch { chapterAudioRepository.evict(failedAudioPath) }
     }
 
     private fun handleRemoteCommand(command: ListeningRemoteCommand) {
@@ -1005,6 +1017,7 @@ internal class ChapterListeningControllerImpl(
             chapterTitle = chapterTitle,
             subtitle = current.bibleVersionId.uppercase(),
             verseNumber = current.verses.getOrNull(current.verseIndex)?.number,
+            isAudioLoaded = current.verses.isNotEmpty(),
             // Why: whole seconds, so the 200 ms position ticks don't republish the system player every time.
             time = time.copy(elapsed = time.elapsed.inWholeSeconds.seconds),
             // Why: a chapter change passes through PREPARING, and reporting it as paused would drop the foreground service.

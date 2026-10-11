@@ -9,6 +9,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import platform.AVFoundation.AVAudioTimePitchAlgorithmSpectral
+import platform.AVFoundation.AVErrorDecodeFailed
+import platform.AVFoundation.AVErrorFailedToParse
+import platform.AVFoundation.AVErrorFileFormatNotRecognized
+import platform.AVFoundation.AVFoundationErrorDomain
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
@@ -37,6 +41,13 @@ import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalForeignApi::class)
 internal class IosChapterAudioPlayer : ChapterAudioPlayer {
+    // Why: only these mean the cached file itself is broken; an interrupted or failed output must not delete it.
+    private val unreadableFileErrorCodes = setOf(
+        AVErrorFileFormatNotRecognized,
+        AVErrorFailedToParse,
+        AVErrorDecodeFailed,
+    )
+
     override val isSupported: Boolean = true
 
     private val eventChannel = Channel<ChapterAudioPlayerEvent>(Channel.UNLIMITED)
@@ -116,9 +127,16 @@ internal class IosChapterAudioPlayer : ChapterAudioPlayer {
     private fun reportFailure() {
         if (hasReportedFailure) return
         hasReportedFailure = true
-        Logger.e { "Could not play the chapter audio: ${loadedItem?.error?.localizedDescription}" }
+        val error = loadedItem?.error
+        Logger.e { "Could not play the chapter audio: ${error?.localizedDescription}" }
         loadedPath = null
-        send(ChapterAudioPlayerEvent.Failed(playbackId))
+        val isAvFoundationError = error != null && error.domain == AVFoundationErrorDomain
+        send(
+            ChapterAudioPlayerEvent.Failed(
+                playbackId = playbackId,
+                isFileUnreadable = isAvFoundationError && error?.code in unreadableFileErrorCodes,
+            ),
+        )
     }
 
     private fun observe(

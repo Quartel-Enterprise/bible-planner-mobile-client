@@ -60,8 +60,8 @@ internal class ListeningPlayer(
             .setPlaybackState(STATE_IDLE)
             .build()
         val forwarded = super.getState()
-        // Why: while the next chapter loads the ExoPlayer still holds the previous one, paused.
-        val isLoading = current.isPlaying && !forwarded.playWhenReady
+        // Why: until a chapter's audio loads, the ExoPlayer still holds the previous chapter's file.
+        val isLoading = !current.isAudioLoaded || (current.isPlaying && !forwarded.playWhenReady)
         val loadedDurationUs = forwarded.playlist.firstOrNull()?.durationUs ?: C.TIME_UNSET
         val item = MediaItemData
             .Builder(current.chapterTitle)
@@ -73,7 +73,7 @@ internal class ListeningPlayer(
                     .build(),
                 // Why: until the file loads its length is unknown, rather than a segment length in other units.
             ).setDurationUs(if (isLoading) C.TIME_UNSET else loadedDurationUs)
-            .setIsSeekable(true)
+            .setIsSeekable(!isLoading)
             .build()
         return forwarded
             .buildUpon()
@@ -85,7 +85,7 @@ internal class ListeningPlayer(
             ).setPlayWhenReady(current.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST)
             .setPlaybackState(
                 when {
-                    isLoading -> STATE_BUFFERING
+                    isLoading && current.isPlaying -> STATE_BUFFERING
                     current.isPlaying && forwarded.playbackState == STATE_BUFFERING -> STATE_BUFFERING
                     else -> STATE_READY
                 },

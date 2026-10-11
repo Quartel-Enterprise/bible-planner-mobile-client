@@ -9,10 +9,13 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepT
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.ChapterListeningGate
 import com.quare.bibleplanner.feature.read.presentation.listening.ListeningPlaybackActions
 import com.quare.bibleplanner.feature.read.presentation.listening.mapper.ListeningPlayerUiModelMapper
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningControl
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningSurface
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -82,11 +85,13 @@ internal class ChapterListeningPlayerViewModel(
             ChapterListeningPlayerUiEvent.OnNextVerseClick -> controller.nextVerse()
 
             ChapterListeningPlayerUiEvent.OnPreviousChapterClick -> openAdjacentChapter(
+                control = ListeningControl.PREVIOUS_CHAPTER,
                 chapter = uiState.value.previousChapter,
                 open = controller::previousChapter,
             )
 
             ChapterListeningPlayerUiEvent.OnNextChapterClick -> openAdjacentChapter(
+                control = ListeningControl.NEXT_CHAPTER,
                 chapter = uiState.value.nextChapter,
                 open = controller::nextChapter,
             )
@@ -115,9 +120,17 @@ internal class ChapterListeningPlayerViewModel(
 
     // Why: asking before moving keeps the current chapter playing when the next one turns out locked.
     private fun openAdjacentChapter(
+        control: ListeningControl,
         chapter: ChapterLocationModel?,
         open: () -> Unit,
     ) {
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+            params = mapOf(
+                AnalyticsParams.CONTROL to control.key,
+                AnalyticsParams.SURFACE to ListeningSurface.PLAYER.key,
+            ),
+        )
         gate.request(
             scope = viewModelScope,
             chapter = chapter ?: return,

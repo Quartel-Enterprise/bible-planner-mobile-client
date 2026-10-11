@@ -5,5 +5,6 @@ data class NowPlayingModel(
     val subtitle: String,
     val verseNumber: Int?,
     val time: ListeningTimeModel,
+    val isAudioLoaded: Boolean,
     val isPlaying: Boolean,
 )

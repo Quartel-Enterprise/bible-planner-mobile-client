@@ -1209,11 +1209,59 @@ internal class ChapterListeningControllerImplTest {
             )
 
             // When
-            audioPlayer.emit(ChapterAudioPlayerEvent.Failed(audioPlayer.plays.last().playbackId))
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = true,
+                ),
+            )
 
             // Then
             assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
             assertEquals(listOf(genesisOneAudio.audioPath), audioRepository.evicted)
+        }
+
+    @Test
+    fun `GIVEN a playback failing for another reason WHEN it fails THEN keeps the cached file`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = false,
+                ),
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertTrue(audioRepository.evicted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN skipping to the next chapter THEN moves without loading it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisTwo,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            controller.nextChapter()
+
+            // Then
+            assertEquals(genesisThree, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertFalse(mediaSession.updates.last().isAudioLoaded)
         }
 
     @Test
@@ -1234,6 +1282,29 @@ internal class ChapterListeningControllerImplTest {
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
             assertEquals(1, audioPlayer.plays.size)
+        }
+
+    @Test
+    fun `GIVEN an expired session WHEN an account without access signs in THEN ends the session`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                failure = ChapterAudioFailureModel.NOT_SIGNED_IN,
+                lockedChapters = setOf(genesisOne),
+            )
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            authenticatedUserId.value = null
+            audioRepository.failure = null
+
+            // When
+            authenticatedUserId.value = "user-2"
+
+            // Then
+            assertNull(session)
+            assertTrue(audioPlayer.plays.isEmpty())
         }
 
     @Test

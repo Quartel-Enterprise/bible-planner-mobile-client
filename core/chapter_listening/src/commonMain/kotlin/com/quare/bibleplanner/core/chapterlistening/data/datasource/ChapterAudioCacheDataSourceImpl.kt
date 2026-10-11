@@ -39,7 +39,7 @@ internal class ChapterAudioCacheDataSourceImpl(
     private var loadedEntries: List<ChapterAudioCacheEntryDto>? = null
 
     // Why: replaced revisions stay on disk until the next launch, so their bytes still count against the cap.
-    private var retiredBytes = 0L
+    private val retiredBytesByFileName = mutableMapOf<String, Long>()
 
     override suspend fun find(chapterKey: String): CachedChapterAudio? = onDisk {
         val entries = loadEntries()
@@ -47,6 +47,8 @@ internal class ChapterAudioCacheDataSourceImpl(
         val audioPath = toAudioPath(entry.fileName)
         val manifestPath = toManifestPath(entry.fileName)
         if (!SystemFileSystem.exists(audioPath) || !SystemFileSystem.exists(manifestPath)) {
+            // Why: the system may purge one file of the pair, and the other could never be evicted.
+            deleteFiles(entry.fileName)
             writeEntries(entries - entry)
             return@onDisk null
         }
@@ -106,10 +108,12 @@ internal class ChapterAudioCacheDataSourceImpl(
             )
             // Why: a replaced revision may still be playing, so its files stay until the next launch drops them.
             val (replaced, others) = loadEntries().partition { it.chapterKey == chapterKey }
-            retiredBytes += replaced.filter { it.fileName != fileName }.sumOf(ChapterAudioCacheEntryDto::bytes)
+            replaced
+                .filter { it.fileName != fileName }
+                .forEach { retired -> retiredBytesByFileName[retired.fileName] = retired.bytes }
             val kept = findEntriesToKeep(
                 entries = others,
-                reservedBytes = entry.bytes + retiredBytes,
+                reservedBytes = entry.bytes + retiredBytesByFileName.values.sum(),
             )
             (others - kept.toSet()).map(ChapterAudioCacheEntryDto::fileName).forEach(::deleteFiles)
             writeEntries(kept + entry)
@@ -127,6 +131,7 @@ internal class ChapterAudioCacheDataSourceImpl(
             val fileName = Path(audioPath).name.removeSuffix(AUDIO_EXTENSION)
             val (removed, kept) = loadEntries().partition { it.fileName == fileName }
             deleteFiles(fileName)
+            retiredBytesByFileName -= fileName
             if (removed.isNotEmpty()) writeEntries(kept)
         }
     }
