@@ -60,10 +60,9 @@ jobs:
   # end-to-end flows are by far the longest module on the device, so no layout finishes sooner than
   # :shared alone takes; the other shards deal the screen modules between them, which together take
   # longer than :shared, so three shards is the minimum that pays. scripts/ui_test_shard.sh does
-  # the dealing and runs Gradle,
-  # so nothing here needs editing when a module is added. To add a shard, add the next index to
-  # matrix.shard: SHARD_COUNT is strategy.job-total, the size of the matrix as long as shard stays
-  # its only axis.
+  # the dealing and runs Gradle, so nothing here needs editing when a module is added. To add a
+  # shard, add the next index to matrix.shard: SHARD_COUNT is strategy.job-total, the size of the
+  # matrix as long as shard stays its only axis.
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 45
