@@ -251,12 +251,26 @@ in the root `build.gradle.kts`; every other generator feeds both.
   without publishing, and uploads the rendered Play images as a `store-screenshots` artifact either
   way. To look at the App Store images between releases, run `collectAppStoreScreenshots` on a
   Mac.
-- **Duplicates on App Store Connect are removed after the last upload.** `deliver` re-uploads a
-  screenshot when App Store Connect has not yet published its checksum, so a shelf can end up with
-  the same file twice; `ios-screenshots-finish` walks the editable version once every locale is
-  in and drops every later copy, then checks that no locale was left without screenshots. Run by
-  hand for every locale at once, `fastlane ios upload_screenshots` does both itself;
-  `fastlane ios finish_screenshots` runs that pass on its own while a version is editable.
+- **Strays on App Store Connect are removed after the last upload.** Two kinds of extra screenshot
+  can end up on a shelf: the same file twice, when `deliver` re-uploads a screenshot whose checksum
+  App Store Connect has not published yet, and a copy of the previous version's screenshot, which
+  App Store Connect copies over while it creates the new version. `ios-screenshots-finish` walks
+  the editable version once every locale is in, with the rendered images at hand: each file keeps
+  the copy whose checksum matches what was uploaded, and a file the locale no longer stages goes.
+  It then puts every shelf in file-name order and checks that no locale was left without
+  screenshots. Run by hand for every locale at once, `fastlane ios upload_screenshots` does all of
+  it itself; `fastlane ios finish_screenshots` runs that pass on its own while a version is
+  editable (add `staged:true` when `fastlane/screenshots/` holds what was uploaded; without it a
+  duplicate keeps the shelf's first copy and nothing else is removed).
+- **The upload waits for the new version's copy, and `deliver`'s sort can't fail it.** App Store
+  Connect refuses to reorder a shelf holding a copy from the previous version, and `deliver`
+  reorders every shelf of the version, every locale's, at the end of each upload: in 2.13.0 the
+  first upload created the version and deleted en-US while the copy was still running, and all four
+  locales' uploads failed on it though every screenshot had landed. Each iOS upload now creates the
+  version itself and starts once its screenshot count holds still (10 s apart, 5 minutes at most).
+  `deliver` still tries to sort; when App Store Connect refuses, the upload carries on and
+  `ios-screenshots-finish` sorts once the strays are gone, shelf by shelf, so one refused shelf
+  doesn't keep the others unsorted.
 - **"Screenshot Set Already Exists!" is retried in place.** `deliver` deletes a locale's
   screenshots before it uploads, and App Store Connect can still hold a deleted screenshot set when
   `deliver` recreates it. The iOS lane waits 30 seconds and runs the upload again, up to three

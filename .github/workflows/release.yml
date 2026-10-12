@@ -503,11 +503,12 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           APP_VERSION: ${{ needs.plan.outputs.version }}
 
-  # After the last locale: removes the duplicate screenshots deliver leaves behind and sets
-  # `screenshots_complete`, which tells ios-submit whether a locale was left with no screenshots at
-  # all — see report_app_store_screenshots_completeness in the Fastfile. !cancelled() because it has
-  # to run precisely when an upload failed, which is when a locale can be empty; the locales guard
-  # skips it along with the uploads when nothing was rendered.
+  # After the last locale: removes the stray screenshots the uploads leave behind, sorts every
+  # shelf in file-name order, and sets `screenshots_complete`, which tells ios-submit whether a
+  # locale was left with no screenshots at all — see report_app_store_screenshots_completeness in
+  # the Fastfile. !cancelled() because it has to run precisely when an upload failed, which is when
+  # a locale can be empty; the locales guard skips it along with the uploads when nothing was
+  # rendered.
   ios-screenshots-finish:
     name: iOS — check the store listing screenshots
     needs: [ios-screenshots-render, ios-screenshots-upload]
@@ -532,9 +533,16 @@ jobs:
       - name: Install fastlane
         run: gem install fastlane --no-document
 
-      - name: Remove duplicate screenshots and check every locale has some
+      # What the uploads sent, so each duplicate keeps the copy that matches it.
+      - name: Download the rendered screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: app-store-screenshots
+          path: fastlane/screenshots/
+
+      - name: Remove stray screenshots, sort them and check every locale has some
         id: screenshots
-        run: fastlane ios finish_screenshots
+        run: fastlane ios finish_screenshots staged:true
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
