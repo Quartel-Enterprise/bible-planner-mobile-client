@@ -11,6 +11,7 @@ import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestion
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -39,6 +40,7 @@ private val versionByLocale = mapOf(
     "pt-BR" to "ACF",
     "es" to "RVR",
 )
+private val listeningVersions = setOf("A21", "ACF", "ARA", "NIV", "ESV", "KJV", "WEB")
 private val versesByLocale = mapOf(
     "en-US" to listOf(
         "In the beginning, God created the heavens and the earth.",
@@ -169,4 +171,14 @@ internal fun readUiState(
         isOpeningChapterStudy = false,
         isChapterStudyBeside = false,
     )
+}
+
+/**
+ * The listen entry as the app shows it for the version [locale]'s reader chip names: the app offers
+ * listening only for the versions in the listening_cloud_versions Remote Config value, which
+ * [listeningVersions] mirrors.
+ */
+internal fun listeningUiState(locale: String): ReadListeningUiState {
+    val isListeningOffered = versionByLocale.getValue(locale) in listeningVersions
+    return if (isListeningOffered) availableListeningUiState() else hiddenListeningUiState()
 }
