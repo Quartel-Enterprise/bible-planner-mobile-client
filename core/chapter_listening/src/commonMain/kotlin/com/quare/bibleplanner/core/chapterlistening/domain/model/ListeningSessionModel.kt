@@ -11,6 +11,7 @@ data class ListeningSessionModel(
     val verses: List<ListeningVerseModel>,
     val verseIndex: Int,
     val verseProgress: Float,
+    val wordIndex: Int?,
     val status: ListeningStatusModel,
     val chapterChangeCause: ChapterChangeCause,
     val finishedChapter: ChapterLocationModel?,

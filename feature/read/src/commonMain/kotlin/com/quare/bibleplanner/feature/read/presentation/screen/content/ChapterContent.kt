@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
@@ -19,6 +20,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.Chapter
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterListenShortcutPill
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyEntryCard
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
+import com.quare.bibleplanner.feature.read.presentation.screen.component.toUntrimmed
 import org.jetbrains.compose.resources.stringResource
 
 private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
@@ -39,17 +41,24 @@ internal fun LazyListScope.chapterContent(
     onEvent: (ReadUiEvent) -> Unit,
     onListeningEvent: (ReadListeningUiEvent) -> Unit,
 ) {
-    val listeningVerseNumber = listening.player
+    val listeningPlayer = listening.player
         ?.takeIf { player ->
             player.chapter.bookId == chapter.chapter.bookId &&
                 player.chapter.chapterNumber == chapter.chapter.chapterNumber &&
                 player.status != ListeningStatusModel.FINISHED
-        }?.verseNumber
+        }
+    val listeningVerseNumber = listeningPlayer?.verseNumber
+    // Why: the word's range belongs to the narrated version's text, so a reader showing another version marks none.
+    val spokenWord = listeningPlayer
+        ?.takeIf { player -> player.bibleVersionId.equals(chapter.chapter.bibleVersionId, ignoreCase = true) }
+        ?.spokenWord
     item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         Column {
             ChapterHeader(
                 bookName = stringResource(chapter.bookStringResource),
                 chapterNumber = chapter.chapter.chapterNumber,
+                isBookNameSpoken = spokenWord == ListeningWordTargetModel.ChapterBook,
+                isChapterNumberSpoken = spokenWord == ListeningWordTargetModel.ChapterNumber,
             )
             if (listening.isAvailable && isListenShortcutShown) {
                 ChapterListenShortcutPill(
@@ -78,6 +87,13 @@ internal fun LazyListScope.chapterContent(
             flashAlpha = verseFlash.alpha.takeIf { isFlashing },
             isDimmed = focusedVerseNumber != null && focusedVerseNumber != verse.number,
             isListening = verse.number == listeningVerseNumber,
+            listeningHeadingWord = (spokenWord as? ListeningWordTargetModel.Heading)
+                ?.range
+                ?.takeIf { verse.number == listeningVerseNumber },
+            listeningWord = (spokenWord as? ListeningWordTargetModel.Verse)
+                ?.range
+                ?.takeIf { verse.number == listeningVerseNumber }
+                ?.toUntrimmed(verse.text),
             onClick = {
                 onEvent(
                     ReadUiEvent.OnVerseClick(

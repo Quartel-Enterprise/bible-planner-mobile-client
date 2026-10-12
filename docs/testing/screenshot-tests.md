@@ -114,6 +114,8 @@ the repository. `isLandscape = true` covers the layouts that switch on width.
 | `DayScreenshotTest` | loading, loaded, loaded in landscape, read, without notes |
 | `ReadingPlanScreenshotTest` | loading, on track, on track in landscape, behind |
 | `ProfileScreenshotTest` | logged out, logged in |
+| `ChapterListeningPlayerScreenshotTest` | word highlight on (verse scrolled to the word), word highlight off |
+| `ReadListeningScreenshotTest` | the reader following the word being read |
 
 Left out on purpose: the day study card, which the day screen gets from the root and
 `:feature:day_study` would cover, and the reading plan's dropdown menu, whose popup Roborazzi does not

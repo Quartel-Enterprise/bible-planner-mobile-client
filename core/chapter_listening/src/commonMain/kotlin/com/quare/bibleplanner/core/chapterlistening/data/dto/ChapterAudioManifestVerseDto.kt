@@ -9,4 +9,6 @@ internal data class ChapterAudioManifestVerseDto(
     @SerialName("start_ms") val startMs: Long,
     @SerialName("duration_ms") val durationMs: Long,
     @SerialName("heading") val heading: ChapterAudioManifestSegmentDto?,
+    // Why: the server sends each word as a bare [offset in the text, start ms from the verse, duration ms] array.
+    @SerialName("words") val words: List<List<Long>>?,
 )

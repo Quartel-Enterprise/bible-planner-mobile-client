@@ -302,6 +302,7 @@ object AnalyticsEventNames {
     const val CHAPTER_LISTENING_SPEED_CHANGED = "chapter_listening_speed_changed"
     const val CHAPTER_LISTENING_SLEEP_TIMER_SET = "chapter_listening_sleep_timer_set"
     const val CHAPTER_LISTENING_AUTO_NEXT_TOGGLED = "chapter_listening_auto_next_toggled"
+    const val CHAPTER_LISTENING_WORD_HIGHLIGHT_TOGGLED = "chapter_listening_word_highlight_toggled"
     const val CHAPTER_LISTENING_UNLOCK_CLICKED = "chapter_listening_unlock_clicked"
     const val CHAPTER_LISTENING_FINISH_OFFER_DISMISSED = "chapter_listening_finish_offer_dismissed"
     const val CHAPTER_LISTENING_BACK_TO_VERSE_CLICKED = "chapter_listening_back_to_verse_clicked"

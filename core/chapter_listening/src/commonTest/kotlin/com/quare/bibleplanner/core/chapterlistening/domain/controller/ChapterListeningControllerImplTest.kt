@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioMod
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioResultModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVerseModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioWordModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterChangeCause
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterDirectionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
@@ -20,12 +21,14 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningWordsUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -70,13 +73,61 @@ internal class ChapterListeningControllerImplTest {
         ),
         genesisThree to mapOf(1 to "Now the serpent was more subtil."),
     )
+    private val headingsByChapter = mapOf(genesisOne to mapOf(2 to "The light"))
 
-    // The title takes the first 2 s, and a heading is read before verse 2.
+    // The title takes the first 2 s, a heading is read before verse 2, and both have their words timed with the
+    // first words of verse 2.
     private val genesisOneAudio = ChapterAudioModel(
         audioPath = "/cache/GEN_1.mp3",
+        titleWords = listOf(
+            createAudioWord(
+                offset = 0,
+                start = 0.2.seconds,
+                end = 0.8.seconds,
+            ),
+            createAudioWord(
+                offset = 8,
+                start = 0.9.seconds,
+                end = 1.4.seconds,
+            ),
+        ),
         verses = listOf(
             createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.5.seconds),
-            createAudioVerse(number = 2, headingStart = 6.seconds, start = 7.seconds, end = 10.seconds),
+            createAudioVerse(
+                number = 2,
+                headingStart = 6.seconds,
+                start = 7.seconds,
+                end = 10.seconds,
+                headingWords = listOf(
+                    createAudioWord(
+                        offset = 0,
+                        start = 6.1.seconds,
+                        end = 6.3.seconds,
+                    ),
+                    createAudioWord(
+                        offset = 4,
+                        start = 6.3.seconds,
+                        end = 6.6.seconds,
+                    ),
+                ),
+                words = listOf(
+                    createAudioWord(
+                        offset = 0,
+                        start = 7.seconds,
+                        end = 7.3.seconds,
+                    ),
+                    createAudioWord(
+                        offset = 4,
+                        start = 7.3.seconds,
+                        end = 7.5.seconds,
+                    ),
+                    createAudioWord(
+                        offset = 8,
+                        start = 7.6.seconds,
+                        end = 8.seconds,
+                    ),
+                ),
+            ),
             createAudioVerse(number = 3, headingStart = null, start = 10.5.seconds, end = 13.seconds),
         ),
         duration = 14.seconds,
@@ -85,6 +136,7 @@ internal class ChapterListeningControllerImplTest {
         genesisOne to genesisOneAudio,
         genesisTwo to ChapterAudioModel(
             audioPath = "/cache/GEN_2.mp3",
+            titleWords = emptyList(),
             verses = listOf(
                 createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.seconds),
                 createAudioVerse(number = 2, headingStart = null, start = 5.5.seconds, end = 9.seconds),
@@ -93,6 +145,7 @@ internal class ChapterListeningControllerImplTest {
         ),
         genesisThree to ChapterAudioModel(
             audioPath = "/cache/GEN_3.mp3",
+            titleWords = emptyList(),
             verses = listOf(createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 4.seconds)),
             duration = 5.seconds,
         ),
@@ -213,6 +266,140 @@ internal class ChapterListeningControllerImplTest {
             // Then
             assertEquals(1, session?.verseIndex)
             assertEquals(0.5f, session?.verseProgress)
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the audio reaches a word THEN marks the word being read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.position = 7.4.seconds
+            advanceTimeBy(250.milliseconds)
+
+            // Then
+            assertEquals(ListeningWordTargetModel.Verse(4..6), spokenTarget())
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the audio reads the title THEN marks its chapter number`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.position = 1.seconds
+            advanceTimeBy(250.milliseconds)
+
+            // Then
+            assertEquals(ListeningWordTargetModel.ChapterNumber, spokenTarget())
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the audio reads a heading THEN marks its word`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        audioPlayer.position = 6.4.seconds
+        advanceTimeBy(250.milliseconds)
+
+        // Then
+        assertEquals(ListeningWordTargetModel.Heading(4..8), spokenTarget())
+    }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the audio is in the pause after a verse THEN marks no word`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.position = 5.8.seconds
+            advanceTimeBy(250.milliseconds)
+
+            // Then
+            assertEquals(0, session?.verseIndex)
+            assertNull(session?.wordIndex)
+        }
+
+    @Test
+    fun `GIVEN word highlight off WHEN the audio reaches a word THEN marks no word`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isWordHighlightEnabled = false)
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        audioPlayer.position = 7.4.seconds
+        advanceTimeBy(250.milliseconds)
+
+        // Then
+        assertEquals(1, session?.verseIndex)
+        assertNull(session?.wordIndex)
+    }
+
+    @Test
+    fun `GIVEN a word being read WHEN the next word starts before the regular tick THEN moves to it on time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            audioPlayer.position = 7.25.seconds
+            advanceTimeBy(250.milliseconds)
+
+            // When
+            audioPlayer.position = 7.31.seconds
+            advanceTimeBy(60.milliseconds)
+
+            // Then
+            assertEquals(ListeningWordTargetModel.Verse(4..6), spokenTarget())
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN turning word highlight off and on THEN hides and shows the word right away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            audioPlayer.position = 7.4.seconds
+            advanceTimeBy(250.milliseconds)
+            controller.togglePlayPause()
+
+            // When
+            controller.setWordHighlightEnabled(false)
+            val wordWhenOff = session?.wordIndex
+            controller.setWordHighlightEnabled(true)
+
+            // Then
+            assertNull(wordWhenOff)
+            assertEquals(ListeningWordTargetModel.Verse(4..6), spokenTarget())
+            assertEquals(true, settingsRepository.settings.value.isWordHighlightEnabled)
         }
 
     @Test
@@ -1749,12 +1936,32 @@ internal class ChapterListeningControllerImplTest {
         headingStart: Duration?,
         start: Duration,
         end: Duration,
+        headingWords: List<ChapterAudioWordModel> = emptyList(),
+        words: List<ChapterAudioWordModel> = emptyList(),
     ): ChapterAudioVerseModel = ChapterAudioVerseModel(
         number = number,
         headingStart = headingStart,
+        headingWords = headingWords,
+        start = start,
+        end = end,
+        words = words,
+    )
+
+    private fun createAudioWord(
+        offset: Int,
+        start: Duration,
+        end: Duration,
+    ): ChapterAudioWordModel = ChapterAudioWordModel(
+        offset = offset,
         start = start,
         end = end,
     )
+
+    private fun spokenTarget(): ListeningWordTargetModel? {
+        val current = session ?: return null
+        val wordIndex = current.wordIndex ?: return null
+        return current.verses[current.verseIndex].words[wordIndex].target
+    }
 
     private fun createDay(vararg chapters: ChapterLocationModel): ListeningDayModel = ListeningDayModel(
         location = PlanDayLocationModel(
@@ -1792,6 +1999,7 @@ internal class ChapterListeningControllerImplTest {
     private fun TestScope.prepareScenario(
         failure: ChapterAudioFailureModel? = null,
         isAutoNextEnabled: Boolean = true,
+        isWordHighlightEnabled: Boolean = true,
         lockedChapters: Set<ChapterLocationModel> = emptySet(),
         accessGate: CompletableDeferred<Unit>? = null,
         canActivate: Boolean = true,
@@ -1806,6 +2014,7 @@ internal class ChapterListeningControllerImplTest {
             ChapterListeningSettingsModel(
                 speed = 1f,
                 isAutoNextEnabled = isAutoNextEnabled,
+                isWordHighlightEnabled = isWordHighlightEnabled,
             ),
         )
         trackedEvents = mutableListOf()
@@ -1820,6 +2029,9 @@ internal class ChapterListeningControllerImplTest {
             observeAuthenticatedUserId = { authenticatedUserId },
             getChapterVerseTexts = { chapter ->
                 versesByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
+            },
+            getChapterVerseHeadings = { chapter ->
+                headingsByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
             },
             getSelectedVersionIdFlow = { flowOf("ACF") },
             getChapterListeningAccess = { chapter ->
@@ -1844,6 +2056,7 @@ internal class ChapterListeningControllerImplTest {
             },
             getListeningChapterTitle = { chapter -> "Genesis ${chapter.chapterNumber}" },
             getListeningTime = GetListeningTimeUseCase(),
+            getListeningWords = GetListeningWordsUseCase(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { controller.events.collect { event -> emittedEvents += event } }
@@ -1972,5 +2185,9 @@ private class FakeSettingsRepository(
 
     override suspend fun setAutoNextEnabled(isEnabled: Boolean) {
         settings.update { it.copy(isAutoNextEnabled = isEnabled) }
+    }
+
+    override suspend fun setWordHighlightEnabled(isEnabled: Boolean) {
+        settings.update { it.copy(isWordHighlightEnabled = isEnabled) }
     }
 }

@@ -18,7 +18,7 @@ internal class ChapterListeningSettingsRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN nothing saved WHEN observing THEN reads at normal speed with auto next`() = runTest {
+    fun `GIVEN nothing saved WHEN observing THEN reads at normal speed with auto next and word highlight`() = runTest {
         // When
         val settings = repository.observe().first()
 
@@ -27,6 +27,7 @@ internal class ChapterListeningSettingsRepositoryImplTest {
             ChapterListeningSettingsModel(
                 speed = 1f,
                 isAutoNextEnabled = true,
+                isWordHighlightEnabled = true,
             ),
             settings,
         )
@@ -37,12 +38,14 @@ internal class ChapterListeningSettingsRepositoryImplTest {
         // When
         repository.setSpeed(1.5f)
         repository.setAutoNextEnabled(false)
+        repository.setWordHighlightEnabled(false)
 
         // Then
         assertEquals(
             ChapterListeningSettingsModel(
                 speed = 1.5f,
                 isAutoNextEnabled = false,
+                isWordHighlightEnabled = false,
             ),
             repository.observe().first(),
         )

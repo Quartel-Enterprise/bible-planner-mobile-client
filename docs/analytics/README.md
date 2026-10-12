@@ -331,6 +331,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [chapter_listening_speed_changed](events/chapter_listening_speed_changed.md) | P2 | Listening |
 | [chapter_listening_sleep_timer_set](events/chapter_listening_sleep_timer_set.md) | P2 | Listening |
 | [chapter_listening_auto_next_toggled](events/chapter_listening_auto_next_toggled.md) | P2 | Listening |
+| [chapter_listening_word_highlight_toggled](events/chapter_listening_word_highlight_toggled.md) | P2 | Listening |
 | [chapter_listening_unlock_clicked](events/chapter_listening_unlock_clicked.md) | P1 | Listening |
 | [chapter_listening_finish_offer_dismissed](events/chapter_listening_finish_offer_dismissed.md) | P2 | Listening |
 | [chapter_listening_back_to_verse_clicked](events/chapter_listening_back_to_verse_clicked.md) | P2 | Listening |

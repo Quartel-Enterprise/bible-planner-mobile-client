@@ -107,6 +107,10 @@ internal class ChapterListeningPlayerViewModel(
 
             is ChapterListeningPlayerUiEvent.OnAutoNextToggle -> controller.setAutoNextEnabled(event.isEnabled)
 
+            is ChapterListeningPlayerUiEvent.OnWordHighlightToggle -> controller.setWordHighlightEnabled(
+                event.isEnabled,
+            )
+
             ChapterListeningPlayerUiEvent.OnUnlockClick -> playbackActions.unlockLockedChapter(
                 scope = viewModelScope,
                 surface = ListeningSurface.PLAYER,
@@ -184,6 +188,7 @@ internal class ChapterListeningPlayerViewModel(
             sleepTimer = toSleepTimer(state.sleepTimer),
             isAutoNextEnabled = state.settings.isAutoNextEnabled || session?.mode == ListeningModeModel.DAY_READING,
             isAutoNextLocked = session?.mode == ListeningModeModel.DAY_READING,
+            isWordHighlightEnabled = state.settings.isWordHighlightEnabled,
         )
     }
 

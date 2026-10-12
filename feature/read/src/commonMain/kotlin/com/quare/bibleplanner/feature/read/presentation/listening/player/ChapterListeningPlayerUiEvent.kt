@@ -81,6 +81,15 @@ sealed interface ChapterListeningPlayerUiEvent : UiEvent {
         )
     }
 
+    data class OnWordHighlightToggle(
+        val isEnabled: Boolean,
+    ) : ChapterListeningPlayerUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_WORD_HIGHLIGHT_TOGGLED,
+            params = mapOf(AnalyticsParams.IS_ENABLED to isEnabled),
+        )
+    }
+
     data object OnUnlockClick : ChapterListeningPlayerUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             setOf(

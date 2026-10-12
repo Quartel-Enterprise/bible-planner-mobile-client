@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation.listening.mapper
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSegmentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -37,6 +38,8 @@ internal class ListeningPlayerUiModelMapperTest {
                 chapter = genesisOne,
                 verseNumber = 1,
                 verseText = "one two three four five",
+                spokenWord = null,
+                hasWordTimings = true,
                 verseIndex = 0,
                 verseCount = 2,
                 status = ListeningStatusModel.PLAYING,
@@ -44,6 +47,7 @@ internal class ListeningPlayerUiModelMapperTest {
                 elapsed = 1.seconds,
                 remaining = 3.seconds,
                 total = 4.seconds,
+                bibleVersionId = "web",
                 versionAbbreviation = "WEB",
                 dayProgress = null,
                 lockedChapter = null,
@@ -109,5 +113,42 @@ internal class ListeningPlayerUiModelMapperTest {
         // Then
         assertEquals(0f, player.progress)
         assertEquals(null, player.verseNumber)
+    }
+
+    @Test
+    fun `GIVEN a word being read WHEN mapping THEN highlights its place in the verse text`() {
+        // Given
+        val session = listeningSession(
+            chapter = genesisOne,
+            wordIndex = 2,
+        )
+
+        // When
+        val player = mapper.map(
+            session = session,
+            speed = 1f,
+        )
+
+        // Then
+        val word = player.spokenWord as ListeningWordTargetModel.Verse
+        assertEquals("two", player.verseText?.substring(word.range))
+    }
+
+    @Test
+    fun `GIVEN a verse without word timings WHEN mapping THEN says it has none`() {
+        // Given
+        val session = listeningSession(
+            chapter = genesisOne,
+            verseIndex = 1,
+        )
+
+        // When
+        val player = mapper.map(
+            session = session,
+            speed = 1f,
+        )
+
+        // Then
+        assertEquals(false, player.hasWordTimings)
     }
 }

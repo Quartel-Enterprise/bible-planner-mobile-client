@@ -15,11 +15,13 @@ internal class ChapterListeningSettingsRepositoryImpl(
 ) : ChapterListeningSettingsRepository {
     private val speedKey = floatPreferencesKey("listening_speed")
     private val autoNextEnabledKey = booleanPreferencesKey("listening_auto_next_enabled")
+    private val wordHighlightEnabledKey = booleanPreferencesKey("listening_word_highlight_enabled")
 
     override fun observe(): Flow<ChapterListeningSettingsModel> = dataStore.data.map { preferences ->
         ChapterListeningSettingsModel(
             speed = preferences[speedKey] ?: ChapterListeningSettingsModel.DEFAULT_SPEED,
             isAutoNextEnabled = preferences[autoNextEnabledKey] != false,
+            isWordHighlightEnabled = preferences[wordHighlightEnabledKey] != false,
         )
     }
 
@@ -33,6 +35,13 @@ internal class ChapterListeningSettingsRepositoryImpl(
     override suspend fun setAutoNextEnabled(isEnabled: Boolean) {
         dataStore.write(
             key = autoNextEnabledKey,
+            value = isEnabled,
+        )
+    }
+
+    override suspend fun setWordHighlightEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = wordHighlightEnabledKey,
             value = isEnabled,
         )
     }
