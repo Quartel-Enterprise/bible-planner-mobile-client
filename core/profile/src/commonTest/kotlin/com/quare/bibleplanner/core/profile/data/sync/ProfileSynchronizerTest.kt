@@ -3,7 +3,6 @@ package com.quare.bibleplanner.core.profile.data.sync
 import com.quare.bibleplanner.core.profile.fake.FakeProfileDao
 import com.quare.bibleplanner.core.profile.fake.RecordingSupabaseClient
 import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
-import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import io.github.jan.supabase.storage.storage
@@ -11,7 +10,6 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -227,10 +225,7 @@ class ProfileSynchronizerTest {
     ) {
         dao = FakeProfileDao(initialRows = initialRows)
         delegate = RecordingSynchronizer()
-        supabase = RecordingSupabaseClient(
-            responseBody = UPLOAD_RESPONSE,
-            realtime = FakeRealtime(actions = emptyFlow()),
-        )
+        supabase = RecordingSupabaseClient(responseBody = UPLOAD_RESPONSE)
         userId = MutableStateFlow(authenticatedUserId)
         synchronizer = ProfileSynchronizer(
             delegate = delegate,

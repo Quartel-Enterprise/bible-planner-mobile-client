@@ -224,12 +224,10 @@ class ProfileRemoteStoreTest {
         actions: List<PostgresAction> = emptyList(),
     ) {
         realtime = FakeRealtime(actions = flowOf(*actions.toTypedArray()))
-        supabase = RecordingSupabaseClient(
-            responseBody = responseBody,
-            realtime = realtime,
-        )
+        supabase = RecordingSupabaseClient(responseBody = responseBody)
         remoteStore = ProfileRemoteStore(
             supabaseClient = supabase.client,
+            realtime = realtime,
             profileMapper = ProfileMapper(),
         )
     }

@@ -44,6 +44,11 @@ ktlint_bible-planner-style_test-body-sections = enabled
 ktlint_bible-planner-style_prepare-scenario-returns-unit = enabled
 ktlint_bible-planner-style_prepare-scenario-last-member = enabled
 ktlint_bible-planner-style_prepare-scenario-in-given = enabled
+ktlint_bible-planner-style_injected-realtime = disabled
+
+# The one place that unwraps the Realtime plugin, to bind SerializedRemovalRealtime (bible-planner-style:injected-realtime).
+[core/provider/supabase/src/commonMain/kotlin/com/quare/bibleplanner/core/provider/supabase/SupabaseModule.kt]
+ktlint_bible-planner-style_injected-realtime = disabled
 
 # Screenshot tests and the store screenshot generators are one render per state, named after the image
 # they produce, with no Given / When / Then (docs/testing/screenshot-tests.md).
@@ -53,6 +58,7 @@ ktlint_bible-planner-style_test-body-sections = disabled
 
 [**/testing/src/**]
 ktlint_bible-planner-style_comments-say-why = disabled
+ktlint_bible-planner-style_injected-realtime = disabled
 
 [*.kts]
 ktlint_bible-planner-style_comments-say-why = disabled

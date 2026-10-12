@@ -33,6 +33,11 @@ Room is the source of truth the UI observes; `OfflineFirstSynchronizer` (`core/s
 - **Pull** — `fetchSnapshot` fetches the full remote set. `SyncCoordinator` runs it on every realtime `CONNECTED`
   transition, cold start included, which covers offline gaps and triggers `adoptProvisionalDefaults`.
 - **Realtime** — `observeRealtime` applies live inserts and updates.
+  Remote stores take the injected `Realtime`, never `supabaseClient.realtime`: Koin binds it to
+  `SerializedRemovalRealtime`, which removes channels one at a time to work around supabase-kt#1414 (concurrent
+  removals leave stray disconnects that kill live channels). Enforced by the custom ktlint rule
+  `bible-planner-style:injected-realtime`, which flags the `io.github.jan.supabase.realtime.realtime` import and
+  `getPlugin(Realtime)` outside `SupabaseModule`, tests and the `:testing` fake modules.
 - Every remote write goes through `applyRemote`, which only overwrites rows that are strictly older **and** not
   pending, so a local change made offline is never lost to an older server value.
 

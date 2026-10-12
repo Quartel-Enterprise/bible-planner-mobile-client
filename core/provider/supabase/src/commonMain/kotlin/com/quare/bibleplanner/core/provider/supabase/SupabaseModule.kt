@@ -55,7 +55,7 @@ val supabaseModule = module {
     }
     single<Auth> { get<SupabaseClient>().auth }
     single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.filterTransientInitializing() }
-    single<Realtime> { get<SupabaseClient>().realtime }
+    single<Realtime> { SerializedRemovalRealtime(delegate = get<SupabaseClient>().realtime) }
     single<Functions> { get<SupabaseClient>().functions }
     single<BucketApi>(named(CONTENT_BUCKET)) {
         get<SupabaseClient>().storage.from(CONTENT_BUCKET)
