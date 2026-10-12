@@ -1,14 +1,19 @@
 name: claude-review
 
-# Reviews every pull request with Claude when it opens, and posts the findings as one review with an
-# inline comment per finding. It is a second opinion on top of the review the create-pr skill already
-# runs before the pull request opens. A draft is reviewed when it is marked ready for review instead;
-# a reopened pull request isn't. A draft marked ready a second time is reviewed again, told what the
-# earlier reviews found so it doesn't repeat them.
+# Reviews every pull request with Claude when it opens, fixes what it found, and pushes the fixes as
+# a commit to the pull request's branch. It then posts the findings as one review: the fixed ones in
+# its body, the ones left for the author as an inline comment each. It is a second opinion on top of
+# the review the create-pr skill already runs before the pull request opens. A draft is reviewed when
+# it is marked ready for review instead; a reopened pull request isn't. A draft marked ready a second
+# time is reviewed again, told what the earlier reviews found so it doesn't repeat them.
 #
-# The review only comments: the job fails only when the run itself does (an expired token, the
-# timeout), never because of what it found. Pushes after the pull request opens don't review it
-# again: adding the ai-review label does (claude-review-on-request).
+# The workflows that build and test the app wait for this review on the commit the pull request
+# opened with (review-gate.yml): when it pushes fixes, they run on the fix commit only; when it
+# pushes nothing, they run on the opening commit once it ends.
+#
+# The job fails only when the run itself does (an expired token, the timeout), never because of what
+# the review found. The fix commit, like every push after the pull request opens, isn't reviewed
+# again: adding the ai-review label does (claude-review-on-request), and that review only comments.
 on:
   pull_request:
     types:
@@ -44,3 +49,4 @@ jobs:
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
+          fix: 'true'
