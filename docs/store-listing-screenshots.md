@@ -256,7 +256,8 @@ in the root `build.gradle.kts`; every other generator feeds both.
   App Store Connect has not published yet, and a copy of the previous version's screenshot, which
   App Store Connect copies over while it creates the new version. `ios-screenshots-finish` walks
   the editable version once every locale is in, with the rendered images at hand: each file keeps
-  the copy whose checksum matches what was uploaded, and a file the locale no longer stages goes.
+  a copy whose checksum matches what was uploaded (one that isn't the live version's image, when a
+  screen didn't change), and a file the locale no longer stages goes, on shelves the upload reached.
   It then puts every shelf in file-name order and checks that no locale was left without
   screenshots. Run by hand for every locale at once, `fastlane ios upload_screenshots` does all of
   it itself; `fastlane ios finish_screenshots` runs that pass on its own while a version is
@@ -267,7 +268,9 @@ in the root `build.gradle.kts`; every other generator feeds both.
   reorders every shelf of the version, every locale's, at the end of each upload: in 2.13.0 the
   first upload created the version and deleted en-US while the copy was still running, and all four
   locales' uploads failed on it though every screenshot had landed. Each iOS upload now creates the
-  version itself and starts once its screenshot count holds still (10 s apart, 5 minutes at most).
+  version itself and starts once the copy is done: every screenshot processed and the count holding
+  still across two looks 10 s apart (not zero on a version it just created), 5 minutes at most. A
+  version that is already done on the first look isn't waited on.
   `deliver` still tries to sort; when App Store Connect refuses, the upload carries on and
   `ios-screenshots-finish` sorts once the strays are gone, shelf by shelf, so one refused shelf
   doesn't keep the others unsorted.
