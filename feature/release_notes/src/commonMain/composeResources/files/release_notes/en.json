@@ -8,12 +8,14 @@
     "android": [
       "Listening to a chapter now sounds much more natural: the Bible is narrated by AI-generated voices, with a narrator, a voice for God, another for Jesus and different voices for the characters in each dialogue. To listen, sign in to your account and be online; the chapters you have already heard stay on your device and play even without a connection.",
       "On the free plan, when no video is available to unlock a chapter, your first chapter of the day is now free.",
-      "While you listen to a chapter, the word being read is now highlighted in the text, both in the player and on the reading screen. You can turn it off with \"Highlight the word being read\" in the player."
+      "While you listen to a chapter, the word being read is now highlighted in the text, both in the player and on the reading screen. You can turn it off with \"Highlight the word being read\" in the player.",
+      "On phones, the player for listening to a chapter no longer takes up almost the whole screen: it now has the same maximum height as the Bible versions screen."
     ],
     "ios": [
       "Listening to a chapter now sounds much more natural: the Bible is narrated by AI-generated voices, with a narrator, a voice for God, another for Jesus and different voices for the characters in each dialogue. To listen, sign in to your account and be online; the chapters you have already heard stay on your device and play even without a connection.",
       "On the free plan, when no video is available to unlock a chapter, your first chapter of the day is now free.",
-      "While you listen to a chapter, the word being read is now highlighted in the text, both in the player and on the reading screen. You can turn it off with \"Highlight the word being read\" in the player."
+      "While you listen to a chapter, the word being read is now highlighted in the text, both in the player and on the reading screen. You can turn it off with \"Highlight the word being read\" in the player.",
+      "On phones, the player for listening to a chapter no longer takes up almost the whole screen: it now has the same maximum height as the Bible versions screen."
     ]
   },
   "2.12.1": {
