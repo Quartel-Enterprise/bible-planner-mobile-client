@@ -10,7 +10,7 @@ The player opens a chapter whose audio is neither cached on the device nor retur
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackOpenedSegment` once per chapter opened, and `onPlaybackFailed` (reason `playback_failed`) once per failed playback.
+`core/chapter_listening/.../domain/controller/ChapterListeningAnalyticsTracker.kt` — `trackOpened`, from `ListeningSegmentLoader.load`, once per chapter opened, and `trackPlaybackFailed` (reason `playback_failed`), from `ChapterListeningControllerImpl.onPlaybackFailed`, once per failed playback.
 
 ## Parameters
 

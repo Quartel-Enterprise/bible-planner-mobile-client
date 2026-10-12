@@ -10,7 +10,7 @@ The system takes the audio focus away for a while (Android) or begins an audio s
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `interrupt`.
+`core/chapter_listening/.../domain/controller/ListeningPlayback.kt` — `interrupt`, through `ChapterListeningAnalyticsTracker.trackInterrupted`.
 
 ## Parameters
 

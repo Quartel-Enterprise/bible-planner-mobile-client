@@ -12,7 +12,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
-import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
@@ -25,8 +24,15 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.ChatUseCases
 import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestions
+import com.quare.bibleplanner.feature.chat.presentation.answer.ChatAnswerWait
+import com.quare.bibleplanner.feature.chat.presentation.draft.ChatDraftAutosave
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
+import com.quare.bibleplanner.feature.chat.presentation.mapper.cancelRename
+import com.quare.bibleplanner.feature.chat.presentation.mapper.closeDelete
+import com.quare.bibleplanner.feature.chat.presentation.mapper.closeRename
+import com.quare.bibleplanner.feature.chat.presentation.mapper.startRename
+import com.quare.bibleplanner.feature.chat.presentation.mapper.toggleActionsOf
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatQuotaUiModel
@@ -46,14 +52,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChatViewModel(
     private val useCases: ChatUseCases,
-    private val applicationScope: ApplicationScope,
+    private val draftAutosave: ChatDraftAutosave,
+    private val answerWait: ChatAnswerWait,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val getDefaultSuggestions: GetDefaultChatSuggestions,
     private val coordinator: ChatStreamCoordinator,
@@ -95,9 +100,6 @@ internal class ChatViewModel(
         field = MutableSharedFlow<ChatUiAction>()
 
     private val cooldownTick: Duration = 1.seconds
-    private val draftDebounceDelay: Duration = 2.seconds
-    private val answerWaitWindow: Duration = 2.minutes
-    private val answerWaitRecheck: Duration = 5.seconds
 
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
@@ -107,12 +109,8 @@ internal class ChatViewModel(
 
     private var isDayThreadClaimed = false
     private var cooldownJob: Job? = null
-    private var draftSaveJob: Job? = null
-    private var pendingDraft: PendingDraftModel? = null
-    private var lastAppliedDraft: String? = null
     private var threadMessages: List<ChatMessageModel> = emptyList()
     private var newestMessage: Pair<String, Boolean>? = null
-    private var awaitingAnswerJob: Job? = null
     private val currentThreadKey: MutableStateFlow<String> = MutableStateFlow(NEW_THREAD_KEY)
     private var isLoggedIn: Boolean = false
 
@@ -129,10 +127,7 @@ internal class ChatViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        val unsaved = pendingDraft ?: return
-        if (draftSaveJob?.isActive != true) return
-        draftSaveJob?.cancel()
-        applicationScope.launch { useCases.saveDraft(unsaved) }
+        draftAutosave.flush()
     }
 
     override fun handleEvent(event: ChatUiEvent) {
@@ -162,13 +157,7 @@ internal class ChatViewModel(
 
             is ChatUiEvent.OnConversationClick -> onConversationClick(event.conversationId)
 
-            is ChatUiEvent.OnConversationActionsToggle -> updateHistory { history ->
-                history.copy(
-                    expandedActionsId = event.conversationId.takeIf { it != history.expandedActionsId },
-                    renamingId = null,
-                    deletingId = null,
-                )
-            }
+            is ChatUiEvent.OnConversationActionsToggle -> updateHistory { it.toggleActionsOf(event.conversationId) }
 
             is ChatUiEvent.OnRenameConversationClick -> onRenameConversationClick(event.conversationId)
 
@@ -176,12 +165,7 @@ internal class ChatViewModel(
 
             ChatUiEvent.OnRenameConfirm -> onRenameConfirm()
 
-            ChatUiEvent.OnRenameCancel -> updateHistory {
-                it.copy(
-                    renamingId = null,
-                    renameDraft = "",
-                )
-            }
+            ChatUiEvent.OnRenameCancel -> updateHistory(ChatHistoryUiState::cancelRename)
 
             is ChatUiEvent.OnDeleteConversationClick -> updateHistory {
                 it.copy(deletingId = event.conversationId)
@@ -201,17 +185,13 @@ internal class ChatViewModel(
 
     private fun onInputChanged(text: String) {
         uiState.update { it.copy(input = text) }
-        val draft = PendingDraftModel(
-            threadKey = currentThreadKey.value,
-            content = text,
+        draftAutosave.schedule(
+            scope = viewModelScope,
+            draft = PendingDraftModel(
+                threadKey = currentThreadKey.value,
+                content = text,
+            ),
         )
-        pendingDraft = draft
-        draftSaveJob?.cancel()
-        draftSaveJob = viewModelScope.launch {
-            delay(draftDebounceDelay)
-            useCases.saveDraft(draft)
-            pendingDraft = null
-        }
     }
 
     private fun observeDraft() {
@@ -223,24 +203,11 @@ internal class ChatViewModel(
     }
 
     private fun onDraftChanged(draft: String) {
-        val input = uiState.value.input
-        if (input == draft) {
-            lastAppliedDraft = draft
-            return
-        }
-        if (input.isNotEmpty() && input != lastAppliedDraft) return
-        lastAppliedDraft = draft
-        uiState.update { it.copy(input = draft) }
-    }
-
-    private fun clearDraft() {
-        pendingDraft = null
-        draftSaveJob?.cancel()
-        val cleared = PendingDraftModel(
-            threadKey = currentThreadKey.value,
-            content = "",
-        )
-        viewModelScope.launch { useCases.saveDraft(cleared) }
+        val input = draftAutosave.findInputToApply(
+            draft = draft,
+            input = uiState.value.input,
+        ) ?: return
+        uiState.update { it.copy(input = input) }
     }
 
     private fun loadContext() {
@@ -306,7 +273,7 @@ internal class ChatViewModel(
 
     private fun applyMessages(messages: List<ChatMessageModel>) {
         threadMessages = messages
-        val isAwaitingAnswer = messages.isAwaitingAnswer()
+        val isAwaitingAnswer = answerWait.isAwaitingAnswer(messages)
         uiState.update { state ->
             state.copy(
                 messages = messageUiMapper.map(messages),
@@ -316,7 +283,12 @@ internal class ChatViewModel(
                 ),
             )
         }
-        watchAwaitingAnswer(isAwaitingAnswer)
+        answerWait.watch(
+            scope = viewModelScope,
+            isAwaitingAnswer = isAwaitingAnswer,
+            getMessages = { threadMessages },
+            onWaitOver = ::stopThinkingAfterWait,
+        )
         scrollOnNewMessage(messages)
     }
 
@@ -336,31 +308,14 @@ internal class ChatViewModel(
         isAwaitingAnswer: Boolean,
     ): Boolean = messageUiMapper.isThinking(messages) || pendingQuestion != null || isAwaitingAnswer
 
-    private fun List<ChatMessageModel>.isAwaitingAnswer(): Boolean {
-        val last = lastOrNull() ?: return false
-        if (last.role != ChatRoleModel.USER) return false
-        return Clock.System.now() - last.createdAt < answerWaitWindow
-    }
-
-    private fun watchAwaitingAnswer(isAwaitingAnswer: Boolean) {
-        if (!isAwaitingAnswer) {
-            awaitingAnswerJob?.cancel()
-            awaitingAnswerJob = null
-            return
-        }
-        if (awaitingAnswerJob?.isActive == true) return
-        awaitingAnswerJob = viewModelScope.launch {
-            while (threadMessages.isAwaitingAnswer()) {
-                delay(answerWaitRecheck)
-            }
-            uiState.update { state ->
-                state.copy(
-                    isThinking = state.isThinkingWith(
-                        messages = threadMessages,
-                        isAwaitingAnswer = false,
-                    ),
-                )
-            }
+    private fun stopThinkingAfterWait() {
+        uiState.update { state ->
+            state.copy(
+                isThinking = state.isThinkingWith(
+                    messages = threadMessages,
+                    isAwaitingAnswer = false,
+                ),
+            )
         }
     }
 
@@ -453,7 +408,10 @@ internal class ChatViewModel(
                 isAnswering = true,
             )
         }
-        clearDraft()
+        draftAutosave.clear(
+            scope = viewModelScope,
+            threadKey = currentThreadKey.value,
+        )
         coordinator.start(
             ChatSendRequestModel(
                 conversationId = conversationId,
@@ -572,10 +530,9 @@ internal class ChatViewModel(
 
     private fun onRenameConversationClick(conversationId: String) {
         updateHistory { history ->
-            history.copy(
-                renamingId = conversationId,
-                renameDraft = conversations.firstOrNull { it.id == conversationId }?.title.orEmpty(),
-                deletingId = null,
+            history.startRename(
+                conversationId = conversationId,
+                title = conversations.firstOrNull { it.id == conversationId }?.title.orEmpty(),
             )
         }
     }
@@ -584,13 +541,7 @@ internal class ChatViewModel(
         val history = uiState.value.history
         val conversationId = history.renamingId ?: return
         val title = history.renameDraft.trim()
-        updateHistory {
-            it.copy(
-                renamingId = null,
-                renameDraft = "",
-                expandedActionsId = null,
-            )
-        }
+        updateHistory(ChatHistoryUiState::closeRename)
         if (title.isEmpty()) return
         viewModelScope.launch {
             useCases.renameConversation(
@@ -602,12 +553,7 @@ internal class ChatViewModel(
 
     private fun onDeleteConfirm() {
         val conversationId = uiState.value.history.deletingId ?: return
-        updateHistory {
-            it.copy(
-                deletingId = null,
-                expandedActionsId = null,
-            )
-        }
+        updateHistory(ChatHistoryUiState::closeDelete)
         if (activeConversationId.value == conversationId) onNewConversationClick()
         viewModelScope.launch {
             useCases.deleteConversation(conversationId).onFailure { throwable ->

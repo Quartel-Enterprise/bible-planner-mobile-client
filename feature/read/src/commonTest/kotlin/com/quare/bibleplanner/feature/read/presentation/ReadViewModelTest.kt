@@ -44,6 +44,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
@@ -55,11 +56,14 @@ import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
+import com.quare.bibleplanner.feature.read.domain.usecase.ReadChapterUseCases
 import com.quare.bibleplanner.feature.read.domain.usecase.ReadStudyUseCases
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
 import com.quare.bibleplanner.feature.read.fake.RecordingBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
+import com.quare.bibleplanner.feature.read.presentation.daycompletion.ReadDayCompletionFactory
+import com.quare.bibleplanner.feature.read.presentation.mapper.ReadUiStateMapper
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
@@ -70,6 +74,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
+import com.quare.bibleplanner.feature.read.presentation.study.ReadChapterStudyOpener
+import com.quare.bibleplanner.feature.read.presentation.vertical.ReadVerticalChaptersFactory
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -1518,6 +1524,26 @@ internal class ReadViewModelTest {
                 isNoteIconEnabled = true,
             ),
         )
+        val studyUseCases = ReadStudyUseCases(
+            prefetchDayStudyQuota = { day -> prefetchedDays += day },
+            prefetchChapterStudyStatus = { target ->
+                prefetchedChapterStudyTargets += target
+                prefetchChapterStudyStatus(target)
+            },
+            getChapterStudyAccess = { target ->
+                chapterStudyAccessTargets += target
+                getChapterStudyAccess(target)
+            },
+            pendingVerseFocusStore = pendingVerseFocusStore,
+            getChapterStudyQuota = { chapterStudyQuota },
+            chapterStudyGenerationCoordinator = chapterStudyCoordinator,
+            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+            studyUnlockResultStore = studyUnlockResultStore,
+        )
+        val trackEvent = TrackEvent { name, params ->
+            trackedEvents += name
+            trackedEventParams += name to params
+        }
         viewModelStore = ViewModelStore()
         viewModel = ViewModelProvider.create(
             store = viewModelStore,
@@ -1532,39 +1558,37 @@ internal class ReadViewModelTest {
                             targetVerseNumbers = targetVerseNumbers,
                         ),
                         observeReadData = FakeObserveReadData(data),
-                        toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
-                        isWholeChapterRead = isWholeChapterRead,
-                        getCompletedDayForChapter = getCompletedDayForChapter,
+                        chapterUseCases = ReadChapterUseCases(
+                            toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
+                            isWholeChapterRead = isWholeChapterRead,
+                        ),
+                        verticalChaptersFactory = ReadVerticalChaptersFactory(
+                            getNextChapter = getNextChapter,
+                            getPreviousChapter = getPreviousChapter,
+                        ),
+                        dayCompletionFactory = ReadDayCompletionFactory(
+                            navigator = navigator,
+                            getCompletedDayForChapter = getCompletedDayForChapter,
+                            observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
+                        ),
                         observeDayCompletionCandidates = ObserveDayCompletionCandidates {
                             flowOf(
                                 dayCompletionCandidates,
                             )
                         },
-                        studyUseCases = ReadStudyUseCases(
-                            prefetchDayStudyQuota = { day -> prefetchedDays += day },
-                            prefetchChapterStudyStatus = { target ->
-                                prefetchedChapterStudyTargets += target
-                                prefetchChapterStudyStatus(target)
-                            },
-                            getChapterStudyAccess = { target ->
-                                chapterStudyAccessTargets += target
-                                getChapterStudyAccess(target)
-                            },
-                            pendingVerseFocusStore = pendingVerseFocusStore,
-                            getChapterStudyQuota = { chapterStudyQuota },
-                            chapterStudyGenerationCoordinator = chapterStudyCoordinator,
-                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
-                            studyUnlockResultStore = studyUnlockResultStore,
+                        studyUseCases = studyUseCases,
+                        chapterStudyOpener = ReadChapterStudyOpener(
+                            studyUseCases = studyUseCases,
+                            navigator = navigator,
+                            trackEvent = trackEvent,
                         ),
-                        observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
+                        uiStateMapper = ReadUiStateMapper(),
                         requestLoginNudgeIfNeeded = { },
                         downloaderFacade = downloaderFacade,
                         getSelectedVersionIdFlow = getSelectedVersionIdFlow,
                         requestDownloadNotificationPermission = { notificationPermissionRequests++ },
                         observeReaderSettings = { settings },
                         setReaderFocusAid = { focusAid -> focusAidWrites += focusAid },
-                        getNextChapter = getNextChapter,
-                        getPreviousChapter = getPreviousChapter,
                         observeVerseSelection = { selectionStore.selection },
                         toggleVerseSelection = { chapter, verseNumber ->
                             selectionStore.toggle(
@@ -1574,10 +1598,7 @@ internal class ReadViewModelTest {
                         },
                         clearVerseSelection = { selectionStore.clear() },
                         navigator = navigator,
-                        trackEvent = { name, params ->
-                            trackedEvents += name
-                            trackedEventParams += name to params
-                        },
+                        trackEvent = trackEvent,
                         platform = Platform.Android,
                     )
                 }

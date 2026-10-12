@@ -10,7 +10,7 @@ The reader taps the "Study" pill in the reader's top bar, or the "Study this cha
 
 ## Trigger source
 
-`feature/read/.../presentation/model/ReadUiEvent.kt` — `OnChapterStudyClick`, tracked automatically. `ReadViewModel.openChapterStudy` then resolves where the tap leads through `GetChapterStudyAccess`.
+`feature/read/.../presentation/model/ReadUiEvent.kt` — `OnChapterStudyClick`, tracked automatically. `ReadViewModel.openChapterStudy` then hands it to `ReadChapterStudyOpener.open`, which resolves where the tap leads through `GetChapterStudyAccess`.
 
 ## Parameters
 

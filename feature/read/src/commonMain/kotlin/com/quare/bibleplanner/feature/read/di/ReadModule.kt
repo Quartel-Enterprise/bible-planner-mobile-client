@@ -7,6 +7,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
+import com.quare.bibleplanner.feature.read.domain.usecase.ReadChapterUseCases
 import com.quare.bibleplanner.feature.read.domain.usecase.ReadStudyUseCases
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFont
@@ -26,6 +27,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderRulerLin
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderVerticalReadingUseCase
 import com.quare.bibleplanner.feature.read.presentation.ReadViewModel
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceViewModel
+import com.quare.bibleplanner.feature.read.presentation.daycompletion.ReadDayCompletionFactory
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorViewModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
@@ -36,6 +38,9 @@ import com.quare.bibleplanner.feature.read.presentation.listening.ReadListeningV
 import com.quare.bibleplanner.feature.read.presentation.listening.mapper.ListeningPlayerUiModelMapper
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerViewModel
 import com.quare.bibleplanner.feature.read.presentation.mapper.ChapterVersesUiModelMapper
+import com.quare.bibleplanner.feature.read.presentation.mapper.ReadUiStateMapper
+import com.quare.bibleplanner.feature.read.presentation.study.ReadChapterStudyOpener
+import com.quare.bibleplanner.feature.read.presentation.vertical.ReadVerticalChaptersFactory
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -57,7 +62,12 @@ val featureReadModule = module {
 
     factoryOf(::GetReadNavigationSuggestionsModelUseCase)
     factoryOf(::ReadStudyUseCases)
+    factoryOf(::ReadChapterUseCases)
     factoryOf(::ChapterVersesUiModelMapper)
+    factoryOf(::ReadUiStateMapper)
+    factoryOf(::ReadChapterStudyOpener)
+    factoryOf(::ReadVerticalChaptersFactory)
+    factoryOf(::ReadDayCompletionFactory)
     factoryOf(::ReadDataPresentationModelFactory).bind<ObserveReadData>()
     factoryOf(::GetAdjacentListeningChapterUseCase).bind<GetAdjacentListeningChapter>()
     singleOf(::ListeningFollowRequests)
