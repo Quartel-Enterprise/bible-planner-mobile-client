@@ -96,6 +96,7 @@ fun EntryProviderScope<NavKey>.read(dayCompletionBanner: DayCompletionBannerSlot
                 )
             },
             sheetBottomBreathingRoom = 12.dp,
+            isHeightCapped = true,
         ) {
             ChapterListeningPlayerContent(
                 uiState = uiState,

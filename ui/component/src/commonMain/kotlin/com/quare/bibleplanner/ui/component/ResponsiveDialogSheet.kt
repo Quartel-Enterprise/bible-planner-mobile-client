@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -61,6 +62,7 @@ private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
 private val defaultCardMaxWidth = 460.dp
 private val cardVerticalMargin = 24.dp
+private const val SHEET_MAX_HEIGHT_FRACTION = 0.8f
 private const val SHEET_SCRIM_ALPHA = 0.44f
 private const val CARD_SCRIM_ALPHA = 0.52f
 private const val CARD_HIDDEN_SCALE = 0.9f
@@ -75,7 +77,7 @@ fun ResponsiveDialogSheet(
     isTitleCentred: Boolean = false,
     cardMaxWidth: Dp = defaultCardMaxWidth,
     sheetBottomBreathingRoom: Dp = 0.dp,
-    sheetMaxHeightFraction: Float? = null,
+    isHeightCapped: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val sheetCloseGuard = rememberSheetCloseGuard()
@@ -116,19 +118,21 @@ fun ResponsiveDialogSheet(
                 scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = SHEET_SCRIM_ALPHA),
                 dragHandle = {
                     BottomSheetDefaults.DragHandle(
-                        modifier = if (sheetMaxHeightFraction == null) {
-                            Modifier
-                        } else {
+                        modifier = if (isHeightCapped) {
                             Modifier.onSizeChanged { size ->
                                 dragHandleHeight = with(density) { size.height.toDp() }
                             }
+                        } else {
+                            Modifier
                         },
                     )
                 },
             ) {
-                val sheetMaxHeight = sheetMaxHeightFraction?.let { fraction ->
-                    val sheetBottomInset = with(density) { WindowInsets.safeDrawing.getBottom(density).toDp() }
-                    windowHeight * fraction - dragHandleHeight - sheetBottomInset
+                val sheetBottomInset = with(density) { WindowInsets.safeDrawing.getBottom(density).toDp() }
+                val sheetMaxHeight: (() -> Dp)? = if (isHeightCapped) {
+                    { windowHeight * SHEET_MAX_HEIGHT_FRACTION - dragHandleHeight - sheetBottomInset }
+                } else {
+                    null
                 }
                 CloseableContent(
                     onCloseClick = onClose,
@@ -151,12 +155,20 @@ fun ResponsiveDialogSheet(
 /*
  * Why: capping the ModalBottomSheet modifier itself also shrinks the height M3 computes its
  * anchors from, which pins the sheet to the top of the screen. The cap goes on the content instead,
- * minus the drag handle and the bottom inset M3 pads the sheet with outside of it.
+ * minus the drag handle and the bottom inset M3 pads the sheet with outside of it. It is read while
+ * measuring, not while composing: the handle is measured just before the content, so its height
+ * counts in the first frame instead of a recomposition later.
  */
-private fun Modifier.sheetMaxHeight(maxHeight: Dp?): Modifier = if (maxHeight == null) {
+private fun Modifier.sheetMaxHeight(maxHeight: (() -> Dp)?): Modifier = if (maxHeight == null) {
     this
 } else {
-    heightIn(max = maxHeight)
+    layout { measurable, constraints ->
+        val cap = maxHeight().roundToPx().coerceIn(constraints.minHeight, constraints.maxHeight)
+        val placeable = measurable.measure(constraints.copy(maxHeight = cap))
+        layout(placeable.width, placeable.height) {
+            placeable.place(0, 0)
+        }
+    }
 }
 
 @Composable

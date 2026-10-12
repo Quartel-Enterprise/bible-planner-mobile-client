@@ -33,6 +33,19 @@ internal fun ChapterListeningPlayerContent(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (player.status == ListeningStatusModel.NEXT_LOCKED) {
+            LockedCard(
+                player = player,
+                onEvent = onEvent,
+            )
+        }
+        player.status.toUnavailableCopy()?.let { copy ->
+            UnavailableCard(
+                player = player,
+                copy = copy,
+                onEvent = onEvent,
+            )
+        }
         player.dayProgress?.let { DayProgressCard(dayProgress = it, progress = player.progress) }
         CurrentVerseCard(
             player = player,
@@ -47,19 +60,6 @@ internal fun ChapterListeningPlayerContent(
             player = player,
             onEvent = onEvent,
         )
-        if (player.status == ListeningStatusModel.NEXT_LOCKED) {
-            LockedCard(
-                player = player,
-                onEvent = onEvent,
-            )
-        }
-        player.status.toUnavailableCopy()?.let { copy ->
-            UnavailableCard(
-                player = player,
-                copy = copy,
-                onEvent = onEvent,
-            )
-        }
         SpeedCard(
             speed = uiState.speed,
             onEvent = onEvent,
