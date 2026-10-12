@@ -38,6 +38,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
       pull-requests: write
     concurrency:
@@ -53,6 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id || 0 }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
             echo "::error::The MERGE_WHEN_GREEN_TOKEN secret is not set."
@@ -88,6 +90,23 @@ jobs:
           if [ -n "$unfinished" ]; then
             echo "#$pr is not green yet:"
             echo "$unfinished"
+            exit 0
+          fi
+
+          # A job waiting on another (the checks behind review-gate) has no check until it starts, so
+          # for a moment after review-gate passes every check is green while its workflow still has
+          # jobs to run. A run of a workflow that calls review-gate counts as unfinished until it
+          # completes; its completion starts this workflow again. Only those: a run started by a label
+          # (claude-review-on-request, record-screenshots) skips its job and may not start this one.
+          # The run that started this one counts as complete whatever the listing says, which can lag
+          # behind the event.
+          running=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
+            --jq '.workflow_runs[] | select(.status != "completed" and .id != (env.TRIGGER_RUN_ID | tonumber))
+              | select(.path | test("^\\.github/workflows/(build-and-test|ui-tests|screenshot-tests|static-analysis|module-graph)\\.yml$"))
+              | .name')
+          if [ -n "$running" ]; then
+            echo "#$pr still has workflows running:"
+            echo "$running"
             exit 0
           fi
 

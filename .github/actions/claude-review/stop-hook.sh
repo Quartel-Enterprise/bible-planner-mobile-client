@@ -8,7 +8,8 @@
 # is hidden because the logs are public, and the log must not leak it). When the hook finds no
 # findings list, it posts nothing and leaves the posting to that step, which reads the reply from the
 # action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
-# from ending.
+# from ending. With fix (action.yml), it first commits the fixes and pushes them through
+# commit-fixes.sh.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
@@ -75,6 +76,21 @@ if [ -f "$dir/.started" ] && url=$(STARTED="$(cat "$dir/.started")" "$dir/post-r
   echo "$url" > "$dir/.posted"
   note "a review was already posted since the review started: $url"
   exit 0
+fi
+
+# With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
+# finds them pushed already.
+if [ -f "$dir/.fix" ] && [ ! -f "$dir/.pushed" ]; then
+  if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$dir/.commit-log"); then
+    echo "$sha" > "$dir/.pushed"
+    note "pushed the fixes as $sha"
+  else
+    note "no fixes pushed: $(tr '\n' ' ' < "$dir/.commit-log")"
+  fi
+fi
+if [ -f "$dir/.pushed" ]; then
+  FIXED_IN=$(cat "$dir/.pushed")
+  export FIXED_IN
 fi
 
 if url=$("$dir/post-review.sh" "$pr" <<< "$findings"); then

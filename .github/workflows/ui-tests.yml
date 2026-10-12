@@ -29,10 +29,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Waits for the opening review on the commit a pull request opened with, since that review may push
+  # a commit of its fixes. Every other event skips it, and the jobs below run on a skipped gate too.
+  # See .github/workflows/review-gate.yml.
+  review-gate:
+    if: github.event.action == 'opened'
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
   # The Compose UI tests on the JVM. unit-tests in build-and-test runs jvmTest without them
   # (-PuiTests=exclude), so each job reports one kind of test. Only the modules with UI tests
   # compile here, and -PuiTests=only leaves their unit tests to unit-tests.
   desktop:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -64,6 +76,8 @@ jobs:
   # shard, add the next index to matrix.shard: SHARD_COUNT is strategy.job-total, the size of the
   # matrix as long as shard stays its only axis.
   android:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -146,6 +160,8 @@ jobs:
   # simulator is the only place where the UIKit side of the app's native components (Calf's switches,
   # menus and pickers) is composed at all.
   ios:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: macos-latest
     timeout-minutes: 60
     env:

@@ -24,6 +24,11 @@
 # can't be read, go in the review body instead; those open no thread. An empty array posts a review
 # saying nothing was found, and anything that isn't an array posts a notice, so the pull request
 # always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
+#
+# FIXED_IN names the commit a review with fix pushed (commit-fixes.sh). The findings marked
+# "outcome": "fixed" are then listed at the end of the review body, under that commit, and open no
+# thread: there is nothing left to resolve. Without it, every finding is posted the usual way, its
+# outcome ignored.
 set -euo pipefail
 
 mode=post
@@ -41,6 +46,7 @@ base_sha=${PR_BASE_SHA:-}
 # before has to count (see post).
 started=$(date -u -d '2 minutes ago' +%Y-%m-%dT%H:%M:%SZ 2> /dev/null || date -u -v-2M +%Y-%m-%dT%H:%M:%SZ)
 export WORKSPACE=${GITHUB_WORKSPACE:-}
+export FIXED_IN=${FIXED_IN:-}
 
 warn() { echo "::warning::$*" >&2; }
 
@@ -122,13 +128,43 @@ findings=$(jq -c '[.[] | select(type == "object") | {
     body: ((.body // (
       "**" + (.summary // "Finding" | tostring) + "**"
       + (if .failure_scenario then "\n\n" + (.failure_scenario | tostring) else "" end)
-      + (if .category then "\n\n_" + (.category | tostring) + "_" else "" end))) | tostring)
+      + (if .category then "\n\n_" + (.category | tostring) + "_" else "" end))) | tostring),
+    fixed: (env.FIXED_IN != "" and .outcome == "fixed")
   }]' <<< "$input")
 total=$(jq 'length' <<< "$findings")
 
 if [ "$total" -eq 0 ]; then
   jq -n '{event: "COMMENT", body: "### Code review\n\nNo findings."}' | post
   exit 0
+fi
+
+as_list() {
+  jq -r 'to_entries | map("\(.key + 1). " + (if .value.path then "`\(.value.path)" + (if .value.line then ":\(.value.line)" else "" end) + "`" else "(no file)" end)
+    + "\n\n\(.value.body)") | join("\n\n")'
+}
+
+fixed=$(jq -c 'map(select(.fixed))' <<< "$findings")
+fixed_count=$(jq 'length' <<< "$fixed")
+findings=$(jq -c 'map(select(.fixed | not))' <<< "$findings")
+left=$(jq 'length' <<< "$findings")
+lead="$total finding(s)"
+fixed_section=""
+if [ "$fixed_count" -gt 0 ]; then
+  if [ "$left" -eq 0 ]; then
+    body="### Code review
+
+$total finding(s), all fixed in $FIXED_IN:
+
+$(as_list <<< "$fixed")"
+    jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post
+    exit 0
+  fi
+  lead="$total finding(s): $fixed_count fixed in $FIXED_IN, listed at the end, and $left left"
+  fixed_section="
+
+Fixed in $FIXED_IN:
+
+$(as_list <<< "$fixed")"
 fi
 
 # The lines GitHub can anchor a comment to: the new-file lines of the diff hunks between the base
@@ -171,22 +207,18 @@ inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")
 inline_count=$(jq 'length' <<< "$inline")
 
-as_list() {
-  jq -r 'to_entries | map("\(.key + 1). " + (if .value.path then "`\(.value.path)" + (if .value.line then ":\(.value.line)" else "" end) + "`" else "(no file)" end)
-    + "\n\n\(.value.body)") | join("\n\n")'
-}
-
 if [ "$inline_count" -gt 0 ]; then
   summary="### Code review
 
-$total finding(s)"
-  if [ "$inline_count" -eq "$total" ]; then
+$lead"
+  if [ "$inline_count" -eq "$left" ]; then
     summary="$summary, as inline comments."
   else
     summary="$summary: $inline_count as inline comments, the others below, in files outside the diff (they open no thread, so they don't hold the merge).
 
 $(as_list <<< "$outside")"
   fi
+  summary="$summary$fixed_section"
   comments=$(jq -c '[.[] | {path, line, side: "RIGHT", body}
     + (if .start_line != null then {start_line, start_side: "RIGHT"} else {} end)]' <<< "$inline")
   if url=$(jq -n --arg body "$summary" --argjson comments "$comments" \
@@ -201,7 +233,7 @@ fi
 
 body="### Code review
 
-$total finding(s), on lines GitHub can't anchor a comment to:
+$lead, on lines GitHub can't anchor a comment to:
 
-$(as_list <<< "$findings")"
+$(as_list <<< "$findings")$fixed_section"
 jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post

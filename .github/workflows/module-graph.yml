@@ -31,7 +31,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Waits for the opening review on the commit a pull request opened with, since that review may push
+  # a commit of its fixes. Every other event skips it, and the jobs below run on a skipped gate too.
+  # See .github/workflows/review-gate.yml.
+  review-gate:
+    if: github.event.action == 'opened'
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
   module-graph:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
     # The check only configures the build and compiles nothing, so there is no state worth saving.
     # See .github/actions/gradle.
