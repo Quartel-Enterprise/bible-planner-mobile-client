@@ -37,6 +37,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
 import kotlinx.io.files.Path
@@ -108,8 +110,11 @@ internal class ChapterAudioRepositoryImplTest {
             assertEquals(AUDIO, java.io.File(audioPath).readText())
             assertEquals("""{"book":"GENESIS","chapter":1,"version":"A21"}""", requests.first().body)
             assertEquals(
-                listOf("Bearer access-token", "Bearer access-token"),
-                requests.drop(1).map(RecordedRequest::authorization),
+                mapOf(
+                    "/A21/cast-pt-1/1.0.0-1/GENESIS/1.json" to "Bearer access-token",
+                    "/A21/cast-pt-1/1.0.0-1/GENESIS/1.mp3" to "Bearer access-token",
+                ),
+                findDownloadAuthorizations(),
             )
         }
 
@@ -234,7 +239,13 @@ internal class ChapterAudioRepositoryImplTest {
 
         // Then
         assertTrue(result is ChapterAudioResultModel.Ready)
-        assertEquals("Bearer renewed-token", requests.last().authorization)
+        assertEquals(
+            mapOf(
+                "/A21/cast-pt-1/1.0.0-1/GENESIS/1.json" to "Bearer renewed-token",
+                "/A21/cast-pt-1/1.0.0-1/GENESIS/1.mp3" to "Bearer renewed-token",
+            ),
+            findDownloadAuthorizations(),
+        )
     }
 
     @Test
@@ -739,12 +750,18 @@ internal class ChapterAudioRepositoryImplTest {
         ),
     )
 
+    private fun findDownloadAuthorizations(): Map<String, String?> = requests
+        .filter { it.host == AUDIO_HOST }
+        .associate { it.path to it.authorization }
+
     private class RecordedRequest(
+        val host: String,
+        val path: String,
         val authorization: String?,
         val body: String,
     )
 
-    private suspend fun prepareScenario(
+    private suspend fun TestScope.prepareScenario(
         respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData,
         isSignedIn: Boolean = true,
         now: Long = 0L,
@@ -757,6 +774,8 @@ internal class ChapterAudioRepositoryImplTest {
                 reuseHandlers = true
                 addHandler { request ->
                     recorded += RecordedRequest(
+                        host = request.url.host,
+                        path = request.url.encodedPath,
                         authorization = request.headers[HttpHeaders.Authorization],
                         body = request.body.toByteArray().decodeToString(),
                     )
@@ -821,6 +840,7 @@ internal class ChapterAudioRepositoryImplTest {
                 maxBytes = MAX_CACHE_BYTES,
                 json = json,
                 currentTimestampProvider = { 0L },
+                dispatcher = StandardTestDispatcher(testScheduler),
             ),
             bookIdWireNameMapper = BookIdWireNameMapper(),
             chapterAudioMapper = ChapterAudioMapper(json),
