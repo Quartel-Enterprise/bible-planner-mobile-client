@@ -101,7 +101,8 @@ Claude reviews pull requests at three points:
 - **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, with
   `--fix`: a second opinion on the code the author pushed, which applies its findings and pushes
   them to the branch as a commit of its own. It then posts the findings as one review: the fixed
-  ones in its body, the ones it left for the author as an inline comment each. The workflows that
+  ones in its body, the ones it left for the author as an inline comment each, labelled with its
+  severity and, when the fix fits the commented lines, a suggestion to commit. The workflows that
   build and test the app wait for it (see [Fixes and the review gate](#fixes-and-the-review-gate)).
   A draft is reviewed when it is marked ready for review instead. Pushes after the pull request
   opens, its own fix commit included, and reopening it, don't review it again.
@@ -162,12 +163,33 @@ Locally, the `review-conventions` skill reads every memory from Claude Code's me
 with `scripts/sync-agent-memory.sh`.
 
 Both GitHub reviews run the `/code-review` skill bundled with Claude Code, the one `create-pr` runs,
-so the three reviews share one recipe. At high effort it looks for correctness bugs, `CLAUDE.md`
+so the three reviews share one recipe. All three pass `--max-findings all`: by default the skill keeps
+only the ten most severe findings, so every round of fixes on a large pull request surfaced the next
+ten and needed another review on request (#585 took 27 rounds). How many `all` reports is up to
+the recipe: locally, where it reports through a tool, high effort still stops at 32; on GitHub,
+where it ends with JSON, the recipe sets no maximum. The skill remembers the choice for later runs
+on the same machine, so after `create-pr` a `/code-review` typed by hand reports every finding too,
+until it is given `--max-findings default`. At high effort it looks for correctness bugs, `CLAUDE.md`
 violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
-locally. On GitHub the model invokes the skill itself with the level and the pull request number and
-ends its reply with the findings as JSON; the model posts nothing. A Stop hook of the session
+locally. On GitHub the model invokes the skill itself with the level, the pull request number and
+`--max-findings all` (plus `--fix` for the opening review), and ends its reply with the findings as
+JSON; the model posts nothing. The
+skill's findings carry no severity and no fix, so the model adds three fields to each one: a
+`severity`, a `fix` and, only when replacing the commented lines fully fixes it, a `suggestion`
+with their new text. Each comment opens with the severity: 🔴 **Must fix** (a bug users would hit,
+a security hole, a race that corrupts state), 🟡 **Should fix** (a real problem with a limited
+impact, or a convention the change breaks) or ⚪ **Nitpick** (optional), and the review's summary
+counts them; the findings are posted most severe first. Nitpicks are inline comments too, so they
+hold the merge until resolved: one in the review body would lose its suggestion's commit button.
+A suggestion becomes a GitHub suggestion block, which the author can commit from the pull request,
+only on a comment anchored to the exact lines the finding names. Anchored anywhere else, GitHub
+would apply it to the wrong lines, so it is shown as a plain code block naming the lines it was
+written for. The model reads those lines from the reviewed commit, since with `--fix` the working
+tree holds its own changes, and a finding it fixed gets no suggestion. A review body is kept under
+the 65,536 characters GitHub allows: past that, the findings it lists lose their suggestions, then
+the last ones are left out, with a link to the run. A Stop hook of the session
 (`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
 it as one review with an inline comment per finding, one notification, rather than through the
 skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so

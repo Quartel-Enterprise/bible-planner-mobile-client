@@ -88,7 +88,8 @@ runs:
     # The list is a help, not a condition: a GitHub error here only leaves it short. gh runs its --jq
     # filters with gojq, whose regexes (RE2) have no lookahead, so the numbered findings of a review
     # body are grouped paragraph by paragraph instead; only a paragraph in post-review.sh's own form
-    # ("1. `path:line`" or "1. (no file)") starts a finding, a numbered list inside one doesn't.
+    # ("1. `path:line`" or "1. (no file)") starts a finding, a numbered list inside one doesn't, and
+    # neither does one inside a code block (a suggestion), which may hold blank lines.
     - id: earlier
       shell: bash
       env:
@@ -105,9 +106,11 @@ runs:
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
               | .body | select(test("^### Code review\\s+[0-9]+ finding"))
               | split("\n\n")[1:]
-              | reduce .[] as $paragraph ([]; if ($paragraph | test("^[0-9]+\\. (`|\\(no file\\))")) then . + [$paragraph]
-                  elif length > 0 then .[-1] += " " + $paragraph else . end)
-              | .[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
+              | reduce .[] as $paragraph ({items: [], fenced: false};
+                  (if (.fenced | not) and ($paragraph | test("^[0-9]+\\. (`|\\(no file\\))")) then .items += [$paragraph]
+                    elif (.items | length) > 0 then .items[-1] += " " + $paragraph else . end)
+                  | .fenced = (.fenced != ([$paragraph | scan("(?m)^\\s*```")] | length % 2 == 1)))
+              | .items[] | "- " + (gsub("\\s+"; " ") | .[0:300])' \
             || echo "::warning::The earlier review bodies couldn't be read, so the review isn't told about them." >&2
         )
         {
@@ -158,7 +161,7 @@ runs:
       run: |
         if [ "$FIX" = true ]; then
           {
-            echo "arguments=high $PR_NUMBER --fix"
+            echo "arguments=high $PR_NUMBER --fix --max-findings all"
             echo "allowed=,Edit(/$WORKSPACE/**)"
             echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),Edit(/$TOOLS/**),"
             echo "task<<TASK_END"
@@ -178,7 +181,7 @@ runs:
           } >> "$GITHUB_OUTPUT"
         else
           {
-            echo "arguments=high $PR_NUMBER"
+            echo "arguments=high $PR_NUMBER --max-findings all"
             echo "allowed="
             echo "denied=Write,Edit,MultiEdit,NotebookEdit,"
             echo "task=and wait for its findings."
@@ -190,9 +193,16 @@ runs:
 
     # The same review as the create-pr skill runs before the pull request opens, the /code-review
     # skill bundled with Claude Code at high effort, on Opus (see docs/ci.md, "AI review"). The model
-    # invokes the skill itself, with the level, the pull request number and, with fix, --fix as its
-    # only arguments: put on the skill's command line, the instructions below would become part of its
-    # target.
+    # invokes the skill itself, with the level, the pull request number, --max-findings and, with fix,
+    # --fix as its only arguments: put on the skill's command line, the instructions below would become
+    # part of its target. Without --max-findings all, the skill keeps only the ten most severe
+    # findings, so a large pull request needed a review on request after every round of fixes to see
+    # the rest (#585 took 27).
+    #
+    # The skill's findings carry no severity and no fix, so the model adds both after it returns: the
+    # severity labels each comment, and a fix that only replaces the commented lines becomes a GitHub
+    # suggestion the author can commit from the pull request (post-review.sh). The suggestion is read
+    # from the reviewed commit, since with fix the working tree holds the review's own changes.
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
     # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
@@ -221,10 +231,29 @@ runs:
 
           End your reply with the skill's findings as a JSON array inside a ```json fence, and nothing
           after it: one object per finding, most severe first, each with "file", "line" (in the new
-          version of the file), "summary", "failure_scenario" and "category", plus "start_line" when
-          the finding spans lines${{ steps.mode.outputs.outcome }}. Write `[]` when there are none.
+          version of the file), "summary", "failure_scenario", "category" and "severity", plus
+          "start_line" when the finding spans lines, and "fix" and "suggestion" as described
+          below${{ steps.mode.outputs.outcome }}. Write `[]` when there are none.
           ${{ steps.mode.outputs.posting }} Don't post anything to GitHub yourself, don't run the
           app, ${{ steps.mode.outputs.editing }}
+
+          - "severity" is one of:
+            - "must-fix": the change shouldn't merge with it: a bug users would hit (a crash, wrong
+              data, data loss, a broken flow), a security hole, a race that corrupts state.
+            - "should-fix": a real problem worth fixing in this pull request, with a limited impact:
+              an edge case, error handling that degrades the experience, a CLAUDE.md or maintainer
+              convention the change breaks, a cleanup that clearly pays off.
+            - "nitpick": optional: naming, wording, a small simplification, style the tooling
+              doesn't enforce.
+          - "fix": one or two sentences on how to fix it, written for the author. Markdown is fine,
+            with a short code sketch in a fenced block when the fix spans several places.
+          - "suggestion": only when replacing lines "start_line" to "line" (or "line" alone) of the
+            file, and nothing else, fully fixes the finding: the exact text that replaces those
+            lines, every line whole and indented as in the file. Read those lines from the reviewed
+            commit with `git show HEAD:<file>` instead of recalling them or reading the working
+            tree, and keep "line" and "start_line" on exactly the lines it replaces. An empty string
+            deletes them. Leave "suggestion" out whenever it would only be a sketch, the fix touches
+            other lines, or the working tree already holds the fix.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
