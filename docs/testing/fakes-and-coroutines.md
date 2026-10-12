@@ -74,6 +74,37 @@ A fake used by a single module stays a `private class` in that module's tests.
   }
   ```
 
+- **ViewModels whose collaborators leave the test dispatcher** (a use case with
+  `flowOn(Dispatchers.Default)`, a Compose Resources string): a worker thread resumes the ViewModel
+  through `Dispatchers.Main`. If the `ViewModelStore` is cleared in `@AfterTest`, outside `runTest`,
+  nothing waits for that work, and the worker can still be inside `Dispatchers.Main` when
+  `resetMain()` runs. That fails at random under load with `Dispatchers.Main is used concurrently with
+  setting it`. Two things prevent it:
+  - Pass the test dispatcher to collaborators that take one (`GetPlansByWeekUseCase(scoringDispatcher =
+    testDispatcher)`), so their work stays on the test scheduler.
+  - Create the ViewModel through `ViewModelTestStore` (`:ui:testing`, on every Compose module's test
+    classpath) and run the test with its `runTest`. At the end of the test, failed or not, it clears the
+    ViewModels and waits for their work, which covers what can't be injected:
+
+  ```kotlin
+  private val viewModelStore = ViewModelTestStore(testDispatcher)
+
+  @AfterTest fun tearDown() { Dispatchers.resetMain() }
+
+  @Test fun x() = viewModelStore.runTest {
+      // Given
+      prepareScenario()
+      ...
+  }
+
+  private fun TestScope.prepareScenario() {
+      viewModel = viewModelStore.create(XViewModel::class) { XViewModel(...) }
+  }
+  ```
+
+  A test that closes the screen calls `viewModelStore.clear()`. See `DayStudyRouteViewModelTest` and
+  `DayViewModelTest`.
+
 - **Long-running collectors** (a manager that collects forever, a `SharedFlow` of UI actions): launch
   them with `backgroundScope.launch { ... }` (auto-cancelled at test end) and step with `runCurrent()`.
   Collect a `SharedFlow` into a list via `backgroundScope` *before* triggering the action — it has no

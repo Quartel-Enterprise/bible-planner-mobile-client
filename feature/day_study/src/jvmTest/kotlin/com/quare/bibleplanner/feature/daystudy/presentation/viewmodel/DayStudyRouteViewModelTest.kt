@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
@@ -63,6 +59,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiAction
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
+import com.quare.bibleplanner.ui.testing.viewmodel.ViewModelTestStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,7 +71,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -137,7 +133,10 @@ internal class DayStudyRouteViewModelTest {
         commonQuestions = emptyList(),
     )
     private lateinit var viewModel: DayStudyRouteViewModel
-    private lateinit var viewModelStore: ViewModelStore
+    private val viewModelStore = ViewModelTestStore(
+        testDispatcher = testDispatcher,
+        timeout = testTimeout,
+    )
     private lateinit var repository: FakeDayStudyRepository
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
@@ -151,13 +150,12 @@ internal class DayStudyRouteViewModelTest {
 
     @AfterTest
     fun tearDown() {
-        viewModelStore.clear()
         Dispatchers.resetMain()
     }
 
     @Test
     fun `GIVEN a day with passages WHEN opening the study THEN marks the job active and shows the reading label`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
 
@@ -172,7 +170,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN free quota left WHEN the card loads THEN offers to generate and tracks the load`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(usedCount = 1)
 
@@ -198,7 +196,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN a cached study WHEN the card loads THEN shows it as viewable and tracks a single cached load`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(hasCached = true)
 
@@ -214,7 +212,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN the quota request fails WHEN the card loads THEN keeps loading and tracks the failure reason`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(statusError = IllegalStateException("boom"))
 
@@ -230,7 +228,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN a rewarded video on offer WHEN tapping the locked card THEN opens the unlock sheet`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             isRewardedUnlockOffered = true
             prepareScenario(usedCount = 3)
@@ -259,7 +257,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN the unlock sheet WHEN the reward is earned THEN starts a rewarded generation`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(usedCount = 3)
             awaitPassages()
@@ -278,7 +276,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN an unserved reward WHEN tapping the locked card THEN retries it without another video`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(usedCount = 3)
             coordinator.unservedRewardKeys += jobKey
@@ -294,58 +292,56 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN an exhausted free quota WHEN tapping the card THEN opens the paywall`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario(usedCount = 3)
-            awaitPassages()
+    fun `GIVEN an exhausted free quota WHEN tapping the card THEN opens the paywall`() = viewModelStore.runTest {
+        // Given
+        prepareScenario(usedCount = 3)
+        awaitPassages()
 
-            // When
-            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
-            runCurrent()
+        // When
+        viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+        runCurrent()
 
-            // Then
-            assertEquals(
-                listOf<NavigationCommand>(
-                    NavigationCommand.Navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL)),
-                ),
-                commands,
-            )
-            assertEquals(
-                mapOf<String, Any>(
-                    AnalyticsParams.CARD_MODE to "locked",
-                    AnalyticsParams.IS_PRO to false,
-                    AnalyticsParams.SOURCE to "day_study_detail",
-                ),
-                trackedParams(AnalyticsEventNames.DAY_STUDY_CARD_CLICKED),
-            )
-        }
+        // Then
+        assertEquals(
+            listOf<NavigationCommand>(
+                NavigationCommand.Navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL)),
+            ),
+            commands,
+        )
+        assertEquals(
+            mapOf<String, Any>(
+                AnalyticsParams.CARD_MODE to "locked",
+                AnalyticsParams.IS_PRO to false,
+                AnalyticsParams.SOURCE to "day_study_detail",
+            ),
+            trackedParams(AnalyticsEventNames.DAY_STUDY_CARD_CLICKED),
+        )
+    }
 
     @Test
-    fun `GIVEN a signed out reader WHEN tapping generate THEN asks to sign in`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario(userId = null)
-            awaitPassages()
+    fun `GIVEN a signed out reader WHEN tapping generate THEN asks to sign in`() = viewModelStore.runTest {
+        // Given
+        prepareScenario(userId = null)
+        awaitPassages()
 
-            // When
-            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
-            runCurrent()
+        // When
+        viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+        runCurrent()
 
-            // Then
-            assertEquals(
-                listOf<NavigationCommand>(
-                    NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
-                ),
-                commands,
-            )
-            assertTrue(coordinator.startedJobs.isEmpty())
-            assertFalse(viewModel.uiState.value.isOpeningStudy)
-        }
+        // Then
+        assertEquals(
+            listOf<NavigationCommand>(
+                NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
+            ),
+            commands,
+        )
+        assertTrue(coordinator.startedJobs.isEmpty())
+        assertFalse(viewModel.uiState.value.isOpeningStudy)
+    }
 
     @Test
     fun `GIVEN free quota left WHEN tapping generate THEN starts the generation and tracks it`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(usedCount = 1)
             val state = awaitPassages()
@@ -372,7 +368,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN a pro reader WHEN tapping generate THEN starts even with other generations running`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(
                 usedCount = 3,
@@ -391,7 +387,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN no connection WHEN tapping generate THEN shows the offline error and tracks the failure`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(isConnected = MutableStateFlow(false))
             awaitPassages()
@@ -411,7 +407,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN other generations using the free quota WHEN tapping generate THEN asks to wait for them`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(
                 usedCount = 1,
@@ -437,34 +433,33 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN a cached study WHEN tapping view THEN opens it and tracks a cached open`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario(
-                hasCached = true,
-                events = listOf(
-                    DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
-                    DayStudyGenerationEventModel.Completed(study),
-                ),
-            )
-            awaitPassages()
+    fun `GIVEN a cached study WHEN tapping view THEN opens it and tracks a cached open`() = viewModelStore.runTest {
+        // Given
+        prepareScenario(
+            hasCached = true,
+            events = listOf(
+                DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
+                DayStudyGenerationEventModel.Completed(study),
+            ),
+        )
+        awaitPassages()
 
-            // When
-            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
-            runCurrent()
+        // When
+        viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+        runCurrent()
 
-            // Then
-            assertEquals(study, viewModel.uiState.value.openStudy)
-            assertEquals(
-                mapOf<String, Any>(AnalyticsParams.IS_CACHED to true),
-                trackedParams(AnalyticsEventNames.DAY_STUDY_OPENED),
-            )
-            assertTrue(coordinator.startedJobs.isEmpty())
-        }
+        // Then
+        assertEquals(study, viewModel.uiState.value.openStudy)
+        assertEquals(
+            mapOf<String, Any>(AnalyticsParams.IS_CACHED to true),
+            trackedParams(AnalyticsEventNames.DAY_STUDY_OPENED),
+        )
+        assertTrue(coordinator.startedJobs.isEmpty())
+    }
 
     @Test
     fun `GIVEN an unlocked day without a local copy WHEN tapping view THEN generates it again`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(
                 usedCount = 3,
@@ -482,28 +477,27 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN an open study WHEN tapping the card THEN only tracks the click`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario(
-                hasCached = true,
-                events = listOf(DayStudyGenerationEventModel.Completed(study)),
-            )
-            awaitPassages()
-            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
-            runCurrent()
+    fun `GIVEN an open study WHEN tapping the card THEN only tracks the click`() = viewModelStore.runTest {
+        // Given
+        prepareScenario(
+            hasCached = true,
+            events = listOf(DayStudyGenerationEventModel.Completed(study)),
+        )
+        awaitPassages()
+        viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+        runCurrent()
 
-            // When
-            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
-            runCurrent()
+        // When
+        viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+        runCurrent()
 
-            // Then
-            assertEquals(2, trackedEvents.count { (name, _) -> name == AnalyticsEventNames.DAY_STUDY_CARD_CLICKED })
-            assertEquals(1, trackedEvents.count { (name, _) -> name == AnalyticsEventNames.DAY_STUDY_OPENED })
-        }
+        // Then
+        assertEquals(2, trackedEvents.count { (name, _) -> name == AnalyticsEventNames.DAY_STUDY_CARD_CLICKED })
+        assertEquals(1, trackedEvents.count { (name, _) -> name == AnalyticsEventNames.DAY_STUDY_OPENED })
+    }
 
     @Test
-    fun `GIVEN the card still loading WHEN tapping it THEN ignores the tap`() = runTest(testDispatcher, testTimeout) {
+    fun `GIVEN the card still loading WHEN tapping it THEN ignores the tap`() = viewModelStore.runTest {
         // Given
         prepareScenario()
 
@@ -518,7 +512,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN an offline error WHEN retrying online THEN clears the error and starts the generation`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             val isConnected = MutableStateFlow(false)
             prepareScenario(isConnected = isConnected)
@@ -538,7 +532,7 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN the study WHEN asking the AI THEN opens the chat for this day`() = runTest(testDispatcher, testTimeout) {
+    fun `GIVEN the study WHEN asking the AI THEN opens the chat for this day`() = viewModelStore.runTest {
         // Given
         prepareScenario()
 
@@ -570,7 +564,7 @@ internal class DayStudyRouteViewModelTest {
 
     @Test
     fun `GIVEN a running job WHEN its phase advances THEN shows the matching generation step`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitPassages()
@@ -591,81 +585,79 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN a running job WHEN it finishes THEN completes the steps and opens the study`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario()
-            awaitPassages()
-            coordinator.jobsFlow.value = listOf(
-                job(
-                    status = DayStudyGenerationStatus.Generating,
-                    phase = null,
-                ),
-            )
-            runCurrent()
+    fun `GIVEN a running job WHEN it finishes THEN completes the steps and opens the study`() = viewModelStore.runTest {
+        // Given
+        prepareScenario()
+        awaitPassages()
+        coordinator.jobsFlow.value = listOf(
+            job(
+                status = DayStudyGenerationStatus.Generating,
+                phase = null,
+            ),
+        )
+        runCurrent()
 
-            // When
-            coordinator.jobsFlow.value = listOf(
-                job(
-                    status = DayStudyGenerationStatus.Done(study),
-                    phase = null,
-                ),
-            )
-            advanceUntilIdle()
+        // When
+        coordinator.jobsFlow.value = listOf(
+            job(
+                status = DayStudyGenerationStatus.Done(study),
+                phase = null,
+            ),
+        )
+        advanceUntilIdle()
 
-            // Then
-            assertEquals(study, viewModel.uiState.value.openStudy)
-            assertNull(viewModel.uiState.value.generation)
-            assertEquals(listOf(jobKey), coordinator.acknowledgedKeys)
-            assertEquals(
-                mapOf<String, Any>(AnalyticsParams.IS_CACHED to false),
-                trackedParams(AnalyticsEventNames.DAY_STUDY_OPENED),
-            )
-        }
+        // Then
+        assertEquals(study, viewModel.uiState.value.openStudy)
+        assertNull(viewModel.uiState.value.generation)
+        assertEquals(listOf(jobKey), coordinator.acknowledgedKeys)
+        assertEquals(
+            mapOf<String, Any>(AnalyticsParams.IS_CACHED to false),
+            trackedParams(AnalyticsEventNames.DAY_STUDY_OPENED),
+        )
+    }
 
     @Test
-    fun `GIVEN a job WHEN it hits the free limit THEN locks the card and explains why`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario(usedCount = 1)
-            awaitPassages()
+    fun `GIVEN a job WHEN it hits the free limit THEN locks the card and explains why`() = viewModelStore.runTest {
+        // Given
+        prepareScenario(usedCount = 1)
+        awaitPassages()
 
-            // When
-            coordinator.jobsFlow.value = listOf(
-                job(
-                    status = DayStudyGenerationStatus.Failed(
-                        isLimitReached = true,
-                        isOffline = false,
-                    ),
-                    phase = null,
+        // When
+        coordinator.jobsFlow.value = listOf(
+            job(
+                status = DayStudyGenerationStatus.Failed(
+                    isLimitReached = true,
+                    isOffline = false,
                 ),
-            )
-            runCurrent()
+                phase = null,
+            ),
+        )
+        runCurrent()
 
-            // Then
-            assertEquals(DayStudyCardMode.LOCKED, card().mode)
-            assertEquals(
-                Loadable.Loaded(
-                    DayStudyCardQuotaUiModel(
-                        remainingFree = 0,
-                        freeLimit = 3,
-                    ),
+        // Then
+        assertEquals(DayStudyCardMode.LOCKED, card().mode)
+        assertEquals(
+            Loadable.Loaded(
+                DayStudyCardQuotaUiModel(
+                    remainingFree = 0,
+                    freeLimit = 3,
                 ),
-                card().quota,
-            )
-            assertNull(viewModel.uiState.value.generationError)
-            assertEquals(
-                listOf<DayStudyRouteUiAction>(
-                    DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message),
-                ),
-                actions,
-            )
-            assertEquals(listOf(jobKey), coordinator.acknowledgedKeys)
-        }
+            ),
+            card().quota,
+        )
+        assertNull(viewModel.uiState.value.generationError)
+        assertEquals(
+            listOf<DayStudyRouteUiAction>(
+                DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message),
+            ),
+            actions,
+        )
+        assertEquals(listOf(jobKey), coordinator.acknowledgedKeys)
+    }
 
     @Test
     fun `GIVEN a job WHEN it fails offline or for another reason THEN shows the matching error`() =
-        runTest(testDispatcher, testTimeout) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitPassages()
@@ -700,7 +692,7 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
-    fun `GIVEN a job for another day WHEN it updates THEN ignores it`() = runTest(testDispatcher, testTimeout) {
+    fun `GIVEN a job for another day WHEN it updates THEN ignores it`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitPassages()
@@ -719,17 +711,16 @@ internal class DayStudyRouteViewModelTest {
     }
 
     @Test
-    fun `GIVEN an open study screen WHEN it is closed THEN releases the active job`() =
-        runTest(testDispatcher, testTimeout) {
-            // Given
-            prepareScenario()
+    fun `GIVEN an open study screen WHEN it is closed THEN releases the active job`() = viewModelStore.runTest {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModelStore.clear()
+        // When
+        viewModelStore.clear()
 
-            // Then
-            assertEquals(listOf(jobKey), coordinator.clearedKeys)
-        }
+        // Then
+        assertEquals(listOf(jobKey), coordinator.clearedKeys)
+    }
 
     private suspend fun TestScope.awaitPassages(): DayStudyRouteUiState {
         val state = viewModel.uiState.first { it.passageLabel != null }
@@ -792,79 +783,74 @@ internal class DayStudyRouteViewModelTest {
         )
         val getAppLanguageFlow = { flowOf(Language.ENGLISH) }
         val languageCodeMapper = LanguageCodeMapper()
-        viewModelStore = ViewModelStore()
-        viewModel = ViewModelProvider.create(
-            store = viewModelStore,
-            factory = viewModelFactory {
-                initializer {
-                    DayStudyRouteViewModel(
-                        getDayPassages = GetDayPassagesForDayStudyUseCase(
-                            GetPlansByWeekUseCase(
-                                planRepository = FakePlanRepository(
-                                    plans = ReadingPlanType.entries.associateWith {
-                                        listOf(
-                                            WeekPlanModel(
-                                                number = 3,
-                                                days = listOf(
-                                                    DayModel(
-                                                        number = 2,
-                                                        passages = passages,
-                                                        isRead = false,
-                                                        totalVerses = 0,
-                                                        readVerses = 0,
-                                                        readTimestamp = null,
-                                                        plannedReadDate = null,
-                                                        notes = null,
-                                                        isToday = false,
-                                                    ),
-                                                ),
+        viewModel = viewModelStore.create(DayStudyRouteViewModel::class) {
+            DayStudyRouteViewModel(
+                getDayPassages = GetDayPassagesForDayStudyUseCase(
+                    GetPlansByWeekUseCase(
+                        planRepository = FakePlanRepository(
+                            plans = ReadingPlanType.entries.associateWith {
+                                listOf(
+                                    WeekPlanModel(
+                                        number = 3,
+                                        days = listOf(
+                                            DayModel(
+                                                number = 2,
+                                                passages = passages,
+                                                isRead = false,
+                                                totalVerses = 0,
+                                                readVerses = 0,
+                                                readTimestamp = null,
+                                                plannedReadDate = null,
+                                                notes = null,
+                                                isToday = false,
                                             ),
-                                        )
-                                    },
-                                    startDate = null,
-                                    selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
-                                ),
-                                booksRepository = FakeBooksRepository(emptyList()),
-                                getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
-                                currentTimestampProvider = { 0L },
-                                localDateTimeProvider = { LocalDateTime(LocalDate(2026, 1, 1), LocalTime(8, 0)) },
-                            ),
+                                        ),
+                                    ),
+                                )
+                            },
+                            startDate = null,
+                            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
                         ),
-                        getDayStudy = GetDayStudyUseCase(
-                            repository = repository,
-                            bibleRepository = bibleRepository,
-                            getAppLanguageFlow = getAppLanguageFlow,
-                            languageCodeMapper = languageCodeMapper,
-                        ),
-                        getDayStudyQuota = GetDayStudyQuotaUseCase(
-                            repository = repository,
-                            bibleRepository = bibleRepository,
-                            getAppLanguageFlow = getAppLanguageFlow,
-                            languageCodeMapper = languageCodeMapper,
-                            getIntRemoteConfig = DefaultIntRemoteConfig(),
-                        ),
-                        hasCachedStudy = HasCachedStudyUseCase(
-                            repository = repository,
-                            bibleRepository = bibleRepository,
-                            getAppLanguageFlow = getAppLanguageFlow,
-                            languageCodeMapper = languageCodeMapper,
-                        ),
-                        isConnected = { isConnected.value },
-                        generationCoordinator = coordinator,
-                        observeIsProUser = { flowOf(isPro) },
-                        observeAuthenticatedUserId = { flowOf(userId) },
-                        cardUiModelFactory = DayStudyCardUiModelFactory(
-                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
-                        ),
-                        navigator = navigator,
-                        studyUnlockResultStore = studyUnlockResultStore,
-                        route = route,
-                        platform = Platform.Android,
-                        trackEvent = { name, params -> trackedEvents += name to params },
-                    )
-                }
-            },
-        )[DayStudyRouteViewModel::class]
+                        booksRepository = FakeBooksRepository(emptyList()),
+                        getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
+                        currentTimestampProvider = { 0L },
+                        localDateTimeProvider = { LocalDateTime(LocalDate(2026, 1, 1), LocalTime(8, 0)) },
+                        scoringDispatcher = testDispatcher,
+                    ),
+                ),
+                getDayStudy = GetDayStudyUseCase(
+                    repository = repository,
+                    bibleRepository = bibleRepository,
+                    getAppLanguageFlow = getAppLanguageFlow,
+                    languageCodeMapper = languageCodeMapper,
+                ),
+                getDayStudyQuota = GetDayStudyQuotaUseCase(
+                    repository = repository,
+                    bibleRepository = bibleRepository,
+                    getAppLanguageFlow = getAppLanguageFlow,
+                    languageCodeMapper = languageCodeMapper,
+                    getIntRemoteConfig = DefaultIntRemoteConfig(),
+                ),
+                hasCachedStudy = HasCachedStudyUseCase(
+                    repository = repository,
+                    bibleRepository = bibleRepository,
+                    getAppLanguageFlow = getAppLanguageFlow,
+                    languageCodeMapper = languageCodeMapper,
+                ),
+                isConnected = { isConnected.value },
+                generationCoordinator = coordinator,
+                observeIsProUser = { flowOf(isPro) },
+                observeAuthenticatedUserId = { flowOf(userId) },
+                cardUiModelFactory = DayStudyCardUiModelFactory(
+                    prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                ),
+                navigator = navigator,
+                studyUnlockResultStore = studyUnlockResultStore,
+                route = route,
+                platform = Platform.Android,
+                trackEvent = { name, params -> trackedEvents += name to params },
+            )
+        }
         backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
         backgroundScope.launch { navigator.commands.collect { commands += it } }
     }

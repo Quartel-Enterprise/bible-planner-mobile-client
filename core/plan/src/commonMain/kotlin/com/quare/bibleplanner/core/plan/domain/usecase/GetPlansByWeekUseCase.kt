@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -27,6 +28,7 @@ class GetPlansByWeekUseCase(
     private val getPlannedReadDateForDayUseCase: GetPlannedReadDateForDayUseCase,
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
+    private val scoringDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     operator fun invoke(): Flow<PlansModel> = observeReadingProgress { books, startDate, today ->
         PlansModel(
@@ -52,7 +54,7 @@ class GetPlansByWeekUseCase(
             books to startDate
         }.map { (books, startDate) ->
             transform(books, startDate, today)
-        }.flowOn(Dispatchers.Default)
+        }.flowOn(scoringDispatcher)
     }
 
     private suspend fun weeksOf(
