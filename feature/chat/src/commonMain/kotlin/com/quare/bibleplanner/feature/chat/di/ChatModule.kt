@@ -49,6 +49,8 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatContextUse
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatSuggestionsUseCase
 import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestions
 import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestionsUseCase
+import com.quare.bibleplanner.feature.chat.presentation.answer.ChatAnswerWait
+import com.quare.bibleplanner.feature.chat.presentation.draft.ChatDraftAutosave
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.viewmodel.ChatViewModel
@@ -67,6 +69,8 @@ val chatModule = module {
     factoryOf(::ChatEntityMapper)
     factoryOf(::ChatMessageUiMapper)
     factoryOf(::ChatConversationGroupMapper)
+    factoryOf(::ChatDraftAutosave)
+    factoryOf(::ChatAnswerWait)
     factoryOf(::GetDefaultChatSuggestionsUseCase).bind<GetDefaultChatSuggestions>()
 
     singleOf(::ChatLocalDataSourceImpl).bind<ChatLocalDataSource>()

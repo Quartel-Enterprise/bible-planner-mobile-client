@@ -827,6 +827,28 @@ different intent and stays a `try`.
 Enforced by the custom ktlint rule `bible-planner-style:suspend-run-catching`: it flags a `try` with a catch
 clause that only rethrows its `CancellationException` and another that catches `Exception` or `Throwable`.
 
+## File Length
+
+A production Kotlin file has at most **600 lines**, the threshold detekt's `LargeClass` uses by default. A file
+that grows past it holds more than one responsibility, and the fix is to move one out, not to squeeze the code into
+fewer lines. These are the moves that took the reader, the chat and the listening controller back under the limit:
+
+| What the file holds | Where it goes | Example |
+|---|---|---|
+| A side of the work with state of its own (jobs, flags, caches) | A collaborator class sharing the owner's scope. When it needs the ViewModel's `viewModelScope` or route, Koin injects a `*Factory` whose `create` takes them; when several collaborators must share one state and scope, a single `create*` function builds them all, for the app and the tests alike | `ReadVerticalChaptersFactory`, `ReadDayCompletionFactory`, `createChapterListeningController` |
+| A flow a ViewModel starts but that doesn't touch its state | An injected class whose methods take the `CoroutineScope` | `ChapterListeningGate`, `ReadChapterStudyOpener`, `ChatDraftAutosave` |
+| Turning data into a `UiState`, or one state into the next | A mapper class, or extension functions on the state | `ReadUiStateMapper`, `ChatHistoryUiStateReducer.kt` |
+| Analytics calls spread over the class | A tracker with one function per event | `ChapterListeningAnalyticsTracker` |
+| Private composables of a screen | One file per composable, in a subpackage named after the screen part | `screen/content/player/SpeedCard.kt` |
+
+A constructor that reaches Koin's 22-parameter limit for `viewModelOf` after an extraction groups its use cases
+in a `*UseCases` data class (see [Use cases](use-cases.md#use-case-aggregation-when-a-viewmodel-needs-many-use-cases)),
+as `ReadChapterUseCases` does.
+
+Enforced by the custom ktlint rule `bible-planner-style:max-file-length`, which counts lines the way the editor
+numbers them (it matches `wc -l` only when the file ends in a newline, which `.editorconfig` asks for). It is
+disabled for the test source sets in `.editorconfig`: a test class grows with its scenarios.
+
 ## Tests
 
 Tests follow the conventions of [docs/testing](../testing/README.md), and the mechanical ones are custom ktlint

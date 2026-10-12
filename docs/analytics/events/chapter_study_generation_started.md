@@ -12,7 +12,7 @@ The study screen opens for a chapter with no study on the device and no generati
 
 `feature/chapter_study/.../presentation/viewmodel/ChapterStudyViewModel.kt` — `startGeneration()`, reached from `openStudy()` on entering the screen from `ChapterStudyUiEvent.OnRetryClick` and, with `is_rewarded=true`, after a rewarded video ([rewarded_ad_earned](rewarded_ad_earned.md)) or from the locked hero when an earned reward is still unserved.
 
-`feature/read/.../presentation/ReadViewModel.kt` — `openRewardedChapterStudy()`: a reward earned on the unlock sheet opened from the reader (`is_pro=false`, `is_rewarded=true`).
+`feature/read/.../presentation/study/ReadChapterStudyOpener.kt` — `openRewardedChapterStudy()`: a reward earned on the unlock sheet opened from the reader (`is_pro=false`, `is_rewarded=true`).
 
 ## Parameters
 

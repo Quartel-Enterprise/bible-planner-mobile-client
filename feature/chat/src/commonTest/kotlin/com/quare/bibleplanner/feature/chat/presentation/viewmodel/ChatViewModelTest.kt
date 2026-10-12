@@ -30,6 +30,8 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatQuotaUseCas
 import com.quare.bibleplanner.feature.chat.domain.usecase.RenameChatConversationUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SaveChatDraftUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesUseCase
+import com.quare.bibleplanner.feature.chat.presentation.answer.ChatAnswerWait
+import com.quare.bibleplanner.feature.chat.presentation.draft.ChatDraftAutosave
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
@@ -1109,7 +1111,11 @@ internal class ChatViewModelTest {
     )
 
     private fun createViewModel(scope: CoroutineScope = CoroutineScope(testDispatcher)): ChatViewModel = ChatViewModel(
-        applicationScope = ApplicationScope(scope),
+        draftAutosave = ChatDraftAutosave(
+            saveDraft = SaveChatDraftUseCase(repository),
+            applicationScope = ApplicationScope(scope),
+        ),
+        answerWait = ChatAnswerWait(),
         route = ChatNavRoute(
             source = entrySource,
             dayNumber = null,
@@ -1132,7 +1138,6 @@ internal class ChatViewModelTest {
             deleteConversation = DeleteChatConversationUseCase(repository),
             getSuggestions = { chatSuggestions },
             observeDraft = ObserveChatDraftUseCase(repository),
-            saveDraft = SaveChatDraftUseCase(repository),
             getContext = { route ->
                 requestedContextRoutes += route
                 chatContext

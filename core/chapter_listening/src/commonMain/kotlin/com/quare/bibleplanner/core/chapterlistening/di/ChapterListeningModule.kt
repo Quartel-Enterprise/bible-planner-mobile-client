@@ -9,7 +9,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.repository.ChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.repository.ChapterListeningSettingsRepositoryImpl
 import com.quare.bibleplanner.core.chapterlistening.data.repository.ChapterListeningUnlockRepositoryImpl
 import com.quare.bibleplanner.core.chapterlistening.domain.controller.ChapterListeningController
-import com.quare.bibleplanner.core.chapterlistening.domain.controller.ChapterListeningControllerImpl
+import com.quare.bibleplanner.core.chapterlistening.domain.controller.createChapterListeningController
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningUnlockRepository
@@ -75,13 +75,12 @@ val chapterListeningModule = module {
     factoryOf(::GetListeningChapterTitleUseCase).bind<GetListeningChapterTitle>()
     // Why: the player calls back on its own threads, and the controller's state is only touched on main.
     single<ChapterListeningController> {
-        ChapterListeningControllerImpl(
+        createChapterListeningController(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
             audioPlayer = get(),
             mediaSession = get(),
             settingsRepository = get(),
             chapterAudioRepository = get(),
-            observeAuthenticatedUserId = get(),
             getChapterVerseContents = get(),
             getSelectedVersionIdFlow = get(),
             getChapterListeningAccess = get(),
@@ -90,6 +89,7 @@ val chapterListeningModule = module {
             getListeningTime = get(),
             getListeningWords = get(),
             trackEvent = get(),
+            observeAuthenticatedUserId = get(),
         )
     }
 }

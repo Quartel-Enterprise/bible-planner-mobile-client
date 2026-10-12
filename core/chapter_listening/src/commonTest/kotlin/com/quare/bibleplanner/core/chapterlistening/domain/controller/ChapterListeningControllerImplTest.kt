@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterrupti
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioResultModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioWordModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterChangeCause
@@ -23,11 +22,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepT
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
-import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
-import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
-import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningWordsUseCase
 import com.quare.bibleplanner.core.model.book.BookId
@@ -37,7 +32,6 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
@@ -2021,7 +2015,7 @@ internal class ChapterListeningControllerImplTest {
         trackedEvents = mutableListOf()
         emittedEvents = mutableListOf()
         val order = listOf(genesisOne, genesisTwo, genesisThree)
-        controller = ChapterListeningControllerImpl(
+        controller = createChapterListeningController(
             scope = backgroundScope,
             audioPlayer = audioPlayer,
             mediaSession = mediaSession,
@@ -2065,115 +2059,6 @@ internal class ChapterListeningControllerImplTest {
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { controller.events.collect { event -> emittedEvents += event } }
-    }
-}
-
-private class FakeChapterAudioPlayer : ChapterAudioPlayer {
-    override val isSupported: Boolean = true
-    private val eventFlow = MutableSharedFlow<ChapterAudioPlayerEvent>(extraBufferCapacity = 16)
-    override val events: Flow<ChapterAudioPlayerEvent> = eventFlow
-    override var position: Duration = Duration.ZERO
-    val plays = mutableListOf<PlayCall>()
-    var speed: Float? = null
-    var releaseCount = 0
-    var pauseCount = 0
-    val seeks = mutableListOf<Duration>()
-
-    fun emit(event: ChapterAudioPlayerEvent) {
-        eventFlow.tryEmit(event)
-    }
-
-    fun finish() {
-        emit(ChapterAudioPlayerEvent.Ended(plays.last().playbackId))
-    }
-
-    override fun play(
-        audioPath: String,
-        position: Duration,
-        speed: Float,
-        playbackId: Int,
-    ) {
-        plays += PlayCall(
-            audioPath = audioPath,
-            position = position,
-            playbackId = playbackId,
-        )
-        this.position = position
-        this.speed = speed
-    }
-
-    override fun seekTo(position: Duration) {
-        seeks += position
-    }
-
-    override fun setSpeed(speed: Float) {
-        this.speed = speed
-    }
-
-    override fun pause() {
-        pauseCount++
-    }
-
-    override fun release() {
-        releaseCount++
-    }
-}
-
-private class PlayCall(
-    val audioPath: String,
-    val position: Duration,
-    val playbackId: Int,
-)
-
-private class FakeChapterAudioRepository(
-    private val audioByChapter: Map<ChapterLocationModel, ChapterAudioModel>,
-) : ChapterAudioRepository {
-    var failure: ChapterAudioFailureModel? = null
-    var gate: CompletableDeferred<Unit>? = null
-    var failingChapters: Set<ChapterLocationModel> = emptySet()
-    val requests = mutableListOf<ChapterLocationModel>()
-    val refreshed = mutableListOf<ChapterLocationModel>()
-    val evicted = mutableListOf<String>()
-
-    override suspend fun loadChapterAudio(
-        bibleVersionId: String,
-        chapter: ChapterLocationModel,
-    ): ChapterAudioResultModel {
-        requests += chapter
-        gate?.await()
-        if (chapter in failingChapters) return ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE)
-        return failure?.let(ChapterAudioResultModel::Failed)
-            ?: ChapterAudioResultModel.Ready(audioByChapter.getValue(chapter))
-    }
-
-    override suspend fun refresh(
-        bibleVersionId: String,
-        chapter: ChapterLocationModel,
-    ) {
-        refreshed += chapter
-    }
-
-    override suspend fun evict(audioPath: String) {
-        evicted += audioPath
-    }
-}
-
-private class FakeListeningMediaSession(
-    private val canActivate: Boolean,
-) : ListeningMediaSession {
-    override val commands = MutableSharedFlow<ListeningRemoteCommand>(extraBufferCapacity = 16)
-    override val interruptions = MutableSharedFlow<AudioInterruptionModel>(extraBufferCapacity = 16)
-    val updates = mutableListOf<NowPlayingModel>()
-    var deactivationCount = 0
-
-    override fun requestActivation(): Boolean = canActivate
-
-    override fun update(nowPlaying: NowPlayingModel) {
-        updates += nowPlaying
-    }
-
-    override fun deactivate() {
-        deactivationCount++
     }
 }
 

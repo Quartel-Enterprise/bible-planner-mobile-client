@@ -32,6 +32,7 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { SuspendRunCatchingRule() },
         RuleProvider { InjectedRealtimeRule() },
         RuleProvider { CommentsSayWhyRule() },
+        RuleProvider { MaxFileLengthRule() },
         RuleProvider { TestNameGivenWhenThenRule() },
         RuleProvider { TestBodySectionsRule() },
         RuleProvider { PrepareScenarioReturnsUnitRule() },
