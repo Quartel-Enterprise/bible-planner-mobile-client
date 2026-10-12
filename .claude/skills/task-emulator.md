@@ -1,7 +1,7 @@
 # Task emulator
 
-Shared by `start-task` and `finish-task`: each task gets an emulator of its own, so its device work
-never lands on an emulator someone else is using.
+Shared by `start-task` and `finish-task`: each task that needs an Android device gets an emulator of
+its own, so its device work never lands on an emulator someone else is using.
 
 Several sessions run at once, and every emulator on the machine is visible to all of them. A
 `connectedAndroidDeviceTest` installs on every device it sees. A test then runs against an APK that
@@ -16,8 +16,10 @@ the branch, so `finish-task` finds the same emulator without anything written do
 
 ## Create
 
-`start-task` does this right after it creates the branch. It only writes two small config files. No
-disk image is copied, and the emulator only takes space once it boots for the first time.
+`start-task` does this right after it creates the branch, when the task will need a device (its step
+5 says how to tell). A task that started without one creates it here the first time it needs a
+device. It only writes two small config files. No disk image is copied, and the emulator only takes
+space once it boots for the first time.
 
 The copy is taken from `Pixel_9`: an API 36 phone, above the API 30 the device tests need (see
 [docs/testing/compose-ui-tests.md](../../docs/testing/compose-ui-tests.md#on-an-android-device)),
@@ -138,7 +140,7 @@ After its first boot an AVD takes about 2.3 GB of disk, and that space is freed 
 is deleted. `finish-task` does that once the branch's merge is verified and the branch is deleted,
 and it does it for every task emulator whose branch no longer exists: this task's, and any left
 behind by a task that was dropped without `finish-task`. Every task emulator has a local branch
-while its task is alive, because `start-task` creates the branch before the emulator.
+while its task is alive, because an emulator is only ever created after its task's branch.
 
 ```bash
 for INI in ~/.android/avd/BiblePlanner_*.ini; do

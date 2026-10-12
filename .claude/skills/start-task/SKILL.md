@@ -11,8 +11,9 @@ from the main checkout and any other in-progress task, at the cost of an extra s
 git-ignored local config into the new worktree). In-place is faster to start but ties up the
 current checkout for this one task.
 
-Either way, the task also gets an emulator of its own, `BiblePlanner_<short_description>`, so any
-device work it does never touches an emulator the user or another session is using.
+When the task will need an Android device, it also gets an emulator of its own,
+`BiblePlanner_<short_description>`, so its device work never touches an emulator the user or another
+session is using. Tasks that never touch a device don't get one.
 
 ## Step-by-step workflow
 
@@ -104,16 +105,39 @@ git checkout -b <type>/<short-description> origin/main
 No file copying is needed here — the checkout already has all the local git-ignored config in
 place.
 
-### 5. Create the task's emulator
+### 5. Create the task's emulator, if the task needs one
 
-In both modes, create an emulator for this task only: `BiblePlanner_<short_description>`, a copy of
-`Pixel_9`'s config. Follow the "Create" section of [`task-emulator.md`](../task-emulator.md), which
-is shared with `finish-task`. It only writes two config files and does not boot the emulator.
+Decide from the user's request (and anything else known about the task) whether it will need an
+Android device. Don't ask the user — infer it.
+
+Create one when the task will:
+
+- write, change or run Compose UI tests or E2E flows on a device (`androidDeviceTest`, `:shared`
+  flows), or fix a `ui-tests` failure on the Android shard;
+- need a look at the running Android app: a visual or layout change, an Android-only bug (insets,
+  rotation, foldables, back gesture, notifications, media/foreground service, permissions), or a
+  repro of an Android crash;
+- touch `androidMain`/`androidApp` behaviour that only a device can confirm.
+
+Don't create one when the task is docs, skills, CI/workflows, Gradle or the version catalog, ktlint
+rules, release notes, translations, backend/Supabase, iOS- or desktop-only work, or logic that unit
+tests, screenshot tests (Robolectric) or `scripts/agent-cli.sh` already verify — use cases,
+repositories, ViewModels, mappers.
+
+When in doubt, don't create it: it can be created later at no extra cost, while an unneeded one
+lingers on disk until `finish-task`.
+
+To create it, copy `Pixel_9`'s config into `BiblePlanner_<short_description>` by following the
+"Create" section of [`task-emulator.md`](../task-emulator.md), which is shared with `finish-task`. It
+only writes two config files and does not boot the emulator.
+
+If a task started without an emulator turns out to need a device later, create it then, the same
+way, before booting anything. Never fall back to the user's emulators or another task's.
 
 Whenever the task needs an Android device (the Compose UI tests of `androidDeviceTest`, a look at
 the running app), boot and use this emulator as described in that file's "Boot", "Run tests on it"
 and "Run the app on it" sections, then shut it down as soon as that work is done ("Shut down"
-section). Never use the user's emulators or another task's.
+section).
 
 ### 6. Report the result
 
@@ -122,7 +146,7 @@ it's ready to open (new Claude Code session, or Android Studio via "Open" on tha
 
 In-place mode: confirm the branch name and that the current checkout is now on it, ready to work.
 
-In both modes, also name the task's emulator.
+In both modes, also name the task's emulator, or say that none was created and why, in one line.
 
 ### 7. Start implementing immediately
 
