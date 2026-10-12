@@ -702,6 +702,89 @@ internal class ResolveResumeReadTargetUseCaseTest {
         }
 
     @Test
+    fun `GIVEN a read passage before an unread one WHEN resolving THEN does not read the book of the read passage`() =
+        runTest {
+            // Given
+            val passages = listOf(
+                passage(bookId = BookId.EXO, isRead = true),
+                passage(bookId = BookId.GEN),
+            )
+            val fake = FakeBooksRepository(
+                books = listOf(
+                    bookOf(
+                        id = BookId.GEN,
+                        chapters = listOf(bookChapter(number = 1)),
+                    ),
+                ),
+            )
+            prepareScenario(
+                booksRepository = object : BooksRepository by fake {
+                    override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = if (bookId == BookId.EXO) {
+                        flow { throw IllegalStateException("a read passage must not be queried") }
+                    } else {
+                        fake.getBookByIdFlow(bookId)
+                    }
+                },
+            )
+
+            // When
+            val result = useCase(passages)
+
+            // Then
+            assertEquals(
+                expected = Result.success<ResumeReadTarget?>(
+                    ResumeReadTarget(
+                        bookId = BookId.GEN,
+                        chapterNumber = 1,
+                        isChapterRead = false,
+                    ),
+                ),
+                actual = result,
+            )
+        }
+
+    @Test
+    fun `GIVEN the first passage unread WHEN resolving THEN does not read the books of later passages`() = runTest {
+        // Given
+        val passages = listOf(
+            passage(bookId = BookId.GEN),
+            passage(bookId = BookId.EXO),
+        )
+        val fake = FakeBooksRepository(
+            books = listOf(
+                bookOf(
+                    id = BookId.GEN,
+                    chapters = listOf(bookChapter(number = 1)),
+                ),
+            ),
+        )
+        prepareScenario(
+            booksRepository = object : BooksRepository by fake {
+                override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = if (bookId == BookId.EXO) {
+                    flow { throw IllegalStateException("a later passage must not be queried") }
+                } else {
+                    fake.getBookByIdFlow(bookId)
+                }
+            },
+        )
+
+        // When
+        val result = useCase(passages)
+
+        // Then
+        assertEquals(
+            expected = Result.success<ResumeReadTarget?>(
+                ResumeReadTarget(
+                    bookId = BookId.GEN,
+                    chapterNumber = 1,
+                    isChapterRead = false,
+                ),
+            ),
+            actual = result,
+        )
+    }
+
+    @Test
     fun `GIVEN a repository that fails WHEN resolving THEN returns the failure`() = runTest {
         // Given
         val passages = listOf(passage(bookId = BookId.GEN))
