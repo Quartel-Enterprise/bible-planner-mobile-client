@@ -206,7 +206,9 @@ It runs every module's `commonTest` and `jvmTest` on the JVM target, Compose UI 
 splits them between `unit-tests` and the `desktop` job of `ui-tests`; the coverage is the same
 either way), and the two coverage rules the `build-and-test` workflow enforces: 80% of the lines for the merged report and for each file the
 branch adds (see [docs/code-quality.md](../../../docs/code-quality.md#test-coverage)). If tests fail
-or a rule fails, stop and report it: write the missing tests rather than pushing a red branch.
+or a rule fails, stop and report it: write the missing tests rather than pushing a red branch, through
+the `write-tests` skill when the "Who writes the unit tests" table of
+[docs/ai_agents.md](../../../docs/ai_agents.md#who-writes-the-unit-tests) says so.
 
 ### 11. Commit all uncommitted changes
 
