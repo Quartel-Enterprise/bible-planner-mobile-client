@@ -10,7 +10,7 @@ A chapter's audio first plays after it was opened: a chapter or the reading of t
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `trackStartOnce`, from `playFrom`, once per opened chapter that plays.
+`core/chapter_listening/.../domain/controller/ListeningPlayback.kt` — `trackStartOnce`, from `playFrom`, once per opened chapter that plays.
 
 ## Parameters
 

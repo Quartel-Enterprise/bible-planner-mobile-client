@@ -10,7 +10,7 @@ The player tries to move to another chapter (end of chapter with auto next or th
 
 ## Trigger source
 
-`core/chapter_listening/.../domain/controller/ChapterListeningControllerImpl.kt` — `changeSegment`.
+`core/chapter_listening/.../domain/controller/ChapterListeningAnalyticsTracker.kt` — `trackLocked`, called by `ChapterListeningControllerImpl` whenever a chapter it would play turns out locked: one moved or skipped to, one played before it was loaded, one resumed after a sign-in, or the next one at the end of a chapter.
 
 ## Parameters
 
