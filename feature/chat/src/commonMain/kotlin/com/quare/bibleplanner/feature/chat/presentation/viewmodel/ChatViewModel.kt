@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
@@ -46,6 +47,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -109,6 +112,12 @@ internal class ChatViewModel(
     private var cooldownJob: Job? = null
     private var draftSaveJob: Job? = null
     private var pendingDraft: PendingDraftModel? = null
+
+    /*
+     * Why: debounced saves run on viewModelScope and the clear/close saves on applicationScope; the lock
+     * keeps a cancelled write still in flight from landing after a newer one for the same thread.
+     */
+    private val draftWrites: Mutex = Mutex()
     private var lastAppliedDraft: String? = null
     private var threadMessages: List<ChatMessageModel> = emptyList()
     private var newestMessage: Pair<String, Boolean>? = null
@@ -134,7 +143,7 @@ internal class ChatViewModel(
     override fun onCleared() {
         super.onCleared()
         val unsaved = pendingDraft ?: return
-        applicationScope.launch { useCases.saveDraft(unsaved) }
+        applicationScope.launch { writeDraft(unsaved) }
     }
 
     override fun handleEvent(event: ChatUiEvent) {
@@ -211,9 +220,15 @@ internal class ChatViewModel(
         draftSaveJob?.cancel()
         draftSaveJob = viewModelScope.launch {
             delay(draftDebounceDelay)
-            useCases.saveDraft(draft)
-            if (pendingDraft == draft) pendingDraft = null
+            writeDraft(draft).onSuccess {
+                if (pendingDraft === draft) pendingDraft = null
+            }
         }
+    }
+
+    private suspend fun writeDraft(draft: PendingDraftModel): Result<Unit> = draftWrites.withLock {
+        suspendRunCatching { useCases.saveDraft(draft) }
+            .onFailure { throwable -> Logger.e(throwable) { "Failed to save the chat draft" } }
     }
 
     private fun observeDraft() {
@@ -242,7 +257,8 @@ internal class ChatViewModel(
             threadKey = currentThreadKey.value,
             content = "",
         )
-        viewModelScope.launch { useCases.saveDraft(cleared) }
+        // Why: on applicationScope so closing the chat right after sending can't cancel it.
+        applicationScope.launch { writeDraft(cleared) }
     }
 
     private fun loadContext() {

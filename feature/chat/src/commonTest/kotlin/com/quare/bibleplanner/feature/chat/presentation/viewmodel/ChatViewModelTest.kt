@@ -53,6 +53,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -434,16 +435,18 @@ internal class ChatViewModelTest {
     }
 
     @Test
-    fun `GIVEN a question sent within the debounce WHEN the chat closes THEN the draft stays cleared`() =
+    fun `GIVEN a saved draft just sent WHEN the chat closes during the clearing write THEN the draft is cleared`() =
         viewModelStore.runTest {
             // Given
             chatContext = readingContext()
+            repository.drafts.value = mapOf(DAY_DRAFT_KEY to "Por que Caim")
+            repository.draftWriteDelay = 1.seconds
             val viewModel = viewModelStore.create(ChatViewModel::class) { createViewModel() }
-            viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
             viewModel.onEvent(ChatUiEvent.OnSendClick)
 
             // When
             viewModelStore.clear()
+            advanceUntilIdle()
 
             // Then
             assertEquals("", repository.drafts.value[DAY_DRAFT_KEY])
