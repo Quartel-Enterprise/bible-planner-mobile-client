@@ -1,4 +1,9 @@
 {
+  "2.14.0": {
+    "common": [
+      "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día."
+    ]
+  },
   "2.13.0": {
     "common": [
       "Corregimos un problema que podía hacer que los cambios hechos en otro dispositivo dejaran de aparecer al instante después de volver a la app.",

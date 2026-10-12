@@ -221,6 +221,7 @@ object AnalyticsEventNames {
     const val PLAN_WEEK_TOGGLED = "plan_week_toggled"
     const val PLAN_GROUP_TOGGLED = "plan_group_toggled"
     const val PLAN_SHORTCUT_USED = "plan_shortcut_used"
+    const val PLAN_RESUME_READING_CLICKED = "plan_resume_reading_clicked"
     const val PLAN_OVERFLOW_OPTION_CLICKED = "plan_overflow_option_clicked"
     const val PLAN_EDIT_CLICKED = "plan_edit_clicked"
     const val PLAN_OVERFLOW_CLICKED = "plan_overflow_clicked"

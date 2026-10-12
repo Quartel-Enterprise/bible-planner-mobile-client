@@ -24,11 +24,13 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivati
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ObservePlansByWeek
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.UpdateDayReadStatus
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.toReadNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
@@ -48,6 +50,7 @@ internal class ReadingPlanViewModel(
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val getPlanMotivationMessage: GetPlanMotivationMessage,
     private val resolvePlanStatus: ResolvePlanStatus,
+    private val resolveResumeReadTarget: ResolveResumeReadTarget,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatus,
@@ -188,6 +191,8 @@ internal class ReadingPlanViewModel(
                     readingPlanType = uiState.value.selectedReadingPlan.name,
                 ),
             )
+
+            is ReadingPlanUiEvent.OnResumeReadingClick -> onResumeReadingClick(event)
 
             ReadingPlanUiEvent.OnOverflowClick -> changeMenuVisibility(true)
 
@@ -341,16 +346,33 @@ internal class ReadingPlanViewModel(
         }
     }
 
+    private fun onResumeReadingClick(event: ReadingPlanUiEvent.OnResumeReadingClick) {
+        val passages = (uiState.value as? ReadingPlanUiState.Loaded)
+            ?.findDay(
+                weekNumber = event.weekNumber,
+                dayNumber = event.dayNumber,
+            )?.passages
+            .orEmpty()
+        viewModelScope.launch {
+            resolveResumeReadTarget(passages).getOrNull()?.let { target ->
+                navigator.navigate(target.toReadNavRoute())
+            } ?: handleEvent(
+                ReadingPlanUiEvent.OnDayClick(
+                    dayNumber = event.dayNumber,
+                    weekNumber = event.weekNumber,
+                ),
+            )
+        }
+    }
+
     private fun onDayReadClick(event: ReadingPlanUiEvent.OnDayReadClick) {
         val currentUiState = uiState.value
         if (currentUiState !is ReadingPlanUiState.Loaded) return
         val selectedPlan = currentUiState.selectedReadingPlan
-        val day = currentUiState.weekPlans
-            .find { it.weekPlan.number == event.weekNumber }
-            ?.weekPlan
-            ?.days
-            ?.find { it.number == event.dayNumber }
-            ?: return
+        val day = currentUiState.findDay(
+            weekNumber = event.weekNumber,
+            dayNumber = event.dayNumber,
+        ) ?: return
         val newReadStatus = !day.isRead
         trackEvent(
             name = AnalyticsEventNames.DAY_READ_TOGGLED,

@@ -12,3 +12,8 @@ internal fun PlanDayRef.toReadClick(): ReadingPlanUiEvent = ReadingPlanUiEvent.O
     dayNumber = dayNumber,
     weekNumber = weekNumber,
 )
+
+internal fun PlanDayRef.toResumeReadingClick(): ReadingPlanUiEvent = ReadingPlanUiEvent.OnResumeReadingClick(
+    dayNumber = dayNumber,
+    weekNumber = weekNumber,
+)

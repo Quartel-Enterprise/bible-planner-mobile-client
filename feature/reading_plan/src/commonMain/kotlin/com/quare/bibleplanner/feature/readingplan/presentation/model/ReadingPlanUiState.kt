@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.model
 
+import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
@@ -33,6 +34,15 @@ internal sealed interface ReadingPlanUiState {
     ) : ReadingPlanUiState {
         val readDaysCount: Int = weekPlans.sumOf { it.readDaysCount }
         val totalDaysCount: Int = weekPlans.sumOf { it.totalDays }
+
+        fun findDay(
+            weekNumber: Int,
+            dayNumber: Int,
+        ): DayModel? = weekPlans
+            .find { it.weekPlan.number == weekNumber }
+            ?.weekPlan
+            ?.days
+            ?.find { it.number == dayNumber }
     }
 
     data class Loading(

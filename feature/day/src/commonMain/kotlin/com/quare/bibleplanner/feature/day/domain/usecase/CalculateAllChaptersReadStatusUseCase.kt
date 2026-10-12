@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.isRangeRead
+import com.quare.bibleplanner.core.books.domain.isChapterRead
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 
 class CalculateAllChaptersReadStatusUseCase {
@@ -13,22 +12,12 @@ class CalculateAllChaptersReadStatusUseCase {
         val statusMap = mutableMapOf<Pair<Int, Int>, Boolean>()
 
         passages.forEachIndexed { passageIndex, passage ->
+            val book = books.find { it.id == passage.bookId }
             passage.chapters.forEachIndexed { chapterIndex, chapter ->
-                val isRead = isChapterRead(passage, chapter, books)
-                statusMap[passageIndex to chapterIndex] = isRead
+                statusMap[passageIndex to chapterIndex] = book.isChapterRead(chapter)
             }
         }
 
         return statusMap
-    }
-
-    private fun isChapterRead(
-        passage: PassageModel,
-        chapter: ChapterModel,
-        books: List<BookDataModel>,
-    ): Boolean {
-        val book = books.find { it.id == passage.bookId } ?: return false
-        val bookChapter = book.chapters.find { it.number == chapter.number } ?: return false
-        return bookChapter.isRangeRead(chapter.startVerse, chapter.endVerse)
     }
 }

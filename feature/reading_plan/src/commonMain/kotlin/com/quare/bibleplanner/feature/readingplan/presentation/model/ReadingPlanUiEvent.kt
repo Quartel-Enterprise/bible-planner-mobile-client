@@ -45,6 +45,19 @@ internal sealed interface ReadingPlanUiEvent : UiEvent {
         )
     }
 
+    data class OnResumeReadingClick(
+        val dayNumber: Int,
+        val weekNumber: Int,
+    ) : ReadingPlanUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PLAN_RESUME_READING_CLICKED,
+            params = mapOf(
+                AnalyticsParams.WEEK_NUMBER to weekNumber,
+                AnalyticsParams.DAY_NUMBER to dayNumber,
+            ),
+        )
+    }
+
     data object OnOverflowClick : ReadingPlanUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.PLAN_OVERFLOW_CLICKED,

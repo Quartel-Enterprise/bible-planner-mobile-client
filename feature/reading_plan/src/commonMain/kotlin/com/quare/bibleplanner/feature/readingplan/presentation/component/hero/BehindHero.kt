@@ -23,7 +23,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.co
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPassageText
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPrimaryButton
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroSurface
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toDayClick
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toResumeReadingClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.ui.icons.AppIcon
@@ -73,7 +73,7 @@ internal fun BehindHero(
             text = stringResource(Res.string.hero_primary_resume),
             icon = AppIcon.PlayArrow,
             trailingIcon = true,
-            onClick = { onEvent(next.toDayClick()) },
+            onClick = { onEvent(next.toResumeReadingClick()) },
         )
         planStatus.todayDay?.let { today ->
             TextButton(

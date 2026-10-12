@@ -1,4 +1,9 @@
 {
+  "2.14.0": {
+    "common": [
+      "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first."
+    ]
+  },
   "2.13.0": {
     "common": [
       "Fixed a problem that could stop changes made on another device from showing up right away after you came back to the app.",

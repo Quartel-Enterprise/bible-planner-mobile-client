@@ -569,6 +569,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [plan_week_toggled](events/plan_week_toggled.md) | P2 | Books |
 | [plan_group_toggled](events/plan_group_toggled.md) | P2 | Books |
 | [plan_shortcut_used](events/plan_shortcut_used.md) | P2 | Books |
+| [plan_resume_reading_clicked](events/plan_resume_reading_clicked.md) | P2 | Books |
 | [plan_overflow_option_clicked](events/plan_overflow_option_clicked.md) | P2 | Books |
 | [plan_edit_clicked](events/plan_edit_clicked.md) | P2 | Books |
 | [plan_overflow_clicked](events/plan_overflow_clicked.md) | P2 | Books |
