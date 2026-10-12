@@ -28,6 +28,11 @@
 # can't be read, go in the review body instead; those open no thread. An empty array posts a review
 # saying nothing was found, and anything that isn't an array posts a notice, so the pull request
 # always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
+#
+# FIXED_IN names the commit a review with fix pushed (commit-fixes.sh). The findings marked
+# "outcome": "fixed" are then listed at the end of the review body, under that commit, and open no
+# thread: there is nothing left to resolve. Without it, every finding is posted the usual way, its
+# outcome ignored.
 set -euo pipefail
 
 mode=post
@@ -45,6 +50,7 @@ base_sha=${PR_BASE_SHA:-}
 # before has to count (see post).
 started=$(date -u -d '2 minutes ago' +%Y-%m-%dT%H:%M:%SZ 2> /dev/null || date -u -v-2M +%Y-%m-%dT%H:%M:%SZ)
 export WORKSPACE=${GITHUB_WORKSPACE:-}
+export FIXED_IN=${FIXED_IN:-}
 
 warn() { echo "::warning::$*" >&2; }
 
@@ -116,15 +122,17 @@ if ! jq -e 'type == "array"' <<< "$input" > /dev/null 2>&1; then
   exit 0
 fi
 
-# One shape for every finding, most severe first; a number given as text still counts, and a span
-# given end first is turned around. Each finding gets three bodies: "body" holds its suggestion as a
+# One shape for every finding, most severe first; a number given as text still counts, and a severity
+# the script doesn't know counts as should-fix, so every finding is labelled. A span given end first
+# loses its start and its suggestion, since the lines the suggestion was written for are unknown, and
+# a fixed finding loses its suggestion too. Each finding gets three bodies: "body" holds its suggestion as a
 # GitHub suggestion block, which replaces exactly the lines the comment is anchored to, "loose" shows
 # it as a plain code block naming the lines it was written for, for a finding anchored elsewhere or
 # listed in the review body, and "short" leaves it out, for a review body too long otherwise.
 # shellcheck disable=SC2016 # the $ names are jq's, not the shell's
 findings=$(jq -c '
   def badge: if type == "string" then {"must-fix": "🔴 **Must fix**", "should-fix": "🟡 **Should fix**", "nitpick": "⚪ **Nitpick**"}[.] else null end;
-  def rank: {"must-fix": 0, "should-fix": 1, "nitpick": 3}[. // ""] // 2;
+  def rank: {"must-fix": 0, "should-fix": 1, "nitpick": 2}[.];
   def language: (split(".") | if length > 1 then last else "" end) as $ext
     | {kt: "kotlin", kts: "kotlin", swift: "swift", java: "java", py: "python", sh: "bash", yml: "yaml",
        yaml: "yaml", json: "json", xml: "xml", md: "markdown", toml: "toml", gradle: "groovy",
@@ -137,37 +145,99 @@ findings=$(jq -c '
       | if . == "" then null else . end),
     line: ((.line // .end_line) | tonumber? // null),
     start_line: ((.start_line // null) | tonumber? // null),
-    severity: (.severity | if type == "string" then ascii_downcase | gsub("[ _]"; "-") else null end
-      | if badge then . else null end),
+    severity: (.severity | if type == "string" then ascii_downcase | gsub("^\\s+|\\s+$"; "") | gsub("[\\s_]+"; "-") else null end
+      | if badge then . else "should-fix" end),
     summary, failure_scenario, category, fix, given_body: .body,
-    suggestion: (.suggestion | if type == "string" then rtrimstr("\n") else null end)
+    suggestion: (.suggestion | if type == "string" then rtrimstr("\n") else null end),
+    fixed: (env.FIXED_IN != "" and .outcome == "fixed")
   }
-  | if .start_line != null and (.line == null or .start_line == .line) then .start_line = null
-    elif .start_line != null and .start_line > .line then {start_line: .line, line: .start_line} as $span | . + $span
-    else . end]
+  | if .start_line != null and (.line == null or .start_line > .line) then .start_line = null | .suggestion = null
+    elif .start_line == .line then .start_line = null
+    else . end
+  | if .fixed then .suggestion = null else . end]
   | sort_by(.severity | rank)
   | map(. as $f
     | ($f.given_body // (
-        ([($f.severity | badge // empty), ($f.category | select(.) | "_\(tostring)_")] | join(" · ")
-          | if . != "" then . + "\n\n" else "" end)
+        ([($f.severity | badge), ($f.category | select(.) | "_\(tostring)_")] | join(" · ")) + "\n\n"
         + "**" + ($f.summary // "Finding" | tostring) + "**"
         + (if $f.failure_scenario then "\n\n" + ($f.failure_scenario | tostring) else "" end)
         + (if $f.fix then "\n\n**How to fix:** " + ($f.fix | tostring) else "" end)) | tostring) as $text
+    | (if $f.given_body != null then null else $f.suggestion end) as $code
+    | ($code // "" | fence) as $fence
     | (if $f.start_line != null then "lines \($f.start_line)–\($f.line)" else "line \($f.line)" end) as $lines
-    | {path, line, start_line, severity, short: $text,
-       body: ($text + if $f.suggestion == null or $f.given_body != null then ""
-         else ($f.suggestion | fence) as $fence | "\n\n\($fence)suggestion\n"
-           + (if $f.suggestion == "" then "" else $f.suggestion + "\n" end) + $fence end),
-       loose: ($text + if $f.suggestion == null or $f.given_body != null or $f.line == null then ""
-         elif $f.suggestion == "" then "\n\nSuggested change: delete \($lines)."
-         else ($f.suggestion | fence) as $fence
-           | "\n\nSuggested change for \($lines):\n\n\($fence)\($f.path // "" | language)\n\($f.suggestion)\n\($fence)" end)})
+    | {path, line, start_line, severity, fixed, short: $text,
+       body: ($text + if $code == null then ""
+         else "\n\n\($fence)suggestion\n" + (if $code == "" then "" else $code + "\n" end) + $fence end),
+       loose: ($text + if $code == null or $f.line == null then ""
+         elif $code == "" then "\n\nSuggested change: delete \($lines)."
+         else "\n\nSuggested change for \($lines):\n\n\($fence)\($f.path // "" | language)\n\($code)\n\($fence)" end)})
   ' <<< "$input")
 total=$(jq 'length' <<< "$findings")
 
 if [ "$total" -eq 0 ]; then
   jq -n '{event: "COMMENT", body: "### Code review\n\nNo findings."}' | post
   exit 0
+fi
+
+as_list() {
+  jq -r 'to_entries | map("\(.key + 1). " + (if .value.path then "`\(.value.path)" + (if .value.line then ":\(.value.line)" else "" end) + "`" else "(no file)" end)
+    + "\n\n\(.value.body)") | join("\n\n")'
+}
+
+# Prints the header $1 followed by the findings of $2 as a list, in at most $3 characters: past that,
+# the findings lose their suggestions, then the last ones are left out whole, so the cut never lands
+# inside a code block. GitHub refuses a review body over 65,536 characters.
+max_body=65000
+with_list() {
+  local text short n kept
+  text="$1$(as_list <<< "$2")"
+  if [ "${#text}" -gt "$3" ]; then
+    short=$(jq -c 'map(.body = .short)' <<< "$2")
+    n=$(jq 'length' <<< "$short")
+    kept=$n
+    text="$1$(as_list <<< "$short")"
+    while [ "${#text}" -gt "$(($3 - 200))" ] && [ "$kept" -gt 0 ]; do
+      kept=$((kept - 1))
+      text="$1$(jq -c --argjson kept "$kept" '.[:$kept]' <<< "$short" | as_list)"
+    done
+    if [ "$kept" -lt "$n" ]; then
+      text="$text
+
+_$((n - kept)) more finding(s) left out: GitHub refuses a longer review body${run_url:+; see [the run]($run_url)}._"
+    fi
+  fi
+  printf '%s' "$text"
+}
+
+# How many findings of each severity, after the count: "3 finding(s) (🔴 1 must fix · ⚪ 2 nitpicks)".
+counts=$(jq -r '[group_by(.severity)[] | {key: .[0].severity, value: length}] | from_entries
+  | [(."must-fix" // empty | "🔴 \(.) must fix"), (."should-fix" // empty | "🟡 \(.) should fix"),
+     (.nitpick // empty | "⚪ \(.) nitpick" + (if . > 1 then "s" else "" end))]
+  | if length > 0 then " (" + join(" · ") + ")" else "" end' <<< "$findings")
+
+fixed=$(jq -c 'map(select(.fixed))' <<< "$findings")
+fixed_count=$(jq 'length' <<< "$fixed")
+findings=$(jq -c 'map(select(.fixed | not))' <<< "$findings")
+left=$(jq 'length' <<< "$findings")
+lead="$total finding(s)$counts"
+fixed_section=""
+if [ "$fixed_count" -gt 0 ]; then
+  if [ "$left" -eq 0 ]; then
+    body=$(with_list "### Code review
+
+$lead, all fixed in $FIXED_IN:
+
+" "$fixed" "$max_body")
+    jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post
+    exit 0
+  fi
+  lead="$lead: $fixed_count fixed in $FIXED_IN, listed at the end, and $left left"
+  # Half the body at most, so the findings left for the author always fit.
+  fixed_section=$(with_list "
+
+Fixed in $FIXED_IN:
+
+" "$fixed" "$((max_body / 2))")
 fi
 
 # The lines GitHub can anchor a comment to: the new-file lines of the diff hunks between the base
@@ -212,46 +282,18 @@ inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")
 inline_count=$(jq 'length' <<< "$inline")
 
-as_list() {
-  jq -r 'to_entries | map("\(.key + 1). " + (if .value.path then "`\(.value.path)" + (if .value.line then ":\(.value.line)" else "" end) + "`" else "(no file)" end)
-    + "\n\n\(.value.body)") | join("\n\n")'
-}
-
-# How many findings of each severity, after the count: "3 finding(s) (🔴 1 must fix · ⚪ 2 nitpicks)".
-counts=$(jq -r '[group_by(.severity)[] | select(.[0].severity != null)
-    | {key: .[0].severity, value: length}] | from_entries
-  | [(."must-fix" // empty | "🔴 \(.) must fix"), (."should-fix" // empty | "🟡 \(.) should fix"),
-     (.nitpick // empty | "⚪ \(.) nitpick" + (if . > 1 then "s" else "" end))]
-  | if length > 0 then " (" + join(" · ") + ")" else "" end' <<< "$findings")
-
-# Prints the header $1 followed by the findings of $2 as a list, within the 65,536 characters GitHub
-# allows a review body: past that, the findings lose their suggestions, then the list is cut short.
-max_body=65000
-with_list() {
-  local text
-  text="$1$(as_list <<< "$2")"
-  if [ "${#text}" -gt "$max_body" ]; then
-    text="$1$(jq -c 'map(.body = .short)' <<< "$2" | as_list)"
-  fi
-  if [ "${#text}" -gt "$max_body" ]; then
-    text="${text:0:max_body}
-
-_Cut short: GitHub refuses a longer review body${run_url:+; see [the run]($run_url)}._"
-  fi
-  printf '%s' "$text"
-}
-
 if [ "$inline_count" -gt 0 ]; then
   summary="### Code review
 
-$total finding(s)$counts"
-  if [ "$inline_count" -eq "$total" ]; then
+$lead"
+  if [ "$inline_count" -eq "$left" ]; then
     summary="$summary, as inline comments."
   else
     summary=$(with_list "$summary: $inline_count as inline comments, the others below, on lines GitHub can't anchor a comment to. They open no thread, so they don't hold the merge.
 
-" "$outside")
+" "$outside" "$((max_body - ${#fixed_section}))")
   fi
+  summary="$summary$fixed_section"
   comments=$(jq -c '[.[] | {path, line, side: "RIGHT", body}
     + (if .start_line != null then {start_line, start_side: "RIGHT"} else {} end)]' <<< "$inline")
   if url=$(jq -n --arg body "$summary" --argjson comments "$comments" \
@@ -267,7 +309,7 @@ fi
 loose=$(jq -c 'map(.body = .loose)' <<< "$findings")
 body=$(with_list "### Code review
 
-$total finding(s)$counts, on lines GitHub can't anchor a comment to. They open no thread, so they don't hold the merge.
+$lead, on lines GitHub can't anchor a comment to. They open no thread, so they don't hold the merge.
 
-" "$loose")
+" "$loose" "$((max_body - ${#fixed_section}))")$fixed_section
 jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post

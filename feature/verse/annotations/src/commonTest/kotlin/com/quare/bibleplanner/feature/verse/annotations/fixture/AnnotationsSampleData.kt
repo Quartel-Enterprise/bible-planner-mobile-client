@@ -12,10 +12,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 internal const val SAMPLE_VERSION_ID = "arc"
-private const val MILLIS_PER_DAY = 86_400_000L
 
 internal val sampleNow: Long = LocalDateTime(
     year = 2026,
@@ -31,7 +31,7 @@ internal val utcLocalDateTimeProvider = LocalDateTimeProvider { timestamp ->
 
 internal val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
 
-internal fun daysAgo(days: Int): Long = sampleNow - days * MILLIS_PER_DAY
+internal fun daysAgo(count: Int): Long = sampleNow - count.days.inWholeMilliseconds
 
 internal fun samplePassage(
     bookId: BookId = BookId.GEN,

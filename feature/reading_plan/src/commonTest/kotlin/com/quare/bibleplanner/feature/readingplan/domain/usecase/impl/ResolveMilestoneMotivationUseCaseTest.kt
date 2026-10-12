@@ -6,13 +6,15 @@ import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 internal class ResolveMilestoneMotivationUseCaseTest {
     private val useCase = ResolveMilestoneMotivationUseCase()
     private val nowMillis = 1_700_000_000_000L
-    private val withinWindow = nowMillis - 60_000L
-    private val olderWithinWindow = nowMillis - 600_000L
-    private val outsideWindow = nowMillis - 25L * 60 * 60 * 1000L
+    private val withinWindow = nowMillis - 1.minutes.inWholeMilliseconds
+    private val olderWithinWindow = nowMillis - 10.minutes.inWholeMilliseconds
+    private val outsideWindow = nowMillis - 25.hours.inWholeMilliseconds
 
     @Test
     fun `GIVEN an empty plan WHEN resolving THEN returns null`() {

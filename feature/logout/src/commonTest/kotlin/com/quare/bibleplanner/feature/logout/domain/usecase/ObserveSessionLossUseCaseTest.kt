@@ -18,9 +18,12 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 class ObserveSessionLossUseCaseTest {
+    private val sessionLifetime: Duration = 1.hours
     private val fakeRefreshFailureCause = RefreshFailureCause.NetworkError(Exception("offline"))
     private lateinit var sessionStatus: MutableStateFlow<SessionStatus>
     private lateinit var intentionalLogoutMarker: IntentionalLogoutMarker
@@ -45,7 +48,7 @@ class ObserveSessionLossUseCaseTest {
         runTest {
             // Given
             backgroundScope.launch { useCase() }
-            sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + HOUR_MILLIS)
+            sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + sessionLifetime.inWholeMilliseconds)
             runCurrent()
 
             // When
@@ -86,7 +89,7 @@ class ObserveSessionLossUseCaseTest {
     fun `GIVEN an intentional logout WHEN the session ends THEN tracks nothing`() = runTest {
         // Given
         backgroundScope.launch { useCase() }
-        sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + HOUR_MILLIS)
+        sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + sessionLifetime.inWholeMilliseconds)
         runCurrent()
         intentionalLogoutMarker.mark()
 
@@ -142,7 +145,7 @@ class ObserveSessionLossUseCaseTest {
     fun `GIVEN a previously reported loss WHEN the user is still logged out THEN does not track again`() = runTest {
         // Given
         backgroundScope.launch { useCase() }
-        sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + HOUR_MILLIS)
+        sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS + sessionLifetime.inWholeMilliseconds)
         runCurrent()
         sessionStatus.value = SessionStatus.NotAuthenticated()
         runCurrent()
@@ -162,7 +165,7 @@ class ObserveSessionLossUseCaseTest {
     fun `GIVEN sessions from every source WHEN each one is lost THEN tracks the matching source value`() = runTest {
         // Given
         backgroundScope.launch { useCase() }
-        val session = authenticated(expiresAtMillis = NOW_MILLIS + HOUR_MILLIS).session
+        val session = authenticated(expiresAtMillis = NOW_MILLIS + sessionLifetime.inWholeMilliseconds).session
         val sources = listOf(
             SessionSource.AnonymousSignIn,
             SessionSource.External,
@@ -205,7 +208,7 @@ class ObserveSessionLossUseCaseTest {
         session = UserSession(
             accessToken = "access-token",
             refreshToken = "refresh-token",
-            expiresIn = 3600,
+            expiresIn = sessionLifetime.inWholeSeconds,
             tokenType = "bearer",
             user = UserInfo(aud = "", id = "user-1"),
             expiresAt = Instant.fromEpochMilliseconds(expiresAtMillis),
@@ -233,6 +236,5 @@ class ObserveSessionLossUseCaseTest {
 
     private companion object {
         const val NOW_MILLIS = 1_000_000L
-        const val HOUR_MILLIS = 3_600_000L
     }
 }

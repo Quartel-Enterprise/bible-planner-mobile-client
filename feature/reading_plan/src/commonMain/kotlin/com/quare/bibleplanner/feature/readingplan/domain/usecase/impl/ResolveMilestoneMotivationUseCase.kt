@@ -5,8 +5,13 @@ import com.quare.bibleplanner.core.model.book.isNewTestament
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.Milestone
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class ResolveMilestoneMotivationUseCase : ResolveMilestoneMotivation {
+    private val milestoneWindow: Duration = 1.days
+
     override fun invoke(
         days: List<DayModel>,
         nowMillis: Long,
@@ -29,7 +34,7 @@ internal class ResolveMilestoneMotivationUseCase : ResolveMilestoneMotivation {
             .maxByOrNull { it.readTimestamp!! }
         val isWithinWindow = mostRecentReadDay
             ?.readTimestamp
-            ?.let { nowMillis - it <= MILESTONE_WINDOW_MILLIS } == true
+            ?.let { (nowMillis - it).milliseconds <= milestoneWindow } == true
 
         resolveEnteredNewTestament(days, mostRecentReadDay, isWithinWindow)
             ?.let { return it }
@@ -91,9 +96,5 @@ internal class ResolveMilestoneMotivationUseCase : ResolveMilestoneMotivation {
         if (booksWithUnreadPassages.size != 1) return null
         if (booksFullyRead.isEmpty()) return null
         return Milestone.OnlyOneBookLeft(booksWithUnreadPassages.single())
-    }
-
-    private companion object {
-        const val MILESTONE_WINDOW_MILLIS: Long = 24L * 60L * 60L * 1000L
     }
 }

@@ -64,6 +64,11 @@ last check to finish is the one that triggers the merge. A push to the pull requ
 commit and the new checks have to pass again. A failed check leaves the pull request open with the
 label on; re-running the check and getting it green merges it.
 
+A job waiting on another has no check until it starts, so right after `review-gate` passes every
+check of a pull request can be green while its workflows still have jobs to start. A run of a
+workflow that calls `review-gate` therefore counts as unfinished until it completes, and its
+completion starts `merge-when-green` again; the list of those workflows is in the merge step.
+
 A green pull request with an unresolved review conversation is not merged: the workflow removes the
 label and comments on the pull request instead. See [Unresolved conversations](#unresolved-conversations).
 
@@ -76,7 +81,8 @@ workflow (see [Screenshot tests](#screenshot-tests)) pushes with the same token.
 error that names the secret.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
-`merge-when-green.yml` too. A workflow missing from it still blocks the merge while running, but its
+`merge-when-green.yml` too, and, when it calls `review-gate`, the list of those workflows in its
+merge step. A workflow missing from it still blocks the merge while running, but its
 completion does not trigger one. When it is one of the workflows that write the Gradle cache on pull
 requests, update the `workflow_run` list and the `WRITERS` variable of `cleanup-pr-caches.yml` as
 well, or the pruning stops without an error.
@@ -92,13 +98,17 @@ Claude reviews pull requests at three points:
   review. Findings stop the skill until the author fixes them or chooses to go on. It is skipped
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
-- **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, and
-  posts its findings as one review: an inline comment per finding, each labelled with its severity
-  and, when the fix fits the commented lines, a suggestion to commit. A second opinion on the code
-  the author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after
-  the pull request opens, and reopening it, don't review it again.
+- **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, with
+  `--fix`: a second opinion on the code the author pushed, which applies its findings and pushes
+  them to the branch as a commit of its own. It then posts the findings as one review: the fixed
+  ones in its body, the ones it left for the author as an inline comment each, labelled with its
+  severity and, when the fix fits the commented lines, a suggestion to commit. The workflows that
+  build and test the app wait for it (see [Fixes and the review gate](#fixes-and-the-review-gate)).
+  A draft is reviewed when it is marked ready for review instead. Pushes after the pull request
+  opens, its own fix commit included, and reopening it, don't review it again.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
-  reviews the pull request again the same way, then removes the label. Use it after new pushes.
+  reviews the pull request again the same way, only commenting, then removes the label. Use it
+  after new pushes.
   When another review of the pull request is still running, it starts nothing and only removes the
   label.
 
@@ -106,8 +116,8 @@ The review can't read the earlier reviews on the pull request, so the action han
 they left, inline comments and review bodies alike (a draft marked ready a second time, a review on
 request), for it not to raise the same issues again.
 
-Both only comment: they fail only when the run itself does (an expired token, the 30-minute
-timeout), never because of what they found. They are skipped on pull requests from forks, which get
+Both fail only when the run itself does (an expired token, the 30-minute timeout), never because of
+what they found. They are skipped on pull requests from forks, which get
 no secrets, and the `ai-review` label then has to be removed by hand. The action also refuses to run
 when the pull request changes the workflow file that started it: the file has to match the one on
 `main`, so a change to either workflow can only be tried out after it merges. The run then ends
@@ -115,8 +125,8 @@ green with a "workflow validation" warning and posts nothing. The review step th
 `.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
 it, with the token. Only branches of this repository get there, since forks are skipped.
 
-Their findings never fail a check, but each one is an inline comment, and an unresolved comment
-blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
+Their findings never fail a check, but each one left for the author is an inline comment, and an
+unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
 runs on the head commit the pull request opened with, `merge-when-green` waits for it to finish
 there, and a run that failed (an expired token) holds the merge until it is rerun. A later push
 brings a head commit with no review check, so the merge no longer waits for it.
@@ -155,15 +165,17 @@ with `scripts/sync-agent-memory.sh`.
 Both GitHub reviews run the `/code-review` skill bundled with Claude Code, the one `create-pr` runs,
 so the three reviews share one recipe. All three pass `--max-findings all`: by default the skill keeps
 only the ten most severe findings, so every round of fixes on a large pull request surfaced the next
-ten and needed another review on request (#585 took 27 rounds). `all` is still capped by the
-recipe, at 32 findings for high effort. The skill remembers the choice for later runs on the same
-machine, so after `create-pr` a `/code-review` typed by hand reports up to 32 as well, until it is
-given `--max-findings default`. At high effort it looks for correctness bugs, `CLAUDE.md`
+ten and needed another review on request (#585 took 27 rounds). How many `all` reports is up to
+the recipe: locally, where it reports through a tool, high effort still stops at 32; on GitHub,
+where it ends with JSON, the recipe sets no maximum. The skill remembers the choice for later runs
+on the same machine, so after `create-pr` a `/code-review` typed by hand reports every finding too,
+until it is given `--max-findings default`. At high effort it looks for correctness bugs, `CLAUDE.md`
 violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
 locally. On GitHub the model invokes the skill itself with the level, the pull request number and
-`--max-findings all`, and ends its reply with the findings as JSON; the model posts nothing. The
+`--max-findings all` (plus `--fix` for the opening review), and ends its reply with the findings as
+JSON; the model posts nothing. The
 skill's findings carry no severity and no fix, so the model adds three fields to each one: a
 `severity`, a `fix` and, only when replacing the commented lines fully fixes it, a `suggestion`
 with their new text. Each comment opens with the severity: 🔴 **Must fix** (a bug users would hit,
@@ -171,9 +183,13 @@ a security hole, a race that corrupts state), 🟡 **Should fix** (a real proble
 impact, or a convention the change breaks) or ⚪ **Nitpick** (optional), and the review's summary
 counts them; the findings are posted most severe first. Nitpicks are inline comments too, so they
 hold the merge until resolved: one in the review body would lose its suggestion's commit button.
-A suggestion becomes a GitHub suggestion block, which the author can commit from the pull request, only on a comment anchored to the exact
-lines the finding names. Anchored anywhere else, GitHub would apply it to the wrong lines, so it is
-shown as a plain code block naming the lines it was written for. A Stop hook of the session
+A suggestion becomes a GitHub suggestion block, which the author can commit from the pull request,
+only on a comment anchored to the exact lines the finding names. Anchored anywhere else, GitHub
+would apply it to the wrong lines, so it is shown as a plain code block naming the lines it was
+written for. The model reads those lines from the reviewed commit, since with `--fix` the working
+tree holds its own changes, and a finding it fixed gets no suggestion. A review body is kept under
+the 65,536 characters GitHub allows: past that, the findings it lists lose their suggestions, then
+the last ones are left out, with a link to the run. A Stop hook of the session
 (`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
 it as one review with an inline comment per finding, one notification, rather than through the
 skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so
@@ -189,8 +205,9 @@ and so doesn't hold the merge. With no findings the review says so, and a reply 
 (a skill that stopped early, a session that never ran) gets a review pointing at the run, so the pull
 request shows the review ran. The exception is the job's 30-minute timeout: GitHub cancels the job
 and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the checkout before the review,
-and the model's file tools are blocked, so nothing the review does to the working tree changes what
-runs with the App's token. At high effort the skill runs its angles one after another in a single context, so a
+and the model's file tools are blocked (with `fix`, editing is allowed only inside the checkout,
+never under `.git`, `.github`, `.claude` or `.agent-memory`, nor on those copies), so nothing the
+review does to the working tree changes what runs with the App's token. At high effort the skill runs its angles one after another in a single context, so a
 large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,
@@ -199,6 +216,48 @@ a fixed recipe: five Sonnet agents, a shallow scan for bugs plus a `CLAUDE.md` c
 had findings on. Two things it did are gone with it: it skipped automated or trivial pull requests,
 and it skipped a pull request it had already commented on (the earlier comments handed to the review
 now cover that case).
+
+### Fixes and the review gate
+
+Until October 2026 the opening review only commented, while every other workflow ran on the same
+commit. It almost always found something, so the author pushed a fix and every check ran a second
+time. Now the review fixes what it found, and the checks wait for it:
+
+- **The review fixes.** `claude-review` passes `fix: 'true'` to the action, which invokes the skill
+  with `--fix` and lets the model edit the files of the checkout, never under `.git`, `.github`,
+  `.claude` (settings and hooks a session would pick up) or `.agent-memory`. It can't create a file.
+  It is told to fix only what is clear and contained, and to leave what needs the author's call (a
+  design choice, a product behaviour, a fix that needs a new file) as it is. Each
+  finding comes back with an outcome: `fixed`, `skipped` or `no_change_needed`.
+- **The hook commits.** Before posting, the Stop hook runs `commit-fixes.sh`: it commits the tracked
+  files the review changed, as `claude[bot]`, and pushes the commit to the branch with the Claude
+  GitHub App's token. A push with that token starts the pull request's workflows, which one with
+  `GITHUB_TOKEN` wouldn't. Nothing is pushed when no finding is marked fixed, when a fix touches
+  `.github` (the App has no workflows permission anyway) or `.claude`, when the working tree has an
+  untracked file (a fix that would be pushed without it), or when the branch moved during the
+  review: the push is never forced. The review then lists the fixed findings at the end of its body, under
+  the fix commit, so they open no thread, and only the others as inline comments. Without a push,
+  every finding is an inline comment, as before.
+- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
+  `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
+  pull request opened with, it waits for the `claude-review` run of that commit to end, checking
+  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  hour. When the pull request's head moved meanwhile (the fix commit), it skips the other jobs: that
+  push started them again on the new commit, and cancels this run anyway. When the head didn't
+  move, they run. Every other event (a later push, a reopened pull request, `main`) skips the gate
+  job itself, so it starts no runner, and the other jobs run on a skipped gate. A draft or a fork
+  passes it right away, and so does a failed or cancelled review, GitHub's API failing three times
+  in a row, or a review still running after 40 minutes. `translations` doesn't wait:
+  `check-translations` is required and takes seconds.
+
+So a pull request whose review found nothing to fix runs its checks once, after the review; one
+whose review fixed something runs them once, on the fix commit. Either way the checks finish later
+than when they ran next to the review, by the length of the review, but they never run twice.
+
+The fix commit isn't reviewed again; the `ai-review` label reviews it, only commenting. It isn't
+built before the push either: the review has no Gradle, so a fix that breaks the build or ktlint
+shows up in the checks of the fix commit. And the local branch is one commit behind afterwards:
+pull before pushing to it again.
 
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
 enabling it next to these workflows would review every pull request twice.
@@ -334,5 +393,7 @@ compiling from linking. To measure the link again, run the task on its own with 
   a required check, which GitHub never reports for a workflow skipped by path filtering.
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a
   cancelled run saves no cache.
+- If it builds or tests the app on pull requests, start it with the `review-gate` job and make
+  its other jobs need it (see [Fixes and the review gate](#fixes-and-the-review-gate)).
 - Set up Gradle through `./.github/actions/gradle`, pass `secrets.GRADLE_ENCRYPTION_KEY`, and pick
   one of the two cache switches above if the job is not a default reader.

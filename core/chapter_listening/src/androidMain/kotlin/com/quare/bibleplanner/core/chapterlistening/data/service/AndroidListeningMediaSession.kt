@@ -16,6 +16,8 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningRemote
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 /*
  * Why: connecting a MediaController is what starts the MediaSessionService; Media3 then moves it to
@@ -56,6 +58,9 @@ internal class AndroidListeningMediaSession(
             .apply { setReferenceCounted(false) }
     }
 
+    // Why: a long safety net, since nothing is published to renew it while the next chapter loads for minutes.
+    private val wakeLockTimeout: Duration = 30.minutes
+
     override fun requestActivation(): Boolean {
         if (controllerFuture == null) {
             controllerFuture = MediaController
@@ -79,7 +84,7 @@ internal class AndroidListeningMediaSession(
         if (!nowPlaying.isPlaying) {
             releaseWakeLock()
         } else if (!wakeLock.isHeld) {
-            wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS)
+            wakeLock.acquire(wakeLockTimeout.inWholeMilliseconds)
         }
     }
 
@@ -98,8 +103,5 @@ internal class AndroidListeningMediaSession(
 
     private companion object {
         const val WAKE_LOCK_TAG = "BiblePlanner:ChapterListening"
-
-        // Why: a long safety net, since nothing is published to renew it while the next chapter loads for minutes.
-        const val WAKE_LOCK_TIMEOUT_MILLIS = 30L * 60 * 1000
     }
 }

@@ -161,8 +161,8 @@ Two reviews run on the whole change, the commits ahead of `main` and the uncommi
 Both start with a fresh context, so they judge the change rather than the conversation that produced
 it:
 
-- `/code-review high --max-findings all` looks for correctness bugs and for cleanups of the changed code (reuse,
-  simplification, efficiency).
+- `/code-review high --max-findings all` looks for correctness bugs and for cleanups of the changed
+  code (reuse, simplification, efficiency).
 - `review-conventions` checks the change against the docs under `docs/`, the product invariants, and
   the description from step 8.
 
@@ -181,9 +181,8 @@ Then invoke the `code-review` skill with `high --max-findings all` as its argume
 (`high <branch> --max-findings all` for a pushed branch): without the flag it keeps only the ten
 most severe findings, and the rest surface one review at a time on GitHub. The skill remembers the
 flag, so the user's own `/code-review` runs report every finding too, until they pass
-`--max-findings default`. Invoke the
-`review-conventions` skill with the description from step 8 as its argument. Wait
-for both results before going on.
+`--max-findings default`. Invoke the `review-conventions` skill with the description from step 8 as
+its argument. Wait for both results before going on.
 
 If neither reports anything, continue to step 10. Otherwise stop and show the user every finding,
 grouped by review, then use the `AskUserQuestion` tool to ask how to proceed:
@@ -343,9 +342,19 @@ The `merge-when-green` check itself counts too: it fails when its token is missi
 when the merge itself fails (e.g. a conflict with `main`), and then nothing else would merge the
 pull request.
 
-If the user asks to merge right away instead, wait for the required checks, then merge:
+If the user asks to merge right away instead, first wait for the opening `claude-review` run: it may
+push a commit of its fixes to the branch (see [docs/ci.md](../../../docs/ci.md#fixes-and-the-review-gate)),
+and a merge before it ends would leave them out. Then wait for the required checks, of the fix commit
+when there is one, and merge:
 
 ```bash
+sha=$(gh pr view --json headRefOid -q .headRefOid)
+for _ in $(seq 20); do
+  run=$(gh run list --workflow claude-review.yml --commit "$sha" --json databaseId -q '.[0].databaseId')
+  [ -n "$run" ] && break
+  sleep 3
+done
+[ -z "$run" ] || gh run watch "$run" --interval 30 > /dev/null || true
 for _ in $(seq 20); do gh pr checks --required 2>/dev/null | grep -q . && break; sleep 3; done
 gh pr checks --watch --required --interval 5
 gh pr merge --squash

@@ -7,12 +7,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 internal class ShouldRequestReviewUseCaseTest {
+    private val grace: Duration = 3.days
+    private val cooldown: Duration = 60.days
+
     @Test
     fun `GIVEN a first eligible timestamp within the grace period WHEN evaluating THEN returns false`() = runTest {
         // Given
-        val shouldRequestReview = useCase(firstEligibleAt = NOW - GRACE_MILLIS + 1)
+        val shouldRequestReview = useCase(firstEligibleAt = NOW - grace.inWholeMilliseconds + 1)
 
         // When
         val result = shouldRequestReview()
@@ -24,7 +29,7 @@ internal class ShouldRequestReviewUseCaseTest {
     @Test
     fun `GIVEN the grace period elapsed and no prompt yet WHEN evaluating THEN returns true`() = runTest {
         // Given
-        val shouldRequestReview = useCase(firstEligibleAt = NOW - GRACE_MILLIS)
+        val shouldRequestReview = useCase(firstEligibleAt = NOW - grace.inWholeMilliseconds)
 
         // When
         val result = shouldRequestReview()
@@ -36,7 +41,7 @@ internal class ShouldRequestReviewUseCaseTest {
     @Test
     fun `GIVEN a first eligible timestamp in the future WHEN evaluating THEN returns true`() = runTest {
         // Given
-        val shouldRequestReview = useCase(firstEligibleAt = NOW + GRACE_MILLIS)
+        val shouldRequestReview = useCase(firstEligibleAt = NOW + grace.inWholeMilliseconds)
 
         // When
         val result = shouldRequestReview()
@@ -50,7 +55,7 @@ internal class ShouldRequestReviewUseCaseTest {
         // Given
         val shouldRequestReview = useCase(
             lastPromptedVersion = "0.9.0",
-            lastPromptedAt = NOW + COOLDOWN_MILLIS,
+            lastPromptedAt = NOW + cooldown.inWholeMilliseconds,
         )
 
         // When
@@ -77,7 +82,7 @@ internal class ShouldRequestReviewUseCaseTest {
         // Given
         val shouldRequestReview = useCase(
             lastPromptedVersion = "0.9.0",
-            lastPromptedAt = NOW - COOLDOWN_MILLIS + 1,
+            lastPromptedAt = NOW - cooldown.inWholeMilliseconds + 1,
         )
 
         // When
@@ -93,7 +98,7 @@ internal class ShouldRequestReviewUseCaseTest {
             // Given
             val shouldRequestReview = useCase(
                 lastPromptedVersion = "0.9.0",
-                lastPromptedAt = NOW - COOLDOWN_MILLIS,
+                lastPromptedAt = NOW - cooldown.inWholeMilliseconds,
             )
 
             // When
@@ -122,7 +127,7 @@ internal class ShouldRequestReviewUseCaseTest {
     }
 
     private fun useCase(
-        firstEligibleAt: Long? = NOW - GRACE_MILLIS,
+        firstEligibleAt: Long? = NOW - grace.inWholeMilliseconds,
         lastPromptedAt: Long? = null,
         lastPromptedVersion: String? = null,
     ): ShouldRequestReviewUseCase = useCase(
@@ -143,7 +148,5 @@ internal class ShouldRequestReviewUseCaseTest {
     private companion object {
         const val NOW = 1_000_000_000_000L
         const val APP_VERSION = "1.0.0"
-        const val GRACE_MILLIS = 3L * 24 * 60 * 60 * 1000
-        const val COOLDOWN_MILLIS = 60L * 24 * 60 * 60 * 1000
     }
 }
