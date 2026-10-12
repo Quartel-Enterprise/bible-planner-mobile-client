@@ -21,6 +21,10 @@ import com.quare.bibleplanner.ui.theme.model.LocalTheme
 // leads instead of the light theme.
 internal const val READ_SCREENSHOT = "02_read"
 
+// The app offers listening only for the versions in the listening_cloud_versions Remote Config key,
+// and Spanish has none yet, so the es listing must not show the headphones button.
+private val localesWithListening = setOf("en-US", "pt-BR")
+
 /**
  * The reader as the store screenshots show it, on every platform that renders them: the
  * Robolectric generators for Play and the iOS simulator captures for the App Store.
@@ -51,7 +55,11 @@ internal fun ReadScreenshotContent(
                             locale = locale,
                             areVersesHighlighted = areVersesHighlighted,
                         ),
-                        listening = hiddenListeningUiState(),
+                        listening = if (locale in localesWithListening) {
+                            availableListeningUiState()
+                        } else {
+                            hiddenListeningUiState()
+                        },
                         onEvent = {},
                         onListeningEvent = {},
                         dayCompletionBanner = NoDayCompletionBanner,
