@@ -1,10 +1,15 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.content
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
@@ -28,23 +33,34 @@ internal fun ChapterListeningPlayerContent(
     uiState: ChapterListeningPlayerUiState,
     onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
 ) {
+    val statusCardRequester = remember { BringIntoViewRequester() }
     val player = uiState.player ?: return
+    val unavailableCopy = player.status.toUnavailableCopy()
+    val hasStatusCard = player.status == ListeningStatusModel.NEXT_LOCKED || unavailableCopy != null
+    LaunchedEffect(player.status) {
+        // Why: the sheet scrolls now, so a card inserted at the top while the user is scrolled down would stay out of sight.
+        if (hasStatusCard) statusCardRequester.bringIntoView()
+    }
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        if (player.status == ListeningStatusModel.NEXT_LOCKED) {
-            LockedCard(
-                player = player,
-                onEvent = onEvent,
-            )
-        }
-        player.status.toUnavailableCopy()?.let { copy ->
-            UnavailableCard(
-                player = player,
-                copy = copy,
-                onEvent = onEvent,
-            )
+        if (hasStatusCard) {
+            Box(modifier = Modifier.bringIntoViewRequester(statusCardRequester)) {
+                if (player.status == ListeningStatusModel.NEXT_LOCKED) {
+                    LockedCard(
+                        player = player,
+                        onEvent = onEvent,
+                    )
+                }
+                unavailableCopy?.let { copy ->
+                    UnavailableCard(
+                        player = player,
+                        copy = copy,
+                        onEvent = onEvent,
+                    )
+                }
+            }
         }
         player.dayProgress?.let { DayProgressCard(dayProgress = it, progress = player.progress) }
         CurrentVerseCard(

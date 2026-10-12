@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.read.screenshots
 
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.feature.read.fixture.chapterListeningPlayerUiState
 import com.quare.bibleplanner.feature.read.fixture.listeningPlayer
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterListeningPlayerContent
@@ -25,6 +28,35 @@ internal class ChapterListeningPlayerScreenshotTest : ScreenshotTest() {
                         verseText = longVerse,
                         spokenWord = ListeningWordTargetModel.Verse(word until word + "earth".length),
                     ),
+                    isWordHighlightEnabled = true,
+                ),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun nextChapterLocked() {
+        snapshot(name = "next_chapter_locked") {
+            ChapterListeningPlayerContent(
+                uiState = chapterListeningPlayerUiState(
+                    player = listeningPlayer(
+                        status = ListeningStatusModel.NEXT_LOCKED,
+                        lockedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2),
+                    ),
+                    isWordHighlightEnabled = true,
+                ),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun needsConnection() {
+        snapshot(name = "needs_connection") {
+            ChapterListeningPlayerContent(
+                uiState = chapterListeningPlayerUiState(
+                    player = listeningPlayer(status = ListeningStatusModel.NEEDS_CONNECTION),
                     isWordHighlightEnabled = true,
                 ),
                 onEvent = {},

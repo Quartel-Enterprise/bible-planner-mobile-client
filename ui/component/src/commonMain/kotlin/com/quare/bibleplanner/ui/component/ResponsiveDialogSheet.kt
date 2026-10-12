@@ -142,8 +142,7 @@ fun ResponsiveDialogSheet(
                             windowHeight = windowHeight,
                             dragHandleHeight = { dragHandleHeight },
                             bottomInsets = safeDrawingInsets,
-                        )
-                        .windowInsetsPadding(LocalNavigationBarInsets.current)
+                        ).windowInsetsPadding(LocalNavigationBarInsets.current)
                         .padding(bottom = sheetBottomBreathingRoom)
                         .blockPointerInput(isBlocked = isClosing),
                 )
@@ -158,7 +157,9 @@ fun ResponsiveDialogSheet(
  * minus the drag handle and the bottom inset M3 pads the sheet with outside of it. Both are read
  * while measuring, not while composing: the handle is measured just before the content, so its
  * height counts in the first frame instead of a recomposition later, and a keyboard animating the
- * inset only remeasures the content instead of recomposing it on every frame.
+ * inset only remeasures the content instead of recomposing it on every frame. That relies on M3
+ * measuring the handle before the content and on onSizeChanged running during measure; if M3 ever
+ * changes either, the first frame uses a 0dp handle and the sheet shrinks a frame later.
  */
 private fun Modifier.sheetMaxHeight(
     isHeightCapped: Boolean,
