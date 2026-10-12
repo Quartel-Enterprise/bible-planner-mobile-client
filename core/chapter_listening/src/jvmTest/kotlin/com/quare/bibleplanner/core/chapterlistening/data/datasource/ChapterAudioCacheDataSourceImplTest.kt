@@ -2,6 +2,8 @@ package com.quare.bibleplanner.core.chapterlistening.data.datasource
 
 import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioStorageException
 import com.quare.bibleplanner.core.chapterlistening.data.model.ChapterAudioCacheDirectory
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -419,12 +421,14 @@ internal class ChapterAudioCacheDataSourceImplTest {
         )
     }
 
-    private fun createDataSource(maxBytes: Long): ChapterAudioCacheDataSource = ChapterAudioCacheDataSourceImpl(
-        directory = ChapterAudioCacheDirectory(directory),
-        maxBytes = maxBytes,
-        json = Json { ignoreUnknownKeys = true },
-        currentTimestampProvider = { now },
-    )
+    private fun TestScope.createDataSource(maxBytes: Long): ChapterAudioCacheDataSource =
+        ChapterAudioCacheDataSourceImpl(
+            directory = ChapterAudioCacheDirectory(directory),
+            maxBytes = maxBytes,
+            json = Json { ignoreUnknownKeys = true },
+            currentTimestampProvider = { now },
+            dispatcher = StandardTestDispatcher(testScheduler),
+        )
 
     private companion object {
         const val MAX_BYTES = 10L * 1024 * 1024

@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterA
 import com.quare.bibleplanner.core.chapterlistening.data.model.CachedChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.model.ChapterAudioCacheDirectory
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.utils.ioDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -32,6 +32,7 @@ internal class ChapterAudioCacheDataSourceImpl(
     private val maxBytes: Long,
     private val json: Json,
     private val currentTimestampProvider: CurrentTimestampProvider,
+    private val dispatcher: CoroutineDispatcher,
 ) : ChapterAudioCacheDataSource {
     private val touchWriteInterval: Duration = 1.hours
     private val mutex = Mutex()
@@ -74,7 +75,7 @@ internal class ChapterAudioCacheDataSourceImpl(
         fileName: String,
         readManifest: suspend () -> String,
         writeAudio: suspend (Path) -> Unit,
-    ): CachedChapterAudio = withContext(ioDispatcher) {
+    ): CachedChapterAudio = withContext(dispatcher) {
         val partialPath = Path(directory.path, "$fileName$PARTIAL_EXTENSION")
         // Why: the first read of a launch sweeps unknown files, so it must run before this file is written.
         onDisk { loadEntries() }
@@ -143,7 +144,7 @@ internal class ChapterAudioCacheDataSourceImpl(
         }
     }
 
-    private suspend fun <T> onDisk(block: () -> T): T = withContext(ioDispatcher) {
+    private suspend fun <T> onDisk(block: () -> T): T = withContext(dispatcher) {
         mutex.withLock { storeChapterAudio(block) }
     }
 

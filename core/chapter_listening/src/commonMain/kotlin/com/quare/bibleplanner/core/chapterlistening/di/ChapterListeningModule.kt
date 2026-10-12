@@ -25,6 +25,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetListe
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.GetTodayListeningDayUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.ObserveIsChapterListeningEnabledUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl.RecordChapterListeningUnlockUseCase
+import com.quare.bibleplanner.core.utils.ioDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,6 +59,7 @@ val chapterListeningModule = module {
             maxBytes = CACHE_MAX_BYTES,
             json = get(),
             currentTimestampProvider = get(),
+            dispatcher = ioDispatcher,
         )
     }
     factoryOf(::ChapterAudioMapper)
