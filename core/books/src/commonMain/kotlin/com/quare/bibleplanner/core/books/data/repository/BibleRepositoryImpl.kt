@@ -126,7 +126,7 @@ internal class BibleRepositoryImpl(
     private fun getDefaultVersion(): String = when (languageProvider.getAppLanguage()) {
         Language.PORTUGUESE_BRAZIL -> "A21"
         Language.SPANISH -> "RVR1960"
-        Language.ENGLISH -> "WEB"
+        Language.ENGLISH -> "NIV"
     }
 
     companion object {

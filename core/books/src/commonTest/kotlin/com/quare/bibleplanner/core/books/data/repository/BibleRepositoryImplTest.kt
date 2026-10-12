@@ -90,7 +90,7 @@ internal class BibleRepositoryImplTest {
         val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
         // Then
-        assertEquals(expected = "WEB", actual = selectedVersionId)
+        assertEquals(expected = "NIV", actual = selectedVersionId)
     }
 
     @Test
@@ -143,7 +143,10 @@ internal class BibleRepositoryImplTest {
     @Test
     fun `GIVEN downloaded chapter counts WHEN observing the bibles THEN reports each version progress`() = runTest {
         // Given
-        prepareScenario(appLanguage = Language.ENGLISH)
+        prepareScenario(
+            appLanguage = Language.ENGLISH,
+            storedVersionId = "WEB",
+        )
 
         // When
         val bibles = repository.getBiblesFlow().first()
