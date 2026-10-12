@@ -407,6 +407,27 @@ jobs:
       - name: Bump version
         run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      # Creating the App Store version makes App Store Connect copy the previous version's
+      # screenshots into it, and deliver deleting a shelf mid-copy leaves strays it then can't sort
+      # (2.13.0). Created here, the copy is over by the time rendering ends. Should this fail, the
+      # first upload creates the version as before.
+      - name: Create the App Store version
+        continue-on-error: true
+        run: fastlane ios prepare_version
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          APP_VERSION: ${{ needs.plan.outputs.version }}
+
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
 
@@ -503,11 +524,12 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           APP_VERSION: ${{ needs.plan.outputs.version }}
 
-  # After the last locale: removes the duplicate screenshots deliver leaves behind and sets
-  # `screenshots_complete`, which tells ios-submit whether a locale was left with no screenshots at
-  # all — see report_app_store_screenshots_completeness in the Fastfile. !cancelled() because it has
-  # to run precisely when an upload failed, which is when a locale can be empty; the locales guard
-  # skips it along with the uploads when nothing was rendered.
+  # After the last locale: removes the duplicate screenshots deliver leaves behind, sorts every
+  # shelf in file-name order, and sets `screenshots_complete`, which tells ios-submit whether a
+  # locale was left with no screenshots at all — see report_app_store_screenshots_completeness in
+  # the Fastfile. !cancelled() because it has to run precisely when an upload failed, which is when
+  # a locale can be empty; the locales guard skips it along with the uploads when nothing was
+  # rendered.
   ios-screenshots-finish:
     name: iOS — check the store listing screenshots
     needs: [ios-screenshots-render, ios-screenshots-upload]
@@ -532,7 +554,7 @@ jobs:
       - name: Install fastlane
         run: gem install fastlane --no-document
 
-      - name: Remove duplicate screenshots and check every locale has some
+      - name: Remove duplicate screenshots, sort them and check every locale has some
         id: screenshots
         run: fastlane ios finish_screenshots
         env:
