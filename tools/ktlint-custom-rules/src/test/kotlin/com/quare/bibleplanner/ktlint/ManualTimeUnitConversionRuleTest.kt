@@ -79,6 +79,25 @@ class ManualTimeUnitConversionRuleTest {
     }
 
     @Test
+    fun `GIVEN unsigned and floating point factors WHEN linting THEN reports the multiplications`() {
+        // Given
+        val code =
+            """
+            val timeout = 30u * 60u * 1000u
+            val delay = seconds * 60.0 * 1000
+            """.trimIndent()
+
+        // When
+        val linted = manualTimeUnitConversionRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(1, 15, buildViolationMessage("30u * 60u * 1000u")),
+            LintViolation(2, 13, buildViolationMessage("seconds * 60.0 * 1000")),
+        )
+    }
+
+    @Test
     fun `GIVEN a single unit factor WHEN linting THEN reports nothing`() {
         // Given
         val code =
@@ -101,6 +120,8 @@ class ManualTimeUnitConversionRuleTest {
         val code =
             """
             val bytes = 1000 * 1000 * 8
+            val avatarPixels = 24 * 24
+            val gridCells = 60 * 60
             val area = width * height * 60
             val cacheSize = 50L * 1024 * 1024
             """.trimIndent()
@@ -135,5 +156,5 @@ class ManualTimeUnitConversionRuleTest {
 }
 
 private fun buildViolationMessage(expression: String): String =
-    "'$expression' converts time units by hand: use a kotlin.time.Duration (minutes, hours, days) and " +
-        "convert with inWholeMilliseconds only where an API takes a number"
+    "'$expression' converts time units by hand: use a kotlin.time.Duration (minutes, hours, days) " +
+        "and convert with inWholeMilliseconds or inWholeSeconds only where an API takes a number"

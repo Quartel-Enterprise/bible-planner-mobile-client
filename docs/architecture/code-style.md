@@ -489,9 +489,10 @@ private companion object {
 ```
 
 Enforced by the custom ktlint rule `bible-planner-style:manual-time-unit-conversion`, which reports a multiplication
-with two or more of the factors 24, 60, 3600 and 1000, at least one of them other than 1000 (`minutes * 60 * 1000`,
-`24L * 60 * 60`). A single factor (`seconds * 1000`) and `1000 * 1000` are left alone, since they are as often about
-sizes as about time.
+with two or more different factors out of 24, 60, 3600 and 1000, at least one of them other than 1000
+(`minutes * 60 * 1000`, `24L * 60 * 60`, `30u * 60u * 1000u`, `seconds * 60.0 * 1000`). A single factor
+(`seconds * 1000`) and a repeated one (`1000 * 1000`, `60 * 60`, `24 * 24`) are left alone, since they are as often
+about sizes or grids as about time. The rule reads literals only: a factor behind a named constant isn't recognised.
 
 ## Interface and Implementation in Separate Files
 

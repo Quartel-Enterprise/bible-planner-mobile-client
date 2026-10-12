@@ -31,7 +31,7 @@ internal val utcLocalDateTimeProvider = LocalDateTimeProvider { timestamp ->
 
 internal val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
 
-internal fun daysAgo(days: Int): Long = sampleNow - days.days.inWholeMilliseconds
+internal fun daysAgo(count: Int): Long = sampleNow - count.days.inWholeMilliseconds
 
 internal fun samplePassage(
     bookId: BookId = BookId.GEN,

@@ -208,7 +208,7 @@ class ObserveSessionLossUseCaseTest {
         session = UserSession(
             accessToken = "access-token",
             refreshToken = "refresh-token",
-            expiresIn = 3600,
+            expiresIn = sessionLifetime.inWholeSeconds,
             tokenType = "bearer",
             user = UserInfo(aud = "", id = "user-1"),
             expiresAt = Instant.fromEpochMilliseconds(expiresAtMillis),
