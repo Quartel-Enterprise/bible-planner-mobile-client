@@ -93,10 +93,10 @@ Claude reviews pull requests at three points:
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
 - **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, and
-  posts its findings as one review: an inline comment per finding, nitpicks aside, each labelled
-  with its severity and, when the fix fits the commented lines, a suggestion to commit. A second
-  opinion on the code the author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after the
-  pull request opens, and reopening it, don't review it again.
+  posts its findings as one review: an inline comment per finding, each labelled with its severity
+  and, when the fix fits the commented lines, a suggestion to commit. A second opinion on the code
+  the author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after
+  the pull request opens, and reopening it, don't review it again.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
   reviews the pull request again the same way, then removes the label. Use it after new pushes.
   When another review of the pull request is still running, it starts nothing and only removes the
@@ -115,8 +115,8 @@ green with a "workflow validation" warning and posts nothing. The review step th
 `.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
 it, with the token. Only branches of this repository get there, since forks are skipped.
 
-Their findings never fail a check, but each one except the nitpicks is an inline comment, and an
-unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
+Their findings never fail a check, but each one is an inline comment, and an unresolved comment
+blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
 runs on the head commit the pull request opened with, `merge-when-green` waits for it to finish
 there, and a run that failed (an expired token) holds the merge until it is rerun. A later push
 brings a head commit with no review check, so the merge no longer waits for it.
@@ -169,14 +169,13 @@ skill's findings carry no severity and no fix, so the model adds three fields to
 with their new text. Each comment opens with the severity: 🔴 **Must fix** (a bug users would hit,
 a security hole, a race that corrupts state), 🟡 **Should fix** (a real problem with a limited
 impact, or a convention the change breaks) or ⚪ **Nitpick** (optional), and the review's summary
-counts them; the findings are posted most severe first. Nitpicks go in the review's body, with the
-findings outside the diff, rather than as inline comments: they open no thread, so an optional fix
-never holds the merge. A suggestion becomes a GitHub suggestion
-block, which the author can commit from the pull request, only on a comment anchored to the exact
+counts them; the findings are posted most severe first. Nitpicks are inline comments too, so they
+hold the merge until resolved: one in the review body would lose its suggestion's commit button.
+A suggestion becomes a GitHub suggestion block, which the author can commit from the pull request, only on a comment anchored to the exact
 lines the finding names. Anchored anywhere else, GitHub would apply it to the wrong lines, so it is
 shown as a plain code block naming the lines it was written for. A Stop hook of the session
 (`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
-it as one review with an inline comment per finding (nitpicks aside), one notification, rather than through the
+it as one review with an inline comment per finding, one notification, rather than through the
 skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so
 the review comes from `claude[bot]`, with the Claude GitHub App's token the action gives the session
 and revokes when it ends. When the hook didn't post, a step of the action posts the same findings with

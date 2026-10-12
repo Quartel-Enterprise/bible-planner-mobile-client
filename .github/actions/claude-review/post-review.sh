@@ -23,10 +23,9 @@
 # comments. GitHub only anchors a comment to a line inside a diff hunk of that commit, and refuses the
 # whole review when one isn't. A finding on another line of a changed file (the recipe reports bugs on
 # unchanged lines of a touched function on purpose) is anchored to the nearest changed line of that
-# file, with its own line named, so it still opens a thread that holds the merge. Nitpicks, the
-# findings in files the diff doesn't touch, the ones without a usable file and line, and all of them
-# when the diff can't be read, go in the review body instead; those open no thread, so an optional
-# fix never holds the merge. An empty array posts a review
+# file, with its own line named, so it still opens a thread that holds the merge. The findings in
+# files the diff doesn't touch, the ones without a usable file and line, and all of them when the diff
+# can't be read, go in the review body instead; those open no thread. An empty array posts a review
 # saying nothing was found, and anything that isn't an array posts a notice, so the pull request
 # always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
 set -euo pipefail
@@ -190,13 +189,13 @@ fi
 # A finding whose line is in a hunk is an inline comment; a span has to start in that same hunk. One
 # on another line of a changed file is anchored to the nearest hunk's edge, naming its own line. Only
 # a comment on the very lines the finding names keeps its suggestion block: GitHub would apply one
-# anywhere else to the wrong lines. A nitpick goes in the body wherever it is, so it opens no thread.
+# anywhere else to the wrong lines.
 split=$(jq -c --argjson hunks "$hunks" '
   def hunk($path; $line): first($hunks[] | select(.path == $path and .from <= $line and $line <= .to)) // null;
   def nearest($path; $line): [$hunks[] | select(.path == $path)]
     | if length == 0 then null else min_by(if $line < .from then .from - $line else $line - .to end) end;
   map(. as $f
-    | if $f.line == null or $f.path == null or $f.severity == "nitpick" then . + {anchored: false}
+    | if $f.line == null or $f.path == null then . + {anchored: false}
       else hunk($f.path; $f.line) as $h
       | if $h != null then
           (if .start_line != null and .start_line < $h.from then .start_line = null | .body = .loose else . end)
@@ -225,16 +224,6 @@ counts=$(jq -r '[group_by(.severity)[] | select(.[0].severity != null)
      (.nitpick // empty | "⚪ \(.) nitpick" + (if . > 1 then "s" else "" end))]
   | if length > 0 then " (" + join(" · ") + ")" else "" end' <<< "$findings")
 
-# Why the findings on stdin go in the review body: "nitpicks", "findings GitHub can't anchor to a
-# line of the diff", or both.
-body_reason() {
-  jq -r '(map(select(.severity == "nitpick")) | length) as $nitpicks
-    | (length - $nitpicks) as $unanchored
-    | [(if $nitpicks > 0 then "nitpicks" else empty end),
-       (if $unanchored > 0 then "findings GitHub can'"'"'t anchor to a line of the diff" else empty end)]
-    | join(", and ")'
-}
-
 # Prints the header $1 followed by the findings of $2 as a list, within the 65,536 characters GitHub
 # allows a review body: past that, the findings lose their suggestions, then the list is cut short.
 max_body=65000
@@ -259,7 +248,7 @@ $total finding(s)$counts"
   if [ "$inline_count" -eq "$total" ]; then
     summary="$summary, as inline comments."
   else
-    summary=$(with_list "$summary: $inline_count as inline comments, the others below: $(body_reason <<< "$outside"). They open no thread, so they don't hold the merge.
+    summary=$(with_list "$summary: $inline_count as inline comments, the others below, on lines GitHub can't anchor a comment to. They open no thread, so they don't hold the merge.
 
 " "$outside")
   fi
@@ -278,7 +267,7 @@ fi
 loose=$(jq -c 'map(.body = .loose)' <<< "$findings")
 body=$(with_list "### Code review
 
-$total finding(s)$counts, below: $(body_reason <<< "$loose"). They open no thread, so they don't hold the merge.
+$total finding(s)$counts, on lines GitHub can't anchor a comment to. They open no thread, so they don't hold the merge.
 
 " "$loose")
 jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post

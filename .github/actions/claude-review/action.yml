@@ -135,9 +135,8 @@ runs:
     # 27).
     #
     # The skill's findings carry no severity and no fix, so the model adds both after it returns: the
-    # severity labels each comment (a nitpick goes in the review body, so it never holds the merge),
-    # and a fix that only replaces the commented lines becomes a GitHub suggestion the author can
-    # commit from the pull request (post-review.sh).
+    # severity labels each comment, and a fix that only replaces the commented lines becomes a GitHub
+    # suggestion the author can commit from the pull request (post-review.sh).
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
     # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
