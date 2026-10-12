@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.controller
 
 import co.touchlab.kermit.Logger
-import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseHeadings
-import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTexts
+import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseContents
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.chapterlistening.domain.mapper.toListeningAnalyticsParams
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
@@ -71,8 +70,7 @@ internal class ChapterListeningControllerImpl(
     private val mediaSession: ListeningMediaSession,
     private val settingsRepository: ChapterListeningSettingsRepository,
     private val chapterAudioRepository: ChapterAudioRepository,
-    private val getChapterVerseTexts: GetChapterVerseTexts,
-    private val getChapterVerseHeadings: GetChapterVerseHeadings,
+    private val getChapterVerseContents: GetChapterVerseContents,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
     private val getChapterListeningAccess: GetChapterListeningAccess,
     private val getAdjacentListeningChapter: GetAdjacentListeningChapter,
@@ -572,17 +570,20 @@ internal class ChapterListeningControllerImpl(
         val segment = session.segment
         val firstVerse = segment.startVerse ?: 0
         val lastVerse = segment.endVerse ?: Int.MAX_VALUE
-        val chapterRef = ChapterRef(
-            bibleVersionId = session.bibleVersionId,
-            bookId = segment.chapter.bookId,
-            chapterNumber = segment.chapter.chapterNumber,
-        )
-        val texts = suspendRunCatching { getChapterVerseTexts(chapterRef) }.getOrDefault(emptyMap())
-        val headings = suspendRunCatching { getChapterVerseHeadings(chapterRef) }.getOrDefault(emptyMap())
+        val contents = suspendRunCatching {
+            getChapterVerseContents(
+                ChapterRef(
+                    bibleVersionId = session.bibleVersionId,
+                    bookId = segment.chapter.bookId,
+                    chapterNumber = segment.chapter.chapterNumber,
+                ),
+            )
+        }.getOrDefault(emptyMap())
         val verses = audio.verses.filter { verse -> verse.number in firstVerse..lastVerse }
         return verses.mapIndexed { index, verse ->
             val next = verses.getOrNull(index + 1)
-            val text = texts[verse.number].orEmpty()
+            val content = contents[verse.number]
+            val text = content?.text.orEmpty()
             // Why: a whole chapter starts with its spoken title, and each verse with the heading read before it.
             val isTitleRead = index == 0 && (segment.startVerse ?: 1) <= 1
             ListeningVerseModel(
@@ -596,7 +597,7 @@ internal class ChapterListeningControllerImpl(
                 },
                 words = getListeningWords(
                     titleWords = if (isTitleRead) audio.titleWords else emptyList(),
-                    heading = headings[verse.number],
+                    heading = content?.heading,
                     headingWords = verse.headingWords,
                     text = text,
                     words = verse.words,

@@ -88,6 +88,48 @@ internal class GetListeningWordsUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a word that lands mid-word WHEN mapping THEN leaves it out`() {
+        // Given
+        val words = createWords(0, 5, 8)
+
+        // When
+        val listeningWords = mapVerse(words)
+
+        // Then
+        assertEquals(listOf(0..2, 8..11), listeningWords.map { word -> word.verseRange() })
+    }
+
+    @Test
+    fun `GIVEN a word left out WHEN mapping THEN the word before it ends on its own end`() {
+        // Given
+        val words = createWords(0, 3, 8)
+
+        // When
+        val listeningWords = mapVerse(words)
+
+        // Then
+        assertEquals(listOf(0.5.seconds, 2.5.seconds), listeningWords.map(ListeningWordModel::end))
+    }
+
+    @Test
+    fun `GIVEN heading words without a local heading WHEN mapping THEN the title ends on its own end`() {
+        // Given
+        val titleWords = createWords(0, 8)
+
+        // When
+        val listeningWords = useCase(
+            titleWords = titleWords,
+            heading = null,
+            headingWords = createWords(0, 4),
+            text = text,
+            words = emptyList(),
+        )
+
+        // Then
+        assertEquals(listOf(1.seconds, 1.5.seconds), listeningWords.map(ListeningWordModel::end))
+    }
+
+    @Test
     fun `GIVEN apostrophes WHEN mapping THEN keeps a possessive and drops a closing quote`() {
         // Given
         val quoted = "Abraham's son said 'Go' now"

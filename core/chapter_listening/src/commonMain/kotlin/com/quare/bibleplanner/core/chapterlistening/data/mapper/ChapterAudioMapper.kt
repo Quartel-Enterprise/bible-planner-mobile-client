@@ -7,6 +7,9 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioMod
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioWordModel
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.doubleOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class ChapterAudioMapper(
@@ -52,20 +55,23 @@ internal class ChapterAudioMapper(
 
     private fun toWords(
         segmentStartMs: Long,
-        words: List<List<Long>>?,
+        words: JsonArray?,
     ): List<ChapterAudioWordModel> = words.orEmpty().mapNotNull { word ->
         toWord(
             segmentStartMs = segmentStartMs,
-            word = word,
+            word = word as? JsonArray ?: return@mapNotNull null,
         )
     }
 
+    // Why: each word is a bare [offset in the text, start ms from the segment, duration ms] array.
     private fun toWord(
         segmentStartMs: Long,
-        word: List<Long>,
+        word: JsonArray,
     ): ChapterAudioWordModel? {
         if (word.size < WORD_FIELD_COUNT) return null
-        val (offset, startMs, durationMs) = word
+        val (offset, startMs, durationMs) = word.take(WORD_FIELD_COUNT).map { field ->
+            (field as? JsonPrimitive)?.doubleOrNull ?: return null
+        }
         val start = segmentStartMs + startMs
         return ChapterAudioWordModel(
             offset = offset.toInt(),

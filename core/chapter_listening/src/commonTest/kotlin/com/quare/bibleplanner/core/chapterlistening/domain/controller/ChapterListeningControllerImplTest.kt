@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.controller
 
+import com.quare.bibleplanner.core.books.domain.model.ChapterVerseContentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
@@ -2027,11 +2028,15 @@ internal class ChapterListeningControllerImplTest {
             settingsRepository = settingsRepository,
             chapterAudioRepository = audioRepository,
             observeAuthenticatedUserId = { authenticatedUserId },
-            getChapterVerseTexts = { chapter ->
-                versesByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
-            },
-            getChapterVerseHeadings = { chapter ->
-                headingsByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
+            getChapterVerseContents = { chapter ->
+                val location = ChapterLocationModel(chapter.bookId, chapter.chapterNumber)
+                val headings = headingsByChapter[location].orEmpty()
+                versesByChapter[location].orEmpty().mapValues { (number, text) ->
+                    ChapterVerseContentModel(
+                        text = text,
+                        heading = headings[number],
+                    )
+                }
             },
             getSelectedVersionIdFlow = { flowOf("ACF") },
             getChapterListeningAccess = { chapter ->

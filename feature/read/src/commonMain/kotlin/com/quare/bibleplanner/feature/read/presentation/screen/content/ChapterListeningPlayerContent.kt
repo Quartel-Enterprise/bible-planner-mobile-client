@@ -44,9 +44,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -272,12 +270,12 @@ private fun FollowedVerseText(
     // Why: right after the verse changes the layout is still the previous verse's, whose lines don't match.
     val currentLayout = layout?.takeIf { it.layoutInput.text.text == text }
     // Why: the pause after the verse's last word has no word, and the card must not jump back to its top then.
-    var lastWordLine by remember(text) { mutableIntStateOf(0) }
+    val lastWordLine = remember(text) { LastWordLine() }
     val wordLine = highlightedWord
         ?.takeIf { word -> word.first < text.length }
         ?.let { word -> currentLayout?.getLineForOffset(word.first) }
-        ?: lastWordLine
-    SideEffect { lastWordLine = wordLine }
+        ?: lastWordLine.line
+    lastWordLine.line = wordLine
     LaunchedEffect(text, wordLine) {
         val top = currentLayout?.getLineTop((wordLine - 1).coerceAtLeast(0)) ?: 0f
         scrollState.animateScrollTo(top.toInt())
@@ -301,6 +299,11 @@ private fun FollowedVerseText(
             onTextLayout = { layout = it },
         )
     }
+}
+
+// Why: a plain holder, since the remembered line only feeds the next composition and must not trigger one.
+private class LastWordLine {
+    var line: Int = 0
 }
 
 @Composable

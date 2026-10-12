@@ -1,14 +1,15 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.model.ChapterVerseContentModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 
-class GetChapterVerseHeadingsUseCase(
+class GetChapterVerseContentsUseCase(
     private val getChapterId: GetChapterIdUseCase,
     private val verseDao: VerseDao,
-) : GetChapterVerseHeadings {
-    // Why: untrimmed, so it stays the exact text the reader shows above the verse.
-    override suspend fun invoke(chapter: ChapterRef): Map<Int, String> {
+) : GetChapterVerseContents {
+    // Why: the heading stays untrimmed, the exact text the reader shows above the verse.
+    override suspend fun invoke(chapter: ChapterRef): Map<Int, ChapterVerseContentModel> {
         val chapterId = getChapterId(
             bookId = chapter.bookId,
             chapterNumber = chapter.chapterNumber,
@@ -18,9 +19,12 @@ class GetChapterVerseHeadingsUseCase(
             .mapNotNull { verseWithTexts ->
                 verseWithTexts.texts
                     .find { it.bibleVersionId == chapter.bibleVersionId }
-                    ?.heading
-                    ?.takeIf(String::isNotBlank)
-                    ?.let { heading -> verseWithTexts.verse.number to heading }
+                    ?.let { verseText ->
+                        verseWithTexts.verse.number to ChapterVerseContentModel(
+                            text = verseText.text.trim(),
+                            heading = verseText.heading?.takeIf(String::isNotBlank),
+                        )
+                    }
             }.toMap()
     }
 }

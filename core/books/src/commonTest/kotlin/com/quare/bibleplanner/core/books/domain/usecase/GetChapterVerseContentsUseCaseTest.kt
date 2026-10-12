@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.model.ChapterVerseContentModel
 import com.quare.bibleplanner.core.books.fake.FakeReadingDatabase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
@@ -9,9 +10,9 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class GetChapterVerseHeadingsUseCaseTest {
+internal class GetChapterVerseContentsUseCaseTest {
     private lateinit var database: FakeReadingDatabase
-    private lateinit var useCase: GetChapterVerseHeadingsUseCase
+    private lateinit var useCase: GetChapterVerseContentsUseCase
 
     @BeforeTest
     fun setUp() {
@@ -20,14 +21,14 @@ internal class GetChapterVerseHeadingsUseCaseTest {
             bookId = BookId.GEN,
             versesPerChapter = listOf(3),
         )
-        useCase = GetChapterVerseHeadingsUseCase(
+        useCase = GetChapterVerseContentsUseCase(
             getChapterId = GetChapterIdUseCase(database.chapterDao),
             verseDao = database.verseDao,
         )
     }
 
     @Test
-    fun `GIVEN headings in two versions WHEN getting a chapter THEN returns the untrimmed headings of its version`() =
+    fun `GIVEN texts with headings WHEN getting a chapter THEN trims the texts and keeps the headings as they are`() =
         runTest {
             // Given
             val chapterId = database
@@ -39,7 +40,7 @@ internal class GetChapterVerseHeadingsUseCaseTest {
             database.verseTexts += VerseTextEntity(
                 verseId = first.id,
                 bibleVersionId = "web",
-                text = "In the beginning",
+                text = " In the beginning ",
                 id = 0,
                 heading = " The Creation",
             )
@@ -66,7 +67,7 @@ internal class GetChapterVerseHeadingsUseCaseTest {
             )
 
             // When
-            val headings = useCase(
+            val contents = useCase(
                 ChapterRef(
                     bibleVersionId = "web",
                     bookId = BookId.GEN,
@@ -75,21 +76,22 @@ internal class GetChapterVerseHeadingsUseCaseTest {
             )
 
             // Then
-            assertEquals(mapOf(1 to " The Creation"), headings)
+            assertEquals(
+                mapOf(
+                    1 to ChapterVerseContentModel(
+                        text = "In the beginning",
+                        heading = " The Creation",
+                    ),
+                    2 to ChapterVerseContentModel(
+                        text = "The earth was formless",
+                        heading = null,
+                    ),
+                    3 to ChapterVerseContentModel(
+                        text = "God said",
+                        heading = null,
+                    ),
+                ),
+                contents,
+            )
         }
-
-    @Test
-    fun `GIVEN an unknown chapter WHEN getting its headings THEN returns none`() = runTest {
-        // When
-        val headings = useCase(
-            ChapterRef(
-                bibleVersionId = "web",
-                bookId = BookId.EXO,
-                chapterNumber = 1,
-            ),
-        )
-
-        // Then
-        assertEquals(emptyMap(), headings)
-    }
 }

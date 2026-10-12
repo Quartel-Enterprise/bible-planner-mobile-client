@@ -2,10 +2,11 @@ package com.quare.bibleplanner.core.chapterlistening.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
 
 @Serializable
 internal data class ChapterAudioManifestSegmentDto(
     @SerialName("start_ms") val startMs: Long,
-    // Why: the server sends each word as a bare [offset in the text, start ms from the segment, duration ms] array.
-    @SerialName("words") val words: List<List<Long>>?,
+    // Why: read loosely, so one malformed word costs only its own highlight instead of the whole manifest.
+    @SerialName("words") val words: JsonArray?,
 )

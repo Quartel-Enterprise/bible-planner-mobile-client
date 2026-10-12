@@ -52,6 +52,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChapterAudioRepositoryImplTest {
@@ -347,6 +348,39 @@ internal class ChapterAudioRepositoryImplTest {
         // Then
         val audio = (result as ChapterAudioResultModel.Ready).audio
         assertEquals(null, audio.verses.first().headingStart)
+    }
+
+    @Test
+    fun `GIVEN a malformed word WHEN getting the audio THEN skips only that word`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json")) {
+                    respondJson(MANIFEST.replace("[[0,50,125]]", "[[0,50.5,125],[4,null,10],\"bad\"]"))
+                } else {
+                    respondOk()(request)
+                }
+            },
+        )
+
+        // When
+        val result = repository.loadChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        val audio = (result as ChapterAudioResultModel.Ready).audio
+        assertEquals(
+            listOf(
+                ChapterAudioWordModel(
+                    offset = 0,
+                    start = 2050.5.milliseconds,
+                    end = 2175.5.milliseconds,
+                ),
+            ),
+            audio.verses.first().words,
+        )
     }
 
     @Test
