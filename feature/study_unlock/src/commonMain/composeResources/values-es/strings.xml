@@ -12,5 +12,7 @@
     </plurals>
     <string name="study_unlock_video_loading">Cargando el video…</string>
     <string name="study_unlock_video_unavailable">No hay videos disponibles ahora</string>
+    <string name="study_unlock_video_unavailable_free">No hay video ahora, así que el primer capítulo de hoy es gratis</string>
+    <string name="study_unlock_listen_free">Escuchar gratis hoy</string>
     <string name="study_unlock_not_now">Ahora no</string>
 </resources>

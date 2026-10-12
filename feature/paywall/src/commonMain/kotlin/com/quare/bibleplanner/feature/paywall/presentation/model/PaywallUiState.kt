@@ -6,6 +6,7 @@ sealed interface PaywallUiState {
         val isPurchasing: Boolean,
         val storeName: String,
         val maxFreeNotes: Int,
+        val isChapterListeningAvailable: Boolean,
     ) : PaywallUiState
 
     data object Error : PaywallUiState

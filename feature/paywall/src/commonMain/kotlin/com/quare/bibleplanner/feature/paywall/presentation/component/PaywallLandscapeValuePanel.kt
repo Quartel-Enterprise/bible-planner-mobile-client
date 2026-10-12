@@ -31,6 +31,7 @@ private const val BACK_ICON_BOTTOM_SPACING = 18
 internal fun PaywallLandscapeValuePanel(
     platform: Platform,
     maxFreeNotes: Int?,
+    isChapterListeningAvailable: Boolean,
     dimensions: PaywallLandscapeDimensions,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -94,6 +95,7 @@ internal fun PaywallLandscapeValuePanel(
         PremiumFeaturesList(
             modifier = Modifier.padding(start = dimensions.panelContentStartPadding),
             maxFreeNotes = maxFreeNotes,
+            isChapterListeningAvailable = isChapterListeningAvailable,
             titleColor = contentColor,
             subtitleColor = contentColor,
             itemSpacing = dimensions.featureSpacing,

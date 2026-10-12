@@ -219,6 +219,7 @@ class DayReadingCompleteBannerViewModel(
                     paywallSource = PaywallEntrySource.DAY_STUDY,
                     requestKey = REWARDED_UNLOCK_REQUEST_PREFIX + generationKey,
                     rewardedRemainingToday = ctaState.rewardedRemainingToday,
+                    canUnlockWithoutVideo = false,
                 ),
             )
 

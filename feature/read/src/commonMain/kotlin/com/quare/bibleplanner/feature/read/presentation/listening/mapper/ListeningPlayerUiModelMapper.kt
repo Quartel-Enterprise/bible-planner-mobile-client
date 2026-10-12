@@ -1,13 +1,13 @@
 package com.quare.bibleplanner.feature.read.presentation.listening.mapper
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVerseModel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import kotlin.time.Duration
 
 internal class ListeningPlayerUiModelMapper(
-    private val estimateListeningTime: EstimateListeningTimeUseCase,
+    private val getListeningTime: GetListeningTimeUseCase,
 ) {
     fun map(
         session: ListeningSessionModel,
@@ -15,8 +15,8 @@ internal class ListeningPlayerUiModelMapper(
     ): ListeningPlayerUiModel {
         val verse = session.verses.getOrNull(session.verseIndex)
         val verseCount = session.verses.size
-        val time = estimateListeningTime(
-            wordCounts = session.verses.map(ListeningVerseModel::wordCount),
+        val time = getListeningTime(
+            verses = session.verses,
             verseIndex = session.verseIndex,
             verseProgress = session.verseProgress,
             speed = speed,
@@ -24,16 +24,16 @@ internal class ListeningPlayerUiModelMapper(
         return ListeningPlayerUiModel(
             chapter = session.segment.chapter,
             verseNumber = verse?.number,
-            verseText = verse?.text,
+            verseText = verse?.text?.takeIf(String::isNotBlank),
             verseIndex = session.verseIndex,
             verseCount = verseCount,
             status = session.status,
-            progress = getProgress(session),
+            // Why: the verses differ in length (the first carries the chapter title), so progress follows the time.
+            progress = if (time.total > Duration.ZERO) (time.elapsed / time.total).toFloat().coerceIn(0f, 1f) else 0f,
             elapsed = time.elapsed,
             remaining = time.remaining,
             total = time.total,
             versionAbbreviation = session.bibleVersionId.uppercase(),
-            languageTag = session.languageTag,
             dayProgress = session.day?.let { day ->
                 ListeningDayProgressUiModel(
                     chapters = day.segments.map { segment -> segment.chapter },
@@ -42,11 +42,5 @@ internal class ListeningPlayerUiModelMapper(
             },
             lockedChapter = session.lockedSegment?.chapter,
         )
-    }
-
-    private fun getProgress(session: ListeningSessionModel): Float {
-        val verseCount = session.verses.size
-        if (verseCount == 0) return 0f
-        return ((session.verseIndex + session.verseProgress) / verseCount).coerceIn(0f, 1f)
     }
 }

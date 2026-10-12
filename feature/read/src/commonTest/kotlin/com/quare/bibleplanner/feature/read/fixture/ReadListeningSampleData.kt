@@ -45,7 +45,6 @@ internal fun listeningPlayer(
     remaining = 228.seconds,
     total = 240.seconds,
     versionAbbreviation = "WEB",
-    languageTag = "en-US",
     dayProgress = null,
     lockedChapter = lockedChapter,
 )

@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.VoiceOverOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
@@ -50,6 +49,7 @@ import bibleplanner.feature.read.generated.resources.listening_locked_body
 import bibleplanner.feature.read.generated.resources.listening_locked_title
 import bibleplanner.feature.read.generated.resources.listening_mini_day
 import bibleplanner.feature.read.generated.resources.listening_mini_finished
+import bibleplanner.feature.read.generated.resources.listening_mini_not_loaded
 import bibleplanner.feature.read.generated.resources.listening_mini_paused
 import bibleplanner.feature.read.generated.resources.listening_mini_playing
 import bibleplanner.feature.read.generated.resources.listening_next_verse
@@ -58,15 +58,13 @@ import bibleplanner.feature.read.generated.resources.listening_paused_at
 import bibleplanner.feature.read.generated.resources.listening_play
 import bibleplanner.feature.read.generated.resources.listening_preparing
 import bibleplanner.feature.read.generated.resources.listening_resume
-import bibleplanner.feature.read.generated.resources.listening_settings
 import bibleplanner.feature.read.generated.resources.listening_unlock
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_body
-import bibleplanner.feature.read.generated.resources.listening_voice_unavailable_title
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.feature.read.presentation.listening.mapper.toUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
-import com.quare.bibleplanner.feature.read.presentation.listening.toLanguageNameResource
 import org.jetbrains.compose.resources.stringResource
 
 internal const val LISTENING_MINI_PLAYER_TAG = "listening_mini_player"
@@ -113,19 +111,13 @@ internal fun ListeningMiniPlayerBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            when (player.status) {
-                ListeningStatusModel.PREPARING -> PreparingContent(player, onEvent)
-
-                ListeningStatusModel.VOICE_UNAVAILABLE -> VoiceUnavailableContent(player, onEvent)
-
-                ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
-
-                ListeningStatusModel.NEXT_LOCKED -> LockedContent(player, onEvent)
-
-                ListeningStatusModel.PLAYING,
-                ListeningStatusModel.PAUSED,
-                ListeningStatusModel.FINISHED,
-                -> PlaybackContent(player, onEvent)
+            val unavailableCopy = player.status.toUnavailableCopy()
+            when {
+                unavailableCopy != null -> UnavailableContent(player, unavailableCopy, onEvent)
+                player.status == ListeningStatusModel.PREPARING -> PreparingContent(player, onEvent)
+                player.status == ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
+                player.status == ListeningStatusModel.NEXT_LOCKED -> LockedContent(player, onEvent)
+                else -> PlaybackContent(player, onEvent)
             }
             IconButton(onClick = { onEvent(ReadListeningUiEvent.OnCloseClick) }) {
                 Icon(
@@ -158,6 +150,9 @@ private fun RowScope.PlaybackContent(
     val dayProgress = player.dayProgress
     val subtitle = when {
         player.status == ListeningStatusModel.FINISHED -> stringResource(Res.string.listening_mini_finished)
+
+        // Why: a chapter moved to while paused loads only once played, so it has no length to show yet.
+        player.verseCount == 0 -> stringResource(Res.string.listening_mini_not_loaded)
 
         dayProgress != null -> stringResource(
             Res.string.listening_mini_day,
@@ -211,27 +206,29 @@ private fun RowScope.PreparingContent(
 }
 
 @Composable
-private fun RowScope.VoiceUnavailableContent(
+private fun RowScope.UnavailableContent(
     player: ListeningPlayerUiModel,
+    copy: ListeningUnavailableCopy,
     onEvent: (ReadListeningUiEvent) -> Unit,
 ) {
-    val language = stringResource(player.languageTag.toLanguageNameResource())
     LeadingIcon(
-        imageVector = Icons.Rounded.VoiceOverOff,
+        imageVector = copy.icon,
         tint = MaterialTheme.colorScheme.tertiary,
     )
     PlayerTitleColumn(
-        title = stringResource(Res.string.listening_voice_unavailable_title, language),
-        subtitle = stringResource(Res.string.listening_voice_unavailable_body, language),
+        title = stringResource(copy.title, player.versionAbbreviation),
+        subtitle = stringResource(copy.body),
         isAnimating = null,
         onEvent = onEvent,
     )
-    OutlinedButton(
-        modifier = Modifier.height(actionButtonHeight),
-        onClick = { onEvent(ReadListeningUiEvent.OnVoiceSettingsClick) },
-        contentPadding = PaddingValues(horizontal = 12.dp),
-    ) {
-        Text(text = stringResource(Res.string.listening_settings))
+    copy.action?.let { action ->
+        OutlinedButton(
+            modifier = Modifier.height(actionButtonHeight),
+            onClick = { onEvent(ReadListeningUiEvent.OnUnavailableActionClick) },
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            Text(text = stringResource(action))
+        }
     }
 }
 

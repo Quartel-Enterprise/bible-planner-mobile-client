@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemote
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -83,6 +84,7 @@ internal class PaywallUiStateFactoryTest {
                     isPurchasing = false,
                     storeName = STORE_NAME,
                     maxFreeNotes = MAX_FREE_NOTES,
+                    isChapterListeningAvailable = true,
                 ),
                 storePackages = listOf(monthlyPackage, annualPackage),
             ),
@@ -168,6 +170,7 @@ internal class PaywallUiStateFactoryTest {
         factory = PaywallUiStateFactory(
             getOfferingsResult = { offerings },
             getMaxFreeNotesAmount = GetMaxFreeNotesAmountUseCase(FakeGetIntRemoteConfig(MAX_FREE_NOTES)),
+            observeIsChapterListeningEnabled = { flowOf(true) },
         )
     }
 

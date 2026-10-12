@@ -33,6 +33,7 @@ internal class StudyUnlockViewModel(
             StudyUnlockUiState(
                 surface = route.surface,
                 rewardedRemainingToday = route.rewardedRemainingToday,
+                canUnlockWithoutVideo = route.canUnlockWithoutVideo,
                 videoState = StudyUnlockVideoState.LOADING,
             ),
         )
@@ -52,6 +53,7 @@ internal class StudyUnlockViewModel(
         when (event) {
             StudyUnlockUiEvent.OnSubscribeClick -> onSubscribeClick()
             StudyUnlockUiEvent.OnWatchVideoClick -> onWatchVideoClick()
+            StudyUnlockUiEvent.OnUnlockWithoutVideoClick -> onUnlockWithoutVideoClick()
             StudyUnlockUiEvent.OnDismiss -> navigator.navigateBack()
         }
     }
@@ -88,6 +90,17 @@ internal class StudyUnlockViewModel(
                 is RewardedAdResult.Failed -> onVideoFailed(result.reason)
             }
         }
+    }
+
+    // Why: when no video can be shown, the caller allowed this unlock anyway, so it completes like an earned reward.
+    private fun onUnlockWithoutVideoClick() {
+        if (!uiState.value.isFreeUnlockShown) return
+        trackEvent(
+            name = AnalyticsEventNames.UNLOCK_WITHOUT_VIDEO_CLICKED,
+            params = surfaceParams,
+        )
+        navigator.navigateBack()
+        resultStore.publishUnlockedWithoutVideo(route.requestKey)
     }
 
     private fun onRewardEarned() {

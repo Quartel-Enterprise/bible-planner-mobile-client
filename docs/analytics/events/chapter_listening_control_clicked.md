@@ -10,13 +10,13 @@ Play/pause, resume after an interruption, previous/next verse, previous/next cha
 
 ## Trigger source
 
-`feature/read/.../presentation/listening/ReadListeningViewModel.kt` — `OnPlayPauseClick` (manual) and `OnNextVerseClick`; `feature/read/.../presentation/listening/player/ChapterListeningPlayerViewModel.kt` — `OnPlayPauseClick` (manual), `OnPreviousVerseClick`, `OnNextVerseClick`, `OnPreviousChapterClick`, `OnNextChapterClick`, `OnSeek`.
+`feature/read/.../presentation/listening/ReadListeningViewModel.kt` — `OnPlayPauseClick` (manual), `OnUnavailableActionClick` (manual, `retry`) and `OnNextVerseClick`; `feature/read/.../presentation/listening/player/ChapterListeningPlayerViewModel.kt` — `OnPlayPauseClick` (manual), `OnUnavailableActionClick` (manual, `retry`), `OnPreviousVerseClick`, `OnNextVerseClick`, `OnPreviousChapterClick`, `OnNextChapterClick`, `OnSeek`.
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `control` | string | `pause` | `play` \| `pause` \| `resume` \| `next_verse` \| `previous_verse` \| `next_chapter` \| `previous_chapter` \| `seek` |
+| `control` | string | `pause` | `play` \| `pause` \| `resume` \| `next_verse` \| `previous_verse` \| `next_chapter` \| `previous_chapter` \| `seek` \| `retry` (the play or Try again button while the chapter's audio couldn't load) |
 | `surface` | string | `mini_player` | Where the control was used: `mini_player` (the bar over the reader) \| `player` (the expanded player sheet) |
 
 ## Notes

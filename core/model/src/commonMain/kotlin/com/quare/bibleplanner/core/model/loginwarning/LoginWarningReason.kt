@@ -23,6 +23,10 @@ sealed interface LoginWarningReason {
         override val key: String = "ai_chat"
     }
 
+    data object ChapterListening : LoginWarningReason {
+        override val key: String = "chapter_listening"
+    }
+
     sealed interface Preferences : LoginWarningReason {
         data object Theme : Preferences {
             override val key: String = "preferences_theme"
@@ -43,6 +47,7 @@ sealed interface LoginWarningReason {
             DayStudy,
             ChapterStudy,
             AiChat,
+            ChapterListening,
             Preferences.Theme,
             Preferences.Language,
             Preferences.StudySuggestion,

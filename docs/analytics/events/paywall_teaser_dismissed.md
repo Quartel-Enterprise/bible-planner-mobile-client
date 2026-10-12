@@ -16,7 +16,7 @@ The user dismisses the paywall teaser sheet by any of its close affordances.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `reason` | string | `highlight_custom_color` | Why the teaser was shown: `PaywallTeaserReason` in `core/model/.../route/`, lowercased (`highlight_custom_color` \| `chapter_study_limit`) |
+| `reason` | string | `highlight_custom_color` | Why the teaser was shown: `PaywallTeaserReason` in `core/model/.../route/`, lowercased (`highlight_custom_color` \| `chapter_study_limit` \| `chapter_listening_limit` \| `chapter_listening_free_limit` when rewarded videos are off \| `chapter_listening_pro_only` when there's no free chapter either) |
 
 ## Notes
 

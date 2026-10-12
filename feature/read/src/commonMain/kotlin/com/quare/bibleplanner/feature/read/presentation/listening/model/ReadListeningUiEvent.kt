@@ -12,7 +12,10 @@ sealed interface ReadListeningUiEvent : UiEvent {
         val source: ListeningEntrySource,
     ) : ReadListeningUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
-            AnalyticsEventNames.CHAPTER_LISTENING_ENTRY_CLICKED,
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_ENTRY_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
+            ),
         )
     }
 
@@ -46,17 +49,21 @@ sealed interface ReadListeningUiEvent : UiEvent {
         )
     }
 
-    data object OnVoiceSettingsClick : ReadListeningUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_VOICE_SETTINGS_OPENED,
-            params = mapOf(AnalyticsParams.SURFACE to ListeningSurface.MINI_PLAYER.key),
+    data object OnUnavailableActionClick : ReadListeningUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_SIGN_IN_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+            ),
         )
     }
 
     data object OnUnlockNextClick : ReadListeningUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.CHAPTER_LISTENING_UNLOCK_CLICKED,
-            params = mapOf(AnalyticsParams.SURFACE to ListeningSurface.MINI_PLAYER.key),
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_LISTENING_UNLOCK_CLICKED,
+                AnalyticsEventNames.CHAPTER_LISTENING_FREE_UNLOCKED,
+            ),
         )
     }
 

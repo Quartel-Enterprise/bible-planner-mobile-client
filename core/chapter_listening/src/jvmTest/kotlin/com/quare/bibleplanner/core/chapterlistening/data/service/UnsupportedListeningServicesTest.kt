@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.core.chapterlistening.data.service
 
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningTimeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechUtteranceModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -12,32 +11,30 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration
 
 internal class UnsupportedListeningServicesTest {
-    private val speechEngine = UnsupportedSpeechEngine()
+    private val audioPlayer = UnsupportedChapterAudioPlayer()
     private val mediaSession = UnsupportedListeningMediaSession()
 
     @Test
-    fun `GIVEN a platform without a voice engine WHEN asking for voices THEN has none and stays silent`() = runTest {
+    fun `GIVEN a platform without an audio player WHEN playing THEN stays silent`() = runTest {
         // Given
-        val utterance = SpeechUtteranceModel(
-            id = "verse",
-            text = "In the beginning",
-            leadingSilence = Duration.ZERO,
-        )
+        val audioPath = "/cache/GEN_1.mp3"
 
         // When
-        speechEngine.speak(
-            utterances = listOf(utterance),
-            voiceId = null,
-            languageTag = "en-US",
+        audioPlayer.play(
+            audioPath = audioPath,
+            position = Duration.ZERO,
             speed = 1f,
+            playbackId = 1,
         )
-        speechEngine.stop()
-        speechEngine.openVoiceSettings()
+        audioPlayer.seekTo(Duration.ZERO)
+        audioPlayer.setSpeed(1.5f)
+        audioPlayer.pause()
+        audioPlayer.release()
 
         // Then
-        assertFalse(speechEngine.isSupported)
-        assertEquals(SpeechVoicesModel.Unavailable, speechEngine.loadVoices("en-US"))
-        assertTrue(speechEngine.events.toList().isEmpty())
+        assertFalse(audioPlayer.isSupported)
+        assertEquals(Duration.ZERO, audioPlayer.position)
+        assertTrue(audioPlayer.events.toList().isEmpty())
     }
 
     @Test
@@ -46,9 +43,12 @@ internal class UnsupportedListeningServicesTest {
         val nowPlaying = NowPlayingModel(
             chapterTitle = "Genesis 1",
             subtitle = "KJV",
-            verses = emptyList(),
-            verseIndex = 0,
-            verseElapsed = Duration.ZERO,
+            verseNumber = null,
+            time = ListeningTimeModel(
+                elapsed = Duration.ZERO,
+                total = Duration.ZERO,
+            ),
+            isAudioLoaded = false,
             isPlaying = false,
         )
 

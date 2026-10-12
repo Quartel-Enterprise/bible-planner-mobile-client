@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 import androidx.datastore.preferences.core.emptyPreferences
 import com.quare.bibleplanner.core.chapterlistening.data.repository.ChapterListeningUnlockRepositoryImpl
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -22,6 +23,21 @@ internal class GetChapterListeningAccessUseCaseTest {
     private lateinit var useCase: GetChapterListeningAccessUseCase
     private lateinit var unlockRepository: ChapterListeningUnlockRepositoryImpl
     private lateinit var recordUnlock: RecordChapterListeningUnlockUseCase
+
+    @Test
+    fun `GIVEN a signed-out user WHEN asking for a chapter THEN asks to sign in first`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = true,
+            isSignedIn = false,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(ChapterListeningAccessModel.LoginRequired, access)
+    }
 
     @Test
     fun `GIVEN a Pro user WHEN asking for a chapter THEN it is open`() = runTest {
@@ -44,7 +60,17 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisOne)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.UnlockAvailable(1), access)
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 1,
+                isFreeUnlockAvailable = true,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+            access,
+        )
     }
 
     @Test
@@ -70,7 +96,15 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisTwo)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.LimitReached, access)
+        assertEquals(
+            ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+            access,
+        )
     }
 
     @Test
@@ -86,12 +120,116 @@ internal class GetChapterListeningAccessUseCaseTest {
         val access = useCase(genesisTwo)
 
         // Then
-        assertEquals(ChapterListeningAccessModel.UnlockAvailable(2), access)
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 2,
+                isFreeUnlockAvailable = false,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+            access,
+        )
+    }
+
+    @Test
+    fun `GIVEN rewarded unlocks switched off remotely WHEN asking THEN still offers the free chapter of the day`() =
+        runTest {
+            // Given
+            prepareScenario(
+                isPro = false,
+                dailyLimit = 0,
+            )
+
+            // When
+            val access = useCase(genesisOne)
+
+            // Then
+            assertEquals(
+                ChapterListeningAccessModel.UnlockAvailable(
+                    rewardedRemainingToday = 0,
+                    isFreeUnlockAvailable = true,
+                    allowance = ListeningAllowanceModel(
+                        hasRewardedUnlocks = false,
+                        hasFreeUnlocks = true,
+                    ),
+                ),
+                access,
+            )
+        }
+
+    @Test
+    fun `GIVEN both daily limits switched off remotely WHEN asking THEN the limit is reached`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            dailyLimit = 0,
+            freeDailyLimit = 0,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(
+            ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = false,
+                    hasFreeUnlocks = false,
+                ),
+            ),
+            access,
+        )
+    }
+
+    @Test
+    fun `GIVEN a higher free limit WHEN asking after one unlock THEN still offers a free chapter`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            freeDailyLimit = 2,
+        )
+        recordUnlock(genesisOne)
+
+        // When
+        val access = useCase(genesisTwo)
+
+        // Then
+        assertEquals(
+            ChapterListeningAccessModel.UnlockAvailable(
+                rewardedRemainingToday = 0,
+                isFreeUnlockAvailable = true,
+                allowance = ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+            access,
+        )
+    }
+
+    @Test
+    fun `GIVEN the access check fails WHEN asking THEN lets the person listen`() = runTest {
+        // Given
+        prepareScenario(
+            isPro = false,
+            isProCheckFailing = true,
+        )
+
+        // When
+        val access = useCase(genesisOne)
+
+        // Then
+        assertEquals(ChapterListeningAccessModel.Open, access)
     }
 
     private fun prepareScenario(
         isPro: Boolean,
         dailyLimit: Int? = null,
+        freeDailyLimit: Int? = null,
+        isSignedIn: Boolean = true,
+        isProCheckFailing: Boolean = false,
     ) {
         val dateProvider = ListeningDateProvider(
             currentTimestampProvider = { 0L },
@@ -102,20 +240,30 @@ internal class GetChapterListeningAccessUseCaseTest {
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
         )
+        val remoteConfig = FakeGetIntRemoteConfig(
+            mapOf(
+                "listening_rewarded_daily_limit" to dailyLimit,
+                "listening_free_daily_limit" to freeDailyLimit,
+            ),
+        )
         useCase = GetChapterListeningAccessUseCase(
-            isProUser = { isPro },
+            getAuthenticatedUserId = { "user-1".takeIf { isSignedIn } },
+            isProUser = {
+                if (isProCheckFailing) error("Billing unavailable")
+                isPro
+            },
             unlockRepository = unlockRepository,
             dateProvider = dateProvider,
-            getIntRemoteConfig = FakeGetIntRemoteConfig(dailyLimit),
+            getIntRemoteConfig = remoteConfig,
         )
     }
 }
 
 private class FakeGetIntRemoteConfig(
-    private val value: Int?,
+    private val values: Map<String, Int?>,
 ) : GetIntRemoteConfig {
     override suspend fun invoke(
         key: String,
         default: Int,
-    ): Int = value ?: default
+    ): Int = values[key] ?: default
 }

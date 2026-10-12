@@ -37,6 +37,7 @@ internal class StudyUnlockViewModelTest {
         paywallSource = PaywallEntrySource.CHAPTER_STUDY,
         requestKey = REQUEST_KEY,
         rewardedRemainingToday = 2,
+        canUnlockWithoutVideo = false,
     )
     private val surfaceParams: Map<String, Any> = mapOf("surface" to "chapter_study")
     private lateinit var viewModel: StudyUnlockViewModel
@@ -77,6 +78,7 @@ internal class StudyUnlockViewModelTest {
                 expected = StudyUnlockUiState(
                     surface = StudyUnlockSurface.CHAPTER_STUDY,
                     rewardedRemainingToday = 2,
+                    canUnlockWithoutVideo = false,
                     videoState = StudyUnlockVideoState.LOADING,
                 ),
                 actual = uiState,
@@ -216,9 +218,59 @@ internal class StudyUnlockViewModelTest {
         assertEquals(1, trackedEvents.size)
     }
 
+    @Test
+    fun `GIVEN no video and a free unlock allowed WHEN taking it THEN closes the sheet and hands the unlock back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                availability = RewardedAdAvailability.NO_FILL,
+                canUnlockWithoutVideo = true,
+            )
+
+            // When
+            viewModel.onEvent(StudyUnlockUiEvent.OnUnlockWithoutVideoClick)
+
+            // Then
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+            assertEquals(1, earnedNotifications.size)
+            assertEquals("unlock_without_video_clicked" to surfaceParams, trackedEvents.last())
+        }
+
+    @Test
+    fun `GIVEN a free unlock not allowed WHEN taking it THEN nothing happens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(availability = RewardedAdAvailability.NO_FILL)
+
+        // When
+        viewModel.onEvent(StudyUnlockUiEvent.OnUnlockWithoutVideoClick)
+
+        // Then
+        assertTrue(commands.isEmpty())
+        assertTrue(earnedNotifications.isEmpty())
+        assertTrue(trackedEvents.none { (name, _) -> name == "unlock_without_video_clicked" })
+    }
+
+    @Test
+    fun `GIVEN a video available WHEN taking the free unlock THEN nothing happens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            availability = RewardedAdAvailability.READY,
+            canUnlockWithoutVideo = true,
+        )
+
+        // When
+        viewModel.onEvent(StudyUnlockUiEvent.OnUnlockWithoutVideoClick)
+
+        // Then
+        assertTrue(commands.isEmpty())
+        assertTrue(earnedNotifications.isEmpty())
+        assertTrue(trackedEvents.none { (name, _) -> name == "unlock_without_video_clicked" })
+    }
+
     private fun TestScope.prepareScenario(
         availability: RewardedAdAvailability,
         showResult: RewardedAdResult = RewardedAdResult.Earned,
+        canUnlockWithoutVideo: Boolean = false,
     ) {
         rewardedAdService = FakeRewardedAdService(
             isSupported = true,
@@ -232,7 +284,7 @@ internal class StudyUnlockViewModelTest {
         backgroundScope.launch { navigator.commands.collect { commands += it } }
         backgroundScope.launch { resultStore.observeEarned(REQUEST_KEY).collect { earnedNotifications += it } }
         viewModel = StudyUnlockViewModel(
-            route = route,
+            route = route.copy(canUnlockWithoutVideo = canUnlockWithoutVideo),
             navigator = navigator,
             rewardedAdService = rewardedAdService,
             resultStore = resultStore,

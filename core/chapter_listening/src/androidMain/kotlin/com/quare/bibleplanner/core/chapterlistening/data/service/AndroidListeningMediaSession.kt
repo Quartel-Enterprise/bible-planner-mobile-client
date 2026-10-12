@@ -5,9 +5,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -16,102 +15,91 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterrupti
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningRemoteCommand
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
 
 /*
  * Why: connecting a MediaController is what starts the MediaSessionService; Media3 then moves it to
- * the foreground with the media notification while speech plays, which keeps the process alive with
- * the screen off. The player is not an ExoPlayer, so audio focus and the noisy broadcast are handled here.
+ * the foreground with the media notification while the chapter plays, which keeps the process alive
+ * with the screen off. The ExoPlayer handles audio focus while it plays; the session alone listens
+ * for unplugged headphones, which also covers the next chapter loading and the gap before it.
  */
 internal class AndroidListeningMediaSession(
     private val context: Context,
-    private val player: ListeningPlayer,
+    private val createPlayer: () -> ListeningPlayer,
+    private val events: ListeningPlayerEvents,
 ) : ListeningMediaSession {
-    override val commands: Flow<ListeningRemoteCommand> = player.commands
+    override val commands: Flow<ListeningRemoteCommand> = events.commands
+    override val interruptions: Flow<AudioInterruptionModel> = events.interruptions
 
-    private val interruptionChannel = Channel<AudioInterruptionModel>(Channel.UNLIMITED)
-    override val interruptions: Flow<AudioInterruptionModel> = interruptionChannel.receiveAsFlow()
-
-    private val audioManager: AudioManager = context.getSystemService(AudioManager::class.java)
-    private val focusRequest: AudioFocusRequest = AudioFocusRequest
-        .Builder(AudioManager.AUDIOFOCUS_GAIN)
-        .setAudioAttributes(
-            AudioAttributes
-                .Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                .build(),
-        ).setWillPauseWhenDucked(true)
-        .setOnAudioFocusChangeListener(::onAudioFocusChange)
-        .build()
+    private var controllerFuture: ListenableFuture<MediaController>? = null
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(
             context: Context,
             intent: Intent,
         ) {
-            interruptionChannel.trySend(AudioInterruptionModel.PAUSE_REQUESTED)
+            events.interrupt(AudioInterruptionModel.PAUSE_REQUESTED)
         }
     }
-    private var hasAudioFocus = false
-    private var isNoisyReceiverRegistered = false
-    private var controllerFuture: ListenableFuture<MediaController>? = null
+
+    // Why: built with the first chapter shown, so opening the reader alone never creates the ExoPlayer.
+    private var player: ListeningPlayer? = null
+
+    /*
+     * Why: the ExoPlayer only keeps the CPU awake while it plays, but between chapters, with the screen
+     * off, the next one may still be generated and downloaded; the session holds it for as long as it
+     * reads as playing.
+     */
+    private val wakeLock: PowerManager.WakeLock by lazy {
+        context
+            .getSystemService(PowerManager::class.java)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
+            .apply { setReferenceCounted(false) }
+    }
 
     override fun requestActivation(): Boolean {
-        if (!hasAudioFocus) {
-            hasAudioFocus = audioManager.requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        }
-        if (!hasAudioFocus) return false
-        if (!isNoisyReceiverRegistered) {
-            ContextCompat.registerReceiver(
-                context,
-                noisyReceiver,
-                IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
-                ContextCompat.RECEIVER_NOT_EXPORTED,
-            )
-            isNoisyReceiverRegistered = true
-        }
         if (controllerFuture == null) {
             controllerFuture = MediaController
                 .Builder(
                     context,
                     SessionToken(context, ComponentName(context, ChapterListeningService::class.java)),
                 ).buildAsync()
+            ContextCompat.registerReceiver(
+                context,
+                noisyReceiver,
+                IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
+                ContextCompat.RECEIVER_NOT_EXPORTED,
+            )
         }
         return true
     }
 
     override fun update(nowPlaying: NowPlayingModel) {
-        player.show(nowPlaying)
+        val shownPlayer = player ?: createPlayer().also { created -> player = created }
+        shownPlayer.show(nowPlaying)
+        if (!nowPlaying.isPlaying) {
+            releaseWakeLock()
+        } else if (!wakeLock.isHeld) {
+            wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS)
+        }
     }
 
     override fun deactivate() {
-        player.show(null)
-        if (hasAudioFocus) {
-            audioManager.abandonAudioFocusRequest(focusRequest)
-            hasAudioFocus = false
-        }
-        if (isNoisyReceiverRegistered) {
-            context.unregisterReceiver(noisyReceiver)
-            isNoisyReceiverRegistered = false
-        }
-        controllerFuture?.let(MediaController::releaseFuture)
+        player?.show(null)
+        releaseWakeLock()
+        val future = controllerFuture ?: return
+        MediaController.releaseFuture(future)
         controllerFuture = null
+        context.unregisterReceiver(noisyReceiver)
     }
 
-    private fun onAudioFocusChange(focusChange: Int) {
-        when (focusChange) {
-            AudioManager.AUDIOFOCUS_LOSS -> {
-                hasAudioFocus = false
-                interruptionChannel.trySend(AudioInterruptionModel.PAUSE_REQUESTED)
-            }
+    private fun releaseWakeLock() {
+        if (wakeLock.isHeld) wakeLock.release()
+    }
 
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK,
-            -> interruptionChannel.trySend(AudioInterruptionModel.BEGAN)
+    private companion object {
+        const val WAKE_LOCK_TAG = "BiblePlanner:ChapterListening"
 
-            AudioManager.AUDIOFOCUS_GAIN -> interruptionChannel.trySend(AudioInterruptionModel.ENDED)
-        }
+        // Why: a long safety net, since nothing is published to renew it while the next chapter loads for minutes.
+        const val WAKE_LOCK_TIMEOUT_MILLIS = 30L * 60 * 1000
     }
 }

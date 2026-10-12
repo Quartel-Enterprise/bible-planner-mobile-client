@@ -22,6 +22,12 @@ internal sealed interface StudyUnlockUiEvent : UiEvent {
         )
     }
 
+    data object OnUnlockWithoutVideoClick : StudyUnlockUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.UNLOCK_WITHOUT_VIDEO_CLICKED,
+        )
+    }
+
     data object OnDismiss : StudyUnlockUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }

@@ -52,7 +52,6 @@ object AnalyticsParams {
     const val CONTROL = "control"
     const val CAUSE = "cause"
     const val SPEED = "speed"
-    const val IS_ENHANCED = "is_enhanced"
     const val THEME = "theme"
     const val CONTRAST = "contrast"
     const val SETTING = "setting"

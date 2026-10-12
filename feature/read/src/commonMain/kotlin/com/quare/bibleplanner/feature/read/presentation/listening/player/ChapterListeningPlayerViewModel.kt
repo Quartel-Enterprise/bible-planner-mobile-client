@@ -7,13 +7,15 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListenin
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.ChapterListeningGate
 import com.quare.bibleplanner.feature.read.presentation.listening.ListeningPlaybackActions
 import com.quare.bibleplanner.feature.read.presentation.listening.mapper.ListeningPlayerUiModelMapper
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningControl
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningSurface
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -83,54 +85,79 @@ internal class ChapterListeningPlayerViewModel(
             ChapterListeningPlayerUiEvent.OnNextVerseClick -> controller.nextVerse()
 
             ChapterListeningPlayerUiEvent.OnPreviousChapterClick -> openAdjacentChapter(
+                direction = ChapterDirectionModel.PREVIOUS,
                 chapter = uiState.value.previousChapter,
-                open = controller::previousChapter,
             )
 
             ChapterListeningPlayerUiEvent.OnNextChapterClick -> openAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
                 chapter = uiState.value.nextChapter,
-                open = controller::nextChapter,
             )
 
             is ChapterListeningPlayerUiEvent.OnSeek -> controller.skipToVerse(event.verseIndex)
 
             is ChapterListeningPlayerUiEvent.OnSpeedClick -> controller.setSpeed(event.speed)
 
-            is ChapterListeningPlayerUiEvent.OnVoiceClick -> controller.selectVoice(event.voice.id)
-
-            is ChapterListeningPlayerUiEvent.OnVoicePreviewClick -> previewVoice(event.voice)
-
-            ChapterListeningPlayerUiEvent.OnVoiceSettingsClick -> controller.openVoiceSettings()
+            ChapterListeningPlayerUiEvent.OnUnavailableActionClick -> playbackActions.handleUnavailableAction(
+                scope = viewModelScope,
+                surface = ListeningSurface.PLAYER,
+            )
 
             is ChapterListeningPlayerUiEvent.OnSleepTimerClick -> controller.setSleepTimer(event.option)
 
             is ChapterListeningPlayerUiEvent.OnAutoNextToggle -> controller.setAutoNextEnabled(event.isEnabled)
 
-            ChapterListeningPlayerUiEvent.OnUnlockClick -> playbackActions.unlockLockedChapter(viewModelScope)
+            ChapterListeningPlayerUiEvent.OnUnlockClick -> playbackActions.unlockLockedChapter(
+                scope = viewModelScope,
+                surface = ListeningSurface.PLAYER,
+            )
 
             ChapterListeningPlayerUiEvent.OnDismiss -> navigator.navigateBack()
         }
     }
 
-    // Why: the voice reads the verse being listened to, so the sample is in the Bible's language whatever the app's is.
-    private fun previewVoice(voice: ListeningVoiceOptionUiModel) {
-        val session = controller.state.value.session ?: return
-        val sample = (session.verses.getOrNull(session.verseIndex) ?: session.verses.firstOrNull())?.text ?: return
-        controller.previewVoice(
-            voiceId = voice.id,
-            sampleText = sample.take(PREVIEW_MAX_LENGTH),
-        )
-    }
-
-    // Why: asking before moving keeps the current chapter playing when the next one turns out locked.
+    /*
+     * Why: asking before moving keeps the current chapter playing when the next one turns out locked;
+     * while paused the move only looks ahead, so the day's unlock is asked for when it is played.
+     */
     private fun openAdjacentChapter(
+        direction: ChapterDirectionModel,
         chapter: ChapterLocationModel?,
-        open: () -> Unit,
     ) {
+        val control = if (direction == ChapterDirectionModel.NEXT) {
+            ListeningControl.NEXT_CHAPTER
+        } else {
+            ListeningControl.PREVIOUS_CHAPTER
+        }
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_LISTENING_CONTROL_CLICKED,
+            params = mapOf(
+                AnalyticsParams.CONTROL to control.key,
+                AnalyticsParams.SURFACE to ListeningSurface.PLAYER.key,
+            ),
+        )
+        val target = chapter ?: return
+        if (controller.state.value.session
+                ?.isPlaying != true
+        ) {
+            controller.moveToAdjacentChapter(
+                direction = direction,
+                chapter = target,
+                shouldPlay = false,
+            )
+            return
+        }
+        // Why: the chapter unlocked is the one opened, even if the session moved on meanwhile.
         gate.request(
             scope = viewModelScope,
-            chapter = chapter ?: return,
-            onAllowed = open,
+            chapter = target,
+            onAllowed = {
+                controller.moveToAdjacentChapter(
+                    direction = direction,
+                    chapter = target,
+                    shouldPlay = true,
+                )
+            },
         )
     }
 
@@ -154,37 +181,9 @@ internal class ChapterListeningPlayerViewModel(
             previousChapter = previousChapter,
             nextChapter = nextChapter,
             speed = state.settings.speed,
-            voices = toVoices(
-                state = state,
-                languageTag = session?.languageTag.orEmpty(),
-            ),
             sleepTimer = toSleepTimer(state.sleepTimer),
             isAutoNextEnabled = state.settings.isAutoNextEnabled || session?.mode == ListeningModeModel.DAY_READING,
             isAutoNextLocked = session?.mode == ListeningModeModel.DAY_READING,
-        )
-    }
-
-    private fun toVoices(
-        state: ChapterListeningStateModel,
-        languageTag: String,
-    ): ListeningVoicesUiModel = when (val voices = state.voices) {
-        SpeechVoicesModel.Loading -> ListeningVoicesUiModel.Loading
-
-        SpeechVoicesModel.Unavailable -> ListeningVoicesUiModel.Unavailable(languageTag)
-
-        is SpeechVoicesModel.Available -> ListeningVoicesUiModel.Available(
-            options = voices.voices.mapIndexed { index, voice ->
-                ListeningVoiceOptionUiModel(
-                    id = voice.id,
-                    name = voice.name,
-                    position = index + 1,
-                    languageTag = voice.languageTag,
-                    isEnhanced = voice.isEnhanced,
-                    isSelected = voice.id == state.selectedVoiceId,
-                    isPreviewing = voice.id == state.previewingVoiceId,
-                )
-            },
-            shouldSuggestEnhancedVoice = voices.shouldSuggestEnhancedVoice,
         )
     }
 
@@ -203,9 +202,5 @@ internal class ChapterListeningPlayerViewModel(
             selectedOption = ListeningSleepTimerOption.END_OF_CHAPTER,
             remaining = null,
         )
-    }
-
-    private companion object {
-        const val PREVIEW_MAX_LENGTH = 160
     }
 }

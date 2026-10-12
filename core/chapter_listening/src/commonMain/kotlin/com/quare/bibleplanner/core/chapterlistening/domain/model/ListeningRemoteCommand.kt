@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.model
 
+import kotlin.time.Duration
+
 sealed interface ListeningRemoteCommand {
     data object Play : ListeningRemoteCommand
 
@@ -11,8 +13,8 @@ sealed interface ListeningRemoteCommand {
 
     data object PreviousVerse : ListeningRemoteCommand
 
-    data class SkipToVerse(
-        val verseIndex: Int,
+    data class SeekTo(
+        val position: Duration,
     ) : ListeningRemoteCommand
 
     data object NextChapter : ListeningRemoteCommand

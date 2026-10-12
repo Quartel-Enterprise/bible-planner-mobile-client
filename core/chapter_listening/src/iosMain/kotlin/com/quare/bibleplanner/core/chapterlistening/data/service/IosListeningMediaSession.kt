@@ -37,8 +37,10 @@ import platform.MediaPlayer.MPNowPlayingInfoPropertyPlaybackRate
 import platform.MediaPlayer.MPRemoteCommand
 import platform.MediaPlayer.MPRemoteCommandCenter
 import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
+import platform.UIKit.UIApplication
+import platform.UIKit.UIBackgroundTaskIdentifier
+import platform.UIKit.UIBackgroundTaskInvalid
 import platform.darwin.NSObjectProtocol
-import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalForeignApi::class)
@@ -53,6 +55,12 @@ internal class IosListeningMediaSession : ListeningMediaSession {
     private val observers = mutableListOf<NSObjectProtocol>()
     private var isActive = false
     private var isPlaying = false
+
+    /*
+     * Why: iOS suspends a background app once nothing plays, so while the next chapter is generated and
+     * downloaded between chapters, with the screen locked, the session asks for time to finish loading it.
+     */
+    private var loadingTask: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
 
     // Why: an interruption deactivates the session behind the app's back, so every start activates it again.
     override fun requestActivation(): Boolean {
@@ -77,23 +85,26 @@ internal class IosListeningMediaSession : ListeningMediaSession {
 
     override fun update(nowPlaying: NowPlayingModel) {
         isPlaying = nowPlaying.isPlaying
-        val verse = nowPlaying.verses.getOrNull(nowPlaying.verseIndex)
-        val total = nowPlaying.verses.fold(Duration.ZERO) { sum, item -> sum + item.duration }
-        val elapsed = nowPlaying.verses
-            .take(nowPlaying.verseIndex)
-            .fold(nowPlaying.verseElapsed) { sum, item -> sum + item.duration }
+        if (nowPlaying.isPlaying && !nowPlaying.isAudioLoaded) beginLoadingTask() else endLoadingTask()
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = mapOf<Any?, Any?>(
             MPMediaItemPropertyTitle to
-                (verse?.let { "${nowPlaying.chapterTitle}:${it.number}" } ?: nowPlaying.chapterTitle),
+                (
+                    nowPlaying.verseNumber?.let { number -> "${nowPlaying.chapterTitle}:$number" }
+                        ?: nowPlaying.chapterTitle
+                ),
             MPMediaItemPropertyArtist to nowPlaying.subtitle,
             MPMediaItemPropertyAlbumTitle to nowPlaying.chapterTitle,
-            MPMediaItemPropertyPlaybackDuration to NSNumber(total.toDouble(DurationUnit.SECONDS)),
-            MPNowPlayingInfoPropertyElapsedPlaybackTime to NSNumber(elapsed.toDouble(DurationUnit.SECONDS)),
-            MPNowPlayingInfoPropertyPlaybackRate to NSNumber(if (nowPlaying.isPlaying) 1.0 else 0.0),
+            MPMediaItemPropertyPlaybackDuration to NSNumber(nowPlaying.time.total.toDouble(DurationUnit.SECONDS)),
+            MPNowPlayingInfoPropertyElapsedPlaybackTime to
+                NSNumber(nowPlaying.time.elapsed.toDouble(DurationUnit.SECONDS)),
+            // Why: while the chapter loads nothing plays, so the lock screen must not move its time forward.
+            MPNowPlayingInfoPropertyPlaybackRate to
+                NSNumber(if (nowPlaying.isPlaying && nowPlaying.isAudioLoaded) 1.0 else 0.0),
         )
     }
 
     override fun deactivate() {
+        endLoadingTask()
         if (!isActive) return
         isActive = false
         commandTargets.forEach { (command, target) ->
@@ -109,6 +120,20 @@ internal class IosListeningMediaSession : ListeningMediaSession {
             withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
             error = null,
         )
+    }
+
+    private fun beginLoadingTask() {
+        if (loadingTask != UIBackgroundTaskInvalid) return
+        loadingTask = UIApplication.sharedApplication.beginBackgroundTaskWithName(
+            taskName = LOADING_TASK_NAME,
+            expirationHandler = ::endLoadingTask,
+        )
+    }
+
+    private fun endLoadingTask() {
+        if (loadingTask == UIBackgroundTaskInvalid) return
+        UIApplication.sharedApplication.endBackgroundTask(loadingTask)
+        loadingTask = UIBackgroundTaskInvalid
     }
 
     private fun registerRemoteCommands() {
@@ -168,5 +193,9 @@ internal class IosListeningMediaSession : ListeningMediaSession {
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             interruptionChannel.trySend(AudioInterruptionModel.PAUSE_REQUESTED)
         }
+    }
+
+    private companion object {
+        const val LOADING_TASK_NAME = "ChapterListeningLoading"
     }
 }

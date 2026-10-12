@@ -249,6 +249,7 @@ internal class DayStudyRouteViewModelTest {
                             paywallSource = PaywallEntrySource.DAY_STUDY_DETAIL,
                             requestKey = "day_study_detail|$jobKey",
                             rewardedRemainingToday = 2,
+                            canUnlockWithoutVideo = false,
                         ),
                     ),
                 ),

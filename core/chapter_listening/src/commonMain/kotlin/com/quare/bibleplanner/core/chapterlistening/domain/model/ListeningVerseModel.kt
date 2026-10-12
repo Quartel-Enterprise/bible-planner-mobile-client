@@ -1,7 +1,10 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.model
 
+import kotlin.time.Duration
+
 data class ListeningVerseModel(
     val number: Int,
     val text: String,
-    val wordCount: Int,
+    val start: Duration,
+    val end: Duration,
 )

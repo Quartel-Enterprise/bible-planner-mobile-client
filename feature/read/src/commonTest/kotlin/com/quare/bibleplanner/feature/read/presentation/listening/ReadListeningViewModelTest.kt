@@ -8,11 +8,12 @@ import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterChangeCause
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningEventModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSegmentModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -22,6 +23,7 @@ import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.ChapterListeningPlayerNavRoute
+import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
@@ -201,7 +203,14 @@ internal class ReadListeningViewModelTest {
     @Test
     fun `GIVEN a locked chapter WHEN tapping listen THEN does not play it yet`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = ChapterListeningAccessModel.LimitReached)
+        prepareScenario(
+            access = ChapterListeningAccessModel.LimitReached(
+                ListeningAllowanceModel(
+                    hasRewardedUnlocks = true,
+                    hasFreeUnlocks = true,
+                ),
+            ),
+        )
 
         // When
         viewModel.onEvent(
@@ -224,7 +233,6 @@ internal class ReadListeningViewModelTest {
         // When
         viewModel.onEvent(ReadListeningUiEvent.OnPlayPauseClick)
         viewModel.onEvent(ReadListeningUiEvent.OnNextVerseClick)
-        viewModel.onEvent(ReadListeningUiEvent.OnVoiceSettingsClick)
         viewModel.onEvent(ReadListeningUiEvent.OnFinishOfferDismissClick)
         viewModel.onEvent(ReadListeningUiEvent.OnBackToVerseClick)
         viewModel.onEvent(ReadListeningUiEvent.OnMiniPlayerClick)
@@ -232,7 +240,7 @@ internal class ReadListeningViewModelTest {
 
         // Then
         assertEquals(
-            listOf("togglePlayPause", "nextVerse", "openVoiceSettings", "dismissFinishOffer", "stop"),
+            listOf("togglePlayPause", "nextVerse", "dismissFinishOffer", "stop"),
             controller.calls,
         )
         assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(ChapterListeningPlayerNavRoute)), commands)
@@ -243,6 +251,77 @@ internal class ReadListeningViewModelTest {
             ),
         )
     }
+
+    @Test
+    fun `GIVEN an expired session WHEN tapping the unavailable action THEN opens the login`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                session = listeningSession(
+                    chapter = genesisOne,
+                    status = ListeningStatusModel.NEEDS_SIGN_IN,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ReadListeningUiEvent.OnUnavailableActionClick)
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(NavigationCommand.Navigate(LoginNavRoute(notifyResultViaSnackbar = true))),
+                commands,
+            )
+            assertTrue(controller.calls.isEmpty())
+            assertTrue(
+                trackedEvents.contains(
+                    "chapter_listening_sign_in_clicked" to mapOf<String, Any>("surface" to "mini_player"),
+                ),
+            )
+        }
+
+    @Test
+    fun `GIVEN a refused session while still signed in WHEN tapping the unavailable action THEN retries it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                session = listeningSession(
+                    chapter = genesisOne,
+                    status = ListeningStatusModel.NEEDS_SIGN_IN,
+                ),
+                authenticatedUserId = "user-1",
+            )
+
+            // When
+            viewModel.onEvent(ReadListeningUiEvent.OnUnavailableActionClick)
+
+            // Then
+            assertEquals(listOf("togglePlayPause"), controller.calls)
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a chapter that needs a connection WHEN tapping the unavailable action THEN retries it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                session = listeningSession(
+                    chapter = genesisOne,
+                    status = ListeningStatusModel.NEEDS_CONNECTION,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ReadListeningUiEvent.OnUnavailableActionClick)
+
+            // Then
+            assertEquals(listOf("togglePlayPause"), controller.calls)
+            assertTrue(
+                trackedEvents.contains(
+                    "chapter_listening_control_clicked" to
+                        mapOf<String, Any>("control" to "retry", "surface" to "mini_player"),
+                ),
+            )
+        }
 
     @Test
     fun `GIVEN an interrupted or paused chapter WHEN tapping play THEN reports resume or play`() =
@@ -447,6 +526,7 @@ internal class ReadListeningViewModelTest {
         access: ChapterListeningAccessModel = ChapterListeningAccessModel.Open,
         isVerticalReadingEnabled: Boolean = false,
         isEnabled: Boolean = true,
+        authenticatedUserId: String? = null,
     ) {
         controller = FakeChapterListeningController(session = session)
         followRequests = ListeningFollowRequests()
@@ -486,8 +566,10 @@ internal class ReadListeningViewModelTest {
             getChapterListeningAccess = { access },
             recordChapterListeningUnlock = { },
             prepareRewardedUnlockOffer = { false },
+            checkRewardedUnlockEnabled = { true },
             studyUnlockResultStore = StudyUnlockResultStore(),
             navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         viewModelStore = ViewModelStore()
@@ -502,13 +584,15 @@ internal class ReadListeningViewModelTest {
                         playbackActions = ListeningPlaybackActions(
                             controller = controller,
                             gate = gate,
+                            navigator = navigator,
                             trackEvent = trackEvent,
+                            getAuthenticatedUserId = { authenticatedUserId },
                         ),
                         followRequests = followRequests,
                         navigator = navigator,
                         isWholeChapterRead = { chapterNumber, _ -> chapterNumber == 2 },
                         booksRepository = booksRepository,
-                        playerUiModelMapper = ListeningPlayerUiModelMapper(EstimateListeningTimeUseCase()),
+                        playerUiModelMapper = ListeningPlayerUiModelMapper(GetListeningTimeUseCase()),
                         observeIsChapterListeningEnabled = { flowOf(isEnabled) },
                         observeReaderSettings = { flowOf(settings) },
                         getTodayListeningDay = { today },

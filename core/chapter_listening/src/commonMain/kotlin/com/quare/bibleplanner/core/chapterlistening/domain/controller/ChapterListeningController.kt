@@ -40,18 +40,17 @@ interface ChapterListeningController {
 
     fun previousChapter()
 
+    fun moveToAdjacentChapter(
+        direction: ChapterDirectionModel,
+        chapter: ChapterLocationModel,
+        shouldPlay: Boolean,
+    )
+
     suspend fun getAdjacentChapter(direction: ChapterDirectionModel): ChapterLocationModel?
 
     fun stop()
 
     fun setSpeed(speed: Float)
-
-    fun selectVoice(voiceId: String)
-
-    fun previewVoice(
-        voiceId: String,
-        sampleText: String,
-    )
 
     fun setSleepTimer(option: ListeningSleepTimerOption)
 
@@ -62,6 +61,4 @@ interface ChapterListeningController {
     fun attachReader()
 
     fun detachReader()
-
-    fun openVoiceSettings()
 }

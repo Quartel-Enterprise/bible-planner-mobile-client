@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningSettingsModel
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
 import com.quare.bibleplanner.core.datastore.write
@@ -15,13 +14,11 @@ internal class ChapterListeningSettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : ChapterListeningSettingsRepository {
     private val speedKey = floatPreferencesKey("listening_speed")
-    private val voiceIdKey = stringPreferencesKey("listening_voice_id")
     private val autoNextEnabledKey = booleanPreferencesKey("listening_auto_next_enabled")
 
     override fun observe(): Flow<ChapterListeningSettingsModel> = dataStore.data.map { preferences ->
         ChapterListeningSettingsModel(
             speed = preferences[speedKey] ?: ChapterListeningSettingsModel.DEFAULT_SPEED,
-            voiceId = preferences[voiceIdKey],
             isAutoNextEnabled = preferences[autoNextEnabledKey] != false,
         )
     }
@@ -30,13 +27,6 @@ internal class ChapterListeningSettingsRepositoryImpl(
         dataStore.write(
             key = speedKey,
             value = speed,
-        )
-    }
-
-    override suspend fun setVoiceId(voiceId: String) {
-        dataStore.write(
-            key = voiceIdKey,
-            value = voiceId,
         )
     }
 

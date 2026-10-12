@@ -10,17 +10,23 @@ import bibleplanner.feature.paywall.generated.resources.plan_monthly
 import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
 import bibleplanner.feature.paywall.generated.resources.year
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetOfferingsResultUseCase
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 
 class PaywallUiStateFactory(
     private val getOfferingsResult: GetOfferingsResultUseCase,
     private val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
+    private val observeIsChapterListeningEnabled: ObserveIsChapterListeningEnabled,
 ) {
     data class PaywallInitializationResult(
         val uiState: PaywallUiState,
@@ -29,7 +35,14 @@ class PaywallUiStateFactory(
 
     suspend fun create(storeName: String): PaywallInitializationResult {
         val maxFreeNotes = getMaxFreeNotesAmount()
-        return getOfferingsResult().fold(
+        // Why: listening is only sold where it exists (mobile, switched on, a version with narration).
+        val (offeringsResult, isChapterListeningAvailable) = coroutineScope {
+            val isListeningAvailable = async {
+                suspendRunCatching { observeIsChapterListeningEnabled().first() }.getOrDefault(false)
+            }
+            getOfferingsResult() to isListeningAvailable.await()
+        }
+        return offeringsResult.fold(
             onSuccess = { offerings ->
                 val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
                 val subscriptionPlans = offerings.mapNotNull { storePackage ->
@@ -63,6 +76,7 @@ class PaywallUiStateFactory(
                             isPurchasing = false,
                             storeName = storeName,
                             maxFreeNotes = maxFreeNotes,
+                            isChapterListeningAvailable = isChapterListeningAvailable,
                         ),
                         storePackages = offerings,
                     )

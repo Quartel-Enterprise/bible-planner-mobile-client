@@ -32,6 +32,7 @@ import com.quare.bibleplanner.feature.login.di.jvmLoginModule
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.engine.HttpClientEngine
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.io.files.Path
 import org.koin.dsl.module
 import org.koin.test.verify.verify
 import kotlin.reflect.KClass
@@ -50,6 +51,7 @@ internal class CommonKoinGraphTest {
         Duration::class,
         HttpClientEngine::class,
         CoroutineScope::class,
+        Path::class,
     )
     private val navigationParameterTypes: List<KClass<*>> = listOf(
         AddNotesFreeWarningNavRoute::class,

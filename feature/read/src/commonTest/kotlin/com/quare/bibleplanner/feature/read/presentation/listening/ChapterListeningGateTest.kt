@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.read.presentation.listening
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
@@ -24,11 +27,11 @@ import kotlin.test.assertTrue
 internal class ChapterListeningGateTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
-    private val requestKey = "chapter_listening|GEN|3"
     private val resultStore = StudyUnlockResultStore()
     private lateinit var gate: ChapterListeningGate
     private lateinit var commands: MutableList<NavigationCommand>
     private lateinit var recordedUnlocks: MutableList<ChapterLocationModel>
+    private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private var allowedCount = 0
 
     @Test
@@ -49,25 +52,9 @@ internal class ChapterListeningGateTest {
     }
 
     @Test
-    fun `GIVEN a failing access check WHEN requesting THEN lets it play`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(access = { error("offline") })
-
-        // When
-        gate.request(
-            scope = backgroundScope,
-            chapter = chapter,
-            onAllowed = { allowedCount++ },
-        )
-
-        // Then
-        assertEquals(1, allowedCount)
-    }
-
-    @Test
     fun `GIVEN the daily unlock used WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = { ChapterListeningAccessModel.LimitReached })
+        prepareScenario(access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = true) })
 
         // When
         gate.request(
@@ -87,12 +74,9 @@ internal class ChapterListeningGateTest {
     }
 
     @Test
-    fun `GIVEN an unlock left but no ad to show WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
+    fun `GIVEN a signed-out user WHEN requesting THEN asks to log in first`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(
-            access = { ChapterListeningAccessModel.UnlockAvailable(1) },
-            isOfferPrepared = false,
-        )
+        prepareScenario(access = { ChapterListeningAccessModel.LoginRequired })
 
         // When
         gate.request(
@@ -104,16 +88,137 @@ internal class ChapterListeningGateTest {
         // Then
         assertEquals(
             listOf<NavigationCommand>(
-                NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_LIMIT)),
+                NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.ChapterListening.key)),
             ),
             commands,
         )
+        assertEquals(0, allowedCount)
     }
+
+    @Test
+    fun `GIVEN no video to offer and the free chapter unused WHEN requesting THEN unlocks it and plays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = true) },
+                isOfferPrepared = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(listOf(chapter), recordedUnlocks)
+            assertEquals(1, allowedCount)
+            assertTrue(commands.isEmpty())
+            assertEquals("chapter_listening_free_unlocked", trackedEvents.single().first)
+        }
+
+    @Test
+    fun `GIVEN no video to offer and the free chapter used WHEN requesting THEN opens the Pro teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = false) },
+                isOfferPrepared = false,
+                isRewardedUnlockEnabled = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_FREE_LIMIT)),
+                ),
+                commands,
+            )
+            assertTrue(recordedUnlocks.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no video and no free chapter configured WHEN the limit is reached THEN opens the Pro only teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = false) },
+                isRewardedUnlockEnabled = false,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY)),
+                ),
+                commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN videos on but no video unlock configured WHEN the limit is reached THEN opens the Pro only teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createLimitReached(hasRewardedUnlocks = false, hasFreeUnlocks = false) },
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_LISTENING_PRO_ONLY)),
+                ),
+                commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the unlock cannot be saved WHEN taking the free chapter THEN still lets the person listen`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                access = { createUnlockAvailable(isFreeUnlockAvailable = true) },
+                isOfferPrepared = false,
+                isRecordFailing = true,
+            )
+
+            // When
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // Then
+            assertEquals(1, allowedCount)
+        }
 
     @Test
     fun `GIVEN an unlock left WHEN requesting THEN offers the video for this chapter`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = { ChapterListeningAccessModel.UnlockAvailable(1) })
+        prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
 
         // When
         gate.request(
@@ -123,27 +228,48 @@ internal class ChapterListeningGateTest {
         )
 
         // Then
+        val route = (commands.single() as NavigationCommand.Navigate).route as StudyUnlockNavRoute
         assertEquals(
-            listOf<NavigationCommand>(
-                NavigationCommand.Navigate(
-                    StudyUnlockNavRoute(
-                        surface = StudyUnlockSurface.CHAPTER_LISTENING,
-                        paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
-                        requestKey = requestKey,
-                        rewardedRemainingToday = 1,
-                    ),
-                ),
+            StudyUnlockNavRoute(
+                surface = StudyUnlockSurface.CHAPTER_LISTENING,
+                paywallSource = PaywallEntrySource.CHAPTER_LISTENING,
+                requestKey = route.requestKey,
+                rewardedRemainingToday = 1,
+                canUnlockWithoutVideo = true,
             ),
-            commands,
+            route,
         )
+        assertTrue(route.requestKey.startsWith("chapter_listening|GEN|3|"))
         assertEquals(0, allowedCount)
     }
+
+    @Test
+    fun `GIVEN two requests for the same chapter WHEN offering the video THEN gives each its own key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
+
+            // When
+            repeat(2) {
+                gate.request(
+                    scope = backgroundScope,
+                    chapter = chapter,
+                    onAllowed = { allowedCount++ },
+                )
+            }
+
+            // Then
+            val keys = commands.map { command ->
+                ((command as NavigationCommand.Navigate).route as StudyUnlockNavRoute).requestKey
+            }
+            assertEquals(2, keys.toSet().size)
+        }
 
     @Test
     fun `GIVEN the video offered WHEN the reward is earned THEN records the unlock and plays`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(access = { ChapterListeningAccessModel.UnlockAvailable(1) })
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
             gate.request(
                 scope = backgroundScope,
                 chapter = chapter,
@@ -151,27 +277,78 @@ internal class ChapterListeningGateTest {
             )
 
             // When
-            resultStore.publishEarned(requestKey)
+            resultStore.publishEarned(openedRequestKey())
 
             // Then
             assertEquals(listOf(chapter), recordedUnlocks)
             assertEquals(1, allowedCount)
+            assertTrue(trackedEvents.none { (name, _) -> name == "chapter_listening_free_unlocked" })
         }
+
+    @Test
+    fun `GIVEN the video offered WHEN unlocked without a video in the sheet THEN tracks the free unlock`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(access = { createUnlockAvailable(isFreeUnlockAvailable = true) })
+            gate.request(
+                scope = backgroundScope,
+                chapter = chapter,
+                onAllowed = { allowedCount++ },
+            )
+
+            // When
+            resultStore.publishUnlockedWithoutVideo(openedRequestKey())
+
+            // Then
+            assertEquals(listOf(chapter), recordedUnlocks)
+            assertEquals("chapter_listening_free_unlocked", trackedEvents.single().first)
+        }
+
+    private fun openedRequestKey(): String =
+        ((commands.single() as NavigationCommand.Navigate).route as StudyUnlockNavRoute).requestKey
+
+    private fun createUnlockAvailable(isFreeUnlockAvailable: Boolean): ChapterListeningAccessModel =
+        ChapterListeningAccessModel.UnlockAvailable(
+            rewardedRemainingToday = 1,
+            isFreeUnlockAvailable = isFreeUnlockAvailable,
+            allowance = ListeningAllowanceModel(
+                hasRewardedUnlocks = true,
+                hasFreeUnlocks = true,
+            ),
+        )
+
+    private fun createLimitReached(
+        hasRewardedUnlocks: Boolean,
+        hasFreeUnlocks: Boolean,
+    ): ChapterListeningAccessModel = ChapterListeningAccessModel.LimitReached(
+        ListeningAllowanceModel(
+            hasRewardedUnlocks = hasRewardedUnlocks,
+            hasFreeUnlocks = hasFreeUnlocks,
+        ),
+    )
 
     private fun TestScope.prepareScenario(
         access: suspend () -> ChapterListeningAccessModel,
         isOfferPrepared: Boolean = true,
+        isRewardedUnlockEnabled: Boolean = true,
+        isRecordFailing: Boolean = false,
     ) {
         val navigator = Navigator()
         commands = mutableListOf()
         recordedUnlocks = mutableListOf()
+        trackedEvents = mutableListOf()
         allowedCount = 0
         gate = ChapterListeningGate(
             getChapterListeningAccess = { access() },
-            recordChapterListeningUnlock = { unlocked -> recordedUnlocks += unlocked },
+            recordChapterListeningUnlock = { unlocked ->
+                if (isRecordFailing) error("Disk full")
+                recordedUnlocks += unlocked
+            },
             prepareRewardedUnlockOffer = { isOfferPrepared },
+            checkRewardedUnlockEnabled = { isRewardedUnlockEnabled },
             studyUnlockResultStore = resultStore,
             navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { navigator.commands.collect { command -> commands += command } }
     }

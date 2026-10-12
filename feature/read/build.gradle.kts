@@ -33,6 +33,7 @@ kotlin {
             implementation(projects.core.chapterStudy)
             implementation(projects.core.studyUnlock)
             implementation(projects.core.chapterListening)
+            implementation(projects.core.user)
             implementation(projects.core.preferences.studySuggestion)
 
             // UI
@@ -58,6 +59,7 @@ kotlin {
             implementation(libs.compose.components.resources)
 
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kermit)
 
             // DataStore
             implementation(libs.datastore.preferences)

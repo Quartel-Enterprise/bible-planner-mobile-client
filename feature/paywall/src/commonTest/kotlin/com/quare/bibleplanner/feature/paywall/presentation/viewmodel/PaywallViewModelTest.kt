@@ -29,6 +29,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -503,6 +504,7 @@ internal class PaywallViewModelTest {
             factory = PaywallUiStateFactory(
                 getOfferingsResult = { offerings },
                 getMaxFreeNotesAmount = GetMaxFreeNotesAmountUseCase(FakeGetIntRemoteConfig()),
+                observeIsChapterListeningEnabled = { flowOf(false) },
             ),
             trackCustomPaywallImpression = { paywallImpressions++ },
             trackEvent = { name, params -> recordedEvents += name to params },

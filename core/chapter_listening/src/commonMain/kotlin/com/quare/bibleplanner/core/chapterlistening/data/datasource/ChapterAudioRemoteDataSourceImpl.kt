@@ -1,0 +1,206 @@
+package com.quare.bibleplanner.core.chapterlistening.data.datasource
+
+import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioRequestDto
+import com.quare.bibleplanner.core.chapterlistening.data.dto.ChapterAudioResponseDto
+import com.quare.bibleplanner.core.chapterlistening.data.exception.ChapterAudioDownloadException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.NotSignedInException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.SessionRenewalException
+import com.quare.bibleplanner.core.chapterlistening.data.exception.isUnauthorized
+import com.quare.bibleplanner.core.chapterlistening.data.exception.storeChapterAudio
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.user.domain.model.RemoteSessionState
+import com.quare.bibleplanner.core.user.domain.usecase.CheckRemoteSessionState
+import com.quare.bibleplanner.core.utils.suspendRunCatching
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.functions.Functions
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.prepareGet
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentLength
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.exhausted
+import io.ktor.utils.io.readRemaining
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.io.IOException
+import kotlinx.io.Sink
+import kotlinx.io.buffered
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
+import kotlinx.serialization.json.Json
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+
+internal class ChapterAudioRemoteDataSourceImpl(
+    private val functions: Functions,
+    private val httpClient: HttpClient,
+    private val auth: Auth,
+    private val json: Json,
+    private val checkRemoteSessionState: CheckRemoteSessionState,
+    private val currentTimestampProvider: CurrentTimestampProvider,
+) : ChapterAudioRemoteDataSource {
+    private val renewalMutex = Mutex()
+    private val expiryMargin: Duration = 1.minutes
+
+    /*
+     * Why: a chapter nobody has heard yet is generated during this call (~20–35 s) without sending a
+     * byte, and a request for one already being generated waits up to 45 s on the server, both past
+     * the client's 30 s request and OkHttp's 10 s read defaults. Only the request timeout applies,
+     * since Supabase reports any other timeout as the missing connection a failed request means.
+     */
+    override suspend fun fetchChapterAudio(request: ChapterAudioRequestDto): ChapterAudioResponseDto =
+        withFreshSession {
+            val response = functions.invoke(FUNCTION_NAME) {
+                contentType(ContentType.Application.Json)
+                setBody(json.encodeToString(ChapterAudioRequestDto.serializer(), request))
+                timeout {
+                    requestTimeoutMillis = FUNCTION_TIMEOUT_MILLIS
+                    socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+                }
+            }
+            json.decodeFromString(ChapterAudioResponseDto.serializer(), response.bodyAsText())
+        }
+
+    override suspend fun downloadText(url: String): String = withFreshSession {
+        fetchFromWorker(url) { response -> response.bodyAsText() }
+    }
+
+    override suspend fun downloadFile(
+        url: String,
+        destination: Path,
+    ) {
+        withFreshSession {
+            fetchFromWorker(url) { response ->
+                val channel = response.bodyAsChannel()
+                val file = storeChapterAudio { SystemFileSystem.sink(destination).buffered() }
+                var writtenBytes = 0L
+                // Why: the last buffered bytes are flushed on close, so a full disk can surface only there.
+                try {
+                    while (!channel.exhausted()) {
+                        val chunk = channel.readRemaining(CHUNK_BYTES)
+                        writtenBytes += storeChapterAudio { file.transferFrom(chunk) }
+                    }
+                } catch (exception: Throwable) {
+                    file.closeQuietly()
+                    throw exception
+                }
+                storeChapterAudio { file.close() }
+                // Why: a stream cut short without an error would otherwise be cached as a chapter that stops early.
+                // Why: a compressed body's Content-Length counts the compressed bytes, which some engines keep.
+                val expectedBytes = response.contentLength().takeIf {
+                    response.headers[HttpHeaders.ContentEncoding] ==
+                        null
+                }
+                if (expectedBytes != null && writtenBytes != expectedBytes) {
+                    throw IOException("The chapter audio ended after $writtenBytes of $expectedBytes bytes")
+                }
+            }
+        }
+    }
+
+    /*
+     * Why: the access token isn't refreshed while the app is in the background, so a chapter that
+     * starts after an hour of listening with the screen off is refused until the token is renewed.
+     */
+    private suspend fun <T> withFreshSession(call: suspend () -> T): T {
+        // Why: after a while in the background the token has predictably expired, so it is renewed before the call.
+        if (isSessionExpiring()) {
+            renewSession(
+                usedToken = auth.currentAccessTokenOrNull(),
+                isRefusalOnly = true,
+            )
+        }
+        val usedToken = auth.currentAccessTokenOrNull()
+        val result = suspendRunCatching { call() }
+        val failure = result.exceptionOrNull()
+        if (failure == null || !failure.isUnauthorized() || auth.currentSessionOrNull() == null) {
+            return result.getOrThrow()
+        }
+        renewSession(
+            usedToken = usedToken,
+            isRefusalOnly = false,
+        )
+        return call()
+    }
+
+    /*
+     * Why: calls refused together renew the session once, since a refresh token is spent on use; one
+     * the server refuses is left to the app's own session handling, which signs the person out.
+     */
+    private fun isSessionExpiring(): Boolean {
+        val expiresAt = auth.currentSessionOrNull()?.expiresAt ?: return false
+        val now = currentTimestampProvider.getCurrentTimestamp().milliseconds
+        return expiresAt.toEpochMilliseconds().milliseconds - now <= expiryMargin
+    }
+
+    /*
+     * Why: a renewal ahead of the call only gives up on a refused session; any other failure (offline,
+     * say) is left to the call itself, whose own error says what went wrong.
+     */
+    private suspend fun renewSession(
+        usedToken: String?,
+        isRefusalOnly: Boolean,
+    ) {
+        renewalMutex.withLock {
+            if (auth.currentAccessTokenOrNull() != usedToken) return
+            when (checkRemoteSessionState()) {
+                RemoteSessionState.ACTIVE -> Unit
+
+                // Why: Supabase's own auto-refresh may spend the same refresh token first, which renews the session.
+                RemoteSessionState.REVOKED -> if (!isRenewedElsewhere(usedToken)) throw NotSignedInException()
+
+                // Why: a rate limit or an auth server error is not the missing connection an IOException reads as.
+                RemoteSessionState.UNKNOWN -> if (!isRefusalOnly) throw SessionRenewalException()
+            }
+        }
+    }
+
+    private fun isRenewedElsewhere(usedToken: String?): Boolean {
+        val currentToken = auth.currentAccessTokenOrNull()
+        return currentToken != null && currentToken != usedToken
+    }
+
+    // Why: the Worker serves the files only to a signed-in user, with the same token the function takes.
+    private suspend fun <T> fetchFromWorker(
+        url: String,
+        read: suspend (HttpResponse) -> T,
+    ): T {
+        val token = auth.currentAccessTokenOrNull() ?: throw NotSignedInException()
+        return httpClient
+            .prepareGet(url) {
+                bearerAuth(token)
+                // Why: a long chapter on a slow connection may take minutes, so only a stalled download times out.
+                timeout {
+                    requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+                    connectTimeoutMillis = DOWNLOAD_CONNECT_TIMEOUT_MILLIS
+                    socketTimeoutMillis = DOWNLOAD_SOCKET_TIMEOUT_MILLIS
+                }
+            }.execute { response ->
+                if (!response.status.isSuccess()) throw ChapterAudioDownloadException(response.status.value)
+                read(response)
+            }
+    }
+
+    private fun Sink.closeQuietly() {
+        runCatching { close() }.onFailure { throwable -> Logger.w(throwable) { "Could not close the audio file" } }
+    }
+
+    private companion object {
+        const val FUNCTION_NAME = "get-chapter-audio"
+        const val FUNCTION_TIMEOUT_MILLIS = 90_000L
+        const val DOWNLOAD_CONNECT_TIMEOUT_MILLIS = 15_000L
+        const val DOWNLOAD_SOCKET_TIMEOUT_MILLIS = 30_000L
+        const val CHUNK_BYTES = 64L * 1024
+    }
+}

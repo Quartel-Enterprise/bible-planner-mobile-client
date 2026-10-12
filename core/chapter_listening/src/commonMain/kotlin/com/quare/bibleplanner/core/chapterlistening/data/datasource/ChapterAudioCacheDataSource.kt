@@ -1,0 +1,19 @@
+package com.quare.bibleplanner.core.chapterlistening.data.datasource
+
+import com.quare.bibleplanner.core.chapterlistening.data.model.CachedChapterAudio
+import kotlinx.io.files.Path
+
+internal interface ChapterAudioCacheDataSource {
+    suspend fun find(chapterKey: String): CachedChapterAudio?
+
+    suspend fun findFileName(chapterKey: String): String?
+
+    suspend fun save(
+        chapterKey: String,
+        fileName: String,
+        readManifest: suspend () -> String,
+        writeAudio: suspend (Path) -> Unit,
+    ): CachedChapterAudio
+
+    suspend fun remove(audioPath: String)
+}

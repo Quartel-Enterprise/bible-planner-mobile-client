@@ -1,25 +1,51 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
-import com.quare.bibleplanner.core.chapterlistening.domain.service.SpeechEngine
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
+import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveStringRemoteConfig
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 
+/*
+ * Why: the server refuses versions outside the same Remote Config list, so the entry is hidden for them,
+ * and for every version while the list isn't known, rather than following a copy baked into the app.
+ */
 internal class ObserveIsChapterListeningEnabledUseCase(
-    private val speechEngine: SpeechEngine,
+    private val audioPlayer: ChapterAudioPlayer,
+    private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
     private val observeBooleanRemoteConfig: ObserveBooleanRemoteConfig,
+    private val observeStringRemoteConfig: ObserveStringRemoteConfig,
 ) : ObserveIsChapterListeningEnabled {
-    override fun invoke(): Flow<Boolean> = if (speechEngine.isSupported) {
-        observeBooleanRemoteConfig(
-            key = CHAPTER_LISTENING_ENABLED_KEY,
-            default = false,
-        )
-    } else {
-        flowOf(false)
+    override fun invoke(): Flow<Boolean> {
+        if (!audioPlayer.isSupported) return flowOf(false)
+        return combine(
+            observeBooleanRemoteConfig(
+                key = CHAPTER_LISTENING_ENABLED_KEY,
+                default = false,
+            ),
+            observeStringRemoteConfig(
+                key = CLOUD_VERSIONS_KEY,
+                default = "",
+            ),
+            getSelectedVersionIdFlow(),
+        ) { isEnabled, cloudVersions, versionId ->
+            isEnabled && versionId.uppercase() in toVersionIds(cloudVersions)
+        }.distinctUntilChanged()
     }
+
+    private fun toVersionIds(cloudVersions: String): Set<String> = cloudVersions
+        .split(VERSION_SEPARATOR)
+        .map { versionId -> versionId.trim().uppercase() }
+        .filter(String::isNotEmpty)
+        .toSet()
 
     private companion object {
         const val CHAPTER_LISTENING_ENABLED_KEY = "chapter_listening_enabled"
+        const val CLOUD_VERSIONS_KEY = "listening_cloud_versions"
+        const val VERSION_SEPARATOR = ","
     }
 }

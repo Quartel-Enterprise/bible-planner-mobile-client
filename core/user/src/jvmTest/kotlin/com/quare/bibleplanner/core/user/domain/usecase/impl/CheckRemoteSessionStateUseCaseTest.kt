@@ -77,6 +77,24 @@ class CheckRemoteSessionStateUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a rate limited refresh WHEN checking THEN the state is unknown`() = runTest {
+        // Given
+        prepareScenario(
+            refreshStatus = HttpStatusCode.TooManyRequests,
+            refreshBody = SERVER_ERROR,
+        )
+
+        // When
+        val state = useCase()
+
+        // Then
+        assertEquals(
+            expected = RemoteSessionState.UNKNOWN,
+            actual = state,
+        )
+    }
+
+    @Test
     fun `GIVEN no local session WHEN checking THEN the state is unknown`() = runTest {
         // Given
         prepareScenario(

@@ -1,11 +1,17 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.controller
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFailureModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioResultModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVerseModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterChangeCause
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterDirectionModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningAccessModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningEventModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterListeningSettingsModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningAllowanceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningDayModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningModeModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningRemoteCommand
@@ -14,16 +20,12 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessio
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVersionModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningVoiceModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.NowPlayingModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechEngineEvent
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechUtteranceModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
+import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterAudioRepository
 import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterListeningSettingsRepository
+import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
-import com.quare.bibleplanner.core.chapterlistening.domain.service.SpeechEngine
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -33,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -41,8 +44,11 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -64,22 +70,39 @@ internal class ChapterListeningControllerImplTest {
         ),
         genesisThree to mapOf(1 to "Now the serpent was more subtil."),
     )
-    private val voice = ListeningVoiceModel(
-        id = "voice-1",
-        name = "Luciana",
-        languageTag = "pt-BR",
-        isEnhanced = true,
+
+    // The title takes the first 2 s, and a heading is read before verse 2.
+    private val genesisOneAudio = ChapterAudioModel(
+        audioPath = "/cache/GEN_1.mp3",
+        verses = listOf(
+            createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.5.seconds),
+            createAudioVerse(number = 2, headingStart = 6.seconds, start = 7.seconds, end = 10.seconds),
+            createAudioVerse(number = 3, headingStart = null, start = 10.5.seconds, end = 13.seconds),
+        ),
+        duration = 14.seconds,
     )
-    private val otherVoice = ListeningVoiceModel(
-        id = "voice-2",
-        name = "Felipe",
-        languageTag = "pt-BR",
-        isEnhanced = false,
+    private val audioByChapter = mapOf(
+        genesisOne to genesisOneAudio,
+        genesisTwo to ChapterAudioModel(
+            audioPath = "/cache/GEN_2.mp3",
+            verses = listOf(
+                createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.seconds),
+                createAudioVerse(number = 2, headingStart = null, start = 5.5.seconds, end = 9.seconds),
+            ),
+            duration = 10.seconds,
+        ),
+        genesisThree to ChapterAudioModel(
+            audioPath = "/cache/GEN_3.mp3",
+            verses = listOf(createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 4.seconds)),
+            duration = 5.seconds,
+        ),
     )
     private val chapterGap = 1.5.seconds
 
     private lateinit var controller: ChapterListeningControllerImpl
-    private lateinit var speechEngine: FakeSpeechEngine
+    private lateinit var audioPlayer: FakeChapterAudioPlayer
+    private lateinit var audioRepository: FakeChapterAudioRepository
+    private lateinit var authenticatedUserId: MutableStateFlow<String?>
     private lateinit var mediaSession: FakeListeningMediaSession
     private lateinit var settingsRepository: FakeSettingsRepository
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
@@ -89,7 +112,7 @@ internal class ChapterListeningControllerImplTest {
         get() = controller.state.value.session
 
     @Test
-    fun `GIVEN a chapter WHEN starting it THEN reads every verse from the first one`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter WHEN starting it THEN plays its audio from the spoken title`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -101,20 +124,19 @@ internal class ChapterListeningControllerImplTest {
 
         // Then
         assertEquals(ListeningStatusModel.PLAYING, session?.status)
-        assertEquals(3, session?.verses?.size)
-        assertEquals(
-            expected = versesByChapter.getValue(genesisOne).values.toList(),
-            actual = speechEngine.lastUtterances.map(SpeechUtteranceModel::text),
-        )
-        assertEquals(voice.id, speechEngine.speakCalls.last().voiceId)
+        assertEquals(versesByChapter.getValue(genesisOne).values.toList(), session?.verses?.map { it.text })
+        assertEquals(listOf(Duration.ZERO, 6.seconds, 10.5.seconds), session?.verses?.map { it.start })
+        assertEquals(listOf(6.seconds, 10.5.seconds, 14.seconds), session?.verses?.map { it.end })
+        assertEquals(genesisOneAudio.audioPath, audioPlayer.plays.single().audioPath)
+        assertEquals(Duration.ZERO, audioPlayer.plays.single().position)
         assertEquals("chapter_listening_started", trackedEvents.last().first)
     }
 
     @Test
-    fun `GIVEN no voice for the language WHEN starting THEN waits for one without speaking`() =
+    fun `GIVEN no connection and no cached audio WHEN starting THEN asks for a connection without playing`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(voices = SpeechVoicesModel.Unavailable)
+            prepareScenario(failure = ChapterAudioFailureModel.NO_CONNECTION)
 
             // When
             controller.startChapter(
@@ -123,33 +145,59 @@ internal class ChapterListeningControllerImplTest {
             )
 
             // Then
-            assertEquals(ListeningStatusModel.VOICE_UNAVAILABLE, session?.status)
-            assertTrue(speechEngine.speakCalls.isEmpty())
-            assertEquals("chapter_listening_voice_unavailable", trackedEvents.last().first)
+            assertEquals(ListeningStatusModel.NEEDS_CONNECTION, session?.status)
+            assertTrue(audioPlayer.plays.isEmpty())
+            assertEquals("chapter_listening_audio_unavailable", trackedEvents.last().first)
+            assertEquals("no_connection", trackedEvents.last().second["reason"])
         }
 
     @Test
-    fun `GIVEN a voice installed later WHEN resuming THEN starts reading`() = runTest(testDispatcher) {
+    fun `GIVEN each audio failure WHEN starting THEN shows why it cannot play`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(voices = SpeechVoicesModel.Unavailable)
-        controller.startChapter(
-            chapter = genesisOne,
-            shouldForceCanonOrder = false,
+        val expected = mapOf(
+            ChapterAudioFailureModel.NOT_SIGNED_IN to ListeningStatusModel.NEEDS_SIGN_IN,
+            ChapterAudioFailureModel.VERSION_NOT_ENABLED to ListeningStatusModel.VERSION_UNAVAILABLE,
+            ChapterAudioFailureModel.BUDGET_REACHED to ListeningStatusModel.NARRATION_PAUSED,
+            ChapterAudioFailureModel.UNAVAILABLE to ListeningStatusModel.AUDIO_UNAVAILABLE,
         )
-        speechEngine.voices = SpeechVoicesModel.Available(
-            voices = listOf(voice),
-            shouldSuggestEnhancedVoice = false,
-        )
+        prepareScenario()
 
         // When
-        controller.togglePlayPause()
+        val statuses = expected.keys.associateWith { failure ->
+            audioRepository.failure = failure
+            authenticatedUserId = MutableStateFlow("user-1")
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            session?.status
+        }
 
         // Then
-        assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        assertEquals(expected, statuses)
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the engine reaches a word THEN shows the verse and its progress`() =
+    fun `GIVEN the connection came back WHEN playing again THEN loads and plays the chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(failure = ChapterAudioFailureModel.NO_CONNECTION)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            audioRepository.failure = null
+
+            // When
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+            assertEquals(1, audioPlayer.plays.size)
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the audio reaches a verse THEN shows the verse and its progress`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -157,43 +205,84 @@ internal class ChapterListeningControllerImplTest {
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
             )
-            val secondVerseId = speechEngine.lastUtterances[1].id
 
             // When
-            speechEngine.emit(SpeechEngineEvent.Started(secondVerseId))
-            speechEngine.emit(
-                SpeechEngineEvent.RangeStarted(
-                    utteranceId = secondVerseId,
-                    charIndex = 21,
-                ),
-            )
+            audioPlayer.position = 8.25.seconds
+            advanceTimeBy(250.milliseconds)
 
             // Then
             assertEquals(1, session?.verseIndex)
-            assertEquals(21f / versesByChapter.getValue(genesisOne).getValue(2).length, session?.verseProgress)
+            assertEquals(0.5f, session?.verseProgress)
         }
 
     @Test
-    fun `GIVEN a stopped utterance WHEN its late callback arrives THEN ignores it`() = runTest(testDispatcher) {
+    fun `GIVEN a paused playback WHEN its late end arrives THEN ignores it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
             chapter = genesisOne,
             shouldForceCanonOrder = false,
         )
-        val staleId = speechEngine.lastUtterances[2].id
+        val stalePlaybackId = audioPlayer.plays.last().playbackId
         controller.togglePlayPause()
 
         // When
-        speechEngine.emit(SpeechEngineEvent.Started(staleId))
+        audioPlayer.emit(ChapterAudioPlayerEvent.Ended(stalePlaybackId))
 
         // Then
-        assertEquals(0, session?.verseIndex)
+        assertEquals(genesisOne, session?.segment?.chapter)
         assertEquals(ListeningStatusModel.PAUSED, session?.status)
     }
 
     @Test
-    fun `GIVEN the last verse and auto next on WHEN it finishes THEN moves on to the next chapter after a pause`() =
+    fun `GIVEN auto next on WHEN the chapter ends THEN plays the next one after a pause`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        audioPlayer.finish()
+        val playsDuringGap = audioPlayer.plays.size
+        advanceTimeBy(chapterGap + 1.milliseconds)
+
+        // Then
+        assertEquals(genesisTwo, session?.segment?.chapter)
+        assertEquals(ChapterChangeCause.PLAYER, session?.chapterChangeCause)
+        assertEquals(genesisOne, session?.finishedChapter)
+        assertEquals(1, playsDuringGap)
+        assertEquals(audioByChapter.getValue(genesisTwo).audioPath, audioPlayer.plays.last().audioPath)
+        assertTrue(trackedEvents.any { (name, _) -> name == "chapter_listening_completed" })
+    }
+
+    @Test
+    fun `GIVEN a pause while the next chapter is looked up WHEN the chapter ends THEN does not start the next one`() =
+        runTest(testDispatcher) {
+            // Given
+            val accessGate = CompletableDeferred<Unit>()
+            prepareScenario(accessGate = accessGate)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val playCount = audioPlayer.plays.size
+            audioPlayer.finish()
+
+            // When
+            controller.togglePlayPause()
+            accessGate.complete(Unit)
+            advanceTimeBy(chapterGap + 1.milliseconds)
+
+            // Then
+            assertEquals(genesisTwo, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertEquals(playCount, audioPlayer.plays.size)
+        }
+
+    @Test
+    fun `GIVEN a session that moved on WHEN moving to the chapter unlocked before THEN stays put`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -203,51 +292,130 @@ internal class ChapterListeningControllerImplTest {
             )
 
             // When
-            speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisThree,
+                shouldPlay = true,
+            )
 
             // Then
-            assertEquals(genesisTwo, session?.segment?.chapter)
-            assertEquals(ChapterChangeCause.PLAYER, session?.chapterChangeCause)
-            assertEquals(genesisOne, session?.finishedChapter)
-            assertEquals(chapterGap, speechEngine.lastUtterances.first().leadingSilence)
-            assertTrue(trackedEvents.any { (name, _) -> name == "chapter_listening_completed" })
+            assertEquals(genesisOne, session?.segment?.chapter)
         }
 
     @Test
-    fun `GIVEN auto next off WHEN the last verse finishes THEN stops at the end of the chapter`() =
+    fun `GIVEN the unlocked next chapter WHEN moving to it THEN opens that chapter`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        controller.moveToAdjacentChapter(
+            direction = ChapterDirectionModel.NEXT,
+            chapter = genesisTwo,
+            shouldPlay = false,
+        )
+
+        // Then
+        assertEquals(genesisTwo, session?.segment?.chapter)
+        assertEquals("/cache/GEN_2.mp3", audioPlayer.plays.last().audioPath)
+    }
+
+    @Test
+    fun `GIVEN a chapter paused by the unlock video WHEN moving to the unlocked one THEN plays it`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(isAutoNextEnabled = false)
+            prepareScenario()
             controller.startChapter(
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
             )
+            controller.togglePlayPause()
 
             // When
-            speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisTwo,
+                shouldPlay = true,
+            )
 
             // Then
-            assertEquals(ListeningStatusModel.FINISHED, session?.status)
-            assertEquals(genesisOne, session?.finishedChapter)
-            assertEquals(1f, session?.verseProgress)
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+            assertEquals("/cache/GEN_2.mp3", audioPlayer.plays.last().audioPath)
         }
 
     @Test
-    fun `GIVEN a finished chapter WHEN playing again THEN reads it from the start`() = runTest(testDispatcher) {
+    fun `GIVEN the monthly budget spent WHEN starting THEN shows the narration as paused`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(failure = ChapterAudioFailureModel.BUDGET_REACHED)
+
+        // When
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // Then
+        assertEquals(ListeningStatusModel.NARRATION_PAUSED, session?.status)
+    }
+
+    @Test
+    fun `GIVEN a chapter paused while loading WHEN it loads THEN prefetches nothing until it plays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            audioLoaded.complete(Unit)
+
+            // Then
+            assertEquals(listOf(genesisOne), audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN auto next off WHEN the chapter ends THEN stops at its end`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isAutoNextEnabled = false)
         controller.startChapter(
             chapter = genesisOne,
             shouldForceCanonOrder = false,
         )
-        speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+
+        // When
+        audioPlayer.finish()
+
+        // Then
+        assertEquals(ListeningStatusModel.FINISHED, session?.status)
+        assertEquals(genesisOne, session?.finishedChapter)
+        assertEquals(1f, session?.verseProgress)
+    }
+
+    @Test
+    fun `GIVEN a finished chapter WHEN playing again THEN plays it from the start`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isAutoNextEnabled = false)
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        audioPlayer.position = 14.seconds
+        audioPlayer.finish()
 
         // When
         controller.togglePlayPause()
 
         // Then
         assertEquals(ListeningStatusModel.PLAYING, session?.status)
-        assertEquals(3, speechEngine.lastUtterances.size)
+        assertEquals(Duration.ZERO, audioPlayer.plays.last().position)
     }
 
     @Test
@@ -260,7 +428,7 @@ internal class ChapterListeningControllerImplTest {
         )
 
         // When
-        speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+        audioPlayer.finish()
 
         // Then
         assertEquals(ListeningStatusModel.NEXT_LOCKED, session?.status)
@@ -270,14 +438,14 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a locked chapter WHEN it is unlocked THEN reads it`() = runTest(testDispatcher) {
+    fun `GIVEN a locked chapter WHEN it is unlocked THEN plays it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(lockedChapters = setOf(genesisTwo))
         controller.startChapter(
             chapter = genesisOne,
             shouldForceCanonOrder = false,
         )
-        speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+        audioPlayer.finish()
 
         // When
         controller.continueLockedChapter()
@@ -289,36 +457,43 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a paused verse WHEN resuming THEN continues from the start of the word it stopped in`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            controller.startChapter(
-                chapter = genesisOne,
-                shouldForceCanonOrder = false,
-            )
-            val firstVerseId = speechEngine.lastUtterances.first().id
-            speechEngine.emit(
-                SpeechEngineEvent.RangeStarted(
-                    utteranceId = firstVerseId,
-                    charIndex = 6,
-                ),
-            )
-            controller.togglePlayPause()
+    fun `GIVEN a paused chapter WHEN resuming THEN continues from where it stopped`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        audioPlayer.position = 8.seconds
+        controller.togglePlayPause()
 
-            // When
-            controller.togglePlayPause()
+        // When
+        controller.togglePlayPause()
 
-            // Then
-            assertEquals(
-                "the beginning God created the heaven and the earth.",
-                speechEngine.lastUtterances.first().text,
-            )
-            assertEquals(ListeningStatusModel.PLAYING, session?.status)
-        }
+        // Then
+        assertEquals(8.seconds, audioPlayer.plays.last().position)
+        assertEquals(ListeningStatusModel.PLAYING, session?.status)
+    }
 
     @Test
-    fun `GIVEN a chapter being read WHEN a call interrupts it THEN shows it as interrupted`() =
+    fun `GIVEN a chapter playing WHEN a call interrupts it THEN shows it as interrupted`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+
+        // Then
+        assertEquals(ListeningStatusModel.INTERRUPTED, session?.status)
+        assertEquals("chapter_listening_interrupted", trackedEvents.last().first)
+    }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN a call interrupts it THEN leaves the player to the system`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -326,17 +501,35 @@ internal class ChapterListeningControllerImplTest {
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
             )
+            val pauseCount = audioPlayer.pauseCount
 
             // When
             mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
 
             // Then
-            assertEquals(ListeningStatusModel.INTERRUPTED, session?.status)
-            assertEquals("chapter_listening_interrupted", trackedEvents.last().first)
+            assertEquals(pauseCount, audioPlayer.pauseCount)
         }
 
     @Test
-    fun `GIVEN an interrupted chapter WHEN the interruption ends THEN reads on`() = runTest(testDispatcher) {
+    fun `GIVEN an interrupted chapter WHEN opening another one THEN pauses the player`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+        val pauseCount = audioPlayer.pauseCount
+
+        // When
+        controller.nextChapter()
+
+        // Then
+        assertTrue(audioPlayer.pauseCount > pauseCount)
+    }
+
+    @Test
+    fun `GIVEN an interrupted chapter WHEN the interruption ends THEN plays on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -351,6 +544,26 @@ internal class ChapterListeningControllerImplTest {
         // Then
         assertEquals(ListeningStatusModel.PLAYING, session?.status)
     }
+
+    @Test
+    fun `GIVEN an interrupted chapter WHEN another app takes the audio for good THEN stays paused`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+
+            // When
+            mediaSession.interruptions.emit(AudioInterruptionModel.PAUSE_REQUESTED)
+            mediaSession.interruptions.emit(AudioInterruptionModel.ENDED)
+
+            // Then
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertEquals(1, audioPlayer.plays.size)
+        }
 
     @Test
     fun `GIVEN a paused chapter WHEN another interruption ends THEN stays paused`() = runTest(testDispatcher) {
@@ -373,8 +586,8 @@ internal class ChapterListeningControllerImplTest {
     fun `GIVEN a chapter still loading WHEN pausing THEN stays paused once it loads`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        val voicesLoaded = CompletableDeferred<Unit>()
-        speechEngine.voicesGate = voicesLoaded
+        val audioLoaded = CompletableDeferred<Unit>()
+        audioRepository.gate = audioLoaded
         controller.startChapter(
             chapter = genesisOne,
             shouldForceCanonOrder = false,
@@ -382,12 +595,12 @@ internal class ChapterListeningControllerImplTest {
 
         // When
         controller.togglePlayPause()
-        voicesLoaded.complete(Unit)
+        audioLoaded.complete(Unit)
 
         // Then
         assertEquals(ListeningStatusModel.PAUSED, session?.status)
         assertEquals(3, session?.verses?.size)
-        assertTrue(speechEngine.speakCalls.isEmpty())
+        assertTrue(audioPlayer.plays.isEmpty())
     }
 
     @Test
@@ -395,8 +608,8 @@ internal class ChapterListeningControllerImplTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val voicesLoaded = CompletableDeferred<Unit>()
-            speechEngine.voicesGate = voicesLoaded
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
             controller.startChapter(
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
@@ -404,20 +617,20 @@ internal class ChapterListeningControllerImplTest {
 
             // When
             mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
-            voicesLoaded.complete(Unit)
+            audioLoaded.complete(Unit)
 
             // Then
             assertEquals(ListeningStatusModel.INTERRUPTED, session?.status)
-            assertTrue(speechEngine.speakCalls.isEmpty())
+            assertTrue(audioPlayer.plays.isEmpty())
         }
 
     @Test
-    fun `GIVEN a chapter paused while loading WHEN resuming before it loads THEN reads it once loaded`() =
+    fun `GIVEN a chapter paused while loading WHEN resuming before it loads THEN plays it once loaded`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val voicesLoaded = CompletableDeferred<Unit>()
-            speechEngine.voicesGate = voicesLoaded
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
             controller.startChapter(
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
@@ -426,15 +639,62 @@ internal class ChapterListeningControllerImplTest {
 
             // When
             controller.togglePlayPause()
-            voicesLoaded.complete(Unit)
+            audioLoaded.complete(Unit)
 
             // Then
             assertEquals(ListeningStatusModel.PLAYING, session?.status)
-            assertEquals(3, speechEngine.lastUtterances.size)
+            assertEquals(1, audioPlayer.plays.size)
         }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the reader opens a locked chapter THEN keeps reading the current one`() =
+    fun `GIVEN a chapter playing WHEN it loads THEN prefetches the next one`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // Then
+        assertEquals(listOf(genesisOne, genesisTwo), audioRepository.requests)
+        assertTrue(audioRepository.refreshed.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a locked next chapter WHEN a chapter loads THEN leaves the locked one alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisTwo))
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(listOf(genesisOne), audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN auto next off WHEN a chapter loads THEN prefetches nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isAutoNextEnabled = false)
+
+        // When
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // Then
+        assertEquals(listOf(genesisOne), audioRepository.requests)
+    }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the reader opens a locked chapter THEN keeps playing the current one`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(lockedChapters = setOf(genesisThree))
@@ -453,7 +713,7 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a locked next chapter WHEN the notification skips to it THEN keeps reading the current one`() =
+    fun `GIVEN a locked next chapter WHEN the notification skips to it THEN keeps playing the current one`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(lockedChapters = setOf(genesisTwo))
@@ -492,7 +752,108 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chapter being read WHEN asking for its neighbours THEN follows the reading order`() =
+    fun `GIVEN a chapter paused while loading WHEN it is played later THEN counts it as started once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            audioLoaded.complete(Unit)
+
+            // When
+            controller.togglePlayPause()
+            controller.togglePlayPause()
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(1, trackedEvents.count { (name, _) -> name == "chapter_listening_started" })
+        }
+
+    @Test
+    fun `GIVEN a chapter still loading WHEN the reader opens a locked one THEN the load still finishes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisTwo))
+            val audioLoaded = CompletableDeferred<Unit>()
+            audioRepository.gate = audioLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            controller.followReader(genesisTwo)
+            audioLoaded.complete(Unit)
+
+            // Then
+            assertEquals(genesisOne, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN the reader opens another one THEN follows it without loading its audio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            controller.followReader(genesisThree)
+
+            // Then
+            assertEquals(genesisThree, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertFalse(genesisThree in audioRepository.requests)
+            assertFalse(mediaSession.updates.last().isPlaying)
+        }
+
+    @Test
+    fun `GIVEN a followed chapter never loaded WHEN playing THEN loads and plays it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        controller.togglePlayPause()
+        controller.followReader(genesisThree)
+
+        // When
+        controller.togglePlayPause()
+
+        // Then
+        assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        assertEquals("/cache/GEN_3.mp3", audioPlayer.plays.last().audioPath)
+    }
+
+    @Test
+    fun `GIVEN the next chapter fails to prefetch WHEN a chapter loads THEN does not check it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            audioRepository.failingChapters = setOf(genesisTwo)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertFalse(genesisTwo in audioRepository.refreshed)
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN asking for its neighbours THEN follows the reading order`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -524,7 +885,7 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the headphones are unplugged THEN pauses`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter playing WHEN the headphones are unplugged THEN pauses`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -540,7 +901,24 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the lock screen skips to a verse THEN reads from it`() =
+    fun `GIVEN a chapter playing WHEN skipping to a verse THEN plays from it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        controller.skipToVerse(2)
+
+        // Then
+        assertEquals(2, session?.verseIndex)
+        assertEquals(10.5.seconds, audioPlayer.plays.last().position)
+    }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the lock screen scrubs to a position THEN plays from there`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -550,14 +928,51 @@ internal class ChapterListeningControllerImplTest {
             )
 
             // When
-            mediaSession.commands.emit(ListeningRemoteCommand.SkipToVerse(2))
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(8.25.seconds))
 
             // Then
-            assertEquals(2, session?.verseIndex)
-            assertEquals(
-                listOf(versesByChapter.getValue(genesisOne).getValue(3)),
-                speechEngine.lastUtterances.map { it.text },
+            assertEquals(8.25.seconds, audioPlayer.plays.last().position)
+            assertEquals(1, session?.verseIndex)
+            assertEquals(0.5f, session?.verseProgress)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN the lock screen scrubs past its end THEN moves there without playing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
             )
+            controller.togglePlayPause()
+            val playCount = audioPlayer.plays.size
+
+            // When
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(1.minutes))
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(playCount + 1, audioPlayer.plays.size)
+            assertEquals(14.seconds, audioPlayer.plays.last().position)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN the lock screen scrubs THEN moves the player to show the new position`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            mediaSession.commands.emit(ListeningRemoteCommand.SeekTo(8.seconds))
+
+            // Then
+            assertEquals(listOf(8.seconds), audioPlayer.seeks)
         }
 
     @Test
@@ -582,7 +997,7 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN the previous chapter command WHEN it arrives THEN reads the previous chapter`() =
+    fun `GIVEN the previous chapter command WHEN it arrives THEN plays the previous chapter`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -613,6 +1028,7 @@ internal class ChapterListeningControllerImplTest {
         // Then
         assertNull(session)
         assertEquals(1, mediaSession.deactivationCount)
+        assertEquals(1, audioPlayer.releaseCount)
     }
 
     @Test
@@ -624,24 +1040,19 @@ internal class ChapterListeningControllerImplTest {
                 chapter = genesisOne,
                 shouldForceCanonOrder = false,
             )
-            val secondVerseId = speechEngine.lastUtterances[1].id
-            speechEngine.emit(
-                SpeechEngineEvent.RangeStarted(
-                    utteranceId = secondVerseId,
-                    charIndex = 21,
-                ),
-            )
+            audioPlayer.position = 8.25.seconds
+            advanceTimeBy(250.milliseconds)
 
             // When
             controller.previousVerse()
 
             // Then
             assertEquals(1, session?.verseIndex)
-            assertEquals(versesByChapter.getValue(genesisOne).getValue(2), speechEngine.lastUtterances.first().text)
+            assertEquals(6.seconds, audioPlayer.plays.last().position)
         }
 
     @Test
-    fun `GIVEN a paused chapter WHEN skipping verses THEN moves without speaking`() = runTest(testDispatcher) {
+    fun `GIVEN a paused chapter WHEN skipping verses THEN moves without playing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -649,18 +1060,36 @@ internal class ChapterListeningControllerImplTest {
             shouldForceCanonOrder = false,
         )
         controller.togglePlayPause()
-        val speakCount = speechEngine.speakCalls.size
+        val playCount = audioPlayer.plays.size
 
         // When
         controller.skipToVerse(2)
 
         // Then
         assertEquals(2, session?.verseIndex)
-        assertEquals(speakCount, speechEngine.speakCalls.size)
+        assertEquals(playCount, audioPlayer.plays.size)
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN changing the speed THEN reads on at the new speed and saves it`() =
+    fun `GIVEN a paused chapter moved to a verse WHEN resuming THEN plays from that verse`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        controller.togglePlayPause()
+        controller.skipToVerse(1)
+
+        // When
+        controller.togglePlayPause()
+
+        // Then
+        assertEquals(6.seconds, audioPlayer.plays.last().position)
+    }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN changing the speed THEN plays on at the new speed and saves it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -673,27 +1102,8 @@ internal class ChapterListeningControllerImplTest {
             controller.setSpeed(1.5f)
 
             // Then
-            assertEquals(1.5f, speechEngine.speakCalls.last().speed)
+            assertEquals(1.5f, audioPlayer.speed)
             assertEquals(1.5f, settingsRepository.settings.value.speed)
-        }
-
-    @Test
-    fun `GIVEN a chapter being read WHEN choosing another voice THEN reads on with it and saves it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            controller.startChapter(
-                chapter = genesisOne,
-                shouldForceCanonOrder = false,
-            )
-
-            // When
-            controller.selectVoice(otherVoice.id)
-
-            // Then
-            assertEquals(otherVoice.id, speechEngine.speakCalls.last().voiceId)
-            assertEquals(otherVoice.id, controller.state.value.selectedVoiceId)
-            assertEquals(otherVoice.id, settingsRepository.settings.value.voiceId)
         }
 
     @Test
@@ -709,32 +1119,7 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN previewing a voice THEN pauses and resumes once the sample ends`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            controller.startChapter(
-                chapter = genesisOne,
-                shouldForceCanonOrder = false,
-            )
-            controller.previewVoice(
-                voiceId = otherVoice.id,
-                sampleText = "Sample",
-            )
-            val previewId = speechEngine.lastUtterances.single().id
-            val previewingVoiceId = controller.state.value.previewingVoiceId
-
-            // When
-            speechEngine.emit(SpeechEngineEvent.Finished(previewId))
-
-            // Then
-            assertEquals(otherVoice.id, previewingVoiceId)
-            assertNull(controller.state.value.previewingVoiceId)
-            assertEquals(ListeningStatusModel.PLAYING, session?.status)
-        }
-
-    @Test
-    fun `GIVEN a sleep timer WHEN its time runs out while reading THEN pauses and says good night`() =
+    fun `GIVEN a sleep timer WHEN its time runs out while playing THEN pauses and says good night`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -789,7 +1174,7 @@ internal class ChapterListeningControllerImplTest {
             controller.setSleepTimer(ListeningSleepTimerOption.END_OF_CHAPTER)
 
             // When
-            speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+            audioPlayer.finish()
 
             // Then
             assertEquals(ListeningStatusModel.FINISHED, session?.status)
@@ -849,7 +1234,7 @@ internal class ChapterListeningControllerImplTest {
         }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the reader opens another chapter THEN reads that one`() =
+    fun `GIVEN a chapter playing WHEN the reader opens another chapter THEN plays that one`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -872,14 +1257,13 @@ internal class ChapterListeningControllerImplTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isAutoNextEnabled = false)
-            val day = createDay(genesisOne, genesisThree)
             controller.startDayReading(
-                day = day,
+                day = createDay(genesisOne, genesisThree),
                 chapter = genesisOne,
             )
 
             // When
-            speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+            audioPlayer.finish()
 
             // Then
             assertEquals(ListeningModeModel.DAY_READING, session?.mode)
@@ -896,7 +1280,7 @@ internal class ChapterListeningControllerImplTest {
         )
 
         // When
-        speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+        audioPlayer.finish()
 
         // Then
         assertEquals(ListeningStatusModel.FINISHED, session?.status)
@@ -904,33 +1288,87 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a partial chapter in the day WHEN reading it THEN reads only its verses`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val day = ListeningDayModel(
-            location = PlanDayLocationModel(
-                weekNumber = 1,
-                dayNumber = 1,
-                readingPlanType = ReadingPlanType.BOOKS,
-            ),
-            segments = listOf(
-                ListeningSegmentModel(
-                    chapter = genesisOne,
+    fun `GIVEN a partial chapter in the day WHEN playing it THEN starts at the heading of its first verse`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            controller.startDayReading(
+                day = createPartialDay(
                     startVerse = 2,
                     endVerse = 3,
                 ),
-            ),
-        )
+                chapter = genesisOne,
+            )
 
-        // When
-        controller.startDayReading(
-            day = day,
-            chapter = genesisOne,
-        )
+            // Then
+            assertEquals(listOf(2, 3), session?.verses?.map { it.number })
+            assertEquals(6.seconds, audioPlayer.plays.single().position)
+        }
 
-        // Then
-        assertEquals(listOf(2, 3), session?.verses?.map { it.number })
-    }
+    @Test
+    fun `GIVEN a day segment from the first verse WHEN playing it THEN starts with the spoken title`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            controller.startDayReading(
+                day = createPartialDay(
+                    startVerse = 1,
+                    endVerse = 2,
+                ),
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(Duration.ZERO, audioPlayer.plays.single().position)
+        }
+
+    @Test
+    fun `GIVEN a chapter the gate unlocked but could not record WHEN moving to it THEN opens it anyway`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisTwo))
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            controller.moveToAdjacentChapter(
+                direction = ChapterDirectionModel.NEXT,
+                chapter = genesisTwo,
+                shouldPlay = true,
+            )
+
+            // Then
+            assertEquals(genesisTwo, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        }
+
+    @Test
+    fun `GIVEN a partial chapter in the day WHEN its last verse ends THEN stops before the next verse`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startDayReading(
+                day = createPartialDay(
+                    startVerse = 1,
+                    endVerse = 2,
+                ),
+                chapter = genesisOne,
+            )
+
+            // When
+            audioPlayer.position = 10.seconds
+            advanceTimeBy(250.milliseconds)
+
+            // Then
+            assertEquals(ListeningStatusModel.FINISHED, session?.status)
+            assertEquals(genesisOne, session?.finishedChapter)
+        }
 
     @Test
     fun `GIVEN the reading of today WHEN the reader opens a chapter outside it THEN leaves the day`() =
@@ -958,7 +1396,7 @@ internal class ChapterListeningControllerImplTest {
             chapter = genesisOne,
             shouldForceCanonOrder = false,
         )
-        speechEngine.emit(SpeechEngineEvent.Finished(speechEngine.lastUtterances.last().id))
+        audioPlayer.finish()
 
         // When
         controller.dismissFinishOffer()
@@ -968,7 +1406,120 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
-    fun `GIVEN a failing utterance WHEN the engine reports it THEN pauses`() = runTest(testDispatcher) {
+    fun `GIVEN a playback the player cannot decode WHEN it fails THEN shows the audio as unavailable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = true,
+                ),
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertEquals(listOf(genesisOneAudio.audioPath), audioRepository.evicted)
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN skipping to a locked one and playing THEN asks to unlock it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(lockedChapters = setOf(genesisThree))
+            controller.startChapter(
+                chapter = genesisTwo,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+            controller.nextChapter()
+
+            // When
+            controller.togglePlayPause()
+
+            // Then
+            assertEquals(ListeningStatusModel.NEXT_LOCKED, session?.status)
+            assertEquals(genesisThree, session?.lockedSegment?.chapter)
+            assertFalse(genesisThree in audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN a playback that failed mid chapter WHEN retrying THEN resumes where it was`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+        audioPlayer.position = 8.seconds
+        audioPlayer.emit(
+            ChapterAudioPlayerEvent.Failed(
+                playbackId = audioPlayer.plays.last().playbackId,
+                isFileUnreadable = false,
+            ),
+        )
+
+        // When
+        controller.togglePlayPause()
+
+        // Then
+        assertEquals(8.seconds, audioPlayer.plays.last().position)
+    }
+
+    @Test
+    fun `GIVEN a playback that failed mid chapter WHEN closed and started again THEN starts from the beginning`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val firstStart = audioPlayer.plays.last().position
+            audioPlayer.position = 8.seconds
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = false,
+                ),
+            )
+            controller.stop()
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(firstStart, audioPlayer.plays.last().position)
+        }
+
+    @Test
+    fun `GIVEN the end of chapter sleep timer WHEN a chapter plays THEN prefetches nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.setSleepTimer(ListeningSleepTimerOption.END_OF_CHAPTER)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(listOf(genesisOne), audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN a playback failure WHEN it fails THEN tracks the audio as unavailable`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         controller.startChapter(
@@ -977,11 +1528,184 @@ internal class ChapterListeningControllerImplTest {
         )
 
         // When
-        speechEngine.emit(SpeechEngineEvent.Failed(speechEngine.lastUtterances.first().id))
+        audioPlayer.emit(
+            ChapterAudioPlayerEvent.Failed(
+                playbackId = audioPlayer.plays.last().playbackId,
+                isFileUnreadable = false,
+            ),
+        )
 
         // Then
-        assertEquals(ListeningStatusModel.PAUSED, session?.status)
+        assertEquals(
+            "playback_failed",
+            trackedEvents.last { (name, _) -> name == "chapter_listening_audio_unavailable" }.second["reason"],
+        )
     }
+
+    @Test
+    fun `GIVEN a playback failing for another reason WHEN it fails THEN keeps the cached file`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = false,
+                ),
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertTrue(audioRepository.evicted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a paused chapter WHEN skipping to the next chapter THEN moves without loading it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisTwo,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            controller.nextChapter()
+
+            // Then
+            assertEquals(genesisThree, session?.segment?.chapter)
+            assertEquals(ListeningStatusModel.PAUSED, session?.status)
+            assertFalse(mediaSession.updates.last().isAudioLoaded)
+        }
+
+    @Test
+    fun `GIVEN an expired session WHEN the person signs in again THEN loads and plays the chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(failure = ChapterAudioFailureModel.NOT_SIGNED_IN)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            authenticatedUserId.value = null
+            audioRepository.failure = null
+
+            // When
+            authenticatedUserId.value = "user-1"
+
+            // Then
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+            assertEquals(1, audioPlayer.plays.size)
+        }
+
+    @Test
+    fun `GIVEN an expired session WHEN an account without access signs in THEN asks to unlock the chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                failure = ChapterAudioFailureModel.NOT_SIGNED_IN,
+                lockedChapters = setOf(genesisOne),
+            )
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            authenticatedUserId.value = null
+            audioRepository.failure = null
+
+            // When
+            authenticatedUserId.value = "user-2"
+
+            // Then
+            assertEquals(ListeningStatusModel.NEXT_LOCKED, session?.status)
+            assertEquals(genesisOne, session?.lockedSegment?.chapter)
+            assertTrue(audioPlayer.plays.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a chapter that needs a connection WHEN someone signs in THEN waits for a retry`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(failure = ChapterAudioFailureModel.NO_CONNECTION)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            authenticatedUserId.value = null
+
+            // When
+            authenticatedUserId.value = "user-2"
+
+            // Then
+            assertEquals(ListeningStatusModel.NEEDS_CONNECTION, session?.status)
+            assertEquals(listOf(genesisOne), audioRepository.requests)
+        }
+
+    @Test
+    fun `GIVEN a chapter playing WHEN the session leaves it THEN checks it for a newer revision`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isAutoNextEnabled = false)
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val refreshedWhilePlaying = audioRepository.refreshed.toList()
+
+            // When
+            controller.nextChapter()
+
+            // Then
+            assertTrue(refreshedWhilePlaying.isEmpty())
+            assertEquals(listOf(genesisOne), audioRepository.refreshed)
+        }
+
+    @Test
+    fun `GIVEN a manifest without the segment verses WHEN starting THEN shows the audio as unavailable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            controller.startDayReading(
+                day = createPartialDay(
+                    startVerse = 40,
+                    endVerse = 45,
+                ),
+                chapter = genesisOne,
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.AUDIO_UNAVAILABLE, session?.status)
+            assertEquals(listOf(genesisOneAudio.audioPath), audioRepository.evicted)
+            assertEquals(
+                "no_verses",
+                trackedEvents.last { (name, _) -> name == "chapter_listening_audio_unavailable" }.second["reason"],
+            )
+        }
+
+    @Test
+    fun `GIVEN the access check fails WHEN prefetching the next chapter THEN keeps playing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isAccessCheckFailing = true)
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+        }
 
     @Test
     fun `GIVEN the audio focus is refused WHEN starting THEN stays paused`() = runTest(testDispatcher) {
@@ -996,11 +1720,11 @@ internal class ChapterListeningControllerImplTest {
 
         // Then
         assertEquals(ListeningStatusModel.PAUSED, session?.status)
-        assertTrue(speechEngine.speakCalls.isEmpty())
+        assertTrue(audioPlayer.plays.isEmpty())
     }
 
     @Test
-    fun `GIVEN a chapter being read WHEN the state changes THEN tells the system what is playing`() =
+    fun `GIVEN a chapter playing WHEN the state changes THEN tells the system what is playing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1015,21 +1739,22 @@ internal class ChapterListeningControllerImplTest {
             val nowPlaying = mediaSession.updates.last()
             assertEquals("Genesis 1", nowPlaying.chapterTitle)
             assertEquals("ACF", nowPlaying.subtitle)
-            assertEquals(3, nowPlaying.verses.size)
+            assertEquals(14.seconds, nowPlaying.time.total)
+            assertEquals(1, nowPlaying.verseNumber)
             assertTrue(nowPlaying.isPlaying)
         }
 
-    @Test
-    fun `GIVEN the voice settings WHEN opening them THEN asks the engine`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        controller.openVoiceSettings()
-
-        // Then
-        assertEquals(1, speechEngine.voiceSettingsOpenCount)
-    }
+    private fun createAudioVerse(
+        number: Int,
+        headingStart: Duration?,
+        start: Duration,
+        end: Duration,
+    ): ChapterAudioVerseModel = ChapterAudioVerseModel(
+        number = number,
+        headingStart = headingStart,
+        start = start,
+        end = end,
+    )
 
     private fun createDay(vararg chapters: ChapterLocationModel): ListeningDayModel = ListeningDayModel(
         location = PlanDayLocationModel(
@@ -1046,21 +1771,40 @@ internal class ChapterListeningControllerImplTest {
         },
     )
 
-    private fun TestScope.prepareScenario(
-        voices: SpeechVoicesModel = SpeechVoicesModel.Available(
-            voices = listOf(voice, otherVoice),
-            shouldSuggestEnhancedVoice = false,
+    private fun createPartialDay(
+        startVerse: Int,
+        endVerse: Int,
+    ): ListeningDayModel = ListeningDayModel(
+        location = PlanDayLocationModel(
+            weekNumber = 1,
+            dayNumber = 1,
+            readingPlanType = ReadingPlanType.BOOKS,
         ),
+        segments = listOf(
+            ListeningSegmentModel(
+                chapter = genesisOne,
+                startVerse = startVerse,
+                endVerse = endVerse,
+            ),
+        ),
+    )
+
+    private fun TestScope.prepareScenario(
+        failure: ChapterAudioFailureModel? = null,
         isAutoNextEnabled: Boolean = true,
         lockedChapters: Set<ChapterLocationModel> = emptySet(),
+        accessGate: CompletableDeferred<Unit>? = null,
         canActivate: Boolean = true,
+        isAccessCheckFailing: Boolean = false,
     ) {
-        speechEngine = FakeSpeechEngine(voices)
+        audioPlayer = FakeChapterAudioPlayer()
+        audioRepository = FakeChapterAudioRepository(audioByChapter)
+        audioRepository.failure = failure
+        authenticatedUserId = MutableStateFlow("user-1")
         mediaSession = FakeListeningMediaSession(canActivate)
         settingsRepository = FakeSettingsRepository(
             ChapterListeningSettingsModel(
                 speed = 1f,
-                voiceId = null,
                 isAutoNextEnabled = isAutoNextEnabled,
             ),
         )
@@ -1069,21 +1813,27 @@ internal class ChapterListeningControllerImplTest {
         val order = listOf(genesisOne, genesisTwo, genesisThree)
         controller = ChapterListeningControllerImpl(
             scope = backgroundScope,
-            speechEngine = speechEngine,
+            audioPlayer = audioPlayer,
             mediaSession = mediaSession,
             settingsRepository = settingsRepository,
+            chapterAudioRepository = audioRepository,
+            observeAuthenticatedUserId = { authenticatedUserId },
             getChapterVerseTexts = { chapter ->
                 versesByChapter[ChapterLocationModel(chapter.bookId, chapter.chapterNumber)].orEmpty()
             },
-            getListeningVersion = {
-                ListeningVersionModel(
-                    id = "ACF",
-                    languageTag = "pt-BR",
-                )
-            },
+            getSelectedVersionIdFlow = { flowOf("ACF") },
             getChapterListeningAccess = { chapter ->
+                accessGate?.await()
+                if (isAccessCheckFailing) error("Remote config unavailable")
                 if (chapter in lockedChapters) {
-                    ChapterListeningAccessModel.UnlockAvailable(1)
+                    ChapterListeningAccessModel.UnlockAvailable(
+                        rewardedRemainingToday = 1,
+                        isFreeUnlockAvailable = true,
+                        allowance = ListeningAllowanceModel(
+                            hasRewardedUnlocks = true,
+                            hasFreeUnlocks = true,
+                        ),
+                    )
                 } else {
                     ChapterListeningAccessModel.Open
                 }
@@ -1093,62 +1843,102 @@ internal class ChapterListeningControllerImplTest {
                 order.getOrNull(order.indexOf(chapter) + step)
             },
             getListeningChapterTitle = { chapter -> "Genesis ${chapter.chapterNumber}" },
-            estimateListeningTime = EstimateListeningTimeUseCase(),
+            getListeningTime = GetListeningTimeUseCase(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { controller.events.collect { event -> emittedEvents += event } }
     }
 }
 
-private class FakeSpeechEngine(
-    var voices: SpeechVoicesModel,
-) : SpeechEngine {
+private class FakeChapterAudioPlayer : ChapterAudioPlayer {
     override val isSupported: Boolean = true
-    private val eventFlow = MutableSharedFlow<SpeechEngineEvent>(extraBufferCapacity = 16)
-    override val events: Flow<SpeechEngineEvent> = eventFlow
-    val speakCalls = mutableListOf<SpeakCall>()
-    var voiceSettingsOpenCount = 0
+    private val eventFlow = MutableSharedFlow<ChapterAudioPlayerEvent>(extraBufferCapacity = 16)
+    override val events: Flow<ChapterAudioPlayerEvent> = eventFlow
+    override var position: Duration = Duration.ZERO
+    val plays = mutableListOf<PlayCall>()
+    var speed: Float? = null
+    var releaseCount = 0
+    var pauseCount = 0
+    val seeks = mutableListOf<Duration>()
 
-    val lastUtterances: List<SpeechUtteranceModel>
-        get() = speakCalls.last().utterances
-
-    fun emit(event: SpeechEngineEvent) {
+    fun emit(event: ChapterAudioPlayerEvent) {
         eventFlow.tryEmit(event)
     }
 
-    var voicesGate: CompletableDeferred<Unit>? = null
-
-    override suspend fun loadVoices(languageTag: String): SpeechVoicesModel {
-        voicesGate?.await()
-        return voices
+    fun finish() {
+        emit(ChapterAudioPlayerEvent.Ended(plays.last().playbackId))
     }
 
-    override fun speak(
-        utterances: List<SpeechUtteranceModel>,
-        voiceId: String?,
-        languageTag: String,
+    override fun play(
+        audioPath: String,
+        position: Duration,
         speed: Float,
+        playbackId: Int,
     ) {
-        speakCalls += SpeakCall(
-            utterances = utterances,
-            voiceId = voiceId,
-            speed = speed,
+        plays += PlayCall(
+            audioPath = audioPath,
+            position = position,
+            playbackId = playbackId,
         )
+        this.position = position
+        this.speed = speed
     }
 
-    override fun stop() {
+    override fun seekTo(position: Duration) {
+        seeks += position
     }
 
-    override fun openVoiceSettings() {
-        voiceSettingsOpenCount++
+    override fun setSpeed(speed: Float) {
+        this.speed = speed
+    }
+
+    override fun pause() {
+        pauseCount++
+    }
+
+    override fun release() {
+        releaseCount++
     }
 }
 
-private class SpeakCall(
-    val utterances: List<SpeechUtteranceModel>,
-    val voiceId: String?,
-    val speed: Float,
+private class PlayCall(
+    val audioPath: String,
+    val position: Duration,
+    val playbackId: Int,
 )
+
+private class FakeChapterAudioRepository(
+    private val audioByChapter: Map<ChapterLocationModel, ChapterAudioModel>,
+) : ChapterAudioRepository {
+    var failure: ChapterAudioFailureModel? = null
+    var gate: CompletableDeferred<Unit>? = null
+    var failingChapters: Set<ChapterLocationModel> = emptySet()
+    val requests = mutableListOf<ChapterLocationModel>()
+    val refreshed = mutableListOf<ChapterLocationModel>()
+    val evicted = mutableListOf<String>()
+
+    override suspend fun loadChapterAudio(
+        bibleVersionId: String,
+        chapter: ChapterLocationModel,
+    ): ChapterAudioResultModel {
+        requests += chapter
+        gate?.await()
+        if (chapter in failingChapters) return ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE)
+        return failure?.let(ChapterAudioResultModel::Failed)
+            ?: ChapterAudioResultModel.Ready(audioByChapter.getValue(chapter))
+    }
+
+    override suspend fun refresh(
+        bibleVersionId: String,
+        chapter: ChapterLocationModel,
+    ) {
+        refreshed += chapter
+    }
+
+    override suspend fun evict(audioPath: String) {
+        evicted += audioPath
+    }
+}
 
 private class FakeListeningMediaSession(
     private val canActivate: Boolean,
@@ -1178,10 +1968,6 @@ private class FakeSettingsRepository(
 
     override suspend fun setSpeed(speed: Float) {
         settings.update { it.copy(speed = speed) }
-    }
-
-    override suspend fun setVoiceId(voiceId: String) {
-        settings.update { it.copy(voiceId = voiceId) }
     }
 
     override suspend fun setAutoNextEnabled(isEnabled: Boolean) {

@@ -175,6 +175,7 @@ private fun PaywallPortraitContent(
             VerticalSpacer(14)
             PremiumFeaturesList(
                 maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
+                isChapterListeningAvailable = (uiState as? PaywallUiState.Success)?.isChapterListeningAvailable == true,
                 itemSpacing = portraitFeatureSpacing,
                 iconSize = portraitFeatureIconSize,
             )
@@ -208,6 +209,7 @@ private fun PaywallLandscapeContent(
                     .fillMaxHeight(),
                 platform = platform,
                 maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
+                isChapterListeningAvailable = (uiState as? PaywallUiState.Success)?.isChapterListeningAvailable == true,
                 dimensions = dimensions,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,

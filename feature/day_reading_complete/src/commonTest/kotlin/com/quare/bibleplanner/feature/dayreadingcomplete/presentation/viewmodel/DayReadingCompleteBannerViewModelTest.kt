@@ -284,6 +284,7 @@ internal class DayReadingCompleteBannerViewModelTest {
                             paywallSource = PaywallEntrySource.DAY_STUDY,
                             requestKey = BANNER_REQUEST_KEY,
                             rewardedRemainingToday = 2,
+                            canUnlockWithoutVideo = false,
                         ),
                     ),
                 ),

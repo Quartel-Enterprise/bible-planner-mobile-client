@@ -131,13 +131,27 @@ internal class ReadListeningViewModel(
     override fun handleEvent(event: ReadListeningUiEvent) {
         when (event) {
             is ReadListeningUiEvent.OnListenClick -> listen(event)
+
             ReadListeningUiEvent.OnMiniPlayerClick -> navigator.navigate(ChapterListeningPlayerNavRoute)
+
             ReadListeningUiEvent.OnPlayPauseClick -> playbackActions.togglePlayPause(ListeningSurface.MINI_PLAYER)
+
             ReadListeningUiEvent.OnNextVerseClick -> controller.nextVerse()
+
             ReadListeningUiEvent.OnCloseClick -> controller.stop()
-            ReadListeningUiEvent.OnVoiceSettingsClick -> controller.openVoiceSettings()
-            ReadListeningUiEvent.OnUnlockNextClick -> playbackActions.unlockLockedChapter(viewModelScope)
+
+            ReadListeningUiEvent.OnUnavailableActionClick -> playbackActions.handleUnavailableAction(
+                scope = viewModelScope,
+                surface = ListeningSurface.MINI_PLAYER,
+            )
+
+            ReadListeningUiEvent.OnUnlockNextClick -> playbackActions.unlockLockedChapter(
+                scope = viewModelScope,
+                surface = ListeningSurface.MINI_PLAYER,
+            )
+
             ReadListeningUiEvent.OnFinishOfferDismissClick -> controller.dismissFinishOffer()
+
             ReadListeningUiEvent.OnBackToVerseClick -> Unit
         }
     }

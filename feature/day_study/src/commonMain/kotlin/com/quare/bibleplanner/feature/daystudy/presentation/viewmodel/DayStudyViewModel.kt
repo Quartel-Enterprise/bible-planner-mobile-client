@@ -291,6 +291,7 @@ internal class DayStudyViewModel(
                     paywallSource = PaywallEntrySource.DAY_STUDY,
                     requestKey = buildRewardedUnlockRequestKey(key),
                     rewardedRemainingToday = card.rewardedRemainingToday,
+                    canUnlockWithoutVideo = false,
                 ),
             )
 

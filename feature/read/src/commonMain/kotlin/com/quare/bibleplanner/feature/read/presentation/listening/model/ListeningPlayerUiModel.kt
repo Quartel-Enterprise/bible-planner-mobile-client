@@ -16,7 +16,6 @@ data class ListeningPlayerUiModel(
     val remaining: Duration,
     val total: Duration,
     val versionAbbreviation: String,
-    val languageTag: String,
     val dayProgress: ListeningDayProgressUiModel?,
     val lockedChapter: ChapterLocationModel?,
 )

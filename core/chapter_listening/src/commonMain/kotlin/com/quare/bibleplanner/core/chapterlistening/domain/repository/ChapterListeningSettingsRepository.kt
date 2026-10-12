@@ -8,7 +8,5 @@ interface ChapterListeningSettingsRepository {
 
     suspend fun setSpeed(speed: Float)
 
-    suspend fun setVoiceId(voiceId: String)
-
     suspend fun setAutoNextEnabled(isEnabled: Boolean)
 }

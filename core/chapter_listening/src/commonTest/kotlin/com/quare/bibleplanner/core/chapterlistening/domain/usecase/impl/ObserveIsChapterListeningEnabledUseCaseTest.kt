@@ -1,10 +1,9 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.usecase.impl
 
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechEngineEvent
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechUtteranceModel
-import com.quare.bibleplanner.core.chapterlistening.domain.model.SpeechVoicesModel
-import com.quare.bibleplanner.core.chapterlistening.domain.service.SpeechEngine
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioPlayerEvent
+import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.ObserveStringRemoteConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -14,17 +13,21 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 
 internal class ObserveIsChapterListeningEnabledUseCaseTest {
     private lateinit var useCase: ObserveIsChapterListeningEnabledUseCase
-    private lateinit var remoteConfig: FakeObserveBooleanRemoteConfig
+    private lateinit var booleanRemoteConfig: FakeObserveBooleanRemoteConfig
+    private lateinit var stringRemoteConfig: FakeObserveStringRemoteConfig
 
     @Test
-    fun `GIVEN a platform without a voice engine WHEN observing THEN listening is off`() = runTest {
+    fun `GIVEN a platform without an audio player WHEN observing THEN listening is off`() = runTest {
         // Given
         prepareScenario(
             isSupported = false,
-            remoteValue = true,
+            isEnabled = true,
+            cloudVersions = null,
+            selectedVersionId = "a21",
         )
 
         // When
@@ -39,7 +42,9 @@ internal class ObserveIsChapterListeningEnabledUseCaseTest {
         // Given
         prepareScenario(
             isSupported = true,
-            remoteValue = true,
+            isEnabled = true,
+            cloudVersions = "A21",
+            selectedVersionId = "a21",
         )
 
         // When
@@ -47,17 +52,91 @@ internal class ObserveIsChapterListeningEnabledUseCaseTest {
 
         // Then
         assertTrue(isEnabled)
-        assertEquals("chapter_listening_enabled" to false, remoteConfig.requests.single())
+        assertEquals("chapter_listening_enabled" to false, booleanRemoteConfig.requests.single())
+        assertEquals("listening_cloud_versions" to "", stringRemoteConfig.requests.single())
+    }
+
+    @Test
+    fun `GIVEN no cloud versions in Remote Config WHEN observing THEN listening is off`() = runTest {
+        // Given
+        prepareScenario(
+            isSupported = true,
+            isEnabled = true,
+            cloudVersions = null,
+            selectedVersionId = "a21",
+        )
+
+        // When
+        val isEnabled = useCase().first()
+
+        // Then
+        assertFalse(isEnabled)
+    }
+
+    @Test
+    fun `GIVEN the kill switch off WHEN observing THEN listening is off`() = runTest {
+        // Given
+        prepareScenario(
+            isSupported = true,
+            isEnabled = false,
+            cloudVersions = null,
+            selectedVersionId = "a21",
+        )
+
+        // When
+        val isEnabled = useCase().first()
+
+        // Then
+        assertFalse(isEnabled)
+    }
+
+    @Test
+    fun `GIVEN a version outside the remote list WHEN observing THEN listening is off`() = runTest {
+        // Given
+        prepareScenario(
+            isSupported = true,
+            isEnabled = true,
+            cloudVersions = " A21 , niv",
+            selectedVersionId = "rvr",
+        )
+
+        // When
+        val isEnabled = useCase().first()
+
+        // Then
+        assertFalse(isEnabled)
+    }
+
+    @Test
+    fun `GIVEN a version in the remote list WHEN observing THEN matches it ignoring case and spaces`() = runTest {
+        // Given
+        prepareScenario(
+            isSupported = true,
+            isEnabled = true,
+            cloudVersions = " A21 , niv",
+            selectedVersionId = "NIV",
+        )
+
+        // When
+        val isEnabled = useCase().first()
+
+        // Then
+        assertTrue(isEnabled)
     }
 
     private fun prepareScenario(
         isSupported: Boolean,
-        remoteValue: Boolean,
+        isEnabled: Boolean,
+        cloudVersions: String?,
+        selectedVersionId: String,
     ) {
-        remoteConfig = FakeObserveBooleanRemoteConfig(remoteValue)
+        booleanRemoteConfig = FakeObserveBooleanRemoteConfig(isEnabled)
+        stringRemoteConfig = FakeObserveStringRemoteConfig(cloudVersions)
         useCase = ObserveIsChapterListeningEnabledUseCase(
-            speechEngine = SupportSpeechEngine(isSupported),
-            observeBooleanRemoteConfig = remoteConfig,
+            audioPlayer = SupportAudioPlayer(isSupported),
+            getSelectedVersionIdFlow = { flowOf(selectedVersionId) },
+            observeBooleanRemoteConfig = booleanRemoteConfig,
+            observeStringRemoteConfig = stringRemoteConfig,
         )
     }
 }
@@ -76,21 +155,39 @@ private class FakeObserveBooleanRemoteConfig(
     }
 }
 
-private class SupportSpeechEngine(
+private class FakeObserveStringRemoteConfig(
+    private val value: String?,
+) : ObserveStringRemoteConfig {
+    val requests = mutableListOf<Pair<String, String>>()
+
+    override fun invoke(
+        key: String,
+        default: String,
+    ): Flow<String> {
+        requests += key to default
+        return flowOf(value ?: default)
+    }
+}
+
+private class SupportAudioPlayer(
     override val isSupported: Boolean,
-) : SpeechEngine {
-    override val events: Flow<SpeechEngineEvent> = emptyFlow()
+) : ChapterAudioPlayer {
+    override val events: Flow<ChapterAudioPlayerEvent> = emptyFlow()
+    override val position: Duration = Duration.ZERO
 
-    override suspend fun loadVoices(languageTag: String): SpeechVoicesModel = error("unused")
-
-    override fun speak(
-        utterances: List<SpeechUtteranceModel>,
-        voiceId: String?,
-        languageTag: String,
+    override fun play(
+        audioPath: String,
+        position: Duration,
         speed: Float,
+        playbackId: Int,
     ) = error("unused")
 
-    override fun stop() = error("unused")
+    override fun seekTo(position: Duration) {
+    }
 
-    override fun openVoiceSettings() = error("unused")
+    override fun setSpeed(speed: Float) = error("unused")
+
+    override fun pause() = error("unused")
+
+    override fun release() = error("unused")
 }

@@ -28,6 +28,8 @@ import bibleplanner.feature.read.generated.resources.chapter_study_pill
 import bibleplanner.feature.read.generated.resources.download_version
 import bibleplanner.feature.read.generated.resources.listening_listen
 import bibleplanner.feature.read.generated.resources.listening_pause
+import bibleplanner.feature.read.generated.resources.listening_retry
+import bibleplanner.feature.read.generated.resources.listening_sign_in
 import bibleplanner.feature.read.generated.resources.listening_unlock
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
 import bibleplanner.feature.read.generated.resources.mark_as_read
@@ -719,6 +721,61 @@ internal class ReadUiTest {
 
         // Then
         assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnUnlockNextClick), listeningEvents)
+    }
+
+    @Test
+    fun `GIVEN a chapter that needs a connection WHEN clicking try again THEN sends the unavailable action`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(
+                    player = listeningPlayer(status = ListeningStatusModel.NEEDS_CONNECTION),
+                ),
+            )
+            val retry = getString(Res.string.listening_retry)
+
+            // When
+            onNodeWithText(retry).performClick()
+
+            // Then
+            assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnUnavailableActionClick), listeningEvents)
+        }
+
+    @Test
+    fun `GIVEN an expired session WHEN clicking sign in THEN sends the unavailable action`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = loadedUiState,
+            listening = availableListeningUiState(
+                player = listeningPlayer(status = ListeningStatusModel.NEEDS_SIGN_IN),
+            ),
+        )
+        val signIn = getString(Res.string.listening_sign_in)
+
+        // When
+        onNodeWithText(signIn).performClick()
+
+        // Then
+        assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnUnavailableActionClick), listeningEvents)
+    }
+
+    @Test
+    fun `GIVEN a version without narration WHEN showing the mini player THEN offers no action`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = loadedUiState,
+            listening = availableListeningUiState(
+                player = listeningPlayer(status = ListeningStatusModel.VERSION_UNAVAILABLE),
+            ),
+        )
+        val retry = getString(Res.string.listening_retry)
+
+        // When
+        val retryButtons = onAllNodesWithText(retry)
+
+        // Then
+        retryButtons.assertCountEquals(0)
     }
 
     @Test
