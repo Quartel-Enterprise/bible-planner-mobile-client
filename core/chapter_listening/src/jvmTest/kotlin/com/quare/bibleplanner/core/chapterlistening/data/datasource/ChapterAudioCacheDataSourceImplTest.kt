@@ -21,6 +21,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 internal class ChapterAudioCacheDataSourceImplTest {
     private val genesisOne = "A21/GENESIS/1"
@@ -202,7 +204,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
         val index = readIndex()
 
         // When
-        now = 30 * 60 * 1000L
+        now = 30.minutes.inWholeMilliseconds
         dataSource.find(genesisOne)
 
         // Then
@@ -216,7 +218,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
         dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
 
         // When
-        now = 2 * 60 * 60 * 1000L
+        now = 2.hours.inWholeMilliseconds
         dataSource.find(genesisOne)
 
         // Then
@@ -229,7 +231,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
         dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
         SystemFileSystem.createDirectories(Path(directory, "index.json.part"))
-        now = 2 * 60 * 60 * 1000L
+        now = 2.hours.inWholeMilliseconds
 
         // When
         val cached = dataSource.find(genesisOne)
@@ -244,11 +246,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
             // Given
             val dataSource = createDataSource(maxBytes = MAX_BYTES)
             dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
-            now = 30 * 60 * 1000L
+            now = 30.minutes.inWholeMilliseconds
             dataSource.find(genesisOne)
 
             // When
-            now = 70 * 60 * 1000L
+            now = 70.minutes.inWholeMilliseconds
             dataSource.find(genesisOne)
 
             // Then
@@ -340,7 +342,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
             val dataSource = createDataSource(maxBytes = MAX_BYTES)
             dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
             val index = readIndex()
-            now = 2 * 60 * 60 * 1000L
+            now = 2.hours.inWholeMilliseconds
 
             // When
             val fileName = dataSource.findFileName(genesisOne)

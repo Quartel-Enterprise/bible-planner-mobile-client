@@ -7,8 +7,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 internal class ShouldShowLoginNudgeUseCaseTest {
+    private val snooze: Duration = 24.hours
+    private val grace: Duration = 12.hours
+
     @Test
     fun `GIVEN an authenticated user WHEN evaluating THEN returns false`() = runTest {
         // Given
@@ -60,7 +65,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `GIVEN a nudge within the snooze window WHEN evaluating THEN returns false`() = runTest {
         // Given
-        val shouldShowLoginNudge = useCase(snoozedAt = NOW - SNOOZE_MILLIS + 1)
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW - snooze.inWholeMilliseconds + 1)
 
         // When
         val shouldShow = shouldShowLoginNudge()
@@ -72,7 +77,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `GIVEN an elapsed snooze window WHEN evaluating THEN returns true`() = runTest {
         // Given
-        val shouldShowLoginNudge = useCase(snoozedAt = NOW - SNOOZE_MILLIS)
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW - snooze.inWholeMilliseconds)
 
         // When
         val shouldShow = shouldShowLoginNudge()
@@ -84,7 +89,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `GIVEN a snooze timestamp in the future WHEN evaluating THEN returns true`() = runTest {
         // Given
-        val shouldShowLoginNudge = useCase(snoozedAt = NOW + SNOOZE_MILLIS)
+        val shouldShowLoginNudge = useCase(snoozedAt = NOW + snooze.inWholeMilliseconds)
 
         // When
         val shouldShow = shouldShowLoginNudge()
@@ -96,7 +101,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `GIVEN a first action timestamp in the future WHEN evaluating THEN returns true`() = runTest {
         // Given
-        val shouldShowLoginNudge = useCase(firstActionAt = NOW + GRACE_MILLIS)
+        val shouldShowLoginNudge = useCase(firstActionAt = NOW + grace.inWholeMilliseconds)
 
         // When
         val shouldShow = shouldShowLoginNudge()
@@ -108,7 +113,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `GIVEN a nudge within the first action grace period WHEN evaluating THEN returns false`() = runTest {
         // Given
-        val shouldShowLoginNudge = useCase(firstActionAt = NOW - GRACE_MILLIS + 1)
+        val shouldShowLoginNudge = useCase(firstActionAt = NOW - grace.inWholeMilliseconds + 1)
 
         // When
         val shouldShow = shouldShowLoginNudge()
@@ -140,7 +145,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
         isOnline: Boolean = true,
         snoozedAt: Long? = null,
         dontShowAgain: Boolean = false,
-        firstActionAt: Long? = NOW - GRACE_MILLIS,
+        firstActionAt: Long? = NOW - grace.inWholeMilliseconds,
     ): ShouldShowLoginNudgeUseCase = useCase(
         preferences = FakeLoginNudgePreferences(
             snoozedAt = snoozedAt,
@@ -165,7 +170,5 @@ internal class ShouldShowLoginNudgeUseCaseTest {
 
     private companion object {
         const val NOW = 1_000_000_000L
-        const val SNOOZE_MILLIS = 24L * 60 * 60 * 1000
-        const val GRACE_MILLIS = 12L * 60 * 60 * 1000
     }
 }

@@ -468,6 +468,31 @@ Enforced by the custom ktlint rule `bible-planner-style:companion-object-duratio
 by its declared type or by an initializer such as `2.seconds`, `Duration.parse(...)` or `.toDuration(...)`. A
 private one is already reported by `companion-object-constants`, so this rule covers the public and internal ones.
 
+A span of time is never converted between units by hand. `30L * 60 * 1000` hides its unit in arithmetic, and a
+missing or extra factor still compiles. Write the `Duration` instead, and turn it into a number with
+`inWholeMilliseconds` (or `inWholeSeconds`) only where an API takes one.
+
+```kotlin
+// Correct
+class AndroidListeningMediaSession(...) {
+    private val wakeLockTimeout: Duration = 30.minutes
+
+    fun activate() {
+        wakeLock.acquire(wakeLockTimeout.inWholeMilliseconds)
+    }
+}
+
+// Wrong
+private companion object {
+    const val WAKE_LOCK_TIMEOUT_MILLIS = 30L * 60 * 1000
+}
+```
+
+Enforced by the custom ktlint rule `bible-planner-style:manual-time-unit-conversion`, which reports a multiplication
+with two or more of the factors 24, 60, 3600 and 1000, at least one of them other than 1000 (`minutes * 60 * 1000`,
+`24L * 60 * 60`). A single factor (`seconds * 1000`) and `1000 * 1000` are left alone, since they are as often about
+sizes as about time.
+
 ## Interface and Implementation in Separate Files
 
 An interface and a class that implements it never share a file. The interface is the contract a consumer imports;
