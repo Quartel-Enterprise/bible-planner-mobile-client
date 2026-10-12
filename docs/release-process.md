@@ -48,9 +48,9 @@ flowchart TD
 | `android-screenshots` | ubuntu | yes | Calls the `store screenshots` workflow: one job renders the Play screenshots, then one job per locale uploads them |
 | `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
 | `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect — the binary only |
-| `ios-screenshots-render` | macOS | yes | Renders the App Store screenshots, next to `ios-build`, and saves them as a build artifact |
+| `ios-screenshots-render` | macOS | yes | Creates the App Store version, then renders the App Store screenshots, next to `ios-build`, and saves them as a build artifact |
 | `ios-screenshots-upload` | macOS | yes | Uploads the rendered screenshots to the editable App Store version, one job per locale, one after the other |
-| `ios-screenshots-finish` | macOS | yes | After the last locale: removes the stray screenshots the uploads leave behind, sorts every shelf and checks that no locale was left without any |
+| `ios-screenshots-finish` | macOS | yes | After the last locale: removes the duplicate screenshots `deliver` leaves behind, sorts every shelf and checks that no locale was left without any |
 | `ios-submit` | macOS | yes | Updates the App Store listing and submits the uploaded build for review |
 | `desktop-build` | macOS + windows + ubuntu | yes | Builds the `.dmg`, `.msi`, `.deb` and `.rpm` installers, one runner per OS |
 | `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release with the installers attached |

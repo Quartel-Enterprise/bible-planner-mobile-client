@@ -39,12 +39,13 @@ SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
 PLAY_SERVER_ERROR_MESSAGE = "Google Api Error: Server error".freeze
 PLAY_SERVER_ERROR_ATTEMPTS = 3
 PLAY_SERVER_ERROR_WAIT_SECONDS = 30
-# What App Store Connect answers when deliver, after uploading, tries to put a shelf in file-name
-# order while it holds a screenshot copied over from the previous version, and how long to wait for
-# that copy to end before uploading — see upload_app_store_screenshots:
+# What App Store Connect answers when a shelf is reordered while it holds a screenshot it is still
+# copying over from the previous version, or one it has not finished deleting — see
+# upload_app_store_screenshots and tidy_app_store_screenshots — and how often, and how far apart,
+# the tidy-up tries again after deleting:
 SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder Set".freeze
-VERSION_COPY_POLL_SECONDS = 10
-VERSION_COPY_TIMEOUT_SECONDS = 300
+SCREENSHOT_REORDER_ATTEMPTS = 3
+SCREENSHOT_REORDER_WAIT_SECONDS = 10
 
 # Appended on its own line when items had to be dropped to fit the limit.
 TRUNCATION_SUFFIX = {
@@ -545,7 +546,7 @@ platform :ios do
   desc "locale and `finish_screenshots` once after the last of them."
   lane :upload_screenshots do |options|
     repo_root = File.expand_path("..")
-    screenshots_path = staged_screenshots_path
+    screenshots_path = File.join(repo_root, "fastlane/screenshots")
 
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
@@ -569,20 +570,17 @@ platform :ios do
     # after an upload that landed, so an error of its own never hides the upload's.
     begin
       upload_app_store_screenshots(api_key, screenshots_path, nil)
-      tidy_app_store_screenshots(screenshots_path)
+      tidy_app_store_screenshots
     ensure
       report_app_store_screenshots_completeness(app_store_listing_locales)
     end
   end
 
   desc "Tidy the editable App Store version up once upload_screenshots has run for every locale:"
-  desc "remove the stray screenshots the uploads leave behind, put every shelf in file-name order,"
-  desc "and report whether every locale still has screenshots at all. CI runs it after the last"
-  desc "per-locale upload; run it by hand while a version is editable."
-  desc "Options: staged (true|false) — fastlane/screenshots/ holds the images just uploaded, so a"
-  desc "duplicate keeps the copy matching its staged file and a name no longer staged is removed."
-  desc "Without it, a duplicate keeps the shelf's first copy, and nothing else is removed."
-  lane :finish_screenshots do |options|
+  desc "remove the duplicate screenshots deliver leaves behind, keeping each shelf's first, put every"
+  desc "shelf in file-name order, and report whether every locale still has screenshots at all. CI"
+  desc "runs it after the last per-locale upload; run it by hand while a version is editable."
+  lane :finish_screenshots do
     app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -590,14 +588,29 @@ platform :ios do
       is_key_content_base64: true,
       set_spaceship_token: true,
     )
-    finish_app_store_screenshots(options[:staged] ? staged_screenshots_path : nil)
+    finish_app_store_screenshots
   end
-end
 
-# Where the rendered screenshots are staged for both stores, and where CI hands them over to the
-# jobs that upload them.
-def staged_screenshots_path
-  File.join(File.expand_path(".."), "fastlane/screenshots")
+  desc "Make APP_VERSION the editable App Store version, creating it when it does not exist yet."
+  desc "CI runs it before rendering the screenshots, so App Store Connect is done copying the previous"
+  desc "version's screenshots into a new version long before the first upload — see"
+  desc "upload_app_store_screenshots."
+  lane :prepare_version do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
+    )
+    version_string = ENV.fetch("APP_VERSION")
+    app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
+    if app.ensure_version!(version_string, platform: Spaceship::ConnectAPI::Platform::IOS)
+      UI.success("Set the editable App Store version to '#{version_string}'")
+    else
+      UI.message("'#{version_string}' is already the editable App Store version")
+    end
+  end
 end
 
 # Both stores replace the listing's screenshots with what is staged, so uploading from an empty
@@ -717,19 +730,19 @@ end
 # submission to it) and deliver gives up on the whole upload. Waiting and running deliver again
 # recovers: it deletes whatever the failed attempt uploaded and starts over on settled sets.
 #
-# Creating a version, App Store Connect copies the previous version's screenshots over to it.
-# 2.13.0's first upload let deliver create the version and delete en-US two seconds later, and each
-# en-US shelf ended up with a 2.12.1 copy beside the new screenshots. Once everything is uploaded,
-# deliver puts every shelf of the version in file-name order, every locale's and not just the one it
-# uploaded, and App Store Connect refuses to reorder a shelf holding such a copy: all four locales'
-# uploads failed although every screenshot had landed. So the version is created here and deliver
-# starts once its screenshots are all in. Should a copy still get through, the refusal no longer
-# fails an upload that landed: tidy_app_store_screenshots removes the copies and sorts the shelves
-# after the last locale.
+# Creating a version, App Store Connect copies the previous version's screenshots over to it, and
+# keeps at it after it reports the version created. 2.13.0's first upload let deliver create the
+# version and delete en-US two seconds later, and each en-US shelf ended up with a 2.12.1 copy
+# beside the new screenshots. Once everything is uploaded, deliver puts every shelf of the version
+# in file-name order, every locale's and not just the one it uploaded, and App Store Connect
+# refuses to reorder a shelf holding such a copy: all four locales' uploads failed although every
+# screenshot had landed. So CI creates the version before rendering the screenshots
+# (`prepare_version`), and the copy is long over when the first upload starts. Should a copy still
+# get through, the refusal no longer fails an upload that landed: tidy_app_store_screenshots removes
+# the copies and sorts the shelves after the last locale.
 def upload_app_store_screenshots(api_key, screenshots_path, locale)
   with_locale_only(screenshots_path, locale) do |path|
     ensure_screenshots_staged(File.join(path, "*", "*.png"))
-    settle_app_store_version(ENV["APP_VERSION"])
 
     tolerated = tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
       retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
@@ -753,56 +766,9 @@ def upload_app_store_screenshots(api_key, screenshots_path, locale)
     end
     # CI's finish job sorts after the last locale; by hand, nothing else will.
     if tolerated && locale
-      UI.important("Once every locale is in, run `fastlane ios finish_screenshots staged:true` to sort the shelves")
+      UI.important("Once every locale is in, run `fastlane ios finish_screenshots` to sort the shelves")
     end
   end
-end
-
-# Makes `version_string` the editable App Store version the way deliver would (nil leaves deliver to
-# fall back to the latest editable one), then waits until App Store Connect is done copying the
-# previous version's screenshots into it, so deliver never deletes a shelf mid-copy — see
-# upload_app_store_screenshots. Done means every screenshot finished processing and the count held
-# still across two looks VERSION_COPY_POLL_SECONDS apart; on a version this call just created, a
-# count of zero doesn't count as done, since the copy may not have started yet. A version that
-# already existed and is done on the first look, as for every locale after the first, isn't waited
-# on. After VERSION_COPY_TIMEOUT_SECONDS it stops waiting and lets the upload go ahead.
-def settle_app_store_version(version_string)
-  app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
-  created = version_string && app.ensure_version!(version_string, platform: Spaceship::ConnectAPI::Platform::IOS)
-  UI.success("Set the editable App Store version to '#{version_string}'") if created
-
-  # The wait is a precaution: an App Store Connect hiccup while polling lets the upload go ahead
-  # rather than failing it.
-  begin
-    version = app.get_edit_app_store_version
-    return if version.nil?
-
-    count, processed = app_store_version_copy_state(version)
-    return if !created && processed && count.positive?
-
-    deadline = Time.now + VERSION_COPY_TIMEOUT_SECONDS
-    loop do
-      sleep(VERSION_COPY_POLL_SECONDS)
-      previous = count
-      count, processed = app_store_version_copy_state(version)
-      if count == previous && processed && (count.positive? || !created)
-        UI.message("The App Store version holds #{count} processed screenshot(s)")
-        return
-      end
-      if Time.now > deadline
-        UI.important("The App Store version's screenshots are still coming in after #{VERSION_COPY_TIMEOUT_SECONDS}s, uploading anyway")
-        return
-      end
-    end
-  rescue => e
-    UI.error("Could not wait for the App Store version's screenshots, uploading anyway: #{e.message.lines.first.strip}")
-  end
-end
-
-# How many screenshots the version holds, and whether every one of them finished processing.
-def app_store_version_copy_state(version)
-  screenshots = app_store_shelves(version).flat_map { |_, sets| sets.flat_map(&:app_screenshots) }
-  [screenshots.size, screenshots.all?(&:complete?)]
 end
 
 # Every localization of the version with its screenshot sets.
@@ -815,8 +781,8 @@ end
 # What comes after the last screenshot upload: the version is tidied up, and checked for a locale
 # left with no screenshots at all. The check runs even when the tidy-up fails, since it is what
 # keeps the `submit` lane's job from a submission Apple would reject.
-def finish_app_store_screenshots(staged_path)
-  tidy_app_store_screenshots(staged_path)
+def finish_app_store_screenshots
+  tidy_app_store_screenshots
 ensure
   # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
   # so an upload that failed partway — the "Screenshot Set Already Exists!" race once its retries
@@ -857,71 +823,47 @@ rescue => e
   true
 end
 
-# Removes, shelf by shelf, the screenshots the uploads leave on the editable version beside the
-# staged ones, then puts each shelf in file-name order, the order they are staged in. Two kinds of
-# stray end up there:
-# - The same file twice. App Store Connect publishes a screenshot's checksum asynchronously, and
-#   deliver's post-upload check reads it to decide what landed; when it lags, deliver calls the
-#   screenshot missing and uploads it again (2.9.0 shipped four such pairs, all in pt-BR).
-# - A copy of the previous version's screenshot, which can sit ahead of the new one under the same
-#   name, or under a name no longer staged when a screen was renamed — see
-#   upload_app_store_screenshots. A shelf holding one can't be reordered.
-# With the images just uploaded at `staged_path`, each name keeps a copy whose checksum matches its
-# staged file, one that isn't the previous version's image if there is one, else the latest, and a
-# name a locale no longer stages goes. Without them, as
-# when finish_screenshots is run by hand, or on a shelf where nothing matches a staged file, each
-# name keeps the shelf's first copy. A shelf App Store Connect refuses to tidy up or reorder doesn't
-# stop the others; the error is raised once every shelf was tried. Idempotent: a clean version is a
-# no-op.
-def tidy_app_store_screenshots(staged_path)
+# Removes, shelf by shelf, the duplicate screenshots the uploads leave on the editable version, then
+# puts each shelf in file-name order, the order they are staged in — what deliver does at the end
+# of an upload, and what a per-locale upload can't be left to (see upload_app_store_screenshots).
+# App Store Connect publishes a screenshot's checksum asynchronously, and deliver's post-upload check
+# reads it to decide what landed; when it lags, deliver calls the screenshot missing and uploads it
+# again, so a shelf ends up with the same file twice (2.9.0 shipped four such pairs, all in pt-BR).
+# Screenshot order is the shelf order, so the later copy is the stray. A copy of the previous
+# version's screenshot left by the version copy race goes the same way, provided it sits behind the
+# new upload. App Store Connect finishes deleting a little after it reports a screenshot gone, so a
+# shelf just rid of one is reordered up to SCREENSHOT_REORDER_ATTEMPTS times. A shelf it refuses to
+# tidy up doesn't stop the others; the error is raised once every shelf was tried. Idempotent: a
+# clean version is a no-op.
+def tidy_app_store_screenshots
   require "naturally"
 
   app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
   version = app.get_edit_app_store_version
   UI.user_error!("No editable App Store version to tidy screenshots up on") if version.nil?
 
-  previous_assets = previous_app_store_screenshot_assets(app)
   removed = 0
   sorted = 0
   refused = []
   app_store_shelves(version).each do |localization, sets|
-    locale_staged = staged_app_store_checksums(staged_path, localization.locale)
     sets.each do |set|
       shelf = "#{localization.locale}/#{set.screenshot_display_type}"
-      # CI runs this after every locale's upload, failed ones too: a shelf holding nothing that
-      # matches what was staged was not uploaded to, so it keeps what it has instead of losing the
-      # names the new render no longer stages.
-      staged = locale_staged
-      if staged && set.app_screenshots.none? { |screenshot| staged.value?(screenshot.source_file_checksum) }
-        staged = nil
-      end
-
       begin
-        strays = set.app_screenshots.group_by(&:file_name).flat_map do |file_name, copies|
-          # A screen that didn't change matches its previous version's copy too, so among the
-          # matching copies one whose image isn't the previous version's is kept. With no copy
-          # matching (a checksum App Store Connect has not published yet), the latest copy is still
-          # the one most likely uploaded, as the previous version's sits ahead of it.
-          kept = if staged.nil?
-            copies.first
-          elsif staged.key?(file_name)
-            matching = copies.select { |copy| copy.source_file_checksum == staged[file_name] }
-            matching.reverse.find { |copy| !previous_assets.include?(copy.asset_token) } || matching.last || copies.last
-          end
-          copies.reject { |copy| copy.equal?(kept) }
-        end
+        strays = set.app_screenshots.group_by(&:file_name).flat_map { |_, copies| copies.drop(1) }
         strays.each do |stray|
-          kind = staged.nil? || staged.key?(stray.file_name) ? "duplicate" : "unstaged"
-          UI.important("Removing #{kind} #{shelf}/#{stray.file_name}")
+          UI.important("Removing duplicate #{shelf}/#{stray.file_name}")
           stray.delete!
           removed += 1
         end
 
-        remaining = set.app_screenshots.reject { |screenshot| strays.any? { |stray| stray.equal?(screenshot) } }
+        remaining = set.app_screenshots - strays
         sorted_ids = Naturally.sort(remaining, by: :file_name).map(&:id)
         next if remaining.map(&:id) == sorted_ids
 
-        set.reorder_screenshots(app_screenshot_ids: sorted_ids)
+        attempts = strays.empty? ? 1 : SCREENSHOT_REORDER_ATTEMPTS
+        retrying_on(SCREENSHOT_REORDER_REFUSED_MESSAGE, attempts: attempts, wait_seconds: SCREENSHOT_REORDER_WAIT_SECONDS) do
+          set.reorder_screenshots(app_screenshot_ids: sorted_ids)
+        end
         UI.message("Sorted #{shelf}")
         sorted += 1
       rescue => e
@@ -931,34 +873,8 @@ def tidy_app_store_screenshots(staged_path)
     end
   end
 
-  UI.success("Removed #{removed} stray screenshot(s) and sorted #{sorted} shelf(s) on App Store Connect")
+  UI.success("Removed #{removed} duplicate screenshot(s) and sorted #{sorted} shelf(s) on App Store Connect")
   UI.user_error!("App Store Connect refused to tidy #{refused.join(', ')} up") if refused.any?
-end
-
-# The asset tokens of the live version's screenshots, which a copy App Store Connect made of one
-# shares; empty when there is no live version or the lookup fails, which only loses a tie-break.
-def previous_app_store_screenshot_assets(app)
-  version = app.get_live_app_store_version
-  return Set.new if version.nil?
-
-  app_store_shelves(version).flat_map { |_, sets| sets.flat_map { |set| set.app_screenshots.map(&:asset_token) } }.compact.to_set
-rescue => e
-  UI.error("Could not look the live App Store version's screenshots up: #{e.message.lines.first.strip}")
-  Set.new
-end
-
-# The staged screenshots of `locale` under `staged_path` by file name, each with its checksum as App
-# Store Connect reports it (deliver's own); nil when there is no such folder to go by.
-def staged_app_store_checksums(staged_path, locale)
-  return nil if staged_path.nil?
-
-  locale_path = File.join(staged_path, locale)
-  return nil unless File.directory?(locale_path)
-
-  require "deliver"
-  Dir.glob(File.join(locale_path, "*.png")).to_h do |path|
-    [File.basename(path), Deliver::UploadScreenshots.calculate_checksum(path)]
-  end
 end
 
 # The locales among `locales` whose editable App Store version has no screenshot at all right now.
