@@ -5,9 +5,6 @@ import com.quare.bibleplanner.core.chapterlistening.data.service.IosChapterAudio
 import com.quare.bibleplanner.core.chapterlistening.data.service.IosListeningMediaSession
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.darwin.Darwin
 import kotlinx.io.files.Path
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -29,6 +26,3 @@ internal actual val platformChapterListeningModule: Module = module {
     singleOf(::IosChapterAudioPlayer).bind<ChapterAudioPlayer>()
     singleOf(::IosListeningMediaSession).bind<ListeningMediaSession>()
 }
-
-internal actual fun createChapterAudioHttpClient(configure: HttpClientConfig<*>.() -> Unit): HttpClient =
-    HttpClient(Darwin, configure)

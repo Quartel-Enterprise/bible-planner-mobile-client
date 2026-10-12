@@ -8,9 +8,6 @@ import com.quare.bibleplanner.core.chapterlistening.data.service.ListeningPlayer
 import com.quare.bibleplanner.core.chapterlistening.data.service.createListeningExoPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ChapterAudioPlayer
 import com.quare.bibleplanner.core.chapterlistening.domain.service.ListeningMediaSession
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.io.files.Path
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -31,6 +28,3 @@ internal actual val platformChapterListeningModule: Module = module {
         )
     }
 }
-
-internal actual fun createChapterAudioHttpClient(configure: HttpClientConfig<*>.() -> Unit): HttpClient =
-    HttpClient(OkHttp, configure)

@@ -30,6 +30,7 @@ import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
 import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
@@ -797,7 +798,7 @@ internal class ChapterAudioRepositoryImplTest {
         repository = ChapterAudioRepositoryImpl(
             remoteDataSource = ChapterAudioRemoteDataSourceImpl(
                 functions = client.functions,
-                httpClient = lazyOf(HttpClient(engine)),
+                httpClient = HttpClient(engine) { install(HttpTimeout) },
                 auth = client.auth,
                 json = json,
                 currentTimestampProvider = { now },

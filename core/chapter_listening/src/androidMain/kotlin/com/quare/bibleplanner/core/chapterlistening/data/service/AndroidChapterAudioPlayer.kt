@@ -31,6 +31,9 @@ internal class AndroidChapterAudioPlayer(
         PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED,
     )
     private var loadedPath: String? = null
+
+    // Why: a failed player keeps its position for the retry, but must load the file again before it plays.
+    private var hasFailed = false
     private var playbackId = 0
 
     // Why: created on the first play, so checking support or opening the reader never builds an ExoPlayer.
@@ -46,7 +49,7 @@ internal class AndroidChapterAudioPlayer(
         playbackId: Int,
     ) {
         this.playbackId = playbackId
-        if (loadedPath == audioPath) {
+        if (loadedPath == audioPath && !hasFailed) {
             player.seekTo(position.inWholeMilliseconds)
         } else {
             player.setMediaItem(
@@ -55,6 +58,7 @@ internal class AndroidChapterAudioPlayer(
             )
             player.prepare()
             loadedPath = audioPath
+            hasFailed = false
         }
         player.setPlaybackSpeed(speed)
         player.play()
@@ -77,6 +81,7 @@ internal class AndroidChapterAudioPlayer(
         player.stop()
         player.clearMediaItems()
         loadedPath = null
+        hasFailed = false
     }
 
     private inner class PlaybackListener : Player.Listener {
@@ -86,7 +91,7 @@ internal class AndroidChapterAudioPlayer(
 
         override fun onPlayerError(error: PlaybackException) {
             Logger.e(error) { "Could not play the chapter audio" }
-            loadedPath = null
+            hasFailed = true
             eventChannel.trySend(
                 ChapterAudioPlayerEvent.Failed(
                     playbackId = playbackId,

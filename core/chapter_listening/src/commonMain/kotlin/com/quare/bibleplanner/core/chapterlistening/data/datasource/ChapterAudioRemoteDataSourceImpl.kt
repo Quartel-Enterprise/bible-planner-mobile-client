@@ -44,8 +44,7 @@ import kotlin.time.Duration.Companion.minutes
 
 internal class ChapterAudioRemoteDataSourceImpl(
     private val functions: Functions,
-    // Why: built on the first download, so opening the reader alone builds no HTTP engine.
-    private val httpClient: Lazy<HttpClient>,
+    private val httpClient: HttpClient,
     private val auth: Auth,
     private val json: Json,
     private val checkRemoteSessionState: CheckRemoteSessionState,
@@ -172,10 +171,19 @@ internal class ChapterAudioRemoteDataSourceImpl(
         read: suspend (HttpResponse) -> T,
     ): T {
         val token = auth.currentAccessTokenOrNull() ?: throw NotSignedInException()
-        return httpClient.value.prepareGet(url) { bearerAuth(token) }.execute { response ->
-            if (!response.status.isSuccess()) throw ChapterAudioDownloadException(response.status.value)
-            read(response)
-        }
+        return httpClient
+            .prepareGet(url) {
+                bearerAuth(token)
+                // Why: a long chapter on a slow connection may take minutes, so only a stalled download times out.
+                timeout {
+                    requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+                    connectTimeoutMillis = DOWNLOAD_CONNECT_TIMEOUT_MILLIS
+                    socketTimeoutMillis = DOWNLOAD_SOCKET_TIMEOUT_MILLIS
+                }
+            }.execute { response ->
+                if (!response.status.isSuccess()) throw ChapterAudioDownloadException(response.status.value)
+                read(response)
+            }
     }
 
     private fun Sink.closeQuietly() {
@@ -185,6 +193,8 @@ internal class ChapterAudioRemoteDataSourceImpl(
     private companion object {
         const val FUNCTION_NAME = "get-chapter-audio"
         const val FUNCTION_TIMEOUT_MILLIS = 90_000L
+        const val DOWNLOAD_CONNECT_TIMEOUT_MILLIS = 15_000L
+        const val DOWNLOAD_SOCKET_TIMEOUT_MILLIS = 30_000L
         const val CHUNK_BYTES = 64L * 1024
     }
 }
