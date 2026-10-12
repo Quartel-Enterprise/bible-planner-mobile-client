@@ -128,12 +128,7 @@ fun ResponsiveDialogSheet(
                     )
                 },
             ) {
-                val sheetBottomInset = with(density) { WindowInsets.safeDrawing.getBottom(density).toDp() }
-                val sheetMaxHeight: (() -> Dp)? = if (isHeightCapped) {
-                    { windowHeight * SHEET_MAX_HEIGHT_FRACTION - dragHandleHeight - sheetBottomInset }
-                } else {
-                    null
-                }
+                val safeDrawingInsets = WindowInsets.safeDrawing
                 CloseableContent(
                     onCloseClick = onClose,
                     title = title,
@@ -142,7 +137,12 @@ fun ResponsiveDialogSheet(
                     content = content,
                     contentMaxHeight = contentMaxHeight,
                     modifier = Modifier
-                        .sheetMaxHeight(sheetMaxHeight)
+                        .sheetMaxHeight(
+                            isHeightCapped = isHeightCapped,
+                            windowHeight = windowHeight,
+                            dragHandleHeight = { dragHandleHeight },
+                            bottomInsets = safeDrawingInsets,
+                        )
                         .windowInsetsPadding(LocalNavigationBarInsets.current)
                         .padding(bottom = sheetBottomBreathingRoom)
                         .blockPointerInput(isBlocked = isClosing),
@@ -155,15 +155,23 @@ fun ResponsiveDialogSheet(
 /*
  * Why: capping the ModalBottomSheet modifier itself also shrinks the height M3 computes its
  * anchors from, which pins the sheet to the top of the screen. The cap goes on the content instead,
- * minus the drag handle and the bottom inset M3 pads the sheet with outside of it. It is read while
- * measuring, not while composing: the handle is measured just before the content, so its height
- * counts in the first frame instead of a recomposition later.
+ * minus the drag handle and the bottom inset M3 pads the sheet with outside of it. Both are read
+ * while measuring, not while composing: the handle is measured just before the content, so its
+ * height counts in the first frame instead of a recomposition later, and a keyboard animating the
+ * inset only remeasures the content instead of recomposing it on every frame.
  */
-private fun Modifier.sheetMaxHeight(maxHeight: (() -> Dp)?): Modifier = if (maxHeight == null) {
+private fun Modifier.sheetMaxHeight(
+    isHeightCapped: Boolean,
+    windowHeight: Dp,
+    dragHandleHeight: () -> Dp,
+    bottomInsets: WindowInsets,
+): Modifier = if (!isHeightCapped) {
     this
 } else {
     layout { measurable, constraints ->
-        val cap = maxHeight().roundToPx().coerceIn(constraints.minHeight, constraints.maxHeight)
+        val maxHeight = (windowHeight * SHEET_MAX_HEIGHT_FRACTION - dragHandleHeight()).roundToPx() -
+            bottomInsets.getBottom(this)
+        val cap = maxHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
         val placeable = measurable.measure(constraints.copy(maxHeight = cap))
         layout(placeable.width, placeable.height) {
             placeable.place(0, 0)
