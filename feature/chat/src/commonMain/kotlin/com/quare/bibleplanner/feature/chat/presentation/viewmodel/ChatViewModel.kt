@@ -127,11 +127,13 @@ internal class ChatViewModel(
         observeDraft()
     }
 
+    /*
+     * Why: ViewModel.clear() closes viewModelScope before calling onCleared(), so the debounce job is
+     * always cancelled by now; only pendingDraft still says whether a save is owed.
+     */
     override fun onCleared() {
         super.onCleared()
         val unsaved = pendingDraft ?: return
-        if (draftSaveJob?.isActive != true) return
-        draftSaveJob?.cancel()
         applicationScope.launch { useCases.saveDraft(unsaved) }
     }
 
@@ -210,7 +212,7 @@ internal class ChatViewModel(
         draftSaveJob = viewModelScope.launch {
             delay(draftDebounceDelay)
             useCases.saveDraft(draft)
-            pendingDraft = null
+            if (pendingDraft == draft) pendingDraft = null
         }
     }
 

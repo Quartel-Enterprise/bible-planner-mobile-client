@@ -35,6 +35,7 @@ import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapp
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiAction
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
+import com.quare.bibleplanner.ui.testing.viewmodel.ViewModelTestStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,6 +63,7 @@ internal class ChatViewModelTest {
         readingPlanType = "CHRONOLOGICAL",
     )
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val viewModelStore = ViewModelTestStore(testDispatcher)
     private val repository = FakeChatRepository()
     private val coordinator = FakeChatStreamCoordinator()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
@@ -416,6 +418,36 @@ internal class ChatViewModelTest {
         // Then
         assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
     }
+
+    @Test
+    fun `GIVEN text typed within the debounce WHEN the chat closes THEN the draft is saved`() = viewModelStore.runTest {
+        // Given
+        chatContext = readingContext()
+        val viewModel = viewModelStore.create(ChatViewModel::class) { createViewModel() }
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+
+        // When
+        viewModelStore.clear()
+
+        // Then
+        assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
+    }
+
+    @Test
+    fun `GIVEN a question sent within the debounce WHEN the chat closes THEN the draft stays cleared`() =
+        viewModelStore.runTest {
+            // Given
+            chatContext = readingContext()
+            val viewModel = viewModelStore.create(ChatViewModel::class) { createViewModel() }
+            viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+            viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+            // When
+            viewModelStore.clear()
+
+            // Then
+            assertEquals("", repository.drafts.value[DAY_DRAFT_KEY])
+        }
 
     @Test
     fun `GIVEN a draft WHEN the question is sent THEN the draft is cleared`() = runTest(testDispatcher) {

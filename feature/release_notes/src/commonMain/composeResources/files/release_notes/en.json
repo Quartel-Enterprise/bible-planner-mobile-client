@@ -2,7 +2,8 @@
   "2.13.0": {
     "common": [
       "Fixed a problem that could stop changes made on another device from showing up right away after you came back to the app.",
-      "With the app in English, the Bible version picked by default is now the New International Version (NIV) instead of the World English Bible (WEB). If you already chose a version, it stays the same."
+      "With the app in English, the Bible version picked by default is now the New International Version (NIV) instead of the World English Bible (WEB). If you already chose a version, it stays the same.",
+      "Fixed the AI chat losing the text you typed right before leaving the conversation: it is now still there when you come back."
     ],
     "android": [
       "Listening to a chapter now sounds much more natural: the Bible is narrated by AI-generated voices, with a narrator, a voice for God, another for Jesus and different voices for the characters in each dialogue. To listen, sign in to your account and be online; the chapters you have already heard stay on your device and play even without a connection.",
