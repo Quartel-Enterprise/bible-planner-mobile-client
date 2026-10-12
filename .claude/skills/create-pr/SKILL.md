@@ -161,7 +161,7 @@ Two reviews run on the whole change, the commits ahead of `main` and the uncommi
 Both start with a fresh context, so they judge the change rather than the conversation that produced
 it:
 
-- `/code-review high` looks for correctness bugs and for cleanups of the changed code (reuse,
+- `/code-review high --max-findings all` looks for correctness bugs and for cleanups of the changed code (reuse,
   simplification, efficiency).
 - `review-conventions` checks the change against the docs under `docs/`, the product invariants, and
   the description from step 8.
@@ -177,8 +177,12 @@ The first covers the whole branch only while its upstream is `origin/main`. Once
 pushed, its upstream is its own remote branch, and the pushed commits would drop out of the review.
 In that case, commit any uncommitted changes now (step 11) and pass the branch name as the target.
 
-Then invoke the `code-review` skill with `high` as its argument (`high <branch>` for a pushed
-branch), and the `review-conventions` skill with the description from step 8 as its argument. Wait
+Then invoke the `code-review` skill with `high --max-findings all` as its arguments
+(`high <branch> --max-findings all` for a pushed branch): without the flag it keeps only the ten
+most severe findings, and the rest surface one review at a time on GitHub. The skill remembers the
+flag, so the user's own `/code-review` runs report every finding too, until they pass
+`--max-findings default`. Invoke the
+`review-conventions` skill with the description from step 8 as its argument. Wait
 for both results before going on.
 
 If neither reports anything, continue to step 10. Otherwise stop and show the user every finding,

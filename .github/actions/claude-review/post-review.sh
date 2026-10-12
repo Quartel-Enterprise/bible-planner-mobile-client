@@ -3,7 +3,8 @@
 # and the comments arrive together, instead of one review per finding. Usage:
 #
 #   PR_HEAD_SHA=<reviewed head> PR_BASE_SHA=<its base> post-review.sh <pr-number> <<'JSON'
-#   [{"file": "a/b.kt", "line": 12, "summary": "...", "failure_scenario": "...", "category": "correctness"}]
+#   [{"file": "a/b.kt", "line": 12, "summary": "...", "failure_scenario": "...", "category": "correctness",
+#     "severity": "must-fix", "fix": "...", "suggestion": "    return null"}]
 #   JSON
 #
 #   STARTED=<when the review started> post-review.sh --already <pr-number>
@@ -12,16 +13,20 @@
 # time (the one test the hook and the action's posting step share) and prints its url, exiting 1 when
 # there is none.
 #
-# The objects are the ones the /code-review skill returns; "path" is read in place of "file" and
-# "body" in place of the summary and failure scenario. "line" is the line in the new version of the
-# file; "start_line" makes the comment span lines. The review is anchored to the reviewed head commit
+# The objects are the ones the /code-review skill returns, plus what the review step adds to them:
+# "severity" (must-fix, should-fix or nitpick) labels the comment and orders the findings, "fix" says
+# how to fix it, and "suggestion" is the text that replaces the commented lines, posted as a GitHub
+# suggestion the author can commit. "path" is read in place of "file", and "body" in place of all
+# of these. "line" is the line in the new version of the file; "start_line" makes the comment span
+# lines. The review is anchored to the reviewed head commit
 # (PR_HEAD_SHA, else the pull request's current head), so a push during the review doesn't move the
 # comments. GitHub only anchors a comment to a line inside a diff hunk of that commit, and refuses the
 # whole review when one isn't. A finding on another line of a changed file (the recipe reports bugs on
 # unchanged lines of a touched function on purpose) is anchored to the nearest changed line of that
-# file, with its own line named, so it still opens a thread that holds the merge. The findings in
-# files the diff doesn't touch, the ones without a usable file and line, and all of them when the diff
-# can't be read, go in the review body instead; those open no thread. An empty array posts a review
+# file, with its own line named, so it still opens a thread that holds the merge. Nitpicks, the
+# findings in files the diff doesn't touch, the ones without a usable file and line, and all of them
+# when the diff can't be read, go in the review body instead; those open no thread, so an optional
+# fix never holds the merge. An empty array posts a review
 # saying nothing was found, and anything that isn't an array posts a notice, so the pull request
 # always shows the review ran. Only a GitHub error that outlasts the retries fails the script.
 set -euo pipefail
@@ -112,18 +117,53 @@ if ! jq -e 'type == "array"' <<< "$input" > /dev/null 2>&1; then
   exit 0
 fi
 
-# One shape for every finding; a number given as text still counts.
-findings=$(jq -c '[.[] | select(type == "object") | {
+# One shape for every finding, most severe first; a number given as text still counts, and a span
+# given end first is turned around. Each finding gets three bodies: "body" holds its suggestion as a
+# GitHub suggestion block, which replaces exactly the lines the comment is anchored to, "loose" shows
+# it as a plain code block naming the lines it was written for, for a finding anchored elsewhere or
+# listed in the review body, and "short" leaves it out, for a review body too long otherwise.
+# shellcheck disable=SC2016 # the $ names are jq's, not the shell's
+findings=$(jq -c '
+  def badge: if type == "string" then {"must-fix": "🔴 **Must fix**", "should-fix": "🟡 **Should fix**", "nitpick": "⚪ **Nitpick**"}[.] else null end;
+  def rank: {"must-fix": 0, "should-fix": 1, "nitpick": 3}[. // ""] // 2;
+  def language: (split(".") | if length > 1 then last else "" end) as $ext
+    | {kt: "kotlin", kts: "kotlin", swift: "swift", java: "java", py: "python", sh: "bash", yml: "yaml",
+       yaml: "yaml", json: "json", xml: "xml", md: "markdown", toml: "toml", gradle: "groovy",
+       js: "javascript", ts: "typescript", sql: "sql", html: "html", css: "css"}[$ext] // "";
+  # A fence longer than any run of backticks in the code, so the code can hold a fence of its own.
+  def fence: "`" * ([3, ([scan("`+") | length] | max // 0) + 1] | max);
+  [.[] | select(type == "object") | {
     path: ((.path // .file)
       | if type == "string" then (if env.WORKSPACE != "" then ltrimstr(env.WORKSPACE + "/") else . end) | ltrimstr("./") else null end
       | if . == "" then null else . end),
     line: ((.line // .end_line) | tonumber? // null),
     start_line: ((.start_line // null) | tonumber? // null),
-    body: ((.body // (
-      "**" + (.summary // "Finding" | tostring) + "**"
-      + (if .failure_scenario then "\n\n" + (.failure_scenario | tostring) else "" end)
-      + (if .category then "\n\n_" + (.category | tostring) + "_" else "" end))) | tostring)
-  }]' <<< "$input")
+    severity: (.severity | if type == "string" then ascii_downcase | gsub("[ _]"; "-") else null end
+      | if badge then . else null end),
+    summary, failure_scenario, category, fix, given_body: .body,
+    suggestion: (.suggestion | if type == "string" then rtrimstr("\n") else null end)
+  }
+  | if .start_line != null and (.line == null or .start_line == .line) then .start_line = null
+    elif .start_line != null and .start_line > .line then {start_line: .line, line: .start_line} as $span | . + $span
+    else . end]
+  | sort_by(.severity | rank)
+  | map(. as $f
+    | ($f.given_body // (
+        ([($f.severity | badge // empty), ($f.category | select(.) | "_\(tostring)_")] | join(" · ")
+          | if . != "" then . + "\n\n" else "" end)
+        + "**" + ($f.summary // "Finding" | tostring) + "**"
+        + (if $f.failure_scenario then "\n\n" + ($f.failure_scenario | tostring) else "" end)
+        + (if $f.fix then "\n\n**How to fix:** " + ($f.fix | tostring) else "" end)) | tostring) as $text
+    | (if $f.start_line != null then "lines \($f.start_line)–\($f.line)" else "line \($f.line)" end) as $lines
+    | {path, line, start_line, severity, short: $text,
+       body: ($text + if $f.suggestion == null or $f.given_body != null then ""
+         else ($f.suggestion | fence) as $fence | "\n\n\($fence)suggestion\n"
+           + (if $f.suggestion == "" then "" else $f.suggestion + "\n" end) + $fence end),
+       loose: ($text + if $f.suggestion == null or $f.given_body != null or $f.line == null then ""
+         elif $f.suggestion == "" then "\n\nSuggested change: delete \($lines)."
+         else ($f.suggestion | fence) as $fence
+           | "\n\nSuggested change for \($lines):\n\n\($fence)\($f.path // "" | language)\n\($f.suggestion)\n\($fence)" end)})
+  ' <<< "$input")
 total=$(jq 'length' <<< "$findings")
 
 if [ "$total" -eq 0 ]; then
@@ -148,25 +188,27 @@ if [ -n "$head_sha" ] && [ -n "$base_sha" ]; then
 fi
 
 # A finding whose line is in a hunk is an inline comment; a span has to start in that same hunk. One
-# on another line of a changed file is anchored to the nearest hunk's edge, naming its own line.
+# on another line of a changed file is anchored to the nearest hunk's edge, naming its own line. Only
+# a comment on the very lines the finding names keeps its suggestion block: GitHub would apply one
+# anywhere else to the wrong lines. A nitpick goes in the body wherever it is, so it opens no thread.
 split=$(jq -c --argjson hunks "$hunks" '
   def hunk($path; $line): first($hunks[] | select(.path == $path and .from <= $line and $line <= .to)) // null;
   def nearest($path; $line): [$hunks[] | select(.path == $path)]
     | if length == 0 then null else min_by(if $line < .from then .from - $line else $line - .to end) end;
   map(. as $f
-    | if $f.line == null or $f.path == null then . + {anchored: false}
+    | if $f.line == null or $f.path == null or $f.severity == "nitpick" then . + {anchored: false}
       else hunk($f.path; $f.line) as $h
       | if $h != null then
-          (if .start_line != null and (.start_line >= .line or .start_line < $h.from) then .start_line = null else . end)
+          (if .start_line != null and .start_line < $h.from then .start_line = null | .body = .loose else . end)
           + {anchored: true}
         else nearest($f.path; $f.line) as $n
         | if $n == null then . + {anchored: false}
           else {path, line: (if $f.line < $n.from then $n.from else $n.to end), start_line: null,
-                body: ("_On line \($f.line), outside the diff; anchored to the nearest changed line._\n\n" + .body),
+                body: ("_On line \($f.line), outside the diff; anchored to the nearest changed line._\n\n" + .loose),
                 anchored: true} end
         end
       end)
-  | {inline: map(select(.anchored)), body: map(select(.anchored | not))}' <<< "$findings")
+  | {inline: map(select(.anchored)), body: map(select(.anchored | not) | .body = .loose)}' <<< "$findings")
 inline=$(jq -c '.inline' <<< "$split")
 outside=$(jq -c '.body' <<< "$split")
 inline_count=$(jq 'length' <<< "$inline")
@@ -176,16 +218,50 @@ as_list() {
     + "\n\n\(.value.body)") | join("\n\n")'
 }
 
+# How many findings of each severity, after the count: "3 finding(s) (🔴 1 must fix · ⚪ 2 nitpicks)".
+counts=$(jq -r '[group_by(.severity)[] | select(.[0].severity != null)
+    | {key: .[0].severity, value: length}] | from_entries
+  | [(."must-fix" // empty | "🔴 \(.) must fix"), (."should-fix" // empty | "🟡 \(.) should fix"),
+     (.nitpick // empty | "⚪ \(.) nitpick" + (if . > 1 then "s" else "" end))]
+  | if length > 0 then " (" + join(" · ") + ")" else "" end' <<< "$findings")
+
+# Why the findings on stdin go in the review body: "nitpicks", "findings GitHub can't anchor to a
+# line of the diff", or both.
+body_reason() {
+  jq -r '(map(select(.severity == "nitpick")) | length) as $nitpicks
+    | (length - $nitpicks) as $unanchored
+    | [(if $nitpicks > 0 then "nitpicks" else empty end),
+       (if $unanchored > 0 then "findings GitHub can'"'"'t anchor to a line of the diff" else empty end)]
+    | join(", and ")'
+}
+
+# Prints the header $1 followed by the findings of $2 as a list, within the 65,536 characters GitHub
+# allows a review body: past that, the findings lose their suggestions, then the list is cut short.
+max_body=65000
+with_list() {
+  local text
+  text="$1$(as_list <<< "$2")"
+  if [ "${#text}" -gt "$max_body" ]; then
+    text="$1$(jq -c 'map(.body = .short)' <<< "$2" | as_list)"
+  fi
+  if [ "${#text}" -gt "$max_body" ]; then
+    text="${text:0:max_body}
+
+_Cut short: GitHub refuses a longer review body${run_url:+; see [the run]($run_url)}._"
+  fi
+  printf '%s' "$text"
+}
+
 if [ "$inline_count" -gt 0 ]; then
   summary="### Code review
 
-$total finding(s)"
+$total finding(s)$counts"
   if [ "$inline_count" -eq "$total" ]; then
     summary="$summary, as inline comments."
   else
-    summary="$summary: $inline_count as inline comments, the others below, in files outside the diff (they open no thread, so they don't hold the merge).
+    summary=$(with_list "$summary: $inline_count as inline comments, the others below: $(body_reason <<< "$outside"). They open no thread, so they don't hold the merge.
 
-$(as_list <<< "$outside")"
+" "$outside")
   fi
   comments=$(jq -c '[.[] | {path, line, side: "RIGHT", body}
     + (if .start_line != null then {start_line, start_side: "RIGHT"} else {} end)]' <<< "$inline")
@@ -199,9 +275,10 @@ $(as_list <<< "$outside")"
   warn "GitHub refused the inline comments, so the findings were posted as one review body."
 fi
 
-body="### Code review
+loose=$(jq -c 'map(.body = .loose)' <<< "$findings")
+body=$(with_list "### Code review
 
-$total finding(s), on lines GitHub can't anchor a comment to:
+$total finding(s)$counts, below: $(body_reason <<< "$loose"). They open no thread, so they don't hold the merge.
 
-$(as_list <<< "$findings")"
+" "$loose")
 jq -n --arg body "$body" '{event: "COMMENT", body: $body}' | post

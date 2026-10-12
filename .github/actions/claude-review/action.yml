@@ -128,8 +128,16 @@ runs:
 
     # The same review as the create-pr skill runs before the pull request opens, the /code-review
     # skill bundled with Claude Code at high effort, on Opus (see docs/ci.md, "AI review"). The model
-    # invokes the skill itself, with the level and the pull request number as its only arguments:
-    # put on the skill's command line, the instructions below would become part of its target.
+    # invokes the skill itself, with the level, the pull request number and --max-findings as its only
+    # arguments: put on the skill's command line, the instructions below would become part of its
+    # target. Without --max-findings all, the skill keeps only the ten most severe findings, so a large
+    # pull request needed a review on request after every round of fixes to see the rest (#585 took
+    # 27).
+    #
+    # The skill's findings carry no severity and no fix, so the model adds both after it returns: the
+    # severity labels each comment (a nitpick goes in the review body, so it never holds the merge),
+    # and a fix that only replaces the commented lines becomes a GitHub suggestion the author can
+    # commit from the pull request (post-review.sh).
     #
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
     # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
@@ -153,15 +161,34 @@ runs:
           {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
-          `code-review` skill once, with `high ${{ github.event.pull_request.number }}` as its
-          arguments, and wait for its findings.
+          `code-review` skill once, with
+          `high ${{ github.event.pull_request.number }} --max-findings all` as its arguments, and wait
+          for its findings.
 
           End your reply with the skill's findings as a JSON array inside a ```json fence, and nothing
           after it: one object per finding, most severe first, each with "file", "line" (in the new
-          version of the file), "summary", "failure_scenario" and "category", plus "start_line" when
-          the finding spans lines. Write `[]` when there are none. A later step posts that array as
-          one pull request review. Don't post anything to GitHub yourself, don't run the app, don't
-          invoke any other skill and don't edit any file.
+          version of the file), "summary", "failure_scenario", "category" and "severity", plus
+          "start_line" when the finding spans lines, and "fix" and "suggestion" as described below.
+          Write `[]` when there are none. A later step posts that array as one pull request review.
+          Don't post anything to GitHub yourself, don't run the app, don't invoke any other skill and
+          don't edit any file.
+
+          - "severity" is one of:
+            - "must-fix": the change shouldn't merge with it: a bug users would hit (a crash, wrong
+              data, data loss, a broken flow), a security hole, a race that corrupts state.
+            - "should-fix": a real problem worth fixing in this pull request, with a limited impact:
+              an edge case, error handling that degrades the experience, a CLAUDE.md or maintainer
+              convention the change breaks, a cleanup that clearly pays off.
+            - "nitpick": optional: naming, wording, a small simplification, style the tooling
+              doesn't enforce.
+          - "fix": one or two sentences on how to fix it, written for the author. Markdown is fine,
+            with a short code sketch in a fenced block when the fix spans several places.
+          - "suggestion": only when replacing lines "start_line" to "line" (or "line" alone) of the
+            file, and nothing else, fully fixes the finding: the exact text that replaces those
+            lines, every line whole and indented as in the file. Read those lines from the file at
+            the pull request's head (it is checked out) instead of recalling them, and keep "line"
+            and "start_line" on exactly the lines it replaces. An empty string deletes them. Leave
+            "suggestion" out whenever it would only be a sketch, or the fix touches other lines.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}

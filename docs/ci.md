@@ -93,8 +93,9 @@ Claude reviews pull requests at three points:
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
 - **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, and
-  posts its findings as one review, an inline comment per finding: a second opinion on the code the
-  author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after the
+  posts its findings as one review: an inline comment per finding, nitpicks aside, each labelled
+  with its severity and, when the fix fits the commented lines, a suggestion to commit. A second
+  opinion on the code the author pushed. A draft is reviewed when it is marked ready for review instead. Pushes after the
   pull request opens, and reopening it, don't review it again.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
   reviews the pull request again the same way, then removes the label. Use it after new pushes.
@@ -114,8 +115,8 @@ green with a "workflow validation" warning and posts nothing. The review step th
 `.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
 it, with the token. Only branches of this repository get there, since forks are skipped.
 
-Their findings never fail a check, but each one is an inline comment, and an unresolved comment
-blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
+Their findings never fail a check, but each one except the nitpicks is an inline comment, and an
+unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
 runs on the head commit the pull request opened with, `merge-when-green` waits for it to finish
 there, and a run that failed (an expired token) holds the merge until it is rerun. A later push
 brings a head commit with no review check, so the merge no longer waits for it.
@@ -152,14 +153,30 @@ Locally, the `review-conventions` skill reads every memory from Claude Code's me
 with `scripts/sync-agent-memory.sh`.
 
 Both GitHub reviews run the `/code-review` skill bundled with Claude Code, the one `create-pr` runs,
-so the three reviews share one recipe. At high effort it looks for correctness bugs, `CLAUDE.md`
+so the three reviews share one recipe. All three pass `--max-findings all`: by default the skill keeps
+only the ten most severe findings, so every round of fixes on a large pull request surfaced the next
+ten and needed another review on request (#585 took 27 rounds). `all` is still capped by the
+recipe, at 32 findings for high effort. The skill remembers the choice for later runs on the same
+machine, so after `create-pr` a `/code-review` typed by hand reports up to 32 as well, until it is
+given `--max-findings default`. At high effort it looks for correctness bugs, `CLAUDE.md`
 violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
 differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
-locally. On GitHub the model invokes the skill itself with the level and the pull request number and
-ends its reply with the findings as JSON; the model posts nothing. A Stop hook of the session
+locally. On GitHub the model invokes the skill itself with the level, the pull request number and
+`--max-findings all`, and ends its reply with the findings as JSON; the model posts nothing. The
+skill's findings carry no severity and no fix, so the model adds three fields to each one: a
+`severity`, a `fix` and, only when replacing the commented lines fully fixes it, a `suggestion`
+with their new text. Each comment opens with the severity: 🔴 **Must fix** (a bug users would hit,
+a security hole, a race that corrupts state), 🟡 **Should fix** (a real problem with a limited
+impact, or a convention the change breaks) or ⚪ **Nitpick** (optional), and the review's summary
+counts them; the findings are posted most severe first. Nitpicks go in the review's body, with the
+findings outside the diff, rather than as inline comments: they open no thread, so an optional fix
+never holds the merge. A suggestion becomes a GitHub suggestion
+block, which the author can commit from the pull request, only on a comment anchored to the exact
+lines the finding names. Anchored anywhere else, GitHub would apply it to the wrong lines, so it is
+shown as a plain code block naming the lines it was written for. A Stop hook of the session
 (`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
-it as one review with an inline comment per finding, one notification, rather than through the
+it as one review with an inline comment per finding (nitpicks aside), one notification, rather than through the
 skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so
 the review comes from `claude[bot]`, with the Claude GitHub App's token the action gives the session
 and revokes when it ends. When the hook didn't post, a step of the action posts the same findings with
