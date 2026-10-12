@@ -34,6 +34,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 internal class DayUiStateFlowFactoryTest {
@@ -61,7 +63,7 @@ internal class DayUiStateFlowFactoryTest {
         notes = null,
         isToday = false,
     )
-    private val readTimestamp = 5 * 60 * 60 * 1_000L + 7 * 60 * 1_000L
+    private val readTimestamp = (5.hours + 7.minutes).inWholeMilliseconds
     private val readGenesis = BookDataModel(
         id = BookId.GEN,
         chapters = listOf(
@@ -170,7 +172,7 @@ internal class DayUiStateFlowFactoryTest {
     @Test
     fun `GIVEN a stored read timestamp WHEN creating the state THEN formats it instead of the derived one`() = runTest {
         // Given
-        val storedTimestamp = 22 * 60 * 60 * 1_000L + 30 * 60 * 1_000L
+        val storedTimestamp = (22.hours + 30.minutes).inWholeMilliseconds
         prepareScenario(
             books = listOf(readGenesis, readObadiah),
             storedDay = planDay.copy(readTimestamp = storedTimestamp),

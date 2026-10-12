@@ -28,6 +28,7 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { DataClassOwnFileRule() },
         RuleProvider { TwoBranchWhenRule() },
         RuleProvider { CompanionObjectDurationRule() },
+        RuleProvider { ManualTimeUnitConversionRule() },
         RuleProvider { SuspendRunCatchingRule() },
         RuleProvider { InjectedRealtimeRule() },
         RuleProvider { CommentsSayWhyRule() },
