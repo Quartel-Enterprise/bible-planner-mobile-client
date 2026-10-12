@@ -5,19 +5,25 @@ name: review-gate
 # run. That review applies its findings and pushes them as a commit of its own (see docs/ci.md, "AI
 # review"), and running the checks on a commit about to be replaced would only have them run twice.
 # When the review pushed, the pull request's head is no longer this commit: the checks are skipped
-# here and run on the new commit, whose push starts them again. When it pushed nothing, they run
-# here.
+# here and run on the new commit, whose push starts them again.
 #
-# The callers only run it on the opened event: every other one (a later push, a reopened pull
+# The review's own push (claude[bot]'s fix commit) runs the gate too, waiting for that same review
+# run. On either commit, once the review ends, the checks are held while a thread the review opened
+# is still unresolved: the author is about to push the fixes, and that push runs them. The gate
+# then fails, so the pull request shows why nothing ran and merge-when-green doesn't take the skipped
+# checks for green. Resolving the threads without a push starts no workflow: the run-checks label
+# re-runs the held runs (run-checks.yml), and so does merge-when-green once every thread is resolved.
+#
+# The callers run it only on those two events: every other one (an author's push, a reopened pull
 # request, a push to main) skips it, and their jobs run on a skipped gate, so it starts no runner
-# there. A draft or a fork's pull request, which claude-review skips, passes right away. The gate
-# never fails a run: a failed or cancelled review, one that outlasts the wait, or GitHub's API
-# failing a few times in a row lets the checks run.
+# there. A draft or a fork's pull request, which claude-review skips, passes right away. Only a hold
+# fails the gate: a failed or cancelled review, one that outlasts the wait, or GitHub's API failing a
+# few times in a row lets the checks run.
 on:
   workflow_call:
     outputs:
       proceed:
-        description: "'false' when a newer head replaces this commit and the checks run there instead."
+        description: "'false' when the checks run on a newer head instead, or are held for the review's open threads."
         value: ${{ jobs.wait.outputs.proceed }}
 
 jobs:
@@ -28,8 +34,9 @@ jobs:
     permissions:
       actions: read
       pull-requests: read
+    # A hold fails the job after its outputs are set, so the callers still read proceed.
     outputs:
-      proceed: ${{ steps.review.outputs.proceed }}
+      proceed: ${{ steps.review.outputs.proceed || steps.threads.outputs.proceed }}
     steps:
       - name: Wait for the opening review
         id: review
@@ -40,7 +47,12 @@ jobs:
             ${{ !github.event.pull_request.draft &&
             github.event.pull_request.head.repo.full_name == github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # The fix commit's parent is the commit the review ran on.
+          REVIEWED_SHA: >-
+            ${{ github.event.action == 'synchronize' && github.event.before ||
+            github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_ACTION: ${{ github.event.action }}
         run: |
           proceed() {
             echo "proceed=$1" >> "$GITHUB_OUTPUT"
@@ -54,7 +66,7 @@ jobs:
           # seconds; a minute of retries covers a slow API.
           run=""
           for _ in $(seq 1 6); do
-            run=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
+            run=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$REVIEWED_SHA&event=pull_request&per_page=100" \
               --jq '[.workflow_runs[] | select(.path == ".github/workflows/claude-review.yml")] | first | .id // empty' \
               2> /dev/null) || run=""
             [ -n "$run" ] && break
@@ -66,8 +78,14 @@ jobs:
           fi
 
           # Once a minute: up to five workflows wait on the same review, all on GITHUB_TOKEN's
-          # 1,000 requests an hour, and the review takes many minutes. The deadline is under the
-          # job's timeout, so a review stuck in the queue still lets the checks run.
+          # 1,000 requests an hour, and the review takes many minutes. Its fix commit is pushed
+          # seconds before it ends, so on that commit the wait is short and polled every 10 seconds.
+          # The deadline is under the job's timeout, so a review stuck in the queue still lets the
+          # checks run.
+          interval=60
+          if [ "$EVENT_ACTION" = synchronize ]; then
+            interval=10
+          fi
           deadline=$(($(date +%s) + 40 * 60))
           failures=0
           status=""
@@ -82,7 +100,7 @@ jobs:
                 proceed true
               fi
             fi
-            sleep 60
+            sleep "$interval"
           done
           if [ "$status" != completed ]; then
             echo "::warning::The review is still running after 40 minutes, so the checks run without waiting for it."
@@ -95,4 +113,45 @@ jobs:
             echo "::notice::The pull request's head moved to $head during the review, so the checks run there instead."
             proceed false
           fi
-          proceed true
+
+          echo "count-threads=true" >> "$GITHUB_OUTPUT"
+
+      - if: steps.review.outputs.count-threads == 'true'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: scripts/review_gate.sh
+          sparse-checkout-cone-mode: false
+
+      # The review posts its threads before its run completes, like its fixes.
+      - name: Count the review's open threads
+        id: threads
+        if: steps.review.outputs.count-threads == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if ! open=$(./scripts/review_gate.sh open-threads "$PR_NUMBER" --claude 2> /dev/null); then
+            echo "::warning::The review's threads couldn't be read, so the checks run without checking them."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$open" -gt 0 ]; then
+            {
+              echo "proceed=false"
+              echo "open-threads=$open"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The step's name is what review_gate.sh rerun-held looks for.
+      - name: Hold for the open threads
+        if: steps.threads.outputs.open-threads != ''
+        env:
+          OPEN_THREADS: ${{ steps.threads.outputs.open-threads }}
+        run: |
+          echo "::error::claude-review left $OPEN_THREADS open thread(s), so this workflow's checks didn't run. Push their fixes, which runs the checks on the new commit, or resolve them and add the run-checks label."
+          exit 1

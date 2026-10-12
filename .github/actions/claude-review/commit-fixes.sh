@@ -18,8 +18,9 @@
 #
 # Nothing is pushed, and the script exits 1, when no finding is marked fixed, when the working tree
 # has no change or an untracked file, when the checkout is no longer the reviewed head, or when the
-# push is refused (the branch moved during the review). git's own output stays out of the log,
-# since origin's url holds the token; the paths it names are the repository's.
+# push is refused (the branch moved during the review). Only the error lines of a failed push reach
+# the log, with any credentials in a url masked, since origin's url holds the token; the paths git
+# names are the repository's.
 set -euo pipefail
 
 findings=$(cat)
@@ -55,11 +56,13 @@ $(jq -r '.[] | "- " + (.summary // "Finding" | tostring | gsub("\\s+"; " "))' <<
 safe_git commit --all --no-verify --quiet --message "$message" > /dev/null 2>&1 || fail "git commit failed"
 
 # A plain push, never forced: a branch that moved during the review keeps its commits.
+error=""
 for attempt in 1 2; do
-  if safe_git push --quiet origin "HEAD:refs/heads/$branch" > /dev/null 2>&1; then
+  if error=$(safe_git push --quiet origin "HEAD:refs/heads/$branch" 2>&1 > /dev/null); then
     safe_git rev-parse HEAD
     exit 0
   fi
   [ "$attempt" -lt 2 ] && sleep 5
 done
-fail "git push failed"
+reason=$(sed -E 's#://[^/@[:space:]]+@#://***@#g' <<< "$error" | { grep -E '^(remote:|error:|fatal:| ?!)' || true; } | tail -n 3 | tr '\n' ' ')
+fail "git push failed: ${reason:-no error from git}"

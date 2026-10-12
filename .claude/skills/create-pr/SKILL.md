@@ -319,7 +319,9 @@ while :; do
     *merge-when-green*) ;;
     *) exit 3 ;;
   esac
-  gh pr checks "$pr" --json bucket -q '.[].bucket' 2>/dev/null | grep -qxE 'fail|cancel' && exit 2
+  gh pr checks "$pr" --json name,bucket \
+    -q '.[] | select(((.name | startswith("review-gate")) and .bucket == "fail") | not) | .bucket' \
+    2>/dev/null | grep -qxE 'fail|cancel' && exit 2
   sleep 60
 done
 ```
@@ -331,8 +333,8 @@ command exits:
 - **2, a check failed or was cancelled:** report which one (`gh pr checks <pr>`) and stop. The label
   stays on, so re-running the check until it's green still merges the pull request; `finish-task`
   then runs when the user asks for it.
-- **3, label removed:** the usual reason is that every check passed but a review conversation is
-  still unresolved, often a `claude-review` finding. `merge-when-green` then removes its label and
+- **3, label removed:** the usual reason is that every check passed, or was held, but a review
+  conversation is still unresolved, often a `claude-review` finding. `merge-when-green` then removes its label and
   comments on the pull request (see [docs/ci.md](../../../docs/ci.md#unresolved-conversations)).
   List the open conversations with the `reviewThreads` GraphQL query from `merge-when-green.yml`
   (asking for each thread's `path` and first comment body too) and show them to the user. For each

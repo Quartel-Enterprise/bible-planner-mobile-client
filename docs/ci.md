@@ -240,19 +240,40 @@ time. Now the review fixes what it found, and the checks wait for it:
   every finding is an inline comment, as before.
 - **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
   `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
-  pull request opened with, it waits for the `claude-review` run of that commit to end, checking
-  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
-  hour. When the pull request's head moved meanwhile (the fix commit), it skips the other jobs: that
-  push started them again on the new commit, and cancels this run anyway. When the head didn't
-  move, they run. Every other event (a later push, a reopened pull request, `main`) skips the gate
-  job itself, so it starts no runner, and the other jobs run on a skipped gate. A draft or a fork
-  passes it right away, and so does a failed or cancelled review, GitHub's API failing three times
-  in a row, or a review still running after 40 minutes. `translations` doesn't wait:
-  `check-translations` is required and takes seconds.
+  pull request opened with, and on the review's fix commit (a push by `claude[bot]`), it waits for
+  the `claude-review` run of the reviewed commit to end, checking once a minute: five workflows wait
+  on the same review with `GITHUB_TOKEN`'s 1,000 requests an hour. When the pull request's head moved
+  meanwhile (the fix commit), it skips the other jobs: that push started them again on the new
+  commit, and cancels this run anyway. Every other event (an author's push, a reopened pull request,
+  `main`) skips the gate job itself, so it starts no runner, and the other jobs run on a skipped
+  gate. A draft or a fork passes it right away, and so does a failed or cancelled review, GitHub's
+  API failing three times in a row, or a review still running after 40 minutes. `translations`
+  doesn't wait: `check-translations` is required and takes seconds.
+- **The checks are held for open threads.** Once the review ended and the head didn't move, the
+  gate counts the review's unresolved threads (`claude[bot]`'s, or `github-actions[bot]`'s when the
+  fallback step posted). With one open, the other jobs are skipped and the gate fails, in its `Hold
+  for the open threads` step, so the pull request shows why nothing ran and `merge-when-green`
+  doesn't take the skipped checks for green. The author is about to push the fixes, and that push
+  runs the checks. Resolving the threads without a push (a finding answered instead of fixed)
+  starts no workflow: add the `run-checks` label, and `run-checks.yml` re-runs every held run of the
+  head commit, whose gate then lets the checks through. With a thread still open it re-runs nothing
+  and comments instead. Either way it removes the label. `merge-when-green` re-runs them too, see
+  [Unresolved conversations](#unresolved-conversations). On the fix commit the review is seconds
+  from ending, so the gate checks on it every 10 seconds instead of every minute.
 
-So a pull request whose review found nothing to fix runs its checks once, after the review; one
-whose review fixed something runs them once, on the fix commit. Either way the checks finish later
-than when they ran next to the review, by the length of the review, but they never run twice.
+`scripts/review_gate.sh` holds what these workflows have to agree on: which threads count as the
+review's and which runs were held (a failed `Hold for the open threads` step).
+
+So a pull request whose review found nothing runs its checks once, after the review; one whose
+review fixed everything it found runs them once, on the fix commit; one whose review left threads
+runs them once, on the author's next push or on `run-checks`. Either way the checks finish later
+than when they ran next to the review, but they never run twice.
+
+The review's checkout doesn't persist `GITHUB_TOKEN` (`persist-credentials: false`): checkout keeps
+its header in a file of its own, which `claude-code-action` doesn't find when it swaps in the App's
+token, so git kept sending the read-only token and the fix push was refused (#600, the first pull
+request after the fixes shipped). A refused push now logs git's error lines, with any credentials
+in a url masked.
 
 The fix commit isn't reviewed again; the `ai-review` label reviews it, only commenting. It isn't
 built before the push either: the review has no Gradle, so a fix that breaks the build or ktlint
@@ -272,6 +293,11 @@ on the merge.
 
 For each Claude finding, either fix it, or reply with why the code stays as it is, then resolve the
 conversation. Resolving one starts no workflow, so add the `merge-when-green` label again afterwards.
+When the opening review's threads held the checks (see
+[Fixes and the review gate](#fixes-and-the-review-gate)), `merge-when-green` doesn't count the failed
+gates as failed checks: with a conversation still open it removes its label and comments, as above,
+and once every conversation is resolved it re-runs the held runs, keeps its label and merges when
+they pass. To run the held checks without merging, add `run-checks` instead.
 The ruleset has no bypass, so this applies to admins too.
 
 ## UI tests
@@ -393,7 +419,10 @@ compiling from linking. To measure the link again, run the task on its own with 
   a required check, which GitHub never reports for a workflow skipped by path filtering.
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a
   cancelled run saves no cache.
-- If it builds or tests the app on pull requests, start it with the `review-gate` job and make
-  its other jobs need it (see [Fixes and the review gate](#fixes-and-the-review-gate)).
+- If it builds or tests the app on pull requests, start it with the `review-gate` job, with the
+  same `if` as the other callers, and make its other jobs need it (see
+  [Fixes and the review gate](#fixes-and-the-review-gate)). Add it to the `GATED` list of
+  `scripts/review_gate.sh` too, or neither `run-checks` nor `merge-when-green` re-runs it when the
+  gate held it.
 - Set up Gradle through `./.github/actions/gradle`, pass `secrets.GRADLE_ENCRYPTION_KEY`, and pick
   one of the two cache switches above if the job is not a default reader.
