@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.isRangeRead
+import com.quare.bibleplanner.core.books.domain.isChapterRead
 import com.quare.bibleplanner.core.books.domain.isVerseRead
 import com.quare.bibleplanner.core.books.domain.readVersesCount
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
@@ -125,21 +125,10 @@ class GetPlansByWeekUseCase(
         val allChaptersRead = if (passage.chapters.isEmpty()) {
             book.isRead
         } else {
-            passage.chapters.all { chapterPlan ->
-                isChapterPlanRead(chapterPlan, book)
-            }
+            passage.chapters.all(book::isChapterRead)
         }
 
         return passage.copy(isRead = allChaptersRead)
-    }
-
-    private fun isChapterPlanRead(
-        chapterPlan: ChapterModel,
-        book: BookDataModel,
-    ): Boolean {
-        val chapter = book.chapters.find { it.number == chapterPlan.number }
-            ?: return false
-        return chapter.isRangeRead(chapterPlan.startVerse, chapterPlan.endVerse)
     }
 
     private fun calculateTotalVerses(

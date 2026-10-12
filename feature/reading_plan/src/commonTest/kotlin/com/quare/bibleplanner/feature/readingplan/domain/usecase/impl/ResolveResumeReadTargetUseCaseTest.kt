@@ -560,6 +560,57 @@ internal class ResolveResumeReadTargetUseCaseTest {
         }
 
     @Test
+    fun `GIVEN only a read verse range of the day WHEN resolving THEN falls back to its chapter flagged unread`() =
+        runTest {
+            // Given
+            val passages = listOf(
+                PassageModel(
+                    bookId = BookId.PSA,
+                    chapters = listOf(
+                        ChapterModel(
+                            number = 119,
+                            startVerse = 1,
+                            endVerse = 2,
+                            bookId = BookId.PSA,
+                        ),
+                    ),
+                    isRead = true,
+                    chapterRanges = null,
+                ),
+            )
+            prepareScenario(
+                books = listOf(
+                    bookOf(
+                        id = BookId.PSA,
+                        chapters = listOf(
+                            bookChapter(
+                                number = 119,
+                                isRead = false,
+                                verseCount = 4,
+                                readVerses = setOf(1, 2),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val result = useCase(passages)
+
+            // Then
+            assertEquals(
+                expected = Result.success<ResumeReadTarget?>(
+                    ResumeReadTarget(
+                        bookId = BookId.PSA,
+                        chapterNumber = 119,
+                        isChapterRead = false,
+                    ),
+                ),
+                actual = result,
+            )
+        }
+
+    @Test
     fun `GIVEN a whole book passage fully read WHEN resolving THEN falls back to chapter 1 flagged read`() = runTest {
         // Given
         val passages = listOf(

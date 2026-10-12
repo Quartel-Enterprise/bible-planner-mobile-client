@@ -39,6 +39,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -78,6 +79,7 @@ internal class ReadingPlanViewModel(
     private val pendingReadOverrides = mutableMapOf<DayReadKey, Boolean>()
     private var lastAuthoritativeReadDayCount: Int? = null
     private var isFirstLoad = true
+    private var resumeReadingJob: Job? = null
 
     init {
         observe(calculateBibleProgress()) { progress ->
@@ -347,13 +349,15 @@ internal class ReadingPlanViewModel(
     }
 
     private fun onResumeReadingClick(event: ReadingPlanUiEvent.OnResumeReadingClick) {
+        // Why: resolving reads the books first, so a second tap meanwhile would open the reader twice.
+        if (resumeReadingJob?.isActive == true) return
         val passages = (uiState.value as? ReadingPlanUiState.Loaded)
             ?.findDay(
                 weekNumber = event.weekNumber,
                 dayNumber = event.dayNumber,
             )?.passages
             .orEmpty()
-        viewModelScope.launch {
+        resumeReadingJob = viewModelScope.launch {
             resolveResumeReadTarget(passages).getOrNull()?.let { target ->
                 navigator.navigate(target.toReadNavRoute())
             } ?: handleEvent(

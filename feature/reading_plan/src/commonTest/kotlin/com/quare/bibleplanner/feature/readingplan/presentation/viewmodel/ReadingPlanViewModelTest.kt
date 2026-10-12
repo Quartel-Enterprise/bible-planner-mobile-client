@@ -20,8 +20,10 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
+import com.quare.bibleplanner.feature.readingplan.domain.model.ResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolvePlanStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveResumeReadTargetUseCase
@@ -33,6 +35,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOpt
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -633,6 +636,48 @@ internal class ReadingPlanViewModelTest {
         }
 
     @Test
+    fun `GIVEN a resume still resolving WHEN tapping resume again THEN opens the reader once`() =
+        runTest(testDispatcher) {
+            // Given
+            val resolution = CompletableDeferred<Result<ResumeReadTarget?>>()
+            prepareScenario(resolveResumeReadTarget = { resolution.await() })
+            val event = ReadingPlanUiEvent.OnResumeReadingClick(
+                dayNumber = 1,
+                weekNumber = 1,
+            )
+            viewModel.onEvent(event)
+
+            // When
+            viewModel.onEvent(event)
+            resolution.complete(
+                Result.success(
+                    ResumeReadTarget(
+                        bookId = BookId.GEN,
+                        chapterNumber = 2,
+                        isChapterRead = false,
+                    ),
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        ReadNavRoute(
+                            bookId = BookId.GEN.name,
+                            chapterNumber = 2,
+                            isChapterRead = false,
+                            isFromBookDetails = false,
+                            targetVerseNumbers = emptyList(),
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
     fun `GIVEN the loaded plans WHEN resuming reading THEN tracks the resume click with its week and day`() =
         runTest(testDispatcher) {
             // Given
@@ -1120,7 +1165,10 @@ internal class ReadingPlanViewModelTest {
         ),
     )
 
-    private fun TestScope.prepareScenario(initialPlans: PlansModel? = plans(readDays = 0)) {
+    private fun TestScope.prepareScenario(
+        initialPlans: PlansModel? = plans(readDays = 0),
+        resolveResumeReadTarget: ResolveResumeReadTarget? = null,
+    ) {
         val navigator = Navigator()
         val collectedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
         val collectedTriggers = mutableListOf<ReviewTrigger>()
@@ -1149,7 +1197,7 @@ internal class ReadingPlanViewModelTest {
                 }
             },
             resolvePlanStatus = ResolvePlanStatusUseCase(),
-            resolveResumeReadTarget = ResolveResumeReadTargetUseCase(booksRepository),
+            resolveResumeReadTarget = resolveResumeReadTarget ?: ResolveResumeReadTargetUseCase(booksRepository),
             weeksPlanPresentationMapper = WeeksPlanPresentationMapper(
                 localDateTimeProvider = {
                     LocalDateTime(

@@ -21,7 +21,7 @@ internal class ResolveResumeReadTargetUseCase(
             .mapNotNull { bookId -> booksRepository.getBookByIdFlow(bookId).first() }
         passages
             .firstNotNullOfOrNull { passage -> passage.toFirstUnreadTarget(books) }
-            ?: passages.firstOrNull()?.toFirstChapterTarget()
+            ?: passages.firstOrNull()?.toFirstChapterTarget(books)
     }.onFailure { error -> Logger.e(error) { "Failed to resolve the chapter to resume reading" } }
 
     private fun PassageModel.toFirstUnreadTarget(books: List<BookDataModel>): ResumeReadTarget? {
@@ -46,11 +46,20 @@ internal class ResolveResumeReadTargetUseCase(
         }
     }
 
-    private fun PassageModel.toFirstChapterTarget(): ResumeReadTarget = ResumeReadTarget(
-        bookId = bookId,
-        chapterNumber = chapters.firstOrNull()?.number ?: FIRST_CHAPTER,
-        isChapterRead = true,
-    )
+    private fun PassageModel.toFirstChapterTarget(books: List<BookDataModel>): ResumeReadTarget {
+        val chapterNumber = chapters.firstOrNull()?.number ?: FIRST_CHAPTER
+        // Why: the reader shows the whole chapter's state, and a read verse range doesn't make it read.
+        val isChapterRead = books
+            .find { it.id == bookId }
+            ?.chapters
+            ?.find { it.number == chapterNumber }
+            ?.isRead == true
+        return ResumeReadTarget(
+            bookId = bookId,
+            chapterNumber = chapterNumber,
+            isChapterRead = isChapterRead,
+        )
+    }
 
     private companion object {
         const val FIRST_CHAPTER = 1
