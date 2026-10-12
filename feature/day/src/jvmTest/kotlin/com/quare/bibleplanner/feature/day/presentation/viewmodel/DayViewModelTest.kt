@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
@@ -69,6 +65,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
+import com.quare.bibleplanner.ui.testing.viewmodel.ViewModelTestStore
 import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +80,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -137,7 +133,7 @@ internal class DayViewModelTest {
         isToday = false,
     )
     private lateinit var viewModel: DayViewModel
-    private lateinit var viewModelStore: ViewModelStore
+    private val viewModelStore = ViewModelTestStore(testDispatcher)
     private lateinit var database: InMemoryBibleDatabase
     private lateinit var dayRepository: FakeDayRepository
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
@@ -153,13 +149,12 @@ internal class DayViewModelTest {
 
     @AfterTest
     fun tearDown() {
-        viewModelStore.clear()
         database.close()
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `GIVEN a planned day WHEN opening it THEN loads the day with its passages`() = runTest(testDispatcher) {
+    fun `GIVEN a planned day WHEN opening it THEN loads the day with its passages`() = viewModelStore.runTest {
         // Given
         prepareScenario()
 
@@ -176,7 +171,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN an unread day WHEN toggling it THEN marks every passage read and asks for the login nudge`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -217,7 +212,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN an unread chapter WHEN checking it THEN reads it and tracks the chapter toggle`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -255,7 +250,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN an unread whole book passage WHEN checking it THEN reads the book and tracks the book toggle`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -278,7 +273,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a chapter outside the passage WHEN checking it THEN shows the toggle failure message`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -303,7 +298,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN a passage outside the day WHEN checking it THEN does nothing`() = runTest(testDispatcher) {
+    fun `GIVEN a passage outside the day WHEN checking it THEN does nothing`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -320,7 +315,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN the day is still loading WHEN toggling it THEN ignores the toggle`() = runTest(testDispatcher) {
+    fun `GIVEN the day is still loading WHEN toggling it THEN ignores the toggle`() = viewModelStore.runTest {
         // Given
         prepareScenario(plannedDay = null)
 
@@ -350,7 +345,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a loaded day WHEN opening and closing the pickers THEN shows the matching picker`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -373,7 +368,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN the date picker WHEN selecting a date THEN keeps it and moves to the time picker`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -392,7 +387,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a selected date WHEN confirming the time THEN saves the read moment and resets the picker`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -439,7 +434,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN no selected date WHEN confirming the time THEN saves nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no selected date WHEN confirming the time THEN saves nothing`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -459,7 +454,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN typed notes WHEN the debounce elapses THEN saves only the last text and tracks its length`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -486,7 +481,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN blank notes WHEN the debounce elapses THEN clears them without tracking`() = runTest(testDispatcher) {
+    fun `GIVEN blank notes WHEN the debounce elapses THEN clears them without tracking`() = viewModelStore.runTest {
         // Given
         prepareScenario(storedNotes = "old")
         awaitLoaded()
@@ -503,7 +498,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN notes typed within the debounce WHEN the screen is closed THEN saves them once`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -528,7 +523,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN saved notes WHEN the screen is closed THEN saves nothing again`() = runTest(testDispatcher) {
+    fun `GIVEN saved notes WHEN the screen is closed THEN saves nothing again`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -545,7 +540,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a day with notes WHEN clearing them THEN opens the delete confirmation`() = runTest(testDispatcher) {
+    fun `GIVEN a day with notes WHEN clearing them THEN opens the delete confirmation`() = viewModelStore.runTest {
         // Given
         prepareScenario(storedNotes = "Remember this")
         awaitLoaded()
@@ -570,24 +565,23 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a day without notes WHEN clearing them THEN says there is nothing to delete`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            awaitLoaded()
+    fun `GIVEN a day without notes WHEN clearing them THEN says there is nothing to delete`() = viewModelStore.runTest {
+        // Given
+        prepareScenario()
+        awaitLoaded()
 
-            // When
-            viewModel.onEvent(DayUiEvent.OnNotesClear)
-            runCurrent()
+        // When
+        viewModel.onEvent(DayUiEvent.OnNotesClear)
+        runCurrent()
 
-            // Then
-            assertEquals(listOf(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message)), actions.value)
-            assertTrue(commands.value.isEmpty())
-        }
+        // Then
+        assertEquals(listOf(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message)), actions.value)
+        assertTrue(commands.value.isEmpty())
+    }
 
     @Test
     fun `GIVEN a free user at the notes limit WHEN focusing empty notes THEN blocks them and shows the warning`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(
                 isFreeUser = true,
@@ -620,7 +614,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN notes typed before the limit check WHEN blocked THEN deletes them afterwards`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(
                 isFreeUser = true,
@@ -640,7 +634,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN nothing typed WHEN the blocked notes cleanup runs THEN deletes nothing`() = runTest(testDispatcher) {
+    fun `GIVEN nothing typed WHEN the blocked notes cleanup runs THEN deletes nothing`() = viewModelStore.runTest {
         // Given
         prepareScenario(
             isFreeUser = true,
@@ -658,7 +652,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a pro user WHEN focusing empty notes THEN lets them write`() = runTest(testDispatcher) {
+    fun `GIVEN a pro user WHEN focusing empty notes THEN lets them write`() = viewModelStore.runTest {
         // Given
         prepareScenario(
             isFreeUser = false,
@@ -677,7 +671,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN existing notes WHEN focusing them THEN skips the limit check`() = runTest(testDispatcher) {
+    fun `GIVEN existing notes WHEN focusing them THEN skips the limit check`() = viewModelStore.runTest {
         // Given
         prepareScenario(
             storedNotes = "Already here",
@@ -696,7 +690,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a loaded day WHEN going back THEN navigates back and tracks it`() = runTest(testDispatcher) {
+    fun `GIVEN a loaded day WHEN going back THEN navigates back and tracks it`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -711,7 +705,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a chapter WHEN clicking it THEN opens the reader on that chapter`() = runTest(testDispatcher) {
+    fun `GIVEN a chapter WHEN clicking it THEN opens the reader on that chapter`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -748,7 +742,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a whole book passage WHEN clicking it THEN opens the reader on its first chapter`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -782,7 +776,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN a loaded day WHEN asking the AI THEN opens the chat for this day`() = runTest(testDispatcher) {
+    fun `GIVEN a loaded day WHEN asking the AI THEN opens the chat for this day`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -815,7 +809,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN the study card WHEN subscribing or signing in THEN opens the paywall and the login warning`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             awaitLoaded()
@@ -837,7 +831,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN a study message WHEN it arrives THEN shows it as a snackbar`() = runTest(testDispatcher) {
+    fun `GIVEN a study message WHEN it arrives THEN shows it as a snackbar`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -851,7 +845,7 @@ internal class DayViewModelTest {
     }
 
     @Test
-    fun `GIVEN a loaded day WHEN opening the study THEN navigates to the day study`() = runTest(testDispatcher) {
+    fun `GIVEN a loaded day WHEN opening the study THEN navigates to the day study`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -866,7 +860,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a wide window WHEN the day loads and updates THEN opens the study companion only once`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario()
             viewModel.onEvent(DayUiEvent.OnWidthClassChanged(isWide = true))
@@ -884,7 +878,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN a narrow window WHEN widening it again THEN reopens the study companion`() = runTest(testDispatcher) {
+    fun `GIVEN a narrow window WHEN widening it again THEN reopens the study companion`() = viewModelStore.runTest {
         // Given
         prepareScenario()
         awaitLoaded()
@@ -906,7 +900,7 @@ internal class DayViewModelTest {
 
     @Test
     fun `GIVEN a pending study reopen for this day WHEN it loads THEN consumes it and opens the study`() =
-        runTest(testDispatcher) {
+        viewModelStore.runTest {
             // Given
             prepareScenario(pendingOpenKey = "BOOKS|1|1")
 
@@ -919,7 +913,7 @@ internal class DayViewModelTest {
         }
 
     @Test
-    fun `GIVEN a pending study reopen for another day WHEN it loads THEN leaves it alone`() = runTest(testDispatcher) {
+    fun `GIVEN a pending study reopen for another day WHEN it loads THEN leaves it alone`() = viewModelStore.runTest {
         // Given
         prepareScenario(pendingOpenKey = "BOOKS|9|9")
 
@@ -1016,6 +1010,7 @@ internal class DayViewModelTest {
             getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
             currentTimestampProvider = { now },
             localDateTimeProvider = localDateTimeProvider,
+            scoringDispatcher = testDispatcher,
         )
         val updatePassageReadStatus = database.updatePassageReadStatus(
             currentTimestampProvider = { now },
@@ -1076,26 +1071,20 @@ internal class DayViewModelTest {
             calculateAllChaptersReadStatus = CalculateAllChaptersReadStatusUseCase(),
             localDateTimeProvider = localDateTimeProvider,
         )
-        viewModelStore = ViewModelStore()
-        viewModel = ViewModelProvider.create(
-            store = viewModelStore,
-            factory = viewModelFactory {
-                initializer {
-                    DayViewModel(
-                        useCases = useCases,
-                        dayUiStateFlowFactory = dayUiStateFlowFactory,
-                        deleteRouteNotesMapper = DeleteRouteNotesMapper(),
-                        requestLoginNudgeIfNeeded = { loginNudgeRequested.complete(Unit) },
-                        applicationScope = ApplicationScope(backgroundScope),
-                        generationCoordinator = coordinator,
-                        navigator = navigator,
-                        platform = Platform.Android,
-                        route = dayRoute,
-                        trackEvent = trackEvent,
-                    )
-                }
-            },
-        )[DayViewModel::class]
+        viewModel = viewModelStore.create(DayViewModel::class) {
+            DayViewModel(
+                useCases = useCases,
+                dayUiStateFlowFactory = dayUiStateFlowFactory,
+                deleteRouteNotesMapper = DeleteRouteNotesMapper(),
+                requestLoginNudgeIfNeeded = { loginNudgeRequested.complete(Unit) },
+                applicationScope = ApplicationScope(backgroundScope),
+                generationCoordinator = coordinator,
+                navigator = navigator,
+                platform = Platform.Android,
+                route = dayRoute,
+                trackEvent = trackEvent,
+            )
+        }
         backgroundScope.launch {
             viewModel.uiAction.collect { action -> actions.update { collected -> collected + action } }
         }

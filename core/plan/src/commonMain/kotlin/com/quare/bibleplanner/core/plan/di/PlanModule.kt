@@ -75,7 +75,15 @@ val planModule = module {
     }
 
     factoryOf(::GetPlannedReadDateForDayUseCase)
-    factoryOf(::GetPlansByWeekUseCase)
+    factory {
+        GetPlansByWeekUseCase(
+            planRepository = get(),
+            booksRepository = get(),
+            getPlannedReadDateForDayUseCase = get(),
+            currentTimestampProvider = get(),
+            localDateTimeProvider = get(),
+        )
+    }
     factoryOf(::GetScheduledDayUseCase).bind<GetScheduledDay>()
     factoryOf(::GetCompletedDayForChapterUseCase).bind<GetCompletedDayForChapter>()
     factoryOf(::ObserveDayCompletionCandidatesUseCase).bind<ObserveDayCompletionCandidates>()
