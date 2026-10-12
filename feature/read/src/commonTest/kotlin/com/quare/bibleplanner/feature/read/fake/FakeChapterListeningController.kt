@@ -25,6 +25,7 @@ internal class FakeChapterListeningController(
             settings = ChapterListeningSettingsModel(
                 speed = 1f,
                 isAutoNextEnabled = true,
+                isWordHighlightEnabled = true,
             ),
             sleepTimer = ListeningSleepTimerModel.Off,
         ),
@@ -118,6 +119,10 @@ internal class FakeChapterListeningController(
 
     override fun setAutoNextEnabled(isEnabled: Boolean) {
         calls += "setAutoNextEnabled:$isEnabled"
+    }
+
+    override fun setWordHighlightEnabled(isEnabled: Boolean) {
+        calls += "setWordHighlightEnabled:$isEnabled"
     }
 
     override fun dismissFinishOffer() {

@@ -186,6 +186,7 @@ internal class ChapterListeningPlayerViewModelTest {
             ChapterListeningPlayerUiEvent.OnSpeedClick(1.25f),
             ChapterListeningPlayerUiEvent.OnSleepTimerClick(ListeningSleepTimerOption.END_OF_CHAPTER),
             ChapterListeningPlayerUiEvent.OnAutoNextToggle(false),
+            ChapterListeningPlayerUiEvent.OnWordHighlightToggle(false),
         ).forEach(viewModel::onEvent)
 
         // Then
@@ -200,6 +201,7 @@ internal class ChapterListeningPlayerViewModelTest {
                 "setSpeed:1.25",
                 "setSleepTimer:end_of_chapter",
                 "setAutoNextEnabled:false",
+                "setWordHighlightEnabled:false",
             ),
             controller.calls,
         )

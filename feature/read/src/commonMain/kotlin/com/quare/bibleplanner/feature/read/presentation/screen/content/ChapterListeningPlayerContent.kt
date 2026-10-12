@@ -12,16 +12,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.rounded.Lock
@@ -40,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +52,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -74,8 +80,12 @@ import bibleplanner.feature.read.generated.resources.listening_speed
 import bibleplanner.feature.read.generated.resources.listening_time_remaining
 import bibleplanner.feature.read.generated.resources.listening_unlock
 import bibleplanner.feature.read.generated.resources.listening_verse_of
+import bibleplanner.feature.read.generated.resources.listening_word_highlight
+import bibleplanner.feature.read.generated.resources.listening_word_highlight_off
+import bibleplanner.feature.read.generated.resources.listening_word_highlight_on
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSleepTimerOption
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.feature.read.presentation.listening.mapper.toUnavailableCopy
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
@@ -85,7 +95,9 @@ import com.quare.bibleplanner.feature.read.presentation.listening.player.Chapter
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningSleepTimerUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
 import com.quare.bibleplanner.feature.read.presentation.screen.component.chapterTitle
+import com.quare.bibleplanner.feature.read.presentation.screen.component.listeningWordStyle
 import com.quare.bibleplanner.feature.read.presentation.screen.component.verseReference
+import com.quare.bibleplanner.feature.read.presentation.screen.component.withListeningWord
 import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.theme.font.displaySerifFontFamily
 import org.jetbrains.compose.resources.stringResource
@@ -111,7 +123,10 @@ internal fun ChapterListeningPlayerContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         player.dayProgress?.let { DayProgressCard(dayProgress = it, progress = player.progress) }
-        CurrentVerseCard(player = player)
+        CurrentVerseCard(
+            player = player,
+            isWordHighlightEnabled = uiState.isWordHighlightEnabled,
+        )
         ProgressSection(
             player = player,
             onEvent = onEvent,
@@ -144,6 +159,10 @@ internal fun ChapterListeningPlayerContent(
         )
         AutoNextCard(
             uiState = uiState,
+            onEvent = onEvent,
+        )
+        WordHighlightCard(
+            isEnabled = uiState.isWordHighlightEnabled,
             onEvent = onEvent,
         )
         AiVoiceLabel()
@@ -202,7 +221,10 @@ private fun DayProgressCard(
 }
 
 @Composable
-private fun CurrentVerseCard(player: ListeningPlayerUiModel) {
+private fun CurrentVerseCard(
+    player: ListeningPlayerUiModel,
+    isWordHighlightEnabled: Boolean,
+) {
     PlayerSection(verticalPadding = 14.dp) {
         Text(
             text = verseReference(
@@ -213,13 +235,108 @@ private fun CurrentVerseCard(player: ListeningPlayerUiModel) {
             color = MaterialTheme.colorScheme.primary,
         )
         player.verseText?.let { text ->
-            Text(
-                modifier = Modifier.padding(top = 4.dp),
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = displaySerifFontFamily(),
-                maxLines = VERSE_MAX_LINES,
-                overflow = TextOverflow.Ellipsis,
+            // Why: without word timings nothing would scroll the card, so the verse keeps its ellipsis.
+            if (isWordHighlightEnabled && player.hasWordTimings) {
+                FollowedVerseText(
+                    text = text,
+                    highlightedWord = (player.spokenWord as? ListeningWordTargetModel.Verse)?.range,
+                )
+            } else {
+                Text(
+                    modifier = Modifier.padding(top = 4.dp),
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = displaySerifFontFamily(),
+                    maxLines = VERSE_MAX_LINES,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+/*
+ * Why: a long verse doesn't fit the card, so instead of cutting it with an ellipsis the text scrolls
+ * line by line to keep the word being read in view, with the line before it as context.
+ */
+@Composable
+private fun FollowedVerseText(
+    text: String,
+    highlightedWord: IntRange?,
+) {
+    val style = MaterialTheme.typography.bodyLarge
+    val scrollState = rememberScrollState()
+    var layout by remember { mutableStateOf<TextLayoutResult?>(null) }
+    // Why: right after the verse changes the layout is still the previous verse's, whose lines don't match.
+    val currentLayout = layout?.takeIf { it.layoutInput.text.text == text }
+    // Why: the pause after the verse's last word has no word, and the card must not jump back to its top then.
+    val lastWordLine = remember(text) { LastWordLine() }
+    val wordLine = highlightedWord
+        ?.takeIf { word -> word.first < text.length }
+        ?.let { word -> currentLayout?.getLineForOffset(word.first) }
+        ?: lastWordLine.line
+    lastWordLine.line = wordLine
+    LaunchedEffect(text, wordLine) {
+        val top = currentLayout?.getLineTop((wordLine - 1).coerceAtLeast(0)) ?: 0f
+        scrollState.animateScrollTo(top.toInt())
+    }
+    Box(
+        modifier = Modifier
+            .padding(top = 4.dp)
+            .heightIn(max = with(LocalDensity.current) { (style.lineHeight * VERSE_MAX_LINES).toDp() })
+            .verticalScroll(
+                state = scrollState,
+                enabled = false,
+            ),
+    ) {
+        Text(
+            text = text.withListeningWord(
+                word = highlightedWord,
+                style = listeningWordStyle(),
+            ),
+            style = style,
+            fontFamily = displaySerifFontFamily(),
+            onTextLayout = { layout = it },
+        )
+    }
+}
+
+// Why: a plain holder, since the remembered line only feeds the next composition and must not trigger one.
+private class LastWordLine {
+    var line: Int = 0
+}
+
+@Composable
+private fun WordHighlightCard(
+    isEnabled: Boolean,
+    onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
+) {
+    PlayerSection(verticalPadding = 12.dp) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionIcon(Icons.Rounded.FormatColorText)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(Res.string.listening_word_highlight),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Text(
+                    text = if (isEnabled) {
+                        stringResource(Res.string.listening_word_highlight_on)
+                    } else {
+                        stringResource(Res.string.listening_word_highlight_off)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            AppSwitch(
+                checked = isEnabled,
+                onCheckedChange = { isChecked ->
+                    onEvent(ChapterListeningPlayerUiEvent.OnWordHighlightToggle(isChecked))
+                },
             )
         }
     }
@@ -345,10 +462,9 @@ private fun ChapterJumpButton(
         modifier = Modifier
             .width(chapterButtonWidth)
             .clip(RoundedCornerShape(12.dp))
-            .clickable(
-                enabled = label != null,
-                onClick = onClick,
-            ).padding(vertical = 4.dp),
+            // Why: a disabled clickable with no label is announced as an unnamed control, so the first chapter's has none.
+            .then(if (label == null) Modifier else Modifier.clickable(onClick = onClick))
+            .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(

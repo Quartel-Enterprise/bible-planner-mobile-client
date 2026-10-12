@@ -77,6 +77,8 @@ internal fun VerseRow(
     modifier: Modifier = Modifier,
     isDimmed: Boolean = false,
     isListening: Boolean = false,
+    listeningHeadingWord: IntRange? = null,
+    listeningWord: IntRange? = null,
     flashAlpha: (() -> Float)? = null,
 ) {
     val fontSize = settings.fontSizeSp.sp
@@ -135,7 +137,10 @@ internal fun VerseRow(
                         bottom = 2.dp,
                         end = if (isNoteLinkedThroughHeading) verseNoteIndicatorWidth else 0.dp,
                     ),
-                    text = heading,
+                    text = heading.withListeningWord(
+                        word = listeningHeadingWord,
+                        style = listeningWordStyle(),
+                    ),
                     style = textStyle,
                     fontSize = fontSize * HEADING_FONT_SIZE_RATIO,
                     fontWeight = FontWeight.SemiBold,
@@ -157,6 +162,7 @@ internal fun VerseRow(
                     end = if (noteMark == null) 0.dp else verseNoteIndicatorWidth,
                 ),
                 verse = verse,
+                listeningWord = listeningWord,
                 settings = settings,
                 textStyle = textStyle,
             )
@@ -184,6 +190,7 @@ internal fun VerseRow(
 @Composable
 private fun VerseLine(
     verse: VerseUiModel,
+    listeningWord: IntRange?,
     settings: ReaderSettingsModel,
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
@@ -221,7 +228,10 @@ private fun VerseLine(
                         }
                     }
                 },
-            text = verse.text.withHighlight(verse.highlightColor),
+            text = verse.text.withHighlight(verse.highlightColor).withListeningWord(
+                word = listeningWord,
+                style = listeningWordStyle(),
+            ),
             style = textStyle,
             onTextLayout = { textLayoutResult = it },
         )

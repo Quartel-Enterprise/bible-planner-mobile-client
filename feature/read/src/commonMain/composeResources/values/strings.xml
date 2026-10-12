@@ -100,6 +100,9 @@
     <string name="listening_auto_next_on">When it ends, moves on to %1$s</string>
     <string name="listening_auto_next_off">Stops at the end of this chapter</string>
     <string name="listening_auto_next_day">In today's reading, the chapters of the day play in sequence</string>
+    <string name="listening_word_highlight">Highlight the word being read</string>
+    <string name="listening_word_highlight_on">Follow the text while you listen</string>
+    <string name="listening_word_highlight_off">Only the verse being read is marked</string>
     <string name="listening_locked_sheet">Unlock %1$s to keep listening</string>
     <string name="listening_dismiss">Dismiss</string>
     <string name="listening_no_connection_title">No connection</string>

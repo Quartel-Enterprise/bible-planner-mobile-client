@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.chapterlistening.domain.controller
 
 import co.touchlab.kermit.Logger
-import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTexts
+import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseContents
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.chapterlistening.domain.mapper.toListeningAnalyticsParams
 import com.quare.bibleplanner.core.chapterlistening.domain.model.AudioInterruptionModel
@@ -33,6 +33,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetAdjacentLi
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningWordsUseCase
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -69,12 +70,13 @@ internal class ChapterListeningControllerImpl(
     private val mediaSession: ListeningMediaSession,
     private val settingsRepository: ChapterListeningSettingsRepository,
     private val chapterAudioRepository: ChapterAudioRepository,
-    private val getChapterVerseTexts: GetChapterVerseTexts,
+    private val getChapterVerseContents: GetChapterVerseContents,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
     private val getChapterListeningAccess: GetChapterListeningAccess,
     private val getAdjacentListeningChapter: GetAdjacentListeningChapter,
     private val getListeningChapterTitle: GetListeningChapterTitle,
     private val getListeningTime: GetListeningTimeUseCase,
+    private val getListeningWords: GetListeningWordsUseCase,
     private val trackEvent: TrackEvent,
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
 ) : ChapterListeningController {
@@ -88,6 +90,7 @@ internal class ChapterListeningControllerImpl(
                 settings = ChapterListeningSettingsModel(
                     speed = ChapterListeningSettingsModel.DEFAULT_SPEED,
                     isAutoNextEnabled = true,
+                    isWordHighlightEnabled = true,
                 ),
                 sleepTimer = ListeningSleepTimerModel.Off,
             ),
@@ -98,6 +101,7 @@ internal class ChapterListeningControllerImpl(
 
     private val chapterGap: Duration = 1.5.seconds
     private val positionTick: Duration = 200.milliseconds
+    private val minimumWordTick: Duration = 20.milliseconds
     private val sleepTimerTick: Duration = 1.seconds
     private val detachedStopDelay: Duration = 2.seconds
     private val chapterTitles = mutableMapOf<ChapterLocationModel, String>()
@@ -346,6 +350,22 @@ internal class ChapterListeningControllerImpl(
         scope.launch { settingsRepository.setAutoNextEnabled(isEnabled) }
     }
 
+    override fun setWordHighlightEnabled(isEnabled: Boolean) {
+        state.update { it.copy(settings = it.settings.copy(isWordHighlightEnabled = isEnabled)) }
+        scope.launch { settingsRepository.setWordHighlightEnabled(isEnabled) }
+        // Why: a paused chapter shows or hides its word right away instead of on the next play.
+        updateSession { current ->
+            current.copy(
+                wordIndex = current.verses.getOrNull(current.verseIndex)?.let { verse ->
+                    findWordIndex(
+                        verse = verse,
+                        position = position,
+                    )
+                },
+            )
+        }
+    }
+
     override fun dismissFinishOffer() {
         updateSession { it.copy(finishedChapter = null) }
     }
@@ -399,6 +419,7 @@ internal class ChapterListeningControllerImpl(
                     verses = emptyList(),
                     verseIndex = 0,
                     verseProgress = 0f,
+                    wordIndex = null,
                     status = status,
                     lockedSegment = null,
                 ),
@@ -441,6 +462,7 @@ internal class ChapterListeningControllerImpl(
         verses = emptyList(),
         verseIndex = 0,
         verseProgress = 0f,
+        wordIndex = null,
         status = ListeningStatusModel.PREPARING,
         chapterChangeCause = ChapterChangeCause.START,
         finishedChapter = null,
@@ -548,8 +570,8 @@ internal class ChapterListeningControllerImpl(
         val segment = session.segment
         val firstVerse = segment.startVerse ?: 0
         val lastVerse = segment.endVerse ?: Int.MAX_VALUE
-        val texts = suspendRunCatching {
-            getChapterVerseTexts(
+        val contents = suspendRunCatching {
+            getChapterVerseContents(
                 ChapterRef(
                     bibleVersionId = session.bibleVersionId,
                     bookId = segment.chapter.bookId,
@@ -560,22 +582,26 @@ internal class ChapterListeningControllerImpl(
         val verses = audio.verses.filter { verse -> verse.number in firstVerse..lastVerse }
         return verses.mapIndexed { index, verse ->
             val next = verses.getOrNull(index + 1)
+            val content = contents[verse.number]
+            val text = content?.text.orEmpty()
+            // Why: a whole chapter starts with its spoken title, and each verse with the heading read before it.
+            val isTitleRead = index == 0 && (segment.startVerse ?: 1) <= 1
             ListeningVerseModel(
                 number = verse.number,
-                text = texts[verse.number].orEmpty(),
-                // Why: a whole chapter starts with its spoken title, and each verse with the heading read before it.
-                start = if (index == 0 &&
-                    (segment.startVerse ?: 1) <= 1
-                ) {
-                    Duration.ZERO
-                } else {
-                    verse.headingStart ?: verse.start
-                },
+                text = text,
+                start = if (isTitleRead) Duration.ZERO else verse.headingStart ?: verse.start,
                 end = when {
                     next != null -> next.headingStart ?: next.start
                     segment.endVerse == null -> audio.duration
                     else -> verse.end
                 },
+                words = getListeningWords(
+                    titleWords = if (isTitleRead) audio.titleWords else emptyList(),
+                    heading = content?.heading,
+                    headingWords = verse.headingWords,
+                    text = text,
+                    words = verse.words,
+                ),
             )
         }
     }
@@ -749,10 +775,36 @@ internal class ChapterListeningControllerImpl(
                 return
             }
             showPosition(position)
-            val untilEnd = (end - position) / state.value.settings.speed
+            val speed = state.value.settings.speed
                 .toDouble()
-            delay(minOf(positionTick, untilEnd))
+            val untilEnd = (end - position) / speed
+            val untilWordChange = findNextWordChange()
+                ?.let { change -> ((change - position) / speed).coerceAtLeast(minimumWordTick) }
+                ?: positionTick
+            delay(minOf(positionTick, untilEnd, untilWordChange))
         }
+    }
+
+    /*
+     * Why: the highlighted word moves when the audio crosses a word's start or end, not on the next
+     * regular tick; the next verse's first word counts too, or it would light up late.
+     */
+    private fun findNextWordChange(): Duration? {
+        if (!state.value.settings.isWordHighlightEnabled) return null
+        val current = session ?: return null
+        val words = current.verses
+            .getOrNull(current.verseIndex)
+            ?.words
+            .orEmpty()
+        val nextVerseFirstWord = current.verses
+            .getOrNull(current.verseIndex + 1)
+            ?.words
+            ?.firstOrNull()
+        return words
+            .asSequence()
+            .flatMap { word -> sequenceOf(word.start, word.end) }
+            .plus(listOfNotNull(nextVerseFirstWord?.start))
+            .firstOrNull { boundary -> boundary > position }
     }
 
     private fun reachEnd(id: Int) {
@@ -771,8 +823,21 @@ internal class ChapterListeningControllerImpl(
             it.copy(
                 verseIndex = verseIndex,
                 verseProgress = progress.coerceIn(0f, 1f),
+                wordIndex = findWordIndex(
+                    verse = verse,
+                    position = position,
+                ),
             )
         }
+    }
+
+    private fun findWordIndex(
+        verse: ListeningVerseModel,
+        position: Duration,
+    ): Int? {
+        if (!state.value.settings.isWordHighlightEnabled) return null
+        val index = verse.words.indexOfLast { word -> word.start <= position }
+        return index.takeIf { it >= 0 && position < verse.words[it].end }
     }
 
     // Why: an interrupted chapter that is paused for good (another app took the audio) must not resume after.
@@ -855,6 +920,7 @@ internal class ChapterListeningControllerImpl(
             it.copy(
                 verseIndex = verseIndex,
                 verseProgress = 0f,
+                wordIndex = null,
                 status = if (it.status == ListeningStatusModel.FINISHED) ListeningStatusModel.PAUSED else it.status,
             )
         }
@@ -1021,6 +1087,7 @@ internal class ChapterListeningControllerImpl(
             it.copy(
                 verseIndex = it.verses.lastIndex.coerceAtLeast(0),
                 verseProgress = 1f,
+                wordIndex = null,
                 status = ListeningStatusModel.FINISHED,
                 finishedChapter = finishedChapter,
             )
@@ -1091,6 +1158,7 @@ internal class ChapterListeningControllerImpl(
                 verses = emptyList(),
                 verseIndex = 0,
                 verseProgress = 0f,
+                wordIndex = null,
             )
         }
         trackAudioUnavailable(

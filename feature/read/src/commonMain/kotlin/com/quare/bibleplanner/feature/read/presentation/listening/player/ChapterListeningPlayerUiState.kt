@@ -11,4 +11,5 @@ data class ChapterListeningPlayerUiState(
     val sleepTimer: ListeningSleepTimerUiModel,
     val isAutoNextEnabled: Boolean,
     val isAutoNextLocked: Boolean,
+    val isWordHighlightEnabled: Boolean,
 )

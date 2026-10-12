@@ -56,6 +56,8 @@ interface ChapterListeningController {
 
     fun setAutoNextEnabled(isEnabled: Boolean)
 
+    fun setWordHighlightEnabled(isEnabled: Boolean)
+
     fun dismissFinishOffer()
 
     fun attachReader()

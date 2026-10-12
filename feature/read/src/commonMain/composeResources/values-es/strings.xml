@@ -100,6 +100,9 @@
     <string name="listening_auto_next_on">Al terminar, sigue con %1$s</string>
     <string name="listening_auto_next_off">Se detiene al final de este capítulo</string>
     <string name="listening_auto_next_day">En la lectura de hoy, los capítulos del día suenan en secuencia</string>
+    <string name="listening_word_highlight">Resaltar la palabra leída</string>
+    <string name="listening_word_highlight_on">Sigue el texto mientras escuchas</string>
+    <string name="listening_word_highlight_off">Solo se marca el versículo que se lee</string>
     <string name="listening_locked_sheet">Desbloquea %1$s para seguir escuchando</string>
     <string name="listening_dismiss">Descartar</string>
     <string name="listening_no_connection_title">Sin conexión</string>

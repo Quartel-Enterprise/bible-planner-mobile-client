@@ -9,4 +9,6 @@ interface ChapterListeningSettingsRepository {
     suspend fun setSpeed(speed: Float)
 
     suspend fun setAutoNextEnabled(isEnabled: Boolean)
+
+    suspend fun setWordHighlightEnabled(isEnabled: Boolean)
 }

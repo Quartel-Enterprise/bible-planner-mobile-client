@@ -1,4 +1,5 @@
 import com.bibleplanner.buildlogic.configureAppleStoreScreenshots
+import com.bibleplanner.buildlogic.configureScreenshotTests
 
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
@@ -96,3 +97,5 @@ tasks.withType<Test>().configureEach {
 }
 
 configureAppleStoreScreenshots(screenshotsName = "read")
+
+configureScreenshotTests()

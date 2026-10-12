@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class ChapterAudioManifestDto(
     @SerialName("duration_ms") val durationMs: Long,
+    @SerialName("title") val title: ChapterAudioManifestSegmentDto?,
     @SerialName("verses") val verses: List<ChapterAudioManifestVerseDto>,
 )

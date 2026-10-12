@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,13 +28,19 @@ internal fun ChapterHeader(
     bookName: String,
     chapterNumber: Int,
     modifier: Modifier = Modifier,
+    isBookNameSpoken: Boolean = false,
+    isChapterNumberSpoken: Boolean = false,
 ) {
+    val spokenStyle = listeningWordStyle()
     Column(
         modifier = modifier.fillMaxWidth().padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = bookName.uppercase(),
+            text = bookName.uppercase().withSpokenStyle(
+                isSpoken = isBookNameSpoken,
+                style = spokenStyle,
+            ),
             style = MaterialTheme.typography.labelLarge,
             fontFamily = displaySerifFontFamily(),
             fontSize = bookNameFontSize,
@@ -41,10 +49,21 @@ internal fun ChapterHeader(
             textAlign = TextAlign.Center,
         )
         Text(
-            text = chapterNumber.toString(),
+            text = chapterNumber.toString().withSpokenStyle(
+                isSpoken = isChapterNumberSpoken,
+                style = spokenStyle,
+            ),
             style = MaterialTheme.typography.displayLarge,
             fontFamily = displaySerifFontFamily(),
             fontSize = chapterNumberFontSize,
         )
     }
 }
+
+private fun String.withSpokenStyle(
+    isSpoken: Boolean,
+    style: SpanStyle,
+): AnnotatedString = withListeningWord(
+    word = indices.takeIf { isSpoken },
+    style = style,
+)

@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.repository.ChapterLis
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetChapterListeningAccess
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningChapterTitle
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningWordsUseCase
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetTodayListeningDay
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ListeningDateProvider
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
@@ -66,6 +67,7 @@ val chapterListeningModule = module {
     singleOf(::ChapterAudioRepositoryImpl).bind<ChapterAudioRepository>()
     factoryOf(::ListeningDateProvider)
     factoryOf(::GetListeningTimeUseCase)
+    factoryOf(::GetListeningWordsUseCase)
     factoryOf(::GetChapterListeningAccessUseCase).bind<GetChapterListeningAccess>()
     factoryOf(::RecordChapterListeningUnlockUseCase).bind<RecordChapterListeningUnlock>()
     factoryOf(::ObserveIsChapterListeningEnabledUseCase).bind<ObserveIsChapterListeningEnabled>()
@@ -80,12 +82,13 @@ val chapterListeningModule = module {
             settingsRepository = get(),
             chapterAudioRepository = get(),
             observeAuthenticatedUserId = get(),
-            getChapterVerseTexts = get(),
+            getChapterVerseContents = get(),
             getSelectedVersionIdFlow = get(),
             getChapterListeningAccess = get(),
             getAdjacentListeningChapter = get(),
             getListeningChapterTitle = get(),
             getListeningTime = get(),
+            getListeningWords = get(),
             trackEvent = get(),
         )
     }

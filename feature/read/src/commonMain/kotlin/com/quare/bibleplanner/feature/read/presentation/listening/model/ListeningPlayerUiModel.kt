@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.listening.model
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import kotlin.time.Duration
 
@@ -8,6 +9,8 @@ data class ListeningPlayerUiModel(
     val chapter: ChapterLocationModel,
     val verseNumber: Int?,
     val verseText: String?,
+    val spokenWord: ListeningWordTargetModel?,
+    val hasWordTimings: Boolean,
     val verseIndex: Int,
     val verseCount: Int,
     val status: ListeningStatusModel,
@@ -15,6 +18,7 @@ data class ListeningPlayerUiModel(
     val elapsed: Duration,
     val remaining: Duration,
     val total: Duration,
+    val bibleVersionId: String,
     val versionAbbreviation: String,
     val dayProgress: ListeningDayProgressUiModel?,
     val lockedChapter: ChapterLocationModel?,

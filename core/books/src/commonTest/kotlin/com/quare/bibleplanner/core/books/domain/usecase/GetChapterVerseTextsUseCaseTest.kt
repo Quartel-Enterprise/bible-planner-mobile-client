@@ -21,8 +21,10 @@ internal class GetChapterVerseTextsUseCaseTest {
             versesPerChapter = listOf(3),
         )
         useCase = GetChapterVerseTextsUseCase(
-            getChapterId = GetChapterIdUseCase(database.chapterDao),
-            verseDao = database.verseDao,
+            getChapterVerseContents = GetChapterVerseContentsUseCase(
+                getChapterId = GetChapterIdUseCase(database.chapterDao),
+                verseDao = database.verseDao,
+            ),
         )
     }
 

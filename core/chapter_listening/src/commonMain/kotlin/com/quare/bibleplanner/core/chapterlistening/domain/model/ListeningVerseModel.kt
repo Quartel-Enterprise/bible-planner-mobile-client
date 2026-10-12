@@ -7,4 +7,5 @@ data class ListeningVerseModel(
     val text: String,
     val start: Duration,
     val end: Duration,
+    val words: List<ListeningWordModel>,
 )

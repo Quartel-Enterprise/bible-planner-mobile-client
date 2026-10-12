@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioFai
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioResultModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioVerseModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ChapterAudioWordModel
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
@@ -51,6 +52,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChapterAudioRepositoryImplTest {
@@ -88,18 +90,46 @@ internal class ChapterAudioRepositoryImplTest {
                 ChapterAudioResultModel.Ready(
                     ChapterAudioModel(
                         audioPath = audioPath,
+                        titleWords = listOf(
+                            ChapterAudioWordModel(
+                                offset = 0,
+                                start = 0.1.seconds,
+                                end = 0.5.seconds,
+                            ),
+                            ChapterAudioWordModel(
+                                offset = 8,
+                                start = 0.6.seconds,
+                                end = 0.9.seconds,
+                            ),
+                        ),
                         verses = listOf(
                             ChapterAudioVerseModel(
                                 number = 1,
                                 headingStart = null,
+                                headingWords = emptyList(),
                                 start = 2.seconds,
                                 end = 5.5.seconds,
+                                words = listOf(
+                                    ChapterAudioWordModel(
+                                        offset = 0,
+                                        start = 2.05.seconds,
+                                        end = 2.175.seconds,
+                                    ),
+                                ),
                             ),
                             ChapterAudioVerseModel(
                                 number = 2,
                                 headingStart = 6.seconds,
+                                headingWords = listOf(
+                                    ChapterAudioWordModel(
+                                        offset = 0,
+                                        start = 6.05.seconds,
+                                        end = 6.25.seconds,
+                                    ),
+                                ),
                                 start = 7.seconds,
                                 end = 10.seconds,
+                                words = emptyList(),
                             ),
                         ),
                         duration = 14.seconds,
@@ -318,6 +348,64 @@ internal class ChapterAudioRepositoryImplTest {
         // Then
         val audio = (result as ChapterAudioResultModel.Ready).audio
         assertEquals(null, audio.verses.first().headingStart)
+    }
+
+    @Test
+    fun `GIVEN a malformed word WHEN getting the audio THEN skips only that word`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json")) {
+                    respondJson(MANIFEST.replace("[[0,50,125]]", "[[0,50.5,125],[4,null,10],\"bad\"]"))
+                } else {
+                    respondOk()(request)
+                }
+            },
+        )
+
+        // When
+        val result = repository.loadChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        val audio = (result as ChapterAudioResultModel.Ready).audio
+        assertEquals(
+            listOf(
+                ChapterAudioWordModel(
+                    offset = 0,
+                    start = 2050.5.milliseconds,
+                    end = 2175.5.milliseconds,
+                ),
+            ),
+            audio.verses.first().words,
+        )
+    }
+
+    @Test
+    fun `GIVEN a manifest without word timings WHEN getting the audio THEN reads the verses without words`() = runTest {
+        // Given
+        prepareScenario(
+            respond = { request ->
+                if (request.url.encodedPath.endsWith(".json")) {
+                    respondJson(MANIFEST.replace(Regex(""",?"words":\[(\[[0-9,]*\],?)*\]"""), ""))
+                } else {
+                    respondOk()(request)
+                }
+            },
+        )
+
+        // When
+        val result = repository.loadChapterAudio(
+            bibleVersionId = "A21",
+            chapter = genesisOne,
+        )
+
+        // Then
+        val audio = (result as ChapterAudioResultModel.Ready).audio
+        assertEquals(listOf(emptyList(), emptyList()), audio.verses.map { it.words })
+        assertEquals(emptyList(), audio.titleWords)
     }
 
     @Test
@@ -860,9 +948,11 @@ internal class ChapterAudioRepositoryImplTest {
             """{"access_token":"renewed-token","refresh_token":"renewed-refresh","expires_in":3600,""" +
                 """"token_type":"bearer","user":{"id":"user-1","aud":"authenticated"}}"""
         const val MANIFEST =
-            """{"cast":"pt-1","audio_version":1,"duration_ms":14000,"title":null,"superscription":null,"verses":[""" +
+            """{"cast":"pt-1","audio_version":1,"duration_ms":14000,""" +
+                """"title":{"start_ms":0,"duration_ms":1500,"words":[[0,100,400],[8,600,300]]},""" +
+                """"superscription":null,"verses":[""" +
                 """{"number":1,"start_ms":2000,"duration_ms":3500,"heading":null,"parts":[],"words":[[0,50,125]]},""" +
                 """{"number":2,"start_ms":7000,"duration_ms":3000,""" +
-                """"heading":{"start_ms":6000,"duration_ms":800,"words":[]},"parts":[],"words":[]}]}"""
+                """"heading":{"start_ms":6000,"duration_ms":800,"words":[[0,50,200]]},"parts":[],"words":[]}]}"""
     }
 }

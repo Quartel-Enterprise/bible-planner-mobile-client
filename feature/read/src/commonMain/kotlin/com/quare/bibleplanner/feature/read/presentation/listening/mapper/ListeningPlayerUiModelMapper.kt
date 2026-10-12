@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.listening.mapper
 
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningSessionModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetListeningTimeUseCase
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningDayProgressUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
@@ -25,6 +26,8 @@ internal class ListeningPlayerUiModelMapper(
             chapter = session.segment.chapter,
             verseNumber = verse?.number,
             verseText = verse?.text?.takeIf(String::isNotBlank),
+            spokenWord = session.wordIndex?.let { wordIndex -> verse?.words?.getOrNull(wordIndex)?.target },
+            hasWordTimings = verse?.words?.any { word -> word.target is ListeningWordTargetModel.Verse } == true,
             verseIndex = session.verseIndex,
             verseCount = verseCount,
             status = session.status,
@@ -33,6 +36,7 @@ internal class ListeningPlayerUiModelMapper(
             elapsed = time.elapsed,
             remaining = time.remaining,
             total = time.total,
+            bibleVersionId = session.bibleVersionId,
             versionAbbreviation = session.bibleVersionId.uppercase(),
             dayProgress = session.day?.let { day ->
                 ListeningDayProgressUiModel(
