@@ -12,6 +12,7 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveDaySitua
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveOverallProgressMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveStreakMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.UpdateDayReadStatus
@@ -22,6 +23,7 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveDay
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveMilestoneMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveOverallProgressMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolvePlanStatusUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveResumeReadTargetUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveStreakMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.SetSelectedReadingPlanUseCase
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
@@ -44,6 +46,7 @@ val readingPlanModule = module {
     factoryOf(::ResolveOverallProgressMotivationUseCase).bind<ResolveOverallProgressMotivation>()
     factoryOf(::GetPlanMotivationMessageUseCase).bind<GetPlanMotivationMessage>()
     factoryOf(::ResolvePlanStatusUseCase).bind<ResolvePlanStatus>()
+    factoryOf(::ResolveResumeReadTargetUseCase).bind<ResolveResumeReadTarget>()
     factoryOf(::BibleProgressMilestoneTracker)
     factoryOf(::ReadingStreakMilestoneTracker)
     factory<ObservePlansByWeek> { ObservePlansByWeek(get<GetPlansByWeekUseCase>()::invoke) }

@@ -8,19 +8,25 @@ import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.VerseModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
+import com.quare.bibleplanner.feature.readingplan.domain.model.ResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveResumeReadTarget
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolvePlanStatusUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveResumeReadTargetUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.day
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
@@ -29,6 +35,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOpt
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -577,6 +584,155 @@ internal class ReadingPlanViewModelTest {
         }
 
     @Test
+    fun `GIVEN a day with its first chapter read WHEN resuming reading THEN opens the reader at the next chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(initialPlans = plansWithTwoChapterDay())
+            booksRepository.books.value = listOf(
+                BookDataModel(
+                    id = BookId.GEN,
+                    chapters = listOf(
+                        BookChapterModel(
+                            number = 1,
+                            verses = emptyList(),
+                            isRead = true,
+                            readUpdatedAt = null,
+                        ),
+                        BookChapterModel(
+                            number = 2,
+                            verses = emptyList(),
+                            isRead = false,
+                            readUpdatedAt = null,
+                        ),
+                    ),
+                    isRead = false,
+                    isFavorite = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(
+                ReadingPlanUiEvent.OnResumeReadingClick(
+                    dayNumber = 1,
+                    weekNumber = 1,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        ReadNavRoute(
+                            bookId = BookId.GEN.name,
+                            chapterNumber = 2,
+                            isChapterRead = false,
+                            isFromBookDetails = false,
+                            targetVerseNumbers = emptyList(),
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN a resume still resolving WHEN tapping resume again THEN opens the reader once`() =
+        runTest(testDispatcher) {
+            // Given
+            val resolution = CompletableDeferred<Result<ResumeReadTarget?>>()
+            prepareScenario(resolveResumeReadTarget = { resolution.await() })
+            val event = ReadingPlanUiEvent.OnResumeReadingClick(
+                dayNumber = 1,
+                weekNumber = 1,
+            )
+            viewModel.onEvent(event)
+
+            // When
+            viewModel.onEvent(event)
+            resolution.complete(
+                Result.success(
+                    ResumeReadTarget(
+                        bookId = BookId.GEN,
+                        chapterNumber = 2,
+                        isChapterRead = false,
+                    ),
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        ReadNavRoute(
+                            bookId = BookId.GEN.name,
+                            chapterNumber = 2,
+                            isChapterRead = false,
+                            isFromBookDetails = false,
+                            targetVerseNumbers = emptyList(),
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the loaded plans WHEN resuming reading THEN tracks the resume click with its week and day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                ReadingPlanUiEvent.OnResumeReadingClick(
+                    dayNumber = 3,
+                    weekNumber = 2,
+                ),
+            )
+
+            // Then
+            assertTrue(
+                trackedEvents.contains(
+                    "plan_resume_reading_clicked" to mapOf<String, Any>(
+                        "week_number" to 2,
+                        "day_number" to 3,
+                    ),
+                ),
+            )
+            assertFalse(trackedEvents.any { (name, _) -> name == "day_card_clicked" })
+        }
+
+    @Test
+    fun `GIVEN a day that is not in the loaded plans WHEN resuming reading THEN opens the day screen instead`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                ReadingPlanUiEvent.OnResumeReadingClick(
+                    dayNumber = 1,
+                    weekNumber = 99,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        DayNavRoute(
+                            dayNumber = 1,
+                            weekNumber = 99,
+                            readingPlanType = "CHRONOLOGICAL",
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
     fun `GIVEN the loaded plans WHEN tapping edit plan THEN opens the start date editor`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -959,6 +1115,35 @@ internal class ReadingPlanViewModelTest {
         ),
     )
 
+    private fun plansWithTwoChapterDay(): PlansModel = PlansModel(
+        chronologicalOrder = listOf(
+            WeekPlanModel(
+                number = 1,
+                days = listOf(
+                    day(
+                        number = 1,
+                        passages = listOf(
+                            PassageModel(
+                                bookId = BookId.GEN,
+                                chapters = (1..2).map { chapterNumber ->
+                                    ChapterModel(
+                                        number = chapterNumber,
+                                        startVerse = null,
+                                        endVerse = null,
+                                        bookId = BookId.GEN,
+                                    )
+                                },
+                                isRead = false,
+                                chapterRanges = null,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        booksOrder = emptyList(),
+    )
+
     private fun booksWithReadVerses(readVerses: Int): List<BookDataModel> = listOf(
         BookDataModel(
             id = BookId.GEN,
@@ -980,7 +1165,10 @@ internal class ReadingPlanViewModelTest {
         ),
     )
 
-    private fun TestScope.prepareScenario(initialPlans: PlansModel? = plans(readDays = 0)) {
+    private fun TestScope.prepareScenario(
+        initialPlans: PlansModel? = plans(readDays = 0),
+        resolveResumeReadTarget: ResolveResumeReadTarget? = null,
+    ) {
         val navigator = Navigator()
         val collectedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
         val collectedTriggers = mutableListOf<ReviewTrigger>()
@@ -1009,6 +1197,7 @@ internal class ReadingPlanViewModelTest {
                 }
             },
             resolvePlanStatus = ResolvePlanStatusUseCase(),
+            resolveResumeReadTarget = resolveResumeReadTarget ?: ResolveResumeReadTargetUseCase(booksRepository),
             weeksPlanPresentationMapper = WeeksPlanPresentationMapper(
                 localDateTimeProvider = {
                     LocalDateTime(

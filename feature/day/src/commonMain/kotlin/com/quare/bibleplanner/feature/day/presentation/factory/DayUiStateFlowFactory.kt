@@ -1,11 +1,10 @@
 package com.quare.bibleplanner.feature.day.presentation.factory
 
-import com.quare.bibleplanner.core.books.domain.isRangeRead
+import com.quare.bibleplanner.core.books.domain.isChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.date.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -138,14 +137,10 @@ internal class DayUiStateFlowFactory(
                     completedCount++
                 }
             } else {
+                val book = books.find { it.id == passage.bookId }
                 passage.chapters.forEach { chapter ->
                     totalCount++
-                    val isChapterRead = isChapterReadForCount(
-                        passage = passage,
-                        chapter = chapter,
-                        books = books,
-                    )
-                    if (isChapterRead) {
+                    if (book.isChapterRead(chapter)) {
                         completedCount++
                     }
                 }
@@ -153,15 +148,5 @@ internal class DayUiStateFlowFactory(
         }
 
         return Pair(completedCount, totalCount)
-    }
-
-    private fun isChapterReadForCount(
-        passage: PassageModel,
-        chapter: ChapterModel,
-        books: List<BookDataModel>,
-    ): Boolean {
-        val book = books.find { it.id == passage.bookId } ?: return false
-        val bookChapter = book.chapters.find { it.number == chapter.number } ?: return false
-        return bookChapter.isRangeRead(chapter.startVerse, chapter.endVerse)
     }
 }

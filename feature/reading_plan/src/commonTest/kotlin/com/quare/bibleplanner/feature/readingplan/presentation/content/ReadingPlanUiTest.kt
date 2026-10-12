@@ -18,10 +18,12 @@ import bibleplanner.feature.reading_plan.generated.resources.day_number
 import bibleplanner.feature.reading_plan.generated.resources.hero_day_of_total
 import bibleplanner.feature.reading_plan.generated.resources.hero_kicker_today
 import bibleplanner.feature.reading_plan.generated.resources.hero_primary_read_now
+import bibleplanner.feature.reading_plan.generated.resources.hero_primary_resume
 import bibleplanner.feature.reading_plan.generated.resources.mark_as_read
 import bibleplanner.feature.reading_plan.generated.resources.more_options
 import bibleplanner.feature.reading_plan.generated.resources.week_number
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.fixture.readingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -87,6 +89,32 @@ internal class ReadingPlanUiTest {
             actual = events,
         )
     }
+
+    @Test
+    fun `GIVEN the user is behind WHEN clicking resume reading THEN emits OnResumeReadingClick for the next day`() =
+        runComposeUiTest {
+            // Given
+            val onTrack = readingPlanUiState()
+            prepareScenario(
+                uiState = onTrack.copy(
+                    planStatus = onTrack.planStatus.copy(
+                        mode = PlanMode.Behind,
+                        daysBehind = 2,
+                    ),
+                ),
+            )
+
+            // When
+            onNodeWithText(getString(Res.string.hero_primary_resume)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadingPlanUiEvent>(
+                    ReadingPlanUiEvent.OnResumeReadingClick(dayNumber = TODAY_DAY_NUMBER, weekNumber = CURRENT_WEEK),
+                ),
+                actual = events,
+            )
+        }
 
     @Test
     fun `GIVEN a loaded plan WHEN clicking mark as read THEN emits OnDayReadClick for the next day`() =

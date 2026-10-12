@@ -6,7 +6,7 @@ Captures tapping a day card on the reading plan screen to open that day. Click-t
 
 ## When it fires
 
-User taps a day card in the reading plan list.
+User taps a day card in the reading plan list, or the primary button of the on-track hero.
 
 ## Trigger source
 

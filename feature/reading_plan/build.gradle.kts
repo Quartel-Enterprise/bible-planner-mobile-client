@@ -58,6 +58,9 @@ kotlin {
 
             // Dates
             implementation(libs.kotlinx.datetime)
+
+            // Logging
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
