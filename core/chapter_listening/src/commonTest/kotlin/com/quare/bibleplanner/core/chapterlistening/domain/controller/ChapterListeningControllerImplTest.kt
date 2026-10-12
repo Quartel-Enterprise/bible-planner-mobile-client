@@ -1473,6 +1473,35 @@ internal class ChapterListeningControllerImplTest {
     }
 
     @Test
+    fun `GIVEN a playback that failed mid chapter WHEN closed and started again THEN starts from the beginning`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            val firstStart = audioPlayer.plays.last().position
+            audioPlayer.position = 8.seconds
+            audioPlayer.emit(
+                ChapterAudioPlayerEvent.Failed(
+                    playbackId = audioPlayer.plays.last().playbackId,
+                    isFileUnreadable = false,
+                ),
+            )
+            controller.stop()
+
+            // When
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // Then
+            assertEquals(firstStart, audioPlayer.plays.last().position)
+        }
+
+    @Test
     fun `GIVEN the end of chapter sleep timer WHEN a chapter plays THEN prefetches nothing`() =
         runTest(testDispatcher) {
             // Given

@@ -11,7 +11,7 @@ internal interface ChapterAudioCacheDataSource {
     suspend fun save(
         chapterKey: String,
         fileName: String,
-        manifest: String,
+        readManifest: suspend () -> String,
         writeAudio: suspend (Path) -> Unit,
     ): CachedChapterAudio
 

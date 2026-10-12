@@ -21,6 +21,8 @@ import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.http.Url
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -178,14 +180,19 @@ internal class ChapterAudioRepositoryImpl(
     private suspend fun save(
         response: ChapterAudioResponseDto,
         chapterKey: String,
-    ): ChapterAudioModel {
-        val manifestText = remoteDataSource.downloadText(response.manifestUrl)
-        // Why: a manifest that can't be read would fail after every full download, so it is parsed first, once.
-        val manifest = chapterAudioMapper.parse(manifestText)
+    ): ChapterAudioModel = coroutineScope {
+        /*
+         * Why: the manifest downloads alongside the audio, and is parsed as soon as it arrives, so one that
+         * can't be read cancels the audio download and is never cached.
+         */
+        val manifest = async {
+            val manifestText = remoteDataSource.downloadText(response.manifestUrl)
+            manifestText to chapterAudioMapper.parse(manifestText)
+        }
         val cached = cacheDataSource.save(
             chapterKey = chapterKey,
             fileName = toFileName(response.audioUrl),
-            manifest = manifestText,
+            readManifest = { manifest.await().first },
             writeAudio = { destination ->
                 remoteDataSource.downloadFile(
                     url = response.audioUrl,
@@ -193,9 +200,9 @@ internal class ChapterAudioRepositoryImpl(
                 )
             },
         )
-        return chapterAudioMapper.map(
+        chapterAudioMapper.map(
             audioPath = cached.audioPath,
-            manifest = manifest,
+            manifest = manifest.await().second,
         )
     }
 

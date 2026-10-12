@@ -118,7 +118,7 @@ internal class ChapterListeningControllerImpl(
 
     // Why: a retry after a failed playback picks up where the chapter was, not at its title.
     private var retryStart: Pair<ListeningSegmentModel, Duration>? = null
-    private val evictedEmptyChapters = mutableSetOf<ChapterLocationModel>()
+    private val evictedEmptyAudioPaths = mutableSetOf<String>()
     private var sleepTimerJob: Job? = null
     private var detachedStopJob: Job? = null
 
@@ -305,6 +305,7 @@ internal class ChapterListeningControllerImpl(
         silencePlayer()
         audioPlayer.release()
         audio = null
+        retryStart = null
         mediaSession.deactivate()
         state.update {
             it.copy(
@@ -483,8 +484,8 @@ internal class ChapterListeningControllerImpl(
             else -> ListeningStatusModel.PAUSED
         }
         // Why: dropped from the cache, so a retry fetches the server's manifest instead of the same one.
-        // Why: once per launch, since a version whose verses really don't match would download again on every retry.
-        if (loadedAudio != null && verses.isEmpty() && evictedEmptyChapters.add(session.segment.chapter)) {
+        // Why: once per file and launch, since a revision whose verses don't match would download again on each retry.
+        if (loadedAudio != null && verses.isEmpty() && evictedEmptyAudioPaths.add(loadedAudio.audioPath)) {
             evictJob = scope.launch { chapterAudioRepository.evict(loadedAudio.audioPath) }
         }
         audio = loadedAudio

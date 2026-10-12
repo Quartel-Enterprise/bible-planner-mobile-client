@@ -372,7 +372,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
             dataSource.save(
                 chapterKey = genesisOne,
                 fileName = "GEN_1",
-                manifest = manifest,
+                readManifest = { manifest },
                 writeAudio = { destination ->
                     SystemFileSystem.sink(destination).buffered().use { it.writeString("half") }
                     error("connection lost")
@@ -412,7 +412,7 @@ internal class ChapterAudioCacheDataSourceImplTest {
         save(
             chapterKey = chapterKey,
             fileName = fileName,
-            manifest = manifest,
+            readManifest = { manifest },
             writeAudio = { destination ->
                 SystemFileSystem.sink(destination).buffered().use { it.write(ByteArray(audioBytes)) }
             },

@@ -503,7 +503,7 @@ internal class ChapterAudioRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a manifest that cannot be read WHEN getting the audio THEN skips downloading the audio`() = runTest {
+    fun `GIVEN a manifest that cannot be read WHEN getting the audio THEN caches nothing`() = runTest {
         // Given
         prepareScenario(
             respond = { request ->
@@ -519,7 +519,8 @@ internal class ChapterAudioRepositoryImplTest {
 
         // Then
         assertEquals(ChapterAudioResultModel.Failed(ChapterAudioFailureModel.UNAVAILABLE), result)
-        assertEquals(2, requests.size)
+        assertFalse(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3")))
+        assertFalse(SystemFileSystem.exists(Path(directory, "A21_cast-pt-1_1.0.0-1_GENESIS_1.mp3.part")))
     }
 
     @Test

@@ -72,7 +72,7 @@ internal class ChapterAudioCacheDataSourceImpl(
     override suspend fun save(
         chapterKey: String,
         fileName: String,
-        manifest: String,
+        readManifest: suspend () -> String,
         writeAudio: suspend (Path) -> Unit,
     ): CachedChapterAudio = withContext(ioDispatcher) {
         val partialPath = Path(directory.path, "$fileName$PARTIAL_EXTENSION")
@@ -86,6 +86,7 @@ internal class ChapterAudioCacheDataSourceImpl(
          */
         try {
             writeAudio(partialPath)
+            val manifest = readManifest()
             onDisk {
                 val audioPath = toAudioPath(fileName)
                 val manifestPath = toManifestPath(fileName)
