@@ -759,23 +759,29 @@ def settle_app_store_version(version_string)
     UI.success("Set the editable App Store version to '#{version_string}'")
   end
 
-  version = app.get_edit_app_store_version
-  return if version.nil?
+  # The wait is a precaution: an App Store Connect hiccup while polling lets the upload go ahead
+  # rather than failing it.
+  begin
+    version = app.get_edit_app_store_version
+    return if version.nil?
 
-  deadline = Time.now + VERSION_COPY_TIMEOUT_SECONDS
-  count = app_store_screenshot_count(version)
-  loop do
-    sleep(VERSION_COPY_POLL_SECONDS)
-    previous = count
+    deadline = Time.now + VERSION_COPY_TIMEOUT_SECONDS
     count = app_store_screenshot_count(version)
-    if count == previous
-      UI.message("The App Store version holds #{count} screenshot(s) and they are holding still")
-      return
+    loop do
+      sleep(VERSION_COPY_POLL_SECONDS)
+      previous = count
+      count = app_store_screenshot_count(version)
+      if count == previous
+        UI.message("The App Store version holds #{count} screenshot(s) and they are holding still")
+        return
+      end
+      if Time.now > deadline
+        UI.important("The App Store version's screenshots still change after #{VERSION_COPY_TIMEOUT_SECONDS}s, uploading anyway")
+        return
+      end
     end
-    if Time.now > deadline
-      UI.important("The App Store version's screenshots still change after #{VERSION_COPY_TIMEOUT_SECONDS}s, uploading anyway")
-      return
-    end
+  rescue => e
+    UI.error("Could not wait for the App Store version's screenshots to hold still, uploading anyway: #{e.message.lines.first.strip}")
   end
 end
 
@@ -840,9 +846,10 @@ end
 # With the images just uploaded at `staged_path`, each name keeps the latest copy whose checksum
 # matches its staged file (a screen that didn't change matches its previous version's copy too, and
 # that copy is older than any upload), and a name a locale no longer stages goes. Without them, as
-# when finish_screenshots is run by hand, each name keeps the shelf's first copy. A shelf App Store
-# Connect refuses to reorder doesn't stop the others from being sorted; the error is raised once
-# every shelf was tried. Idempotent: a clean version is a no-op.
+# when finish_screenshots is run by hand, or on a shelf where nothing matches a staged file, each
+# name keeps the shelf's first copy. A shelf App Store Connect refuses to tidy up or reorder doesn't
+# stop the others; the error is raised once every shelf was tried. Idempotent: a clean version is a
+# no-op.
 def tidy_app_store_screenshots(staged_path)
   require "naturally"
 
@@ -854,42 +861,51 @@ def tidy_app_store_screenshots(staged_path)
   sorted = 0
   refused = []
   version.get_app_store_version_localizations.each do |localization|
-    staged = staged_app_store_checksums(staged_path, localization.locale)
+    locale_staged = staged_app_store_checksums(staged_path, localization.locale)
     localization.get_app_screenshot_sets.each do |set|
       shelf = "#{localization.locale}/#{set.screenshot_display_type}"
-
-      strays = set.app_screenshots.group_by(&:file_name).flat_map do |file_name, copies|
-        kept = if staged.nil?
-          copies.first
-        elsif staged.key?(file_name)
-          copies.reverse.find { |copy| copy.source_file_checksum == staged[file_name] } || copies.first
-        end
-        copies.reject { |copy| copy.equal?(kept) }
+      # CI runs this after every locale's upload, failed ones too: a shelf holding nothing that
+      # matches what was staged was not uploaded to, so it keeps what it has instead of losing the
+      # names the new render no longer stages.
+      staged = locale_staged
+      if staged && set.app_screenshots.none? { |screenshot| staged.value?(screenshot.source_file_checksum) }
+        staged = nil
       end
-      strays.each do |stray|
-        kind = staged.nil? || staged.key?(stray.file_name) ? "duplicate" : "unstaged"
-        UI.important("Removing #{kind} #{shelf}/#{stray.file_name}")
-        stray.delete!
-        removed += 1
-      end
-
-      remaining = set.app_screenshots.reject { |screenshot| strays.any? { |stray| stray.equal?(screenshot) } }
-      sorted_ids = Naturally.sort(remaining, by: :file_name).map(&:id)
-      next if remaining.map(&:id) == sorted_ids
 
       begin
+        strays = set.app_screenshots.group_by(&:file_name).flat_map do |file_name, copies|
+          # With no copy matching (a checksum App Store Connect has not published yet), the latest
+          # copy is still the one most likely uploaded, as the previous version's sits ahead of it.
+          kept = if staged.nil?
+            copies.first
+          elsif staged.key?(file_name)
+            copies.reverse.find { |copy| copy.source_file_checksum == staged[file_name] } || copies.last
+          end
+          copies.reject { |copy| copy.equal?(kept) }
+        end
+        strays.each do |stray|
+          kind = staged.nil? || staged.key?(stray.file_name) ? "duplicate" : "unstaged"
+          UI.important("Removing #{kind} #{shelf}/#{stray.file_name}")
+          stray.delete!
+          removed += 1
+        end
+
+        remaining = set.app_screenshots.reject { |screenshot| strays.any? { |stray| stray.equal?(screenshot) } }
+        sorted_ids = Naturally.sort(remaining, by: :file_name).map(&:id)
+        next if remaining.map(&:id) == sorted_ids
+
         set.reorder_screenshots(app_screenshot_ids: sorted_ids)
         UI.message("Sorted #{shelf}")
         sorted += 1
       rescue => e
-        UI.error("Could not sort #{shelf}: #{e.message.lines.first.strip}")
+        UI.error("Could not tidy #{shelf} up: #{e.message.lines.first.strip}")
         refused << shelf
       end
     end
   end
 
   UI.success("Removed #{removed} stray screenshot(s) and sorted #{sorted} shelf(s) on App Store Connect")
-  UI.user_error!("App Store Connect refused to sort #{refused.join(', ')}") if refused.any?
+  UI.user_error!("App Store Connect refused to tidy #{refused.join(', ')} up") if refused.any?
 end
 
 # The staged screenshots of `locale` under `staged_path` by file name, each with its checksum as App
