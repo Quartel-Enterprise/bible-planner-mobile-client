@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.profile.fake
 
-import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -16,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 
 internal class RecordingSupabaseClient(
     responseBody: String,
-    realtime: FakeRealtime,
 ) {
     val requests = mutableListOf<RecordedRequest>()
     var responseStatus: HttpStatusCode = HttpStatusCode.OK
@@ -52,6 +50,5 @@ internal class RecordingSupabaseClient(
         )
         install(Postgrest)
         install(Storage)
-        install(FakeRealtimeProvider(realtime))
     }
 }

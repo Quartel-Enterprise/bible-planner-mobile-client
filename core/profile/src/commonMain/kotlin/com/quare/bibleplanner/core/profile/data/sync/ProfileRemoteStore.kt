@@ -13,7 +13,6 @@ import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
-import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,12 +23,10 @@ import kotlinx.serialization.json.JsonPrimitive
 
 internal class ProfileRemoteStore(
     private val supabaseClient: SupabaseClient,
+    private val realtime: Realtime,
     private val profileMapper: ProfileMapper,
 ) : SyncRemoteStore<ProfileDto> {
     private val columns = Columns.list(COLUMN_ID, COLUMN_DISPLAY_NAME, COLUMN_AVATAR_URL, COLUMN_UPDATED_AT)
-
-    private val realtime: Realtime
-        get() = supabaseClient.realtime
 
     override suspend fun upsert(dtos: List<ProfileDto>) {
         dtos

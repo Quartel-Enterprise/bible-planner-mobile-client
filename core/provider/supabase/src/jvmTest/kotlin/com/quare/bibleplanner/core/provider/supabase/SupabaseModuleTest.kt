@@ -78,7 +78,7 @@ internal class SupabaseModuleTest {
     }
 
     @Test
-    fun `GIVEN the supabase module WHEN resolving the client plugins THEN exposes the own plugins of the client`() {
+    fun `GIVEN the supabase module WHEN resolving the plugins THEN exposes the client plugins with realtime wrapped`() {
         // When
         val auth = koin.get<Auth>()
         val realtime = koin.get<Realtime>()
@@ -86,7 +86,8 @@ internal class SupabaseModuleTest {
 
         // Then
         assertSame(client.auth, auth)
-        assertSame(client.realtime, realtime)
+        assertIs<SerializedRemovalRealtime>(realtime)
+        assertSame(client.realtime.status, realtime.status)
         assertSame(client.functions, functions)
     }
 

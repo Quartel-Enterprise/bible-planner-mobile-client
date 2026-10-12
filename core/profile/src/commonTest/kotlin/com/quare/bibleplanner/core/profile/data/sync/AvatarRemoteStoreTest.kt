@@ -1,10 +1,8 @@
 package com.quare.bibleplanner.core.profile.data.sync
 
 import com.quare.bibleplanner.core.profile.fake.RecordingSupabaseClient
-import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.HttpMethod
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -20,10 +18,7 @@ class AvatarRemoteStoreTest {
 
     @BeforeTest
     fun setUp() {
-        supabase = RecordingSupabaseClient(
-            responseBody = UPLOAD_RESPONSE,
-            realtime = FakeRealtime(actions = emptyFlow()),
-        )
+        supabase = RecordingSupabaseClient(responseBody = UPLOAD_RESPONSE)
         avatarRemoteStore = AvatarRemoteStore(supabase.client.storage.from(BUCKET))
     }
 

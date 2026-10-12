@@ -55,6 +55,7 @@ kotlin {
 
             // Shared fakes
             implementation(projects.core.provider.dataStore.testing)
+            implementation(projects.core.provider.supabase.testing)
         }
 
         androidMain.dependencies {
