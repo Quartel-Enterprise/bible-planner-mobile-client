@@ -408,10 +408,7 @@ internal class ChatViewModel(
                 isAnswering = true,
             )
         }
-        draftAutosave.clear(
-            scope = viewModelScope,
-            threadKey = currentThreadKey.value,
-        )
+        draftAutosave.clear(currentThreadKey.value)
         coordinator.start(
             ChatSendRequestModel(
                 conversationId = conversationId,

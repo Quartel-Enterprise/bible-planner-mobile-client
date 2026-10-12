@@ -6,10 +6,12 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration
 
 internal class FakeChatRepository : ChatRepository {
     val conversations: MutableStateFlow<List<ChatConversationModel>> = MutableStateFlow(emptyList())
@@ -24,6 +26,7 @@ internal class FakeChatRepository : ChatRepository {
     var refreshedQuota: Int = 0
     var syncCount: Int = 0
     var deleteFailure: Throwable? = null
+    var draftWriteDelay: Duration = Duration.ZERO
     val sentRequests: MutableList<ChatSendRequestModel> = mutableListOf()
     var answer: (ChatSendRequestModel) -> Flow<ChatSendEventModel> = { emptyFlow() }
 
@@ -71,6 +74,7 @@ internal class FakeChatRepository : ChatRepository {
         .map { current -> current[threadKey].orEmpty() }
 
     override suspend fun saveDraft(draft: PendingDraftModel) {
+        delay(draftWriteDelay)
         drafts.value = drafts.value + (draft.threadKey to draft.content)
     }
 }

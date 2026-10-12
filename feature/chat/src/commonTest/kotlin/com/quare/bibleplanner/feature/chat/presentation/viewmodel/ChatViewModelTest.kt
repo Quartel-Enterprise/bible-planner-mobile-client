@@ -37,6 +37,7 @@ import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapp
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiAction
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
+import com.quare.bibleplanner.ui.testing.viewmodel.ViewModelTestStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,6 +55,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -64,6 +66,7 @@ internal class ChatViewModelTest {
         readingPlanType = "CHRONOLOGICAL",
     )
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val viewModelStore = ViewModelTestStore(testDispatcher)
     private val repository = FakeChatRepository()
     private val coordinator = FakeChatStreamCoordinator()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
@@ -418,6 +421,38 @@ internal class ChatViewModelTest {
         // Then
         assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
     }
+
+    @Test
+    fun `GIVEN text typed within the debounce WHEN the chat closes THEN the draft is saved`() = viewModelStore.runTest {
+        // Given
+        chatContext = readingContext()
+        val viewModel = viewModelStore.create(ChatViewModel::class) { createViewModel() }
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+
+        // When
+        viewModelStore.clear()
+
+        // Then
+        assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
+    }
+
+    @Test
+    fun `GIVEN a saved draft just sent WHEN the chat closes during the clearing write THEN the draft is cleared`() =
+        viewModelStore.runTest {
+            // Given
+            chatContext = readingContext()
+            repository.drafts.value = mapOf(DAY_DRAFT_KEY to "Por que Caim")
+            repository.draftWriteDelay = 1.seconds
+            val viewModel = viewModelStore.create(ChatViewModel::class) { createViewModel() }
+            viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+            // When
+            viewModelStore.clear()
+            advanceUntilIdle()
+
+            // Then
+            assertEquals("", repository.drafts.value[DAY_DRAFT_KEY])
+        }
 
     @Test
     fun `GIVEN a draft WHEN the question is sent THEN the draft is cleared`() = runTest(testDispatcher) {

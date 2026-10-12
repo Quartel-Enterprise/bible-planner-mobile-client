@@ -2,7 +2,8 @@
   "2.13.0": {
     "common": [
       "Corrigimos um problema que podia fazer as mudanças feitas em outro aparelho pararem de aparecer na hora depois de você voltar para o app.",
-      "Com o app em inglês, a versão da Bíblia que vem escolhida agora é a New International Version (NIV), no lugar da World English Bible (WEB). Se você já escolheu uma versão, ela continua a mesma."
+      "Com o app em inglês, a versão da Bíblia que vem escolhida agora é a New International Version (NIV), no lugar da World English Bible (WEB). Se você já escolheu uma versão, ela continua a mesma.",
+      "Corrigimos o chat com IA, que podia perder o texto digitado logo antes de você sair da conversa: agora ele continua lá quando você volta."
     ],
     "android": [
       "Ouvir o capítulo ficou muito mais natural: a Bíblia agora é narrada por vozes geradas por IA, com um narrador, uma voz para Deus, outra para Jesus e vozes diferentes para os personagens dos diálogos. Para ouvir, entre na sua conta e esteja conectado à internet; os capítulos que você já ouviu ficam guardados no aparelho e tocam mesmo sem conexão.",

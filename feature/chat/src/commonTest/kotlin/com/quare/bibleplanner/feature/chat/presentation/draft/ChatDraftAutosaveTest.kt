@@ -110,10 +110,7 @@ internal class ChatDraftAutosaveTest {
             )
 
             // When
-            autosave.clear(
-                scope = screenScope,
-                threadKey = secondDraft.threadKey,
-            )
+            autosave.clear(secondDraft.threadKey)
             advanceUntilIdle()
 
             // Then
@@ -131,10 +128,7 @@ internal class ChatDraftAutosaveTest {
             scope = screenScope,
             draft = firstDraft,
         )
-        autosave.clear(
-            scope = screenScope,
-            threadKey = firstDraft.threadKey,
-        )
+        autosave.clear(firstDraft.threadKey)
 
         // When
         autosave.flush()
@@ -161,6 +155,25 @@ internal class ChatDraftAutosaveTest {
             // When
             autosave.flush()
             screenScope.cancel()
+            advanceUntilIdle()
+
+            // Then
+            assertEquals(listOf(firstDraft), repository.savedDrafts)
+        }
+
+    @Test
+    fun `GIVEN a draft waiting for its debounce WHEN the screen scope ends before flushing THEN it is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            autosave.schedule(
+                scope = screenScope,
+                draft = firstDraft,
+            )
+            advanceTimeBy(debounceDelay / 2)
+            screenScope.cancel()
+
+            // When
+            autosave.flush()
             advanceUntilIdle()
 
             // Then

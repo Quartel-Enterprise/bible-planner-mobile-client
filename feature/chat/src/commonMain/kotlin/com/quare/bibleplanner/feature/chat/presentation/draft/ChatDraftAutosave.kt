@@ -1,12 +1,16 @@
 package com.quare.bibleplanner.feature.chat.presentation.draft
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.SaveChatDraftUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -19,6 +23,12 @@ internal class ChatDraftAutosave(
     private var pendingDraft: PendingDraftModel? = null
     private var lastAppliedDraft: String? = null
 
+    /*
+     * Why: debounced saves run on the screen's scope and the clear/flush saves on the app's; the lock
+     * keeps a cancelled write still in flight from landing after a newer one for the same thread.
+     */
+    private val draftWrites: Mutex = Mutex()
+
     fun schedule(
         scope: CoroutineScope,
         draft: PendingDraftModel,
@@ -27,30 +37,36 @@ internal class ChatDraftAutosave(
         draftSaveJob?.cancel()
         draftSaveJob = scope.launch {
             delay(draftDebounceDelay)
-            saveDraft(draft)
-            pendingDraft = null
+            writeDraft(draft).onSuccess {
+                if (pendingDraft === draft) pendingDraft = null
+            }
         }
     }
 
-    fun clear(
-        scope: CoroutineScope,
-        threadKey: String,
-    ) {
+    // Why: on the app's scope so closing the screen right after sending can't cancel the clearing write.
+    fun clear(threadKey: String) {
         pendingDraft = null
         draftSaveJob?.cancel()
         val cleared = PendingDraftModel(
             threadKey = threadKey,
             content = "",
         )
-        scope.launch { saveDraft(cleared) }
+        applicationScope.launch { writeDraft(cleared) }
     }
 
-    // Why: the screen's scope is gone by now, so a draft still waiting for its debounce is saved on the app's.
+    /*
+     * Why: ViewModel.clear() closes the screen's scope before onCleared() calls this, so the debounce job
+     * is already cancelled; only pendingDraft still says whether a save is owed.
+     */
     fun flush() {
         val unsaved = pendingDraft ?: return
-        if (draftSaveJob?.isActive != true) return
         draftSaveJob?.cancel()
-        applicationScope.launch { saveDraft(unsaved) }
+        applicationScope.launch { writeDraft(unsaved) }
+    }
+
+    private suspend fun writeDraft(draft: PendingDraftModel): Result<Unit> = draftWrites.withLock {
+        suspendRunCatching { saveDraft(draft) }
+            .onFailure { throwable -> Logger.e(throwable) { "Failed to save the chat draft" } }
     }
 
     /*
