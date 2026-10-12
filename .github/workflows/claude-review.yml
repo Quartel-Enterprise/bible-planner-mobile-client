@@ -9,7 +9,8 @@ name: claude-review
 #
 # The workflows that build and test the app wait for this review on the commit the pull request
 # opened with (review-gate.yml): when it pushes fixes, they run on the fix commit only; when it
-# pushes nothing, they run on the opening commit once it ends.
+# pushes nothing, they run on the opening commit once it ends. Either way they are held while a
+# thread it opened is unresolved (run-checks.yml re-runs them once the threads are resolved).
 #
 # The job fails only when the run itself does (an expired token, the timeout), never because of what
 # the review found. The fix commit, like every push after the pull request opens, isn't reviewed
@@ -39,11 +40,14 @@ jobs:
       id-token: write
     steps:
       # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
-      # commit the comments are anchored to.
+      # commit the comments are anchored to. No persisted credentials: checkout keeps GITHUB_TOKEN's
+      # header in a file of its own, which claude-code-action doesn't find when it swaps in the App's
+      # token, so git kept sending the read-only token and the fix push was refused (#600).
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
+          persist-credentials: false
 
       - uses: ./.github/actions/claude-review
         with:

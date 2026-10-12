@@ -32,10 +32,13 @@ concurrency:
 
 jobs:
   # Waits for the opening review on the commit a pull request opened with, since that review may push
-  # a commit of its fixes. Every other event skips it, and the jobs below run on a skipped gate too.
-  # See .github/workflows/review-gate.yml.
+  # a commit of its fixes, and on that fix commit; on both, it holds the jobs below while a thread the
+  # review opened is unresolved. Every other event skips it, and the jobs below run on a skipped gate
+  # too. See .github/workflows/review-gate.yml.
   review-gate:
-    if: github.event.action == 'opened'
+    if: >-
+      github.event.action == 'opened' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
     uses: ./.github/workflows/review-gate.yml
     permissions:
       actions: read

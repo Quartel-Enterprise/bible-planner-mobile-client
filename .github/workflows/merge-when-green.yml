@@ -9,7 +9,9 @@ name: merge-when-green
 #
 # A green pull request with an unresolved review conversation (a finding of claude-review, say) is
 # not merged: the label goes and a comment says why. Resolving a conversation starts no workflow, so
-# adding the label again is what merges it then.
+# adding the label again is what merges it then. The checks review-gate held for those conversations
+# (see review-gate.yml) don't count as failed: once every conversation is resolved, this workflow
+# re-runs them and merges when they pass.
 on:
   pull_request:
     types:
@@ -35,15 +37,22 @@ jobs:
     if: >-
       (github.event_name == 'pull_request' && github.event.label.name == 'merge-when-green') ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success')
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
     runs-on: ubuntu-latest
     permissions:
-      actions: read
+      actions: write
       contents: read
       pull-requests: write
     concurrency:
       group: merge-when-green-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: scripts/review_gate.sh
+          sparse-checkout-cone-mode: false
+
       # A merge made with GITHUB_TOKEN triggers no other workflow, so neither the push to main
       # (build-and-test, ui-tests, translations…) nor cleanup-pr-caches would run. The merge is made
       # with a token of its own instead: a fine-grained personal access token restricted to this
@@ -86,7 +95,12 @@ jobs:
             exit 0
           fi
 
-          unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.name): \(.bucket)"' <<< "$others")
+          # A gate that held its workflow's checks for claude-review's open threads is the only
+          # review-gate check that fails. Its run completes failed, which starts this workflow too.
+          held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
+          unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
+            | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
+            | "\(.name): \(.bucket)"' <<< "$others")
           if [ -n "$unfinished" ]; then
             echo "#$pr is not green yet:"
             echo "$unfinished"
@@ -111,31 +125,30 @@ jobs:
           fi
 
           # The ruleset refuses the merge too, but checking first leaves a comment on the pull request
-          # instead of a failed run nobody looks at. The $ names in the query are GraphQL variables.
-          # shellcheck disable=SC2016
-          unresolved_threads=$(gh api graphql --paginate \
-            -F owner="${GH_REPO%/*}" \
-            -F name="${GH_REPO#*/}" \
-            -F number="$pr" \
-            -f query='query($owner: String!, $name: String!, $number: Int!, $endCursor: String) {
-              repository(owner: $owner, name: $name) {
-                pullRequest(number: $number) {
-                  reviewThreads(first: 100, after: $endCursor) {
-                    nodes { id isResolved }
-                    pageInfo { hasNextPage endCursor }
-                  }
-                }
-              }
-            }' \
-            --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not) | .id')
-          unresolved=$(grep -c . <<< "$unresolved_threads" || true)
+          # instead of a failed run nobody looks at.
+          unresolved=$(GH_TOKEN="$GITHUB_TOKEN" ./scripts/review_gate.sh open-threads "$pr")
           if [ "$unresolved" -gt 0 ]; then
             echo "#$pr is green but has $unresolved unresolved review conversation(s)."
-            body="Every check passed, but $unresolved review conversation(s) are still unresolved, so this"
-            body+=" was not merged. Fix each one, or reply with why it stays as it is, resolve them, then"
-            body+=" add the \`merge-when-green\` label again."
+            if [ "$held" -gt 0 ]; then
+              body="The checks are held for the Claude review's threads, and $unresolved review"
+              body+=" conversation(s) are still unresolved, so this was not merged. Fix each one, or reply"
+              body+=" with why it stays as it is, resolve them, then add the \`merge-when-green\` label"
+              body+=" again: the held checks run then, and this merges once they pass."
+            else
+              body="Every check passed, but $unresolved review conversation(s) are still unresolved, so this"
+              body+=" was not merged. Fix each one, or reply with why it stays as it is, resolve them, then"
+              body+=" add the \`merge-when-green\` label again."
+            fi
             GH_TOKEN="$GITHUB_TOKEN" gh pr comment "$pr" --body "$body"
             GH_TOKEN="$GITHUB_TOKEN" gh api --method DELETE "repos/$GH_REPO/issues/$pr/labels/merge-when-green" > /dev/null
+            exit 0
+          fi
+
+          # Every conversation is resolved now, so the gate lets the held checks through; their
+          # completion starts this workflow again.
+          if [ "$held" -gt 0 ]; then
+            rerun=$(GH_TOKEN="$GITHUB_TOKEN" ./scripts/review_gate.sh rerun-held "$HEAD_SHA")
+            echo "Re-ran $rerun run(s) of #$pr held for review conversations that are resolved now."
             exit 0
           fi
 
