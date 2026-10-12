@@ -183,9 +183,6 @@ private fun UnlockWithoutVideoButton(onClick: () -> Unit) {
     }
 }
 
-private val StudyUnlockUiState.isFreeUnlockShown: Boolean
-    get() = canUnlockWithoutVideo && videoState == StudyUnlockVideoState.UNAVAILABLE
-
 @Composable
 private fun videoCaption(uiState: StudyUnlockUiState): String = when (uiState.videoState) {
     StudyUnlockVideoState.LOADING -> stringResource(Res.string.study_unlock_video_loading)

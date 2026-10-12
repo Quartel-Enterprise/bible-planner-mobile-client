@@ -94,11 +94,7 @@ internal class StudyUnlockViewModel(
 
     // Why: when no video can be shown, the caller allowed this unlock anyway, so it completes like an earned reward.
     private fun onUnlockWithoutVideoClick() {
-        if (!uiState.value.canUnlockWithoutVideo ||
-            uiState.value.videoState != StudyUnlockVideoState.UNAVAILABLE
-        ) {
-            return
-        }
+        if (!uiState.value.isFreeUnlockShown) return
         trackEvent(
             name = AnalyticsEventNames.UNLOCK_WITHOUT_VIDEO_CLICKED,
             params = surfaceParams,

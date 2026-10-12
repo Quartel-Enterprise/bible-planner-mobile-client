@@ -157,12 +157,18 @@ internal class ChapterAudioRemoteDataSourceImpl(
             when (checkRemoteSessionState()) {
                 RemoteSessionState.ACTIVE -> Unit
 
-                RemoteSessionState.REVOKED -> throw NotSignedInException()
+                // Why: Supabase's own auto-refresh may spend the same refresh token first, which renews the session.
+                RemoteSessionState.REVOKED -> if (!isRenewedElsewhere(usedToken)) throw NotSignedInException()
 
                 // Why: a rate limit or an auth server error is not the missing connection an IOException reads as.
                 RemoteSessionState.UNKNOWN -> if (!isRefusalOnly) throw SessionRenewalException()
             }
         }
+    }
+
+    private fun isRenewedElsewhere(usedToken: String?): Boolean {
+        val currentToken = auth.currentAccessTokenOrNull()
+        return currentToken != null && currentToken != usedToken
     }
 
     // Why: the Worker serves the files only to a signed-in user, with the same token the function takes.

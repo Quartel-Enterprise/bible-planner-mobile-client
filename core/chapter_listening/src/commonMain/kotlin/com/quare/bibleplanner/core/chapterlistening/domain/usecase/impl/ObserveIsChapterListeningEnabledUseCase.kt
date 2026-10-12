@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 
-// Why: the server refuses versions outside the same Remote Config list, so the entry is hidden for them.
+/*
+ * Why: the server refuses versions outside the same Remote Config list, so the entry is hidden for them,
+ * and for every version while the list isn't known, rather than following a copy baked into the app.
+ */
 internal class ObserveIsChapterListeningEnabledUseCase(
     private val audioPlayer: ChapterAudioPlayer,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -26,7 +29,7 @@ internal class ObserveIsChapterListeningEnabledUseCase(
             ),
             observeStringRemoteConfig(
                 key = CLOUD_VERSIONS_KEY,
-                default = DEFAULT_CLOUD_VERSIONS,
+                default = "",
             ),
             getSelectedVersionIdFlow(),
         ) { isEnabled, cloudVersions, versionId ->
@@ -43,7 +46,6 @@ internal class ObserveIsChapterListeningEnabledUseCase(
     private companion object {
         const val CHAPTER_LISTENING_ENABLED_KEY = "chapter_listening_enabled"
         const val CLOUD_VERSIONS_KEY = "listening_cloud_versions"
-        const val DEFAULT_CLOUD_VERSIONS = "A21,ACF,ARA,NIV,ESV,KJV,WEB"
         const val VERSION_SEPARATOR = ","
     }
 }

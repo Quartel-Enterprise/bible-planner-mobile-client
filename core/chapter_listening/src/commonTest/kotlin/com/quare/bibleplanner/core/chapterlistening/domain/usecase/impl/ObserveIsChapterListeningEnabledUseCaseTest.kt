@@ -43,7 +43,7 @@ internal class ObserveIsChapterListeningEnabledUseCaseTest {
         prepareScenario(
             isSupported = true,
             isEnabled = true,
-            cloudVersions = null,
+            cloudVersions = "A21",
             selectedVersionId = "a21",
         )
 
@@ -53,7 +53,24 @@ internal class ObserveIsChapterListeningEnabledUseCaseTest {
         // Then
         assertTrue(isEnabled)
         assertEquals("chapter_listening_enabled" to false, booleanRemoteConfig.requests.single())
-        assertEquals("listening_cloud_versions", stringRemoteConfig.requests.single().first)
+        assertEquals("listening_cloud_versions" to "", stringRemoteConfig.requests.single())
+    }
+
+    @Test
+    fun `GIVEN no cloud versions in Remote Config WHEN observing THEN listening is off`() = runTest {
+        // Given
+        prepareScenario(
+            isSupported = true,
+            isEnabled = true,
+            cloudVersions = null,
+            selectedVersionId = "a21",
+        )
+
+        // When
+        val isEnabled = useCase().first()
+
+        // Then
+        assertFalse(isEnabled)
     }
 
     @Test
