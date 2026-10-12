@@ -27,6 +27,23 @@ class InjectedRealtimeRuleTest {
     }
 
     @Test
+    fun `GIVEN the realtime plugin looked up on the client WHEN linting THEN reports the lookup`() {
+        // Given
+        val code =
+            """
+            class Store(private val supabaseClient: SupabaseClient) {
+                private val realtime = supabaseClient.pluginManager.getPlugin(Realtime)
+            }
+            """.trimIndent()
+
+        // When
+        val linted = injectedRealtimeRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 57, VIOLATION_MESSAGE)
+    }
+
+    @Test
     fun `GIVEN the injected Realtime WHEN linting THEN reports nothing`() {
         // Given
         val code =

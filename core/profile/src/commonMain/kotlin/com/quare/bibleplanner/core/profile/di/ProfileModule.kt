@@ -23,13 +23,7 @@ val profileModule = module {
     factoryOf(::ProfileMapper)
     factoryOf(::UserProfileMapper)
     singleOf(::ProfileLocalStore)
-    single {
-        ProfileRemoteStore(
-            supabaseClient = get(),
-            realtime = get(),
-            profileMapper = get(),
-        )
-    }
+    singleOf(::ProfileRemoteStore)
     single {
         AvatarRemoteStore(bucketApi = get(named(AVATARS_BUCKET)))
     }

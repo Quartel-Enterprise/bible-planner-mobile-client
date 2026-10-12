@@ -58,6 +58,7 @@ ktlint_bible-planner-style_test-body-sections = disabled
 
 [**/testing/src/**]
 ktlint_bible-planner-style_comments-say-why = disabled
+ktlint_bible-planner-style_injected-realtime = disabled
 
 [*.kts]
 ktlint_bible-planner-style_comments-say-why = disabled
