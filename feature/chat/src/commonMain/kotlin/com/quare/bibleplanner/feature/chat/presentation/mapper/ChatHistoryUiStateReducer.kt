@@ -22,11 +22,7 @@ internal fun ChatHistoryUiState.cancelRename(): ChatHistoryUiState = copy(
     renameDraft = "",
 )
 
-internal fun ChatHistoryUiState.closeRename(): ChatHistoryUiState = copy(
-    renamingId = null,
-    renameDraft = "",
-    expandedActionsId = null,
-)
+internal fun ChatHistoryUiState.closeRename(): ChatHistoryUiState = cancelRename().copy(expandedActionsId = null)
 
 internal fun ChatHistoryUiState.closeDelete(): ChatHistoryUiState = copy(
     deletingId = null,

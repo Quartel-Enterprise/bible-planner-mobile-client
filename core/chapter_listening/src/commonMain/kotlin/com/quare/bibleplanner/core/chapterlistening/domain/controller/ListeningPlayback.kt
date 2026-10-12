@@ -32,6 +32,7 @@ internal class ListeningPlayback(
     private val sleepTimer: ListeningSleepTimer,
     private val prefetcher: ChapterAudioPrefetcher,
     private val tracker: ChapterListeningAnalyticsTracker,
+    private val onSegmentEnd: () -> Unit,
 ) {
     private val positionTick: Duration = 200.milliseconds
     private val minimumWordTick: Duration = 20.milliseconds
@@ -40,19 +41,28 @@ internal class ListeningPlayback(
     private var playbackJob: Job? = null
     private var hasTrackedStart = false
     private var hasPrefetched = false
-    private var onSegmentEnd: () -> Unit = {}
 
     var audio: ChapterAudioModel? = null
+        private set
+
     var position: Duration = Duration.ZERO
+        private set
 
     val isSupported: Boolean
         get() = audioPlayer.isSupported
 
     val events: Flow<ChapterAudioPlayerEvent> = audioPlayer.events.filter { event -> event.playbackId == playbackId }
 
-    // Why: the controller loads the next segment and itself depends on this playback, so it registers once it exists.
-    fun setSegmentEndListener(listener: () -> Unit) {
-        onSegmentEnd = listener
+    fun load(
+        audio: ChapterAudioModel?,
+        start: Duration,
+    ) {
+        this.audio = audio
+        position = start
+    }
+
+    fun dropAudio() {
+        audio = null
     }
 
     fun playFrom(

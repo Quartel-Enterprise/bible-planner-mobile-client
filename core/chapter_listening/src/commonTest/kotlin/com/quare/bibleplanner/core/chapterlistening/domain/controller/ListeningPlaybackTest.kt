@@ -106,7 +106,7 @@ internal class ListeningPlaybackTest {
     fun `GIVEN no audio loaded WHEN playing THEN nothing plays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        playback.audio = null
+        playback.dropAudio()
 
         // When
         playback.playFrom(Duration.ZERO)
@@ -540,7 +540,10 @@ internal class ListeningPlaybackTest {
         prepareScenario()
         playback.playFrom(Duration.ZERO)
         playback.reset()
-        playback.audio = audio
+        playback.load(
+            audio = audio,
+            start = playback.position,
+        )
 
         // When
         playback.playFrom(Duration.ZERO)
@@ -673,8 +676,11 @@ internal class ListeningPlaybackTest {
                 getChapterListeningAccess = { ChapterListeningAccessModel.Open },
             ),
             tracker = tracker,
+            onSegmentEnd = ::onSegmentEnd,
         )
-        playback.audio = audio
-        playback.setSegmentEndListener(::onSegmentEnd)
+        playback.load(
+            audio = audio,
+            start = playback.position,
+        )
     }
 }

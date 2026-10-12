@@ -69,10 +69,12 @@ internal class ListeningSegmentLoader(
             else -> ListeningStatusModel.PAUSED
         }
         if (loadedAudio != null && verses.isEmpty()) cacheKeeper.evictEmpty(loadedAudio.audioPath)
-        playback.audio = loadedAudio
-        playback.position = toStartPosition(
-            segment = session.segment,
-            verses = verses,
+        playback.load(
+            audio = loadedAudio,
+            start = toStartPosition(
+                segment = session.segment,
+                verses = verses,
+            ),
         )
         store.updateSession {
             it.copy(

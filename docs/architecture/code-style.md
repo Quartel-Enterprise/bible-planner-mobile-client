@@ -845,7 +845,8 @@ A constructor that reaches Koin's 22-parameter limit for `viewModelOf` after an 
 in a `*UseCases` data class (see [Use cases](use-cases.md#use-case-aggregation-when-a-viewmodel-needs-many-use-cases)),
 as `ReadChapterUseCases` does.
 
-Enforced by the custom ktlint rule `bible-planner-style:max-file-length`, which counts lines like `wc -l`. It is
+Enforced by the custom ktlint rule `bible-planner-style:max-file-length`, which counts lines the way the editor
+numbers them (it matches `wc -l` only when the file ends in a newline, which `.editorconfig` asks for). It is
 disabled for the test source sets in `.editorconfig`: a test class grows with its scenarios.
 
 ## Tests

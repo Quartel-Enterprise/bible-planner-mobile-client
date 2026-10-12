@@ -78,7 +78,10 @@ internal class ListeningSegmentLoaderTest {
                 status = ListeningStatusModel.PLAYING,
             )
             store.update { it.copy(session = leftSession) }
-            playback.audio = audio
+            playback.load(
+                audio = audio,
+                start = playback.position,
+            )
 
             // When
             val left = loader.reset(
@@ -107,7 +110,10 @@ internal class ListeningSegmentLoaderTest {
                 status = ListeningStatusModel.PLAYING,
             )
             store.update { it.copy(session = session) }
-            playback.audio = audio
+            playback.load(
+                audio = audio,
+                start = playback.position,
+            )
 
             // When
             val left = loader.reset(
@@ -154,7 +160,10 @@ internal class ListeningSegmentLoaderTest {
     fun `GIVEN no session WHEN resetting to a chapter THEN no session is left`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        playback.audio = audio
+        playback.load(
+            audio = audio,
+            start = playback.position,
+        )
 
         // When
         val left = loader.reset(
@@ -182,7 +191,10 @@ internal class ListeningSegmentLoaderTest {
                     ),
                 )
             }
-            playback.audio = audio
+            playback.load(
+                audio = audio,
+                start = playback.position,
+            )
             val nextSession = createSession(
                 segment = createSegment(
                     chapter = genesisTwo,
@@ -408,7 +420,10 @@ internal class ListeningSegmentLoaderTest {
             segment = wholeChapter,
             status = ListeningStatusModel.PREPARING,
         )
-        playback.position = 7.seconds
+        playback.load(
+            audio = playback.audio,
+            start = 7.seconds,
+        )
         loader.rememberRetryStart(wholeChapter)
 
         // When
@@ -429,7 +444,10 @@ internal class ListeningSegmentLoaderTest {
             segment = wholeChapter,
             status = ListeningStatusModel.PREPARING,
         )
-        playback.position = 20.seconds
+        playback.load(
+            audio = playback.audio,
+            start = 20.seconds,
+        )
         loader.rememberRetryStart(wholeChapter)
 
         // When
@@ -450,7 +468,10 @@ internal class ListeningSegmentLoaderTest {
             segment = wholeChapter,
             status = ListeningStatusModel.PREPARING,
         )
-        playback.position = 7.seconds
+        playback.load(
+            audio = playback.audio,
+            start = 7.seconds,
+        )
         loader.rememberRetryStart(
             createSegment(
                 chapter = genesisOne,
@@ -477,7 +498,10 @@ internal class ListeningSegmentLoaderTest {
             segment = wholeChapter,
             status = ListeningStatusModel.PREPARING,
         )
-        playback.position = 7.seconds
+        playback.load(
+            audio = playback.audio,
+            start = 7.seconds,
+        )
         loader.rememberRetryStart(wholeChapter)
         loader.forgetRetryStart()
 
@@ -499,7 +523,10 @@ internal class ListeningSegmentLoaderTest {
             segment = wholeChapter,
             status = ListeningStatusModel.PREPARING,
         )
-        playback.position = 7.seconds
+        playback.load(
+            audio = playback.audio,
+            start = 7.seconds,
+        )
         loader.rememberRetryStart(wholeChapter)
         loader.load(
             session = session,
@@ -591,6 +618,7 @@ internal class ListeningSegmentLoaderTest {
             ),
             prefetcher = prefetcher,
             tracker = tracker,
+            onSegmentEnd = {},
         )
         loader = ListeningSegmentLoader(
             store = store,

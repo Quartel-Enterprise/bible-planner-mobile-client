@@ -56,6 +56,8 @@ internal fun createChapterListeningController(
         scope = scope,
         chapterAudioRepository = chapterAudioRepository,
     )
+    // Why: the playback reports a segment end to the controller, which itself needs the playback, so it is set right below.
+    lateinit var controller: ChapterListeningControllerImpl
     val playback = ListeningPlayback(
         scope = scope,
         audioPlayer = audioPlayer,
@@ -64,8 +66,9 @@ internal fun createChapterListeningController(
         sleepTimer = sleepTimer,
         prefetcher = prefetcher,
         tracker = tracker,
+        onSegmentEnd = { controller.loadAfterSegmentEnd() },
     )
-    return ChapterListeningControllerImpl(
+    controller = ChapterListeningControllerImpl(
         scope = scope,
         store = store,
         playback = playback,
@@ -97,4 +100,5 @@ internal fun createChapterListeningController(
         ),
         observeAuthenticatedUserId = observeAuthenticatedUserId,
     )
+    return controller
 }

@@ -20,7 +20,10 @@ class MaxFileLengthRule : BiblePlannerRule("max-file-length") {
         )
     }
 
-    // Why: counted like `wc -l`, so the trailing newline every file ends with doesn't add a line.
+    /*
+     * Why: counted the way the editor numbers lines, so the final newline doesn't add one; `wc -l`
+     * agrees only when the file ends in a newline.
+     */
     private fun String.countLines(): Int {
         val newlines = count { it == '\n' }
         return if (isEmpty() || endsWith('\n')) newlines else newlines + 1

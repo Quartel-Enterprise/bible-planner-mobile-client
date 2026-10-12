@@ -80,7 +80,6 @@ internal class ChapterListeningControllerImpl(
         get() = store.session
 
     init {
-        playback.setSegmentEndListener(::loadAfterSegmentEnd)
         scope.launch { settingsRepository.observe().collect(::applySettings) }
         scope.launch { playback.events.collect(::handlePlayerEvent) }
         scope.launch { mediaSession.commands.collect(::handleRemoteCommand) }
@@ -359,7 +358,7 @@ internal class ChapterListeningControllerImpl(
         }
     }
 
-    private fun loadAfterSegmentEnd() {
+    fun loadAfterSegmentEnd() {
         launchLoad { onSegmentFinished() }
     }
 
@@ -532,7 +531,7 @@ internal class ChapterListeningControllerImpl(
         val failedAudioPath = playback.audio?.audioPath
         playback.silence()
         loader.rememberRetryStart(current.segment)
-        playback.audio = null
+        playback.dropAudio()
         store.updateSession(ListeningSessionModel::toPlaybackFailed)
         tracker.trackPlaybackFailed(current)
         if (isFileUnreadable && failedAudioPath != null) cacheKeeper.evict(failedAudioPath)
