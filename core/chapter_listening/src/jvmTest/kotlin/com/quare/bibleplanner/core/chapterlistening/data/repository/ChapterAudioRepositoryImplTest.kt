@@ -43,6 +43,7 @@ import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.serialization.json.Json
 import java.nio.file.Files
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -749,7 +750,9 @@ internal class ChapterAudioRepositoryImplTest {
         isSignedIn: Boolean = true,
         now: Long = 0L,
     ) {
-        requests = mutableListOf()
+        // The audio downloads on the IO dispatcher while the manifest downloads on the test thread, so both
+        // requests may be recorded at once, and a plain list would drop one of them.
+        requests = CopyOnWriteArrayList()
         val recorded = requests
         val engine = MockEngine(
             MockEngineConfig().apply {
