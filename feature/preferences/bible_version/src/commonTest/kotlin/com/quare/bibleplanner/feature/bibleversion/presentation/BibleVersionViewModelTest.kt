@@ -21,7 +21,6 @@ import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifie
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingNotificationPermissionRequester
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
-import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +53,6 @@ internal class BibleVersionViewModelTest {
     private lateinit var bibleVersionDao: InMemoryBibleVersionDao
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var commands: MutableList<NavigationCommand>
-    private lateinit var actions: MutableList<BibleVersionUiAction>
     private lateinit var states: MutableList<BibleVersionsUiState>
     private var initializeCalls = 0
 
@@ -110,23 +108,6 @@ internal class BibleVersionViewModelTest {
             assertEquals(
                 expected = 1,
                 actual = permissionRequester.requestCount,
-            )
-            assertTrue(actions.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN a downloader asking for the tip WHEN downloading THEN shows the keep the app open tip`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(shouldShowDownloadTip = true)
-
-            // When
-            viewModel.onEvent(BibleVersionUiEvent.OnDownload(OTHER_ID))
-
-            // Then
-            assertEquals(
-                expected = listOf<BibleVersionUiAction>(BibleVersionUiAction.ShowDownloadTip),
-                actual = actions,
             )
         }
 
@@ -278,8 +259,8 @@ internal class BibleVersionViewModelTest {
         )
     }
 
-    private fun TestScope.prepareScenario(shouldShowDownloadTip: Boolean = false) {
-        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = shouldShowDownloadTip)
+    private fun TestScope.prepareScenario() {
+        downloaderFacade = FakeBibleVersionDownloaderFacade()
         bibleRepository = FakeBibleRepository(
             bibles = listOf(selectedVersion, otherVersion),
             selectedVersionId = "ACF",
@@ -297,7 +278,6 @@ internal class BibleVersionViewModelTest {
         )
         trackedEvents = mutableListOf()
         commands = mutableListOf()
-        actions = mutableListOf()
         states = mutableListOf()
         initializeCalls = 0
         val navigator = Navigator()
@@ -329,7 +309,6 @@ internal class BibleVersionViewModelTest {
             ),
         )
         backgroundScope.launch { navigator.commands.collect { commands += it } }
-        backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
         backgroundScope.launch { viewModel.uiState.collect { states += it } }
     }
 

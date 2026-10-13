@@ -6,7 +6,7 @@ struct ComposeView: UIViewControllerRepresentable {
     let remoteConfigService: RemoteConfigDataSource
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
-    let downloadSession: BibleVersionDownloadSession
+    let downloadLiveActivity: BibleDownloadLiveActivity
     let reviewRequester: StoreKitReviewRequester
     let rewardedAdDataSource: IosRewardedAdDataSource
     let adsConsentDataSource: IosAdsConsentDataSource
@@ -16,7 +16,7 @@ struct ComposeView: UIViewControllerRepresentable {
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession,
+            downloadLiveActivity: downloadLiveActivity,
             reviewRequester: reviewRequester,
             rewardedAdDataSource: rewardedAdDataSource,
             adsConsentDataSource: adsConsentDataSource
@@ -30,7 +30,7 @@ struct ContentView: View {
     let remoteConfigService: RemoteConfigDataSource
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
-    let downloadSession: BibleVersionDownloadSession
+    let downloadLiveActivity: BibleDownloadLiveActivity
     let reviewRequester: StoreKitReviewRequester
     let rewardedAdDataSource: IosRewardedAdDataSource
     let adsConsentDataSource: IosAdsConsentDataSource
@@ -40,7 +40,7 @@ struct ContentView: View {
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession,
+            downloadLiveActivity: downloadLiveActivity,
             reviewRequester: reviewRequester,
             rewardedAdDataSource: rewardedAdDataSource,
             adsConsentDataSource: adsConsentDataSource

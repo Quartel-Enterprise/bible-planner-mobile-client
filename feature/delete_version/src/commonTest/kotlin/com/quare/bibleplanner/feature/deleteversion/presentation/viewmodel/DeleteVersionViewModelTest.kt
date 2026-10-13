@@ -101,7 +101,7 @@ internal class DeleteVersionViewModelTest {
     private fun TestScope.prepareScenario() {
         val navigator = Navigator()
         deletionGate = CompletableDeferred()
-        downloader = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
+        downloader = FakeBibleVersionDownloaderFacade()
         downloader.deletionGate = deletionGate
         commands = mutableListOf()
         trackedEvents = mutableListOf()

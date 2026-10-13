@@ -1,94 +1,66 @@
 import ActivityKit
 import Foundation
 
-@available(iOS 16.2, *)
 class LiveActivityManager {
     static let shared = LiveActivityManager()
 
     private var activities: [String: Activity<BibleDownloadAttributes>] = [:]
     private var lastReportedProgress: [String: Double] = [:]
+    private var pausedVersionIds = Set<String>()
     private let lock = NSLock()
 
     // MARK: - Lifecycle
 
-    func start(versionId: String, versionName: String) {
-        let enabled = ActivityAuthorizationInfo().areActivitiesEnabled
-        dlog("start — versionId: \(versionId) versionName: \(versionName) areActivitiesEnabled: \(enabled)", tag: "LIVE_ACTIVITY")
-
-        guard enabled else {
-            dlog("start SKIPPED — activities not enabled on this device/iOS version", tag: "LIVE_ACTIVITY")
+    /// Starts the version's Live Activity on its first progress, then updates it. A paused one
+    /// always switches back to downloading; otherwise changes below 1% are skipped.
+    func show(versionId: String, versionName: String, progress: Double, estimatedTimeLabel: String?) {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        lock.lock()
+        if let stored = activities[versionId], !stored.isLive {
+            activities.removeValue(forKey: versionId)
+            lastReportedProgress.removeValue(forKey: versionId)
+            pausedVersionIds.remove(versionId)
+        }
+        let wasPaused = pausedVersionIds.remove(versionId) != nil
+        guard let activity = activities[versionId] else {
+            // Still under the lock, so two progress updates can't each start an activity for the version.
+            startLocked(versionId: versionId, versionName: versionName, progress: progress)
+            lock.unlock()
             return
         }
-
-        lock.lock()
-        if let existing = activities[versionId] {
-            dlog("start — ending existing activity for \(versionId) before restart", tag: "LIVE_ACTIVITY")
-            Task { await existing.end(nil, dismissalPolicy: .immediate) }
-        }
-        lock.unlock()
-
-        let attributes = BibleDownloadAttributes(versionId: versionId, versionName: versionName)
-        let initialState = BibleDownloadAttributes.ContentState(
-            progress: 0,
-            progressStr: "0",
-            downloadState: .downloading,
-            estimatedTimeLabel: nil
-        )
-
-        do {
-            let activity = try Activity.request(
-                attributes: attributes,
-                contentState: initialState
-            )
-            lock.lock()
-            activities[versionId] = activity
-            lastReportedProgress[versionId] = 0
-            lock.unlock()
-            dlog("start SUCCESS — activityId: \(activity.id) state: \(activity.activityState)", tag: "LIVE_ACTIVITY")
-            logAllActivities()
-        } catch {
-            dlog("start FAILED — error: \(error)", tag: "LIVE_ACTIVITY")
-        }
-    }
-
-    func updateIfChanged(
-        versionId: String,
-        progress: Double,
-        progressStr: String,
-        estimatedTimeLabel: String?
-    ) {
-        lock.lock()
         let last = lastReportedProgress[versionId] ?? -1
-        guard progress - last >= 0.01,
-              let activity = activities[versionId] else {
-            lock.unlock()
-            return
-        }
-        lastReportedProgress[versionId] = progress
+        let shouldUpdate = wasPaused || abs(progress - last) >= 0.01
+        if shouldUpdate { lastReportedProgress[versionId] = progress }
         lock.unlock()
 
-        // Log state every 25% to avoid spam
-        let pct = Int(progress * 100)
-        if pct % 25 == 0 {
-            dlog("update — \(versionId) \(progressStr)% state: \(activity.activityState)", tag: "LIVE_ACTIVITY")
-        }
-        let newState = BibleDownloadAttributes.ContentState(
+        guard shouldUpdate else { return }
+        let state = BibleDownloadAttributes.ContentState(
             progress: progress,
-            progressStr: progressStr,
+            progressStr: formatProgress(progress),
             downloadState: .downloading,
             estimatedTimeLabel: estimatedTimeLabel
         )
-        Task { await activity.update(.init(state: newState, staleDate: nil)) }
+        Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
 
-    func pause(versionId: String) {
+    /// The versions with a Live Activity this app tracks.
+    var versionIds: [String] {
         lock.lock()
-        guard let activity = activities[versionId],
-              let progress = lastReportedProgress[versionId] else {
+        defer { lock.unlock() }
+        return Array(activities.keys)
+    }
+
+    /// Calls `completion` once the paused state reached the Live Activity, or right away without one.
+    func pause(versionId: String, completion: @escaping () -> Void) {
+        lock.lock()
+        guard let activity = activities[versionId] else {
             dlog("pause SKIPPED — no active activity for \(versionId)", tag: "LIVE_ACTIVITY")
             lock.unlock()
+            completion()
             return
         }
+        pausedVersionIds.insert(versionId)
+        let progress = lastReportedProgress[versionId] ?? 0
         lock.unlock()
 
         dlog("pause — \(versionId) at \(Int(progress * 100))%", tag: "LIVE_ACTIVITY")
@@ -98,83 +70,81 @@ class LiveActivityManager {
             downloadState: .paused,
             estimatedTimeLabel: nil
         )
-        Task { await activity.update(.init(state: state, staleDate: nil)) }
+        Task {
+            await activity.update(.init(state: state, staleDate: nil))
+            completion()
+        }
     }
 
-    func resume(versionId: String) {
-        lock.lock()
-        guard let activity = activities[versionId],
-              let progress = lastReportedProgress[versionId] else {
-            dlog("resume SKIPPED — no active activity for \(versionId)", tag: "LIVE_ACTIVITY")
-            lock.unlock()
-            return
-        }
-        lock.unlock()
-
-        dlog("resume — \(versionId) at \(Int(progress * 100))%", tag: "LIVE_ACTIVITY")
-        let state = BibleDownloadAttributes.ContentState(
-            progress: progress,
-            progressStr: formatProgress(progress),
-            downloadState: .downloading,
-            estimatedTimeLabel: nil
-        )
-        Task { await activity.update(.init(state: state, staleDate: nil)) }
-    }
-
-    func end(versionId: String) {
-        lock.lock()
-        guard let activity = activities.removeValue(forKey: versionId) else {
-            dlog("end SKIPPED — no active activity for \(versionId)", tag: "LIVE_ACTIVITY")
-            lock.unlock()
-            return
-        }
-        lastReportedProgress.removeValue(forKey: versionId)
-        lock.unlock()
-
-        dlog("end — \(versionId) currentState: \(activity.activityState) showing complete then dismissing in 5s", tag: "LIVE_ACTIVITY")
+    /// Shows the version as complete, then dismisses it after a few seconds.
+    func complete(versionId: String) {
+        guard let activity = remove(versionId: versionId) else { return }
+        dlog("complete — \(versionId), dismissing in 5s", tag: "LIVE_ACTIVITY")
         let finalState = BibleDownloadAttributes.ContentState(
             progress: 1.0,
             progressStr: "100",
             downloadState: .complete,
             estimatedTimeLabel: nil
         )
-        Task {
-            await activity.end(
-                using: finalState,
-                dismissalPolicy: .after(.now + 5)
-            )
-            dlog("end — \(versionId) activity.end() completed", tag: "LIVE_ACTIVITY")
-        }
+        Task { await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .after(.now + 5)) }
     }
 
-    /// Re-adopts any Live Activities that were started in a previous app session.
-    /// Must be called on launch so that `endLiveActivity` can find and end stale activities.
-    func adoptOrphanedActivities() {
+    func dismiss(versionId: String) {
+        guard let activity = remove(versionId: versionId) else { return }
+        dlog("dismiss — \(versionId)", tag: "LIVE_ACTIVITY")
+        Task { await activity.end(nil, dismissalPolicy: .immediate) }
+    }
+
+    /// Re-adopts the Live Activities still up from before the app was last terminated, so they can be
+    /// updated, paused or ended. Returns their version ids.
+    func adoptOrphanedActivities() -> [String] {
         let all = Activity<BibleDownloadAttributes>.activities
         dlog("adoptOrphanedActivities — found \(all.count) system activities", tag: "LIVE_ACTIVITY")
         lock.lock()
-        for activity in all {
+        defer { lock.unlock() }
+        return all.compactMap { activity in
             let versionId = activity.attributes.versionId
-            if activities[versionId] == nil {
-                activities[versionId] = activity
-                lastReportedProgress[versionId] = activity.contentState.progress
-                dlog("adoptOrphanedActivities — adopted versionId: \(versionId) progress: \(activity.contentState.progress)", tag: "LIVE_ACTIVITY")
+            guard activity.isLive, activities[versionId] == nil else { return nil }
+            activities[versionId] = activity
+            lastReportedProgress[versionId] = activity.content.state.progress
+            if activity.content.state.downloadState == .paused {
+                pausedVersionIds.insert(versionId)
             }
-        }
-        lock.unlock()
-    }
-
-    // MARK: - Diagnostics
-
-    func logAllActivities() {
-        let all = Activity<BibleDownloadAttributes>.activities
-        dlog("all active Live Activities count: \(all.count)", tag: "LIVE_ACTIVITY")
-        for a in all {
-            dlog("  → id:\(a.id) state:\(a.activityState) version:\(a.attributes.versionId)", tag: "LIVE_ACTIVITY")
+            return versionId
         }
     }
 
     // MARK: - Helpers
+
+    /// Must be called with `lock` held.
+    private func startLocked(versionId: String, versionName: String, progress: Double) {
+        let attributes = BibleDownloadAttributes(versionId: versionId, versionName: versionName)
+        let initialState = BibleDownloadAttributes.ContentState(
+            progress: progress,
+            progressStr: formatProgress(progress),
+            downloadState: .downloading,
+            estimatedTimeLabel: nil
+        )
+        do {
+            let activity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: initialState, staleDate: nil)
+            )
+            activities[versionId] = activity
+            lastReportedProgress[versionId] = progress
+            dlog("start — \(versionId) activityId: \(activity.id)", tag: "LIVE_ACTIVITY")
+        } catch {
+            dlog("start FAILED — \(error)", tag: "LIVE_ACTIVITY")
+        }
+    }
+
+    private func remove(versionId: String) -> Activity<BibleDownloadAttributes>? {
+        lock.lock()
+        defer { lock.unlock() }
+        lastReportedProgress.removeValue(forKey: versionId)
+        pausedVersionIds.remove(versionId)
+        return activities.removeValue(forKey: versionId)
+    }
 
     private func formatProgress(_ progress: Double) -> String {
         let rounded = Int((progress * 10000).rounded())
@@ -182,4 +152,9 @@ class LiveActivityManager {
         let fracPart = rounded % 100
         return fracPart == 0 ? "\(intPart)" : "\(intPart).\(String(format: "%02d", fracPart))"
     }
+}
+
+private extension Activity where Attributes == BibleDownloadAttributes {
+    /// Ended or dismissed activities stay listed for a while but ignore updates.
+    var isLive: Bool { activityState == .active || activityState == .stale }
 }

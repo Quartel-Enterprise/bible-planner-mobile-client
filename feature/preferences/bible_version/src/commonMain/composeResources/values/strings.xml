@@ -14,7 +14,6 @@
     <string name="paused_progress">Paused %1$s%</string>
     <string name="download_bible_versions_error">We were unable to download the Bible versions to your device. Please check your internet connection and try again.</string>
     <string name="try_again">Try Again</string>
-    <string name="download_tip_keep_app_open">Keep the app open to speed up the download.</string>
     <string name="update">Update</string>
     <string name="update_available_title">Updates available</string>
     <string name="update_available_description">New revisions for versions you downloaded. Choose which to update.</string>

@@ -18,12 +18,14 @@ import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigDataSource
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.iosAppLanguageModule
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.login.di.iosLoginModule
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
+import com.quare.bibleplanner.notification.IosDownloadLiveActivity
 import com.quare.bibleplanner.review.IosReviewRequester
-import com.quare.bibleplanner.worker.IosBackgroundDownloadBridge
 import com.quare.bibleplanner.worker.IosBibleVersionDownloaderFacade
-import com.quare.bibleplanner.worker.IosDownloadSession
+import com.quare.bibleplanner.worker.IosDownloadBackgroundTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,16 +41,13 @@ import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
 
-/*
- * Why: Koin starts before any UI so the background URLSession handler can reach the graph when
- * the app launches only for background events; repeated calls are ignored.
- */
+// Why: the App init and the Compose controller both call this; repeated calls are ignored.
 @OptIn(ExperimentalNativeApi::class)
 fun initializeKoinForIos(
     remoteConfigService: RemoteConfigDataSource,
     analyticsService: AnalyticsService,
     crashReporter: CrashReporter,
-    downloadSession: IosDownloadSession,
+    downloadLiveActivity: IosDownloadLiveActivity,
     reviewRequester: IosReviewRequester,
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
@@ -68,23 +67,21 @@ fun initializeKoinForIos(
                     single { crashReporter }
                     single { rewardedAdDataSource }
                     single { adsConsentDataSource }
-                    single { downloadSession }.bind<IosDownloadSession>()
+                    single { downloadLiveActivity }
                     factory<RequestInAppReview> {
                         RequestInAppReview {
                             withContext(Dispatchers.Main) { reviewRequester.requestReview() }
                         }
                     }
-                    single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
-                    singleOf(::IosBackgroundDownloadBridge)
+                    singleOf(::IosBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
+                    singleOf(::InProcessBibleVersionDownloader)
+                    singleOf(::InProcessBibleVersionDownloaderFacade)
+                    singleOf(::IosDownloadBackgroundTask)
                     singleOf(::IosBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
                 },
             ),
         )
-        /*
-         * Why: force-create the facade so setBridge runs now; on a background-only URLSession relaunch
-         * there is no UI to request it from Koin.
-         */
-        KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
+        KoinPlatform.getKoin().get<IosBibleVersionDownloaderFacade>().startResumingInterruptedDownloads()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
         crashReporter.configure(isDebug = Platform.isDebugBinary)
         isInitialized = true
@@ -97,7 +94,7 @@ fun MainViewController(
     remoteConfigService: RemoteConfigDataSource,
     analyticsService: AnalyticsService,
     crashReporter: CrashReporter,
-    downloadSession: IosDownloadSession,
+    downloadLiveActivity: IosDownloadLiveActivity,
     reviewRequester: IosReviewRequester,
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
@@ -107,7 +104,7 @@ fun MainViewController(
             remoteConfigService = remoteConfigService,
             analyticsService = analyticsService,
             crashReporter = crashReporter,
-            downloadSession = downloadSession,
+            downloadLiveActivity = downloadLiveActivity,
             reviewRequester = reviewRequester,
             rewardedAdDataSource = rewardedAdDataSource,
             adsConsentDataSource = adsConsentDataSource,
@@ -136,7 +133,8 @@ fun handleDownloadAction(
     action: String,
     versionId: String,
 ) {
-    val facade = KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
+    // Why: the Live Activity of an earlier run can send its buttons before Koin starts at launch.
+    val facade = KoinPlatform.getKoinOrNull()?.get<BibleVersionDownloaderFacade>() ?: return
     CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
         when (action) {
             "pause" -> facade.pauseDownload(versionId)

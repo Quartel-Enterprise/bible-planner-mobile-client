@@ -48,7 +48,7 @@ internal class PendingBibleUpdatesViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
+        downloaderFacade = FakeBibleVersionDownloaderFacade()
         permissionRequester = RecordingNotificationPermissionRequester()
         promptPreferences = RecordingPromptPreferences()
         trackedEvents = mutableListOf()

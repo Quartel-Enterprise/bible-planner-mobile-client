@@ -6,20 +6,15 @@ import Shared
 
 @main
 struct iOSApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
     let remoteConfigService: RemoteConfigDataSource
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
-    let downloadSession: BibleVersionDownloadSession
+    let downloadLiveActivity: BibleDownloadLiveActivity
     let reviewRequester: StoreKitReviewRequester
     let rewardedAdDataSource: IosRewardedAdDataSource
     let adsConsentDataSource: IosAdsConsentDataSource
 
     init() {
-        let downloadSession = BibleVersionDownloadSession()
-        self.downloadSession = downloadSession
-
         FirebaseApp.configure()
         remoteConfigService = IosRemoteConfigService(remoteConfig: RemoteConfig.remoteConfig())
         analyticsService = IosAnalyticsService()
@@ -27,14 +22,15 @@ struct iOSApp: App {
         reviewRequester = StoreKitReviewRequester()
         rewardedAdDataSource = IosRewardedAdDataSource()
         adsConsentDataSource = IosAdsConsentDataSource()
+        downloadLiveActivity = BibleDownloadLiveActivity()
+        LegacyBibleDownloadSession.cancelLeftoverTasks()
 
-        // Initialize Koin early so background URLSession events can access the Koin graph
-        // even when the app is launched solely to process background download events.
+        // Initialize Koin before any UI so a Bible download cut off by iOS ending the app resumes at launch.
         MainViewControllerKt.initializeKoinForIos(
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession,
+            downloadLiveActivity: downloadLiveActivity,
             reviewRequester: reviewRequester,
             rewardedAdDataSource: rewardedAdDataSource,
             adsConsentDataSource: adsConsentDataSource
@@ -52,7 +48,7 @@ struct iOSApp: App {
                 remoteConfigService: remoteConfigService,
                 analyticsService: analyticsService,
                 crashReporter: crashReporter,
-                downloadSession: downloadSession,
+                downloadLiveActivity: downloadLiveActivity,
                 reviewRequester: reviewRequester,
                 rewardedAdDataSource: rewardedAdDataSource,
                 adsConsentDataSource: adsConsentDataSource

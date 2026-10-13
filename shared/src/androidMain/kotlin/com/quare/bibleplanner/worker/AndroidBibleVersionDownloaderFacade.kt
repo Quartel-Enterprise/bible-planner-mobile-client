@@ -30,8 +30,6 @@ internal class AndroidBibleVersionDownloaderFacade(
     }
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-    override val shouldShowDownloadTip: Boolean = false
-
     override fun downloadVersion(versionId: String) {
         withWorkManager(
             onAvailable = { manager -> enqueueDownload(manager = manager, versionId = versionId) },

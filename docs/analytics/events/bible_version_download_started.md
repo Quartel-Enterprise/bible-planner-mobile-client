@@ -28,5 +28,5 @@ The user taps download on a version in the selector, taps resume on a paused dow
 ## Notes
 
 - One event with `is_resume` instead of separate start/resume events, per the toggle-style convention in the README.
-- Interrupted downloads auto-resume on app start (`InProcessBibleVersionDownloader.resumePendingDownloads`); that is system-initiated and not logged — this event tracks user intent only.
+- Interrupted downloads resume on their own (WorkManager on Android; on iOS `IosBibleVersionDownloaderFacade.resumeInterruptedDownloads` at launch and on returning to the foreground); that is system-initiated and not logged — this event tracks user intent only.
 - Outcomes: [bible_version_download_completed](bible_version_download_completed.md), [bible_version_download_failed](bible_version_download_failed.md), or a user pause ([bible_version_download_paused](bible_version_download_paused.md)).
