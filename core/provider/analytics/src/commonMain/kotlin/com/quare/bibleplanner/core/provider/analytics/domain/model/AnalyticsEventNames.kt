@@ -204,7 +204,6 @@ object AnalyticsEventNames {
     const val UPDATE_DISMISSED = "update_dismissed"
     const val UPDATE_DOWNLOAD_FAILED = "update_download_failed"
     const val UPDATE_INSTALL_STARTED = "update_install_started"
-    const val UPDATE_INSTALL_POSTPONED = "update_install_postponed"
 
     const val BOOKS_SEARCH_USED = "books_search_used"
     const val BOOKS_SEARCH_CLEARED = "books_search_cleared"

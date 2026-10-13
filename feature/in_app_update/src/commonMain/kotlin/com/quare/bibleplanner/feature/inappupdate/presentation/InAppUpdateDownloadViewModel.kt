@@ -3,9 +3,8 @@ package com.quare.bibleplanner.feature.inappupdate.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateDownloadState
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.InstallDownloadedUpdate
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.ObserveUpdateDownloadState
-import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateDownloadUiAction
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class InAppUpdateDownloadViewModel(
-    private val navigator: Navigator,
+    private val installDownloadedUpdate: InstallDownloadedUpdate,
     private val trackEvent: TrackEvent,
     observeUpdateDownloadState: ObserveUpdateDownloadState,
 ) : ViewModel() {
@@ -39,7 +38,7 @@ internal class InAppUpdateDownloadViewModel(
 
             UpdateDownloadState.Downloaded -> {
                 downloadProgress.value = null
-                navigator.navigate(UpdateDownloadedNavRoute)
+                installDownloadedUpdate()
             }
 
             UpdateDownloadState.Failed -> {

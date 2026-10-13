@@ -61,7 +61,6 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(StudySuggestionNavRoute::class, StudySuggestionNavRoute.serializer())
             subclass(SubscriptionDetailsNavRoute::class, SubscriptionDetailsNavRoute.serializer())
             subclass(ThemeNavRoute::class, ThemeNavRoute.serializer())
-            subclass(UpdateDownloadedNavRoute::class, UpdateDownloadedNavRoute.serializer())
         }
     }
 }

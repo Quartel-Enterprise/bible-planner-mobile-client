@@ -2,6 +2,9 @@
   "2.14.0": {
     "common": [
       "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día."
+    ],
+    "android": [
+      "Cuando una actualización de la app termina de descargarse, la app ahora se reinicia sola para instalarla, sin que tengas que tocar \"Reiniciar ahora\"."
     ]
   },
   "2.13.0": {

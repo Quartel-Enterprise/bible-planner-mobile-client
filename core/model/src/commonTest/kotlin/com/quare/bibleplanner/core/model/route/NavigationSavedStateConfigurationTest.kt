@@ -124,7 +124,6 @@ internal class NavigationSavedStateConfigurationTest {
         StudySuggestionNavRoute,
         SubscriptionDetailsNavRoute,
         ThemeNavRoute,
-        UpdateDownloadedNavRoute,
     )
 
     @Test
