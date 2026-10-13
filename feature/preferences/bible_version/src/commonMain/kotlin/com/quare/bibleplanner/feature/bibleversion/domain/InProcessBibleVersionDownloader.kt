@@ -2,10 +2,13 @@ package com.quare.bibleplanner.feature.bibleversion.domain
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgress
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -30,7 +33,7 @@ class InProcessBibleVersionDownloader(
     private val bibleRepository: BibleRepository,
     private val observeDownloadProgress: ObserveBibleVersionDownloadProgress,
 ) {
-    // Why: an uncaught exception in a download would otherwise end the whole app on iOS.
+    // Why: a failing error report or completion notice would otherwise end the whole app on iOS.
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Logger.e(throwable) { "Bible version download failed unexpectedly" }
     }
@@ -78,30 +81,33 @@ class InProcessBibleVersionDownloader(
     fun hasAnyActiveDownload(): Boolean = activeDownloads.load().isNotEmpty()
 
     private suspend fun download(versionId: String) {
-        val versionName = resolveVersionName(versionId)
-        bibleVersionDao.updateStatus(
-            id = versionId,
-            status = DownloadStatus.IN_PROGRESS,
-        )
-        notifier.showProgress(
-            versionId = versionId,
-            versionName = versionName,
-            progress = 0f,
-        )
-
-        val result = coroutineScope {
-            val progressObserver = launch {
-                observeDownloadProgress(versionId)
-                    .onEach { progress ->
-                        notifier.showProgress(
-                            versionId = versionId,
-                            versionName = versionName,
-                            progress = progress,
-                        )
-                    }.catch { error -> Logger.w(error) { "Progress observation failed; download continues" } }
-                    .collect()
-            }
-            downloadBible(versionId).also { progressObserver.cancel() }
+        val bible = findBible(versionId)
+        val versionName = bible?.version?.name ?: versionId
+        val result = suspendRunCatching {
+            bibleVersionDao.updateStatus(
+                id = versionId,
+                status = DownloadStatus.IN_PROGRESS,
+            )
+            // Why: a resumed download opens at the progress it already has instead of dropping back to 0.
+            notifier.showProgress(
+                versionId = versionId,
+                versionName = versionName,
+                progress = bible?.storedProgress ?: 0f,
+            )
+            coroutineScope {
+                val progressObserver = launch {
+                    observeDownloadProgress(versionId)
+                        .onEach { progress ->
+                            notifier.showProgress(
+                                versionId = versionId,
+                                versionName = versionName,
+                                progress = progress,
+                            )
+                        }.catch { error -> Logger.w(error) { "Progress observation failed; download continues" } }
+                        .collect()
+                }
+                downloadBible(versionId).also { progressObserver.cancel() }
+            }.getOrThrow()
         }
 
         result
@@ -132,10 +138,14 @@ class InProcessBibleVersionDownloader(
         }
     }
 
-    private suspend fun resolveVersionName(versionId: String): String = bibleRepository
-        .getBiblesFlow()
-        .first()
-        .find { it.version.id == versionId }
-        ?.version
-        ?.name ?: versionId
+    private suspend fun findBible(versionId: String): BibleModel? = suspendRunCatching {
+        bibleRepository
+            .getBiblesFlow()
+            .first()
+            .find { it.version.id == versionId }
+    }.onFailure { throwable -> Logger.w(throwable) { "Could not read $versionId before downloading it" } }
+        .getOrNull()
+
+    private val BibleModel.storedProgress: Float?
+        get() = (downloadStatus as? DownloadStatusModel.InProgress)?.progress
 }

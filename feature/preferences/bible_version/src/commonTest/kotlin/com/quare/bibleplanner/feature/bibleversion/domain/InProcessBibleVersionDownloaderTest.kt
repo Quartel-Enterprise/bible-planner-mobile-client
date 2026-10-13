@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
 import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
@@ -90,6 +91,50 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
+    fun `GIVEN a paused version WHEN resuming its download THEN opens at the progress it already has`() = runTest {
+        // Given
+        prepareScenario(
+            bibleRepository = FakeBibleRepository(
+                bibles = listOf(
+                    bibleModel(VERSION_ID).copy(downloadStatus = DownloadStatusModel.InProgress.Paused(0.5f)),
+                ),
+                selectedVersionId = "ACF",
+            ),
+        )
+
+        // When
+        downloader.startDownload(VERSION_ID)
+        awaitReal(finished)
+
+        // Then
+        assertEquals(
+            expected = "progress $VERSION_ID Version $VERSION_ID 0.5",
+            actual = notifier.calls.first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a notifier failing at the start WHEN downloading THEN pauses the version and reports the error`() =
+        runTest {
+            // Given
+            prepareScenario(failingCallPrefix = "progress")
+
+            // When
+            downloader.startDownload(VERSION_ID)
+            val outcome = awaitReal(finished)
+
+            // Then
+            assertEquals(
+                expected = "error $VERSION_ID Version $VERSION_ID",
+                actual = outcome,
+            )
+            assertEquals(
+                expected = VERSION_ID to DownloadStatus.PAUSED,
+                actual = bibleVersionDao.statusUpdates.last(),
+            )
+        }
+
+    @Test
     fun `GIVEN a running download WHEN cancelling it THEN no longer tracks it as active`() = runTest {
         // Given
         prepareScenario(bibleRepository = NeverLoadingBibleRepository())
@@ -165,10 +210,12 @@ internal class InProcessBibleVersionDownloaderTest {
             bibles = listOf(bibleModel(VERSION_ID)),
             selectedVersionId = "ACF",
         ),
+        failingCallPrefix: String? = null,
     ) {
         finished = CompletableDeferred()
         notifier = RecordingDownloadNotifier { call ->
             if (call.startsWith("complete") || call.startsWith("error")) finished.complete(call)
+            if (failingCallPrefix != null && call.startsWith(failingCallPrefix)) error("Notifier failed on $call")
         }
         bibleVersionDao = InMemoryBibleVersionDao(
             listOf(

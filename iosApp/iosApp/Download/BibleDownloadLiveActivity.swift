@@ -19,8 +19,6 @@ final class BibleDownloadLiveActivity: IosDownloadLiveActivity {
 
     func showProgress(versionId: String, versionName: String, progress: Float) {
         let progress = Double(progress)
-        // Every run opens at 0 before reading the stored progress; a resumed download must not drop back to 0.
-        if progress == 0, (LiveActivityManager.shared.knownProgress(versionId: versionId) ?? 0) > 0 { return }
         lock.lock()
         let runStart = runStarts[versionId] ?? (time: Date(), progress: progress)
         runStarts[versionId] = runStart
@@ -35,9 +33,9 @@ final class BibleDownloadLiveActivity: IosDownloadLiveActivity {
         )
     }
 
-    func showPaused(versionId: String) {
+    func showPaused(versionId: String, onShown: @escaping () -> Void) {
         forgetRun(versionId: versionId)
-        LiveActivityManager.shared.pause(versionId: versionId)
+        LiveActivityManager.shared.pause(versionId: versionId, completion: onShown)
     }
 
     func showComplete(versionId: String) {
@@ -50,6 +48,13 @@ final class BibleDownloadLiveActivity: IosDownloadLiveActivity {
         forgetRun(versionId: versionId)
         unregisterActionObservers(versionId: versionId)
         LiveActivityManager.shared.dismiss(versionId: versionId)
+    }
+
+    func keepOnly(versionIds: [String]) {
+        let kept = Set(versionIds)
+        LiveActivityManager.shared.versionIds
+            .filter { !kept.contains($0) }
+            .forEach { dismiss(versionId: $0) }
     }
 
     // MARK: - Darwin Notification Observers (Live Activity button IPC)

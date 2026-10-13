@@ -7,9 +7,14 @@ interface IosDownloadLiveActivity {
         progress: Float,
     )
 
-    fun showPaused(versionId: String)
+    fun showPaused(
+        versionId: String,
+        onShown: () -> Unit,
+    )
 
     fun showComplete(versionId: String)
 
     fun dismiss(versionId: String)
+
+    fun keepOnly(versionIds: List<String>)
 }

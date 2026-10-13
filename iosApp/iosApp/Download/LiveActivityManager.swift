@@ -43,18 +43,20 @@ class LiveActivityManager {
         Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
 
-    /// The last progress shown for the version, if its Live Activity is still up.
-    func knownProgress(versionId: String) -> Double? {
+    /// The versions with a Live Activity this app tracks.
+    var versionIds: [String] {
         lock.lock()
         defer { lock.unlock() }
-        return activities[versionId]?.isLive == true ? lastReportedProgress[versionId] : nil
+        return Array(activities.keys)
     }
 
-    func pause(versionId: String) {
+    /// Calls `completion` once the paused state reached the Live Activity, or right away without one.
+    func pause(versionId: String, completion: @escaping () -> Void) {
         lock.lock()
         guard let activity = activities[versionId] else {
             dlog("pause SKIPPED — no active activity for \(versionId)", tag: "LIVE_ACTIVITY")
             lock.unlock()
+            completion()
             return
         }
         pausedVersionIds.insert(versionId)
@@ -68,7 +70,10 @@ class LiveActivityManager {
             downloadState: .paused,
             estimatedTimeLabel: nil
         )
-        Task { await activity.update(.init(state: state, staleDate: nil)) }
+        Task {
+            await activity.update(.init(state: state, staleDate: nil))
+            completion()
+        }
     }
 
     /// Shows the version as complete, then dismisses it after a few seconds.

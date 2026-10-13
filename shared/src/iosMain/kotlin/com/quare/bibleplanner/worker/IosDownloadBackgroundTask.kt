@@ -1,12 +1,13 @@
 package com.quare.bibleplanner.worker
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import platform.UIKit.UIApplication
-import platform.UIKit.UIBackgroundTaskIdentifier
 import platform.UIKit.UIBackgroundTaskInvalid
 
 internal class IosDownloadBackgroundTask {
@@ -17,32 +18,28 @@ internal class IosDownloadBackgroundTask {
 
     /*
      * Why: iOS suspends the app shortly after it leaves the foreground, and a whole version downloads
-     * in seconds, so asking for that extra time is enough to finish one started just before.
+     * in seconds, so asking for that extra time is enough to finish one started just before. When it
+     * runs out anyway, the task is held until onExpired is done, since the app is suspended right after.
      */
     fun keepAppRunningUntil(
         download: Job,
-        onExpired: () -> Unit,
+        onExpired: suspend () -> Unit,
     ) {
         scope.launch {
             if (!keptDownloads.add(download)) return@launch
-            var task: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
-            val endTask = {
-                if (task != UIBackgroundTaskInvalid) {
-                    UIApplication.sharedApplication.endBackgroundTask(task)
-                    task = UIBackgroundTaskInvalid
-                }
-            }
-            task = UIApplication.sharedApplication.beginBackgroundTaskWithName(
+            val expired = CompletableDeferred<Unit>()
+            val task = UIApplication.sharedApplication.beginBackgroundTaskWithName(
                 taskName = TASK_NAME,
-                expirationHandler = {
-                    onExpired()
-                    endTask()
-                },
+                expirationHandler = { expired.complete(Unit) },
             )
             try {
-                download.join()
+                val hasExpired = select {
+                    download.onJoin { false }
+                    expired.onAwait { true }
+                }
+                if (hasExpired) onExpired()
             } finally {
-                endTask()
+                if (task != UIBackgroundTaskInvalid) UIApplication.sharedApplication.endBackgroundTask(task)
                 keptDownloads.remove(download)
             }
         }
