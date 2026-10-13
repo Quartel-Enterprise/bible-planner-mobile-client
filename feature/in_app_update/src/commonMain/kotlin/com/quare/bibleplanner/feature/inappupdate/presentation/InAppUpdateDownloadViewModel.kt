@@ -37,8 +37,14 @@ internal class InAppUpdateDownloadViewModel(
             is UpdateDownloadState.Downloading -> downloadProgress.value = state.progress
 
             UpdateDownloadState.Downloaded -> {
+                /*
+                 * Why: the updater's StateFlow replays Downloaded to a ViewModel created after the download ended
+                 * (activity recreated, process kept). That case is left to the foreground check, which owns
+                 * installing an update downloaded earlier, so the same download isn't installed twice.
+                 */
+                val hasWatchedDownload = downloadProgress.value != null
                 downloadProgress.value = null
-                installDownloadedUpdate()
+                if (hasWatchedDownload) installDownloadedUpdate()
             }
 
             UpdateDownloadState.Failed -> {

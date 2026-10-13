@@ -65,6 +65,20 @@ internal class InAppUpdateDownloadViewModelTest {
         }
 
     @Test
+    fun `GIVEN a download that ended before the ViewModel existed WHEN it replays THEN does not install`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            downloadStates.emit(UpdateDownloadState.Downloaded)
+
+            // Then
+            assertNull(viewModel.downloadProgress.value)
+            assertEquals(0, installCalls)
+        }
+
+    @Test
     fun `GIVEN a running download WHEN it fails THEN clears the progress tracks the failure and warns the user`() =
         runTest(testDispatcher) {
             // Given
