@@ -404,7 +404,7 @@ class BooksViewModel(
                 isSortMenuVisible = isSortMenuVisible,
                 isTestamentMenuVisible = isTestamentMenuVisible,
                 sortOrder = sortOrder,
-                groupsInTestament = if (currentTestament == null) {
+                visibleGroups = if (currentTestament == null) {
                     BookTestament.entries.flatMap { categorizedBooks[it].orEmpty() }
                 } else {
                     categorizedBooks[currentTestament].orEmpty()

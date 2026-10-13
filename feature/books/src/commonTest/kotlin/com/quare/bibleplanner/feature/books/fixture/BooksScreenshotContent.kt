@@ -122,7 +122,7 @@ private fun rememberBooksUiState(): BooksUiState.Success {
         filteredBooks = pentateuchBooks + historical,
         selectedTestamentFilter = BookTestamentFilter.All,
         searchQuery = "",
-        groupsInTestament = listOf(
+        visibleGroups = listOf(
             BookGroupPresentationModel(
                 group = BookGroup.Pentateuch,
                 books = pentateuchBooks,

@@ -129,7 +129,7 @@ internal class BooksViewModelTest {
             ),
             state.filteredBooks,
         )
-        assertEquals(listOf(BookGroup.Pentateuch), state.groupsInTestament.map { it.group })
+        assertEquals(listOf(BookGroup.Pentateuch), state.visibleGroups.map { it.group })
     }
 
     @Test
@@ -528,7 +528,7 @@ internal class BooksViewModelTest {
         assertEquals(listOf(BookId.MAT, BookId.JHN, BookId.GEN, BookId.EXO), state.filteredBooks.map { it.id })
         assertEquals(
             listOf(BookId.GEN, BookId.EXO),
-            state.groupsInTestament
+            state.visibleGroups
                 .single()
                 .books
                 .map { it.id },
@@ -603,7 +603,7 @@ internal class BooksViewModelTest {
                     BookGroup.Pentateuch to listOf(BookId.GEN, BookId.EXO),
                     BookGroup.Gospels to listOf(BookId.MAT, BookId.JHN),
                 ),
-                state.groupsInTestament.map { group -> group.group to group.books.map { it.id } },
+                state.visibleGroups.map { group -> group.group to group.books.map { it.id } },
             )
         }
 
@@ -620,7 +620,7 @@ internal class BooksViewModelTest {
             // Then
             assertEquals(
                 listOf(BookGroup.Pentateuch, BookGroup.Gospels),
-                successState().groupsInTestament.map { it.group },
+                successState().visibleGroups.map { it.group },
             )
         }
 
@@ -651,7 +651,7 @@ internal class BooksViewModelTest {
             // Then
             val state = successState()
             assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
-            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.groupsInTestament.map { it.group })
+            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.visibleGroups.map { it.group })
         }
 
     @Test
@@ -754,7 +754,7 @@ internal class BooksViewModelTest {
             // Then
             val state = successState()
             assertEquals(listOf(BookId.GEN, BookId.EXO), state.filteredBooks.map { it.id })
-            assertEquals(listOf(BookGroup.Pentateuch), state.groupsInTestament.map { it.group })
+            assertEquals(listOf(BookGroup.Pentateuch), state.visibleGroups.map { it.group })
             assertEquals(listOf(BookTestamentFilter.OldTestament.name), repository.selectedTestaments)
             assertEquals(
                 AnalyticsEventNames.TESTAMENT_SWITCHED to mapOf<String, Any>(AnalyticsParams.TESTAMENT to "old"),
@@ -775,7 +775,7 @@ internal class BooksViewModelTest {
             val state = successState()
             assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
             assertEquals(listOf(BookId.GEN, BookId.EXO, BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
-            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.groupsInTestament.map { it.group })
+            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.visibleGroups.map { it.group })
             assertEquals(listOf(BookTestamentFilter.All.name), repository.selectedTestaments)
             assertEquals(listOf<BooksUiAction>(BooksUiAction.ScrollToTop), actions)
             assertEquals(

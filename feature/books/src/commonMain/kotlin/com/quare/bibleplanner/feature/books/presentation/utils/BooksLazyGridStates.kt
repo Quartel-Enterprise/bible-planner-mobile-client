@@ -20,7 +20,7 @@ class BooksLazyGridStates(
     private val newTestamentGridState: LazyGridState,
     private val newTestamentListState: LazyGridState,
 ) {
-    val states: List<LazyGridState> = listOf(
+    private val states: List<LazyGridState> = listOf(
         searchGridState,
         searchListState,
         allTestamentsGridState,
@@ -30,6 +30,10 @@ class BooksLazyGridStates(
         newTestamentGridState,
         newTestamentListState,
     )
+
+    suspend fun scrollAllToTop() {
+        states.forEach { it.animateScrollToItem(0) }
+    }
 
     fun getCurrent(state: BooksUiState): LazyGridState {
         if (state !is BooksUiState.Success) return searchGridState

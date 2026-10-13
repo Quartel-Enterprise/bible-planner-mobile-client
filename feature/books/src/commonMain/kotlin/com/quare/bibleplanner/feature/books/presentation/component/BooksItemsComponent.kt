@@ -67,7 +67,7 @@ fun BooksItemsComponent(
                         )
                     }
                 } else {
-                    state.groupsInTestament.forEach { presentationGroup ->
+                    state.visibleGroups.forEach { presentationGroup ->
                         responsiveItem(
                             span = { GridItemSpan(totalColumns) },
                             key = "header-${presentationGroup.group}",

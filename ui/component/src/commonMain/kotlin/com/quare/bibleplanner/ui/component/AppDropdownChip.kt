@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
@@ -30,6 +32,7 @@ fun AppDropdownChip(
 ) {
     Box(modifier = modifier) {
         Surface(
+            modifier = Modifier.semantics { role = Role.DropdownList },
             onClick = onClick,
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.surface,
@@ -49,8 +52,6 @@ fun AppDropdownChip(
                     text = label,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),

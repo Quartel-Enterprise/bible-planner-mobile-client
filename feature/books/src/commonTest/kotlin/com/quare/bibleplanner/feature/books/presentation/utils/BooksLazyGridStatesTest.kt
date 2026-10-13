@@ -7,7 +7,6 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilt
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertSame
 
 internal class BooksLazyGridStatesTest {
@@ -173,28 +172,6 @@ internal class BooksLazyGridStatesTest {
 
         // Then
         assertSame(newTestamentListState, current)
-    }
-
-    @Test
-    fun `GIVEN eight scroll states WHEN listing them for scrolling to the top THEN exposes every one of them`() {
-        // Given
-        val expected = setOf(
-            searchGridState,
-            searchListState,
-            allTestamentsGridState,
-            allTestamentsListState,
-            oldTestamentGridState,
-            oldTestamentListState,
-            newTestamentGridState,
-            newTestamentListState,
-        )
-
-        // When
-        val states = lazyGridStates.states
-
-        // Then
-        assertEquals(expected.size, states.size)
-        assertEquals(expected, states.toSet())
     }
 
     private fun successState(

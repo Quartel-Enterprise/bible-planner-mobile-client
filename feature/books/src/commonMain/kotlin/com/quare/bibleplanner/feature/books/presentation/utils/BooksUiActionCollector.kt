@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.utils
 
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -23,7 +22,7 @@ internal fun BooksUiActionCollector(
 ) {
     ActionCollector(uiAction) { action ->
         when (action) {
-            is BooksUiAction.ScrollToTop -> lazyGridStates.states.forEach { it.srollToTop() }
+            is BooksUiAction.ScrollToTop -> lazyGridStates.scrollAllToTop()
 
             is BooksUiAction.OpenWebAppLink -> uriHandler.openUri(action.url)
 
@@ -39,8 +38,4 @@ internal fun BooksUiActionCollector(
             }
         }
     }
-}
-
-private suspend fun LazyGridState.srollToTop() {
-    animateScrollToItem(0)
 }

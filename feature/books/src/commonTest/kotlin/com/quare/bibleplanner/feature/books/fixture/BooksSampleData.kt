@@ -70,7 +70,7 @@ internal fun booksUiState(): BooksUiState.Success {
         filteredBooks = pentateuch + historical,
         selectedTestamentFilter = BookTestamentFilter.OldTestament,
         searchQuery = "",
-        groupsInTestament = listOf(
+        visibleGroups = listOf(
             BookGroupPresentationModel(
                 group = BookGroup.Pentateuch,
                 books = pentateuch,

@@ -8,7 +8,7 @@ sealed interface BooksUiState {
         val filteredBooks: List<BookPresentationModel>,
         val selectedTestamentFilter: BookTestamentFilter,
         val searchQuery: String,
-        val groupsInTestament: List<BookGroupPresentationModel>,
+        val visibleGroups: List<BookGroupPresentationModel>,
         val filterOptions: List<BookFilterOption>,
         val shouldShowTestamentToggle: Boolean,
         val isFilterMenuVisible: Boolean,
