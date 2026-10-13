@@ -16,4 +16,5 @@
     <string name="list">Lista</string>
     <string name="content_description_sort">Ordenar</string>
     <string name="content_description_filter">Filtrar</string>
+    <string name="all_testaments">Todos</string>
 </resources>

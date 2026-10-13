@@ -1,7 +1,8 @@
 {
   "2.14.0": {
     "common": [
-      "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first."
+      "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first.",
+      "On the Books tab, the choice between Old and New Testament is now a button with a menu, with a new \"All\" option that comes selected and shows every book of the Bible at once. If you had already picked one of the testaments, your choice stays the same."
     ],
     "android": [
       "When an app update finishes downloading, the app now restarts on its own to install it, without you having to tap \"Restart now\".",

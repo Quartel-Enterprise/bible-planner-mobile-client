@@ -55,6 +55,35 @@ internal class BookCategorizationMapperTest {
     }
 
     @Test
+    fun `GIVEN groups arriving out of canonical order WHEN mapping THEN orders them canonically`() {
+        // Given
+        val revelation = book(BookId.REV)
+        val romans = book(BookId.ROM)
+        val matthew = book(BookId.MAT)
+        val psalms = book(BookId.PSA)
+        val genesis = book(BookId.GEN)
+
+        // When
+        val categorized = mapper.map(listOf(revelation, romans, matthew, psalms, genesis))
+
+        // Then
+        assertEquals(
+            expected = mapOf(
+                BookTestament.NewTestament to listOf(
+                    BookGroup.Gospels,
+                    BookGroup.PaulineEpistles,
+                    BookGroup.Revelation,
+                ),
+                BookTestament.OldTestament to listOf(
+                    BookGroup.Pentateuch,
+                    BookGroup.WisdomBooks,
+                ),
+            ),
+            actual = categorized.mapValues { (_, groups) -> groups.map { it.group } },
+        )
+    }
+
+    @Test
     fun `GIVEN no books WHEN mapping THEN returns no testaments`() {
         // When
         val categorized = mapper.map(emptyList())

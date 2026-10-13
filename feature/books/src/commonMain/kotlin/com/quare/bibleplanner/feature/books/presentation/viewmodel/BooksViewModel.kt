@@ -26,9 +26,11 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
+import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilter
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.feature.books.presentation.model.toAnalyticsValue
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import com.quare.bibleplanner.ui.utils.removeAccents
@@ -75,7 +77,7 @@ class BooksViewModel(
             }
 
             result.selectedTestament?.let { persistedTestament ->
-                runCatching { BookTestament.valueOf(persistedTestament) }.getOrNull()?.let {
+                runCatching { BookTestamentFilter.valueOf(persistedTestament) }.getOrNull()?.let {
                     persistedTestamentValue = it
                 }
             }
@@ -96,9 +98,10 @@ class BooksViewModel(
     private val searchTrackDebounceDelay: Duration = 1.seconds
     private var isFilterMenuVisible: Boolean = false
     private var isSortMenuVisible: Boolean = false
+    private var isTestamentMenuVisible: Boolean = false
     private var sortOrder: BookSortOrder? = null
     private var layoutFormat: BookLayoutFormat = BookLayoutFormat.List
-    private var persistedTestamentValue: BookTestament? = null
+    private var persistedTestamentValue: BookTestamentFilter? = null
 
     override fun handleEvent(event: BooksUiEvent) {
         when (event) {
@@ -110,13 +113,16 @@ class BooksViewModel(
                 }
             }
 
-            is BooksUiEvent.OnTestamentSelect -> {
-                persistedTestamentValue = event.testament
-                updateState(selectedTestament = event.testament)
-                viewModelScope.launch {
-                    booksRepository.setSelectedTestament(event.testament.name)
-                    uiAction.emit(BooksUiAction.ScrollToTop)
-                }
+            is BooksUiEvent.OnTestamentSelect -> onTestamentSelect(event.testamentFilter)
+
+            is BooksUiEvent.OnToggleTestamentMenu -> {
+                isTestamentMenuVisible = !isTestamentMenuVisible
+                updateState()
+            }
+
+            is BooksUiEvent.OnDismissTestamentMenu -> {
+                isTestamentMenuVisible = false
+                updateState()
             }
 
             is BooksUiEvent.OnBookClick -> onBookClick(event.book)
@@ -212,6 +218,25 @@ class BooksViewModel(
         }
     }
 
+    private fun onTestamentSelect(testamentFilter: BookTestamentFilter) {
+        isTestamentMenuVisible = false
+        val isAlreadySelected = (uiState.value as? BooksUiState.Success)?.selectedTestamentFilter == testamentFilter
+        if (isAlreadySelected) {
+            updateState()
+            return
+        }
+        persistedTestamentValue = testamentFilter
+        updateState(selectedTestamentFilter = testamentFilter)
+        trackEvent(
+            name = AnalyticsEventNames.TESTAMENT_SWITCHED,
+            params = mapOf(AnalyticsParams.TESTAMENT to testamentFilter.toAnalyticsValue()),
+        )
+        viewModelScope.launch {
+            booksRepository.setSelectedTestament(testamentFilter.name)
+            uiAction.emit(BooksUiAction.ScrollToTop)
+        }
+    }
+
     private fun trackSearchUsed(query: String) {
         searchTrackJob?.cancel()
         if (query.isBlank()) return
@@ -267,14 +292,15 @@ class BooksViewModel(
 
     private fun updateState(
         searchQuery: String? = null,
-        selectedTestament: BookTestament? = null,
+        selectedTestamentFilter: BookTestamentFilter? = null,
     ) {
         val currentState = uiState.value
         val currentQuery = searchQuery ?: (currentState as? BooksUiState.Success)?.searchQuery.orEmpty()
-        val currentSelectedTestament = selectedTestament
+        val currentTestamentFilter = selectedTestamentFilter
             ?: persistedTestamentValue
-            ?: (currentState as? BooksUiState.Success)?.selectedTestament
-            ?: BookTestament.OldTestament
+            ?: (currentState as? BooksUiState.Success)?.selectedTestamentFilter
+            ?: BookTestamentFilter.All
+        val currentTestament = currentTestamentFilter.testament
 
         val isOnlyRead = activeFilterTypes.contains(BookFilterType.OnlyRead)
         val isOnlyUnread = activeFilterTypes.contains(BookFilterType.OnlyUnread)
@@ -316,11 +342,10 @@ class BooksViewModel(
             val matchesOnlyRead = if (isOnlyRead) book.isCompleted else true
             val matchesOnlyUnread = if (isOnlyUnread) !book.isCompleted else true
             val matchesFavorites = if (isFavoritesOnly) book.isFavorite else true
-            val matchesTestament = if (isSearchFilterOrSortActive) {
+            val matchesTestament = if (isSearchFilterOrSortActive || currentTestament == null) {
                 true
             } else {
-                bookGroupMapper.fromBookId(book.id).testament ==
-                    currentSelectedTestament
+                bookGroupMapper.fromBookId(book.id).testament == currentTestament
             }
 
             matchesQuery && matchesOnlyRead && matchesOnlyUnread && matchesFavorites && matchesTestament
@@ -371,14 +396,19 @@ class BooksViewModel(
                     BookSortOrder.AlphabeticalDescending -> filtered.sortedByDescending { it.name.removeAccents() }
                     null -> filtered
                 },
-                selectedTestament = currentSelectedTestament,
+                selectedTestamentFilter = currentTestamentFilter,
                 searchQuery = currentQuery,
                 filterOptions = filterOptions,
                 shouldShowTestamentToggle = !isSearchFilterOrSortActive,
                 isFilterMenuVisible = isFilterMenuVisible,
                 isSortMenuVisible = isSortMenuVisible,
+                isTestamentMenuVisible = isTestamentMenuVisible,
                 sortOrder = sortOrder,
-                groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
+                visibleGroups = if (currentTestament == null) {
+                    BookTestament.entries.flatMap { categorizedBooks[it].orEmpty() }
+                } else {
+                    categorizedBooks[currentTestament].orEmpty()
+                },
                 layoutFormat = layoutFormat,
             )
         }
