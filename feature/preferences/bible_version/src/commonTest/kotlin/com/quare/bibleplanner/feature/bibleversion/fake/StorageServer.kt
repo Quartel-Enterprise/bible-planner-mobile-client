@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 internal class StorageServer(
     filesByPath: Map<String, String>,
     failuresBeforeSuccessByPath: Map<String, Int> = emptyMap(),
+    failureStatus: HttpStatusCode = HttpStatusCode.InternalServerError,
 ) {
     val requestedPaths = mutableListOf<String>()
 
@@ -33,7 +34,7 @@ internal class StorageServer(
                     val file = filesByPath[path]
                     val failures = failuresBeforeSuccessByPath[path] ?: 0
                     when {
-                        attempt <= failures -> respondError(HttpStatusCode.InternalServerError)
+                        attempt <= failures -> respondError(failureStatus, failureStatus.toErrorBody())
 
                         // What Storage answers for a missing object: a 400 carrying "not_found".
                         file == null -> respondError(HttpStatusCode.BadRequest, NOT_FOUND_BODY)
@@ -45,6 +46,9 @@ internal class StorageServer(
         )
         install(Storage)
     }.storage.from(BUCKET)
+
+    private fun HttpStatusCode.toErrorBody(): String =
+        """{"statusCode":"$value","error":"$description","message":"$description"}"""
 
     private companion object {
         const val BUCKET = "content"
