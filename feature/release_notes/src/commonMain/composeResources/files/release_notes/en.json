@@ -1,7 +1,8 @@
 {
   "2.14.0": {
     "common": [
-      "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first."
+      "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first.",
+      "Fixed a problem that could rarely close the app on its own while it was syncing your data with your other devices."
     ],
     "android": [
       "When an app update finishes downloading, the app now restarts on its own to install it, without you having to tap \"Restart now\".",

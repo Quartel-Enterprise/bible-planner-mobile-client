@@ -6,10 +6,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /*
- * Why: supabase-kt 3.8.0 schedules a deferred disconnect on every removeChannel that leaves no
- * subscriptions, but keeps only the last job, so addChannel can't cancel the others. Concurrent
- * removals, or removals after removeAllChannels, then disconnect live channels later and race the
- * heartbeat (Crashlytics 20238338888878bbc6bf9b7e0cbc6c4c). Remove once supabase-kt#1414 ships:
+ * Why: supabase-kt (still in 3.9.0-beta-1) schedules a deferred disconnect on every removeChannel
+ * that leaves no subscriptions, but keeps only the last job, so addChannel can't cancel the others.
+ * Concurrent removals, or removals after removeAllChannels, then disconnect live channels later in
+ * the foreground and realtime silently stops. Remove once supabase-kt#1414 ships:
  * https://github.com/supabase-community/supabase-kt/issues/1414
  */
 internal class SerializedRemovalRealtime(
