@@ -17,27 +17,13 @@ import org.jetbrains.compose.resources.getString
 @Composable
 internal fun BooksUiActionCollector(
     uiAction: Flow<BooksUiAction>,
-    searchGridState: LazyGridState,
-    searchListState: LazyGridState,
-    oldTestamentGridState: LazyGridState,
-    oldTestamentListState: LazyGridState,
-    newTestamentGridState: LazyGridState,
-    newTestamentListState: LazyGridState,
+    lazyGridStates: BooksLazyGridStates,
     uriHandler: UriHandler,
     snackbarHostState: SnackbarHostState,
 ) {
     ActionCollector(uiAction) { action ->
         when (action) {
-            is BooksUiAction.ScrollToTop -> {
-                sequenceOf(
-                    searchGridState,
-                    searchListState,
-                    oldTestamentGridState,
-                    oldTestamentListState,
-                    newTestamentGridState,
-                    newTestamentListState,
-                ).forEach { it.srollToTop() }
-            }
+            is BooksUiAction.ScrollToTop -> lazyGridStates.states.forEach { it.srollToTop() }
 
             is BooksUiAction.OpenWebAppLink -> uriHandler.openUri(action.url)
 

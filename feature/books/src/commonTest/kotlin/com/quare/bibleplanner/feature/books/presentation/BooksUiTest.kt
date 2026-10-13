@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.books.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -33,6 +32,7 @@ import com.quare.bibleplanner.feature.books.fixture.joshua
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
@@ -46,7 +46,7 @@ internal class BooksUiTest {
         hasClickAction() and hasAnySibling(hasAnyDescendant(hasSetTextAction()))
 
     @Test
-    fun `GIVEN loaded books WHEN rendered THEN shows the testament toggle the group headers and the books`() =
+    fun `GIVEN loaded books WHEN rendered THEN shows the testament chip the group headers and the books`() =
         runComposeUiTest {
             // Given
             prepareScenario(uiState = booksUiState())
@@ -106,18 +106,15 @@ internal class BooksUiTest {
         }
 
     @Test
-    fun `GIVEN loaded books WHEN selecting the new testament THEN emits OnTestamentSelect`() = runComposeUiTest {
+    fun `GIVEN loaded books WHEN clicking the testament chip THEN emits OnToggleTestamentMenu`() = runComposeUiTest {
         // Given
         prepareScenario(uiState = booksUiState())
 
         // When
-        onNodeWithText(getString(BookTestament.NewTestament.titleRes)).performClick()
+        onNodeWithText(getString(BookTestament.OldTestament.titleRes)).performClick()
 
         // Then
-        assertEquals(
-            expected = listOf<BooksUiEvent>(BooksUiEvent.OnTestamentSelect(BookTestament.NewTestament)),
-            actual = events,
-        )
+        assertEquals(expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleTestamentMenu), actual = events)
     }
 
     @Test
@@ -151,7 +148,7 @@ internal class BooksUiTest {
     }
 
     @Test
-    fun `GIVEN a search WHEN rendered THEN shows only the matching books without testament toggle or headers`() =
+    fun `GIVEN a search WHEN rendered THEN shows only the matching books without testament chip or headers`() =
         runComposeUiTest {
             // Given
             prepareScenario(uiState = searchUiState())
@@ -235,12 +232,7 @@ internal class BooksUiTest {
                     BooksScreen(
                         state = uiState,
                         isScrolled = false,
-                        searchGridState = rememberLazyGridState(),
-                        searchListState = rememberLazyGridState(),
-                        oldTestamentGridState = rememberLazyGridState(),
-                        oldTestamentListState = rememberLazyGridState(),
-                        newTestamentGridState = rememberLazyGridState(),
-                        newTestamentListState = rememberLazyGridState(),
+                        lazyGridStates = rememberBooksLazyGridStates(),
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = this@AnimatedContent,
                         onEvent = { event -> events += event },

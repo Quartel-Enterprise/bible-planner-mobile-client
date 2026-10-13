@@ -213,6 +213,8 @@ object AnalyticsEventNames {
     const val BOOKS_SORT_CHANGED = "books_sort_changed"
     const val BOOKS_SORT_MENU_OPENED = "books_sort_menu_opened"
     const val BOOKS_SORT_MENU_DISMISSED = "books_sort_menu_dismissed"
+    const val BOOKS_TESTAMENT_MENU_OPENED = "books_testament_menu_opened"
+    const val BOOKS_TESTAMENT_MENU_DISMISSED = "books_testament_menu_dismissed"
     const val BOOKS_LAYOUT_CHANGED = "books_layout_changed"
     const val TESTAMENT_SWITCHED = "testament_switched"
     const val WEB_APP_LINK_OPENED = "web_app_link_opened"

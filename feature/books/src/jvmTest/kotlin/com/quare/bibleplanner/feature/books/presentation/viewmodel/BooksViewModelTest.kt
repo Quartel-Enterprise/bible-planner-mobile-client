@@ -4,7 +4,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationB
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -19,6 +18,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
+import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilter
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
@@ -95,43 +95,42 @@ internal class BooksViewModelTest {
     }
 
     @Test
-    fun `GIVEN books without persisted preferences WHEN opening THEN lists the old testament books in a list`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN a persisted old testament WHEN opening THEN lists its books in a list`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(selectedTestament = BookTestamentFilter.OldTestament.name)
 
-            // When
-            val state = successState()
+        // When
+        val state = successState()
 
-            // Then
-            assertEquals(BookTestament.OldTestament, state.selectedTestament)
-            assertEquals(BookLayoutFormat.List, state.layoutFormat)
-            assertTrue(state.shouldShowTestamentToggle)
-            assertEquals(
-                listOf(
-                    BookPresentationModel(
-                        id = BookId.GEN,
-                        name = "Genesis",
-                        chapterProgressText = "2 / 2",
-                        progress = 1f,
-                        percentageText = "100%",
-                        isCompleted = true,
-                        isFavorite = false,
-                    ),
-                    BookPresentationModel(
-                        id = BookId.EXO,
-                        name = "Exodus",
-                        chapterProgressText = "1 / 2",
-                        progress = 0.5f,
-                        percentageText = "50%",
-                        isCompleted = false,
-                        isFavorite = false,
-                    ),
+        // Then
+        assertEquals(BookTestamentFilter.OldTestament, state.selectedTestamentFilter)
+        assertEquals(BookLayoutFormat.List, state.layoutFormat)
+        assertTrue(state.shouldShowTestamentToggle)
+        assertEquals(
+            listOf(
+                BookPresentationModel(
+                    id = BookId.GEN,
+                    name = "Genesis",
+                    chapterProgressText = "2 / 2",
+                    progress = 1f,
+                    percentageText = "100%",
+                    isCompleted = true,
+                    isFavorite = false,
                 ),
-                state.filteredBooks,
-            )
-            assertEquals(listOf(BookGroup.Pentateuch), state.groupsInTestament.map { it.group })
-        }
+                BookPresentationModel(
+                    id = BookId.EXO,
+                    name = "Exodus",
+                    chapterProgressText = "1 / 2",
+                    progress = 0.5f,
+                    percentageText = "50%",
+                    isCompleted = false,
+                    isFavorite = false,
+                ),
+            ),
+            state.filteredBooks,
+        )
+        assertEquals(listOf(BookGroup.Pentateuch), state.groupsInTestament.map { it.group })
+    }
 
     @Test
     fun `GIVEN a book without chapters WHEN opening THEN shows it with no progress`() = runTest(testDispatcher) {
@@ -153,7 +152,7 @@ internal class BooksViewModelTest {
         // Given
         prepareScenario(
             layoutFormat = BookLayoutFormat.Grid.name,
-            selectedTestament = BookTestament.NewTestament.name,
+            selectedTestament = BookTestamentFilter.NewTestament.name,
         )
 
         // When
@@ -161,7 +160,7 @@ internal class BooksViewModelTest {
 
         // Then
         assertEquals(BookLayoutFormat.Grid, state.layoutFormat)
-        assertEquals(BookTestament.NewTestament, state.selectedTestament)
+        assertEquals(BookTestamentFilter.NewTestament, state.selectedTestamentFilter)
         assertEquals(listOf(BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
     }
 
@@ -178,7 +177,7 @@ internal class BooksViewModelTest {
 
         // Then
         assertEquals(BookLayoutFormat.List, state.layoutFormat)
-        assertEquals(BookTestament.OldTestament, state.selectedTestament)
+        assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
     }
 
     @Test
@@ -258,21 +257,21 @@ internal class BooksViewModelTest {
         val state = successState()
         assertEquals("", state.searchQuery)
         assertTrue(state.shouldShowTestamentToggle)
-        assertEquals(listOf(BookId.GEN, BookId.EXO), state.filteredBooks.map { it.id })
+        assertEquals(listOf(BookId.GEN, BookId.EXO, BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
     }
 
     @Test
-    fun `GIVEN the old testament WHEN selecting the new testament THEN persists it and tracks the switch`() =
+    fun `GIVEN all testaments WHEN selecting the new testament THEN persists it and tracks the switch`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
 
             // When
-            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestament.NewTestament))
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.NewTestament))
 
             // Then
-            assertEquals(BookTestament.NewTestament, successState().selectedTestament)
-            assertEquals(listOf(BookTestament.NewTestament.name), repository.selectedTestaments)
+            assertEquals(BookTestamentFilter.NewTestament, successState().selectedTestamentFilter)
+            assertEquals(listOf(BookTestamentFilter.NewTestament.name), repository.selectedTestaments)
             assertEquals(listOf<BooksUiAction>(BooksUiAction.ScrollToTop), actions)
             assertEquals(
                 AnalyticsEventNames.TESTAMENT_SWITCHED to mapOf<String, Any>(AnalyticsParams.TESTAMENT to "new"),
@@ -519,7 +518,7 @@ internal class BooksViewModelTest {
     @Test
     fun `GIVEN no sort WHEN sorting descending THEN sorts every group by name descending`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(selectedTestament = BookTestamentFilter.OldTestament.name)
 
         // When
         sendEvent(BooksUiEvent.OnSortOrderSelect(BookSortOrder.AlphabeticalDescending))
@@ -545,7 +544,7 @@ internal class BooksViewModelTest {
     fun `GIVEN an ascending sort WHEN sorting ascending again THEN clears the sort without tracking`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
+            prepareScenario(selectedTestament = BookTestamentFilter.OldTestament.name)
             sendEvent(BooksUiEvent.OnSortOrderSelect(BookSortOrder.AlphabeticalAscending))
 
             // When
@@ -584,6 +583,236 @@ internal class BooksViewModelTest {
         // Then
         assertEquals(listOf<BooksUiAction>(BooksUiAction.OpenWebAppLink(WEB_APP_URL)), actions)
     }
+
+    @Test
+    fun `GIVEN no persisted testament WHEN opening THEN lists every book grouped old testament first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = successState()
+
+            // Then
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertTrue(state.shouldShowTestamentToggle)
+            assertFalse(state.isTestamentMenuVisible)
+            assertEquals(listOf(BookId.GEN, BookId.EXO, BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
+            assertEquals(
+                listOf(
+                    BookGroup.Pentateuch to listOf(BookId.GEN, BookId.EXO),
+                    BookGroup.Gospels to listOf(BookId.MAT, BookId.JHN),
+                ),
+                state.groupsInTestament.map { group -> group.group to group.books.map { it.id } },
+            )
+        }
+
+    @Test
+    fun `GIVEN all testaments WHEN new testament books are emitted first THEN groups the old testament first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            repository.books.value = listOf(matthew, john, genesis, exodus)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf(BookGroup.Pentateuch, BookGroup.Gospels),
+                successState().groupsInTestament.map { it.group },
+            )
+        }
+
+    @Test
+    fun `GIVEN a persisted all testaments WHEN opening THEN restores it and lists every book`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(selectedTestament = BookTestamentFilter.All.name)
+
+            // When
+            val state = successState()
+
+            // Then
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertEquals(listOf(BookId.GEN, BookId.EXO, BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the old testament selected WHEN all testaments is persisted THEN restores all testaments`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(selectedTestament = BookTestamentFilter.OldTestament.name)
+
+            // When
+            repository.selectedTestament.value = BookTestamentFilter.All.name
+            runCurrent()
+
+            // Then
+            val state = successState()
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.groupsInTestament.map { it.group })
+        }
+
+    @Test
+    fun `GIVEN a closed testament menu WHEN toggling it THEN opens it and tracks the opening`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+            // Then
+            assertTrue(successState().isTestamentMenuVisible)
+            assertEquals(
+                AnalyticsEventNames.BOOKS_TESTAMENT_MENU_OPENED to emptyMap<String, Any>(),
+                trackedEvents.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN an open testament menu WHEN toggling it again THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+        // When
+        sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+        // Then
+        assertFalse(successState().isTestamentMenuVisible)
+    }
+
+    @Test
+    fun `GIVEN an open testament menu WHEN dismissing it THEN closes it and tracks the dismissal`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+            // When
+            sendEvent(BooksUiEvent.OnDismissTestamentMenu)
+
+            // Then
+            val state = successState()
+            assertFalse(state.isTestamentMenuVisible)
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertTrue(repository.selectedTestaments.isEmpty())
+            assertEquals(
+                AnalyticsEventNames.BOOKS_TESTAMENT_MENU_DISMISSED to emptyMap<String, Any>(),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN an open testament menu WHEN selecting a testament THEN closes the menu`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+        // When
+        sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.OldTestament))
+
+        // Then
+        val state = successState()
+        assertFalse(state.isTestamentMenuVisible)
+        assertEquals(BookTestamentFilter.OldTestament, state.selectedTestamentFilter)
+    }
+
+    @Test
+    fun `GIVEN an open testament menu WHEN selecting the current testament THEN only closes the menu`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            sendEvent(BooksUiEvent.OnToggleTestamentMenu)
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.All))
+
+            // Then
+            val state = successState()
+            assertFalse(state.isTestamentMenuVisible)
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertTrue(repository.selectedTestaments.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertEquals(
+                listOf(AnalyticsEventNames.BOOKS_TESTAMENT_MENU_OPENED),
+                trackedEvents.map { it.first },
+            )
+        }
+
+    @Test
+    fun `GIVEN all testaments WHEN selecting the old testament THEN lists only its books and tracks old`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.OldTestament))
+
+            // Then
+            val state = successState()
+            assertEquals(listOf(BookId.GEN, BookId.EXO), state.filteredBooks.map { it.id })
+            assertEquals(listOf(BookGroup.Pentateuch), state.groupsInTestament.map { it.group })
+            assertEquals(listOf(BookTestamentFilter.OldTestament.name), repository.selectedTestaments)
+            assertEquals(
+                AnalyticsEventNames.TESTAMENT_SWITCHED to mapOf<String, Any>(AnalyticsParams.TESTAMENT to "old"),
+                trackedEvents.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the new testament WHEN selecting all testaments THEN lists every book persists it and tracks all`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(selectedTestament = BookTestamentFilter.NewTestament.name)
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.All))
+
+            // Then
+            val state = successState()
+            assertEquals(BookTestamentFilter.All, state.selectedTestamentFilter)
+            assertEquals(listOf(BookId.GEN, BookId.EXO, BookId.MAT, BookId.JHN), state.filteredBooks.map { it.id })
+            assertEquals(listOf(BookGroup.Pentateuch, BookGroup.Gospels), state.groupsInTestament.map { it.group })
+            assertEquals(listOf(BookTestamentFilter.All.name), repository.selectedTestaments)
+            assertEquals(listOf<BooksUiAction>(BooksUiAction.ScrollToTop), actions)
+            assertEquals(
+                AnalyticsEventNames.TESTAMENT_SWITCHED to mapOf<String, Any>(AnalyticsParams.TESTAMENT to "all"),
+                trackedEvents.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the old testament WHEN searching a new testament book THEN finds it and hides the testament chip`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(selectedTestament = BookTestamentFilter.OldTestament.name)
+
+            // When
+            sendEvent(BooksUiEvent.OnSearchQueryChange("MATT"))
+
+            // Then
+            val state = successState()
+            assertEquals(listOf(BookId.MAT), state.filteredBooks.map { it.id })
+            assertFalse(state.shouldShowTestamentToggle)
+        }
+
+    @Test
+    fun `GIVEN the new testament WHEN toggling the only read filter THEN shows the completed old testament books`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(selectedTestament = BookTestamentFilter.NewTestament.name)
+
+            // When
+            sendEvent(BooksUiEvent.OnToggleFilter(BookFilterType.OnlyRead))
+
+            // Then
+            val state = successState()
+            assertEquals(listOf(BookId.GEN), state.filteredBooks.map { it.id })
+            assertFalse(state.shouldShowTestamentToggle)
+        }
 
     private fun successState(): BooksUiState.Success = assertIs<BooksUiState.Success>(viewModel.uiState.value)
 

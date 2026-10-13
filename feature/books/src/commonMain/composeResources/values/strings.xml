@@ -16,4 +16,5 @@
     <string name="open_site">Open site</string>
     <string name="content_description_sort">Sort</string>
     <string name="content_description_filter">Filter</string>
+    <string name="all_testaments">All</string>
 </resources>

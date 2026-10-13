@@ -43,7 +43,8 @@ fun BooksItemsComponent(
                         key = "testament_toggle_item",
                     ) {
                         BookToggleRow(
-                            selectedTestament = state.selectedTestament,
+                            selectedTestamentFilter = state.selectedTestamentFilter,
+                            isTestamentMenuVisible = state.isTestamentMenuVisible,
                             selectedLayoutFormat = state.layoutFormat,
                             onEvent = onEvent,
                         )

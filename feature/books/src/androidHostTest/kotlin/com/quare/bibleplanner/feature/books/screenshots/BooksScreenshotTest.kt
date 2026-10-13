@@ -2,13 +2,13 @@ package com.quare.bibleplanner.feature.books.screenshots
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.feature.books.fixture.booksUiState
 import com.quare.bibleplanner.feature.books.fixture.exodus
 import com.quare.bibleplanner.feature.books.presentation.BooksScreen
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.ui.screenshots.testing.ScreenshotTest
 import com.quare.bibleplanner.ui.screenshots.testing.ScreenshotVariant
 import org.junit.Test
@@ -49,6 +49,13 @@ internal class BooksScreenshotTest : ScreenshotTest() {
     }
 
     @Test
+    fun testamentMenu() {
+        snapshot(name = "testament_menu") {
+            BooksContent(uiState = booksUiState().copy(isTestamentMenuVisible = true))
+        }
+    }
+
+    @Test
     fun searching() {
         snapshot(name = "searching") {
             BooksContent(
@@ -67,12 +74,7 @@ internal class BooksScreenshotTest : ScreenshotTest() {
                 BooksScreen(
                     state = uiState,
                     isScrolled = false,
-                    searchGridState = rememberLazyGridState(),
-                    searchListState = rememberLazyGridState(),
-                    oldTestamentGridState = rememberLazyGridState(),
-                    oldTestamentListState = rememberLazyGridState(),
-                    newTestamentGridState = rememberLazyGridState(),
-                    newTestamentListState = rememberLazyGridState(),
+                    lazyGridStates = rememberBooksLazyGridStates(),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@AnimatedContent,
                     onEvent = {},

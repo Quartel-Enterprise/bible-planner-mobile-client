@@ -1,20 +1,19 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
-
 sealed interface BooksUiState {
     data object Loading : BooksUiState
 
     data class Success(
         val books: List<BookPresentationModel>,
         val filteredBooks: List<BookPresentationModel>,
-        val selectedTestament: BookTestament,
+        val selectedTestamentFilter: BookTestamentFilter,
         val searchQuery: String,
         val groupsInTestament: List<BookGroupPresentationModel>,
         val filterOptions: List<BookFilterOption>,
         val shouldShowTestamentToggle: Boolean,
         val isFilterMenuVisible: Boolean,
         val isSortMenuVisible: Boolean,
+        val isTestamentMenuVisible: Boolean,
         val sortOrder: BookSortOrder?,
         val layoutFormat: BookLayoutFormat,
     ) : BooksUiState

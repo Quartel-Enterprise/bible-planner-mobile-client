@@ -560,6 +560,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [books_filter_menu_dismissed](events/books_filter_menu_dismissed.md) | P2 | Books |
 | [books_sort_menu_opened](events/books_sort_menu_opened.md) | P2 | Books |
 | [books_sort_menu_dismissed](events/books_sort_menu_dismissed.md) | P2 | Books |
+| [books_testament_menu_opened](events/books_testament_menu_opened.md) | P2 | Books |
+| [books_testament_menu_dismissed](events/books_testament_menu_dismissed.md) | P2 | Books |
 | [books_search_cleared](events/books_search_cleared.md) | P2 | Books |
 | [testament_switched](events/testament_switched.md) | P2 | Books |
 | [web_app_link_opened](events/web_app_link_opened.md) | P2 | Books |

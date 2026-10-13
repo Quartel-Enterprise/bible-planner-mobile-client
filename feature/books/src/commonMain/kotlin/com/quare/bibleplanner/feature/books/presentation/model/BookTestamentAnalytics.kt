@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
-
-internal fun BookTestament.toAnalyticsValue(): String = when (this) {
-    BookTestament.OldTestament -> "old"
-    BookTestament.NewTestament -> "new"
+internal fun BookTestamentFilter.toAnalyticsValue(): String = when (this) {
+    BookTestamentFilter.All -> "all"
+    BookTestamentFilter.OldTestament -> "old"
+    BookTestamentFilter.NewTestament -> "new"
 }
