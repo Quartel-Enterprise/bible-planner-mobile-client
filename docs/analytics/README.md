@@ -178,7 +178,6 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `StudyUnlockNavRoute` | `study_unlock` | `responsive` | `surface` (`chapter_study` \| `day_study` \| `day_reading_complete`) |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
-| `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
 
 `InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `screen_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `screen_view`.
 
@@ -548,7 +547,6 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [update_dismissed](events/update_dismissed.md) | P2 | Updates |
 | [update_download_failed](events/update_download_failed.md) | P2 | Updates |
 | [update_install_started](events/update_install_started.md) | P2 | Updates |
-| [update_install_postponed](events/update_install_postponed.md) | P2 | Updates |
 
 ### Books browsing UI
 

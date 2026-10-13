@@ -3,11 +3,11 @@ package com.quare.bibleplanner.core.inappupdate.domain.usecase.impl
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptPreferences
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.InstallDownloadedUpdate
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -17,6 +17,7 @@ import com.quare.bibleplanner.core.provider.platform.isAndroid
 internal class ShowUpdatePromptUseCase(
     private val platform: Platform,
     private val startUpdate: StartUpdate,
+    private val installDownloadedUpdate: InstallDownloadedUpdate,
     private val navigator: Navigator,
     private val updatePromptPreferences: UpdatePromptPreferences,
     private val currentTimestampProvider: CurrentTimestampProvider,
@@ -33,7 +34,7 @@ internal class ShowUpdatePromptUseCase(
                 source = source,
             )
 
-            UpdateAvailability.Downloaded -> navigator.navigate(UpdateDownloadedNavRoute)
+            UpdateAvailability.Downloaded -> installDownloadedUpdate()
         }
     }
 

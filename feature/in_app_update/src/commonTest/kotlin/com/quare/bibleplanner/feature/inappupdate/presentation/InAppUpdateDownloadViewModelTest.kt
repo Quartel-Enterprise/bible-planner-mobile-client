@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.inappupdate.presentation
 
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateDownloadState
-import com.quare.bibleplanner.core.model.NavigationCommand
-import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateDownloadUiAction
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +17,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class InAppUpdateDownloadViewModelTest {
@@ -28,7 +24,7 @@ internal class InAppUpdateDownloadViewModelTest {
     private lateinit var viewModel: InAppUpdateDownloadViewModel
     private lateinit var downloadStates: MutableSharedFlow<UpdateDownloadState>
     private lateinit var trackedEvents: MutableList<String>
-    private lateinit var commands: MutableList<NavigationCommand>
+    private var installCalls = 0
     private lateinit var actions: MutableList<InAppUpdateDownloadUiAction>
 
     @BeforeTest
@@ -54,7 +50,7 @@ internal class InAppUpdateDownloadViewModelTest {
     }
 
     @Test
-    fun `GIVEN a running download WHEN it finishes THEN clears the progress and opens the restart prompt`() =
+    fun `GIVEN a running download WHEN it finishes THEN clears the progress and installs the update right away`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -65,7 +61,21 @@ internal class InAppUpdateDownloadViewModelTest {
 
             // Then
             assertNull(viewModel.downloadProgress.value)
-            assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(UpdateDownloadedNavRoute)), commands)
+            assertEquals(1, installCalls)
+        }
+
+    @Test
+    fun `GIVEN a download that ended before the ViewModel existed WHEN it replays THEN does not install`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            downloadStates.emit(UpdateDownloadState.Downloaded)
+
+            // Then
+            assertNull(viewModel.downloadProgress.value)
+            assertEquals(0, installCalls)
         }
 
     @Test
@@ -82,10 +92,11 @@ internal class InAppUpdateDownloadViewModelTest {
             assertNull(viewModel.downloadProgress.value)
             assertEquals(listOf(AnalyticsEventNames.UPDATE_DOWNLOAD_FAILED), trackedEvents)
             assertEquals(listOf<InAppUpdateDownloadUiAction>(InAppUpdateDownloadUiAction.ShowDownloadFailed), actions)
+            assertEquals(0, installCalls)
         }
 
     @Test
-    fun `GIVEN a running download WHEN it goes idle THEN clears the progress without navigating`() =
+    fun `GIVEN a running download WHEN it goes idle THEN clears the progress without installing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -96,18 +107,16 @@ internal class InAppUpdateDownloadViewModelTest {
 
             // Then
             assertNull(viewModel.downloadProgress.value)
-            assertTrue(commands.isEmpty())
+            assertEquals(0, installCalls)
         }
 
     private fun TestScope.prepareScenario() {
-        val navigator = Navigator()
         downloadStates = MutableSharedFlow()
         trackedEvents = mutableListOf()
-        commands = mutableListOf()
+        installCalls = 0
         actions = mutableListOf()
-        backgroundScope.launch { navigator.commands.collect(commands::add) }
         viewModel = InAppUpdateDownloadViewModel(
-            navigator = navigator,
+            installDownloadedUpdate = { installCalls++ },
             trackEvent = { name, _ -> trackedEvents += name },
             observeUpdateDownloadState = { downloadStates },
         )

@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.inappupdate.fake.FakeUpdatePromptPreferences
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -26,6 +25,7 @@ internal class ShowUpdatePromptUseCaseTest {
     private val commands = mutableListOf<NavigationCommand>()
     private val preferences = FakeUpdatePromptPreferences(lastPromptedAt = null)
     private var didStartUpdate = false
+    private var didInstallDownloadedUpdate = false
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var useCase: ShowUpdatePromptUseCase
 
@@ -91,22 +91,22 @@ internal class ShowUpdatePromptUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a downloaded update WHEN showing the prompt THEN opens the restart sheet without starting it`() =
-        runTest {
-            // Given
-            prepareScenario(platform = Platform.Android)
+    fun `GIVEN a downloaded update WHEN showing the prompt THEN installs it without asking`() = runTest {
+        // Given
+        prepareScenario(platform = Platform.Android)
 
-            // When
-            useCase(
-                availability = UpdateAvailability.Downloaded,
-                source = UpdatePromptSource.STARTUP,
-            )
+        // When
+        useCase(
+            availability = UpdateAvailability.Downloaded,
+            source = UpdatePromptSource.STARTUP,
+        )
 
-            // Then
-            assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(UpdateDownloadedNavRoute)), commands)
-            assertFalse(didStartUpdate)
-            assertTrue(trackedEvents.isEmpty())
-        }
+        // Then
+        assertTrue(didInstallDownloadedUpdate)
+        assertTrue(commands.isEmpty())
+        assertFalse(didStartUpdate)
+        assertTrue(trackedEvents.isEmpty())
+    }
 
     @Test
     fun `GIVEN a downloaded update WHEN showing the prompt THEN records it so the cooldown also covers it`() = runTest {
@@ -145,6 +145,7 @@ internal class ShowUpdatePromptUseCaseTest {
         useCase = ShowUpdatePromptUseCase(
             platform = platform,
             startUpdate = { didStartUpdate = true },
+            installDownloadedUpdate = { didInstallDownloadedUpdate = true },
             navigator = navigator,
             updatePromptPreferences = preferences,
             currentTimestampProvider = { NOW },

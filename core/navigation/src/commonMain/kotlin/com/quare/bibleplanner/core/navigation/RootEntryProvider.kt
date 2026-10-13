@@ -35,7 +35,6 @@ import com.quare.bibleplanner.feature.editprofile.presentation.editPhotoSource
 import com.quare.bibleplanner.feature.editprofile.presentation.editProfile
 import com.quare.bibleplanner.feature.editprofile.presentation.expandedPhoto
 import com.quare.bibleplanner.feature.inappupdate.presentation.inAppUpdate
-import com.quare.bibleplanner.feature.inappupdate.presentation.updateDownloaded
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.loginSyncNudge
 import com.quare.bibleplanner.feature.loginwarning.presentation.loginWarning
@@ -107,6 +106,5 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     annotations()
     notificationPermission()
     inAppUpdate()
-    updateDownloaded()
     pendingBibleUpdates()
 }

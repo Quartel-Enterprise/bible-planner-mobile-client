@@ -18,13 +18,13 @@ internal class RequestUpdatePromptIfNeededUseCase(
     private val showUpdatePrompt: ShowUpdatePrompt,
 ) : RequestUpdatePromptIfNeeded {
     private val availablePromptCooldown: Duration = 1.hours
-    private val downloadedPromptCooldown: Duration = 15.minutes
+    private val downloadedInstallCooldown: Duration = 15.minutes
 
     override suspend fun invoke() {
         val lastPromptedAt = updatePromptPreferences.getLastPromptedAt()
         val hasShortestCooldownElapsed = hasCooldownElapsed(
             lastOccurredAt = lastPromptedAt,
-            cooldown = downloadedPromptCooldown,
+            cooldown = downloadedInstallCooldown,
         )
         if (!hasShortestCooldownElapsed) return
         val availability = checkForUpdate()
@@ -43,6 +43,6 @@ internal class RequestUpdatePromptIfNeededUseCase(
 
     private fun UpdateAvailability.Pending.getPromptCooldown(): Duration = when (this) {
         is UpdateAvailability.Available -> availablePromptCooldown
-        UpdateAvailability.Downloaded -> downloadedPromptCooldown
+        UpdateAvailability.Downloaded -> downloadedInstallCooldown
     }
 }

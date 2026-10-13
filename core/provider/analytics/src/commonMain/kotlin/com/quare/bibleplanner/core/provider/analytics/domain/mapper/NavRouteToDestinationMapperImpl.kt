@@ -50,7 +50,6 @@ import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -239,8 +238,6 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is SubscriptionDetailsNavRoute -> createDialogDestination("subscription_details")
 
         is ThemeNavRoute -> createResponsiveDestination("theme_selection")
-
-        is UpdateDownloadedNavRoute -> createDialogDestination("update_downloaded")
     }
 
     private fun createScreenDestination(

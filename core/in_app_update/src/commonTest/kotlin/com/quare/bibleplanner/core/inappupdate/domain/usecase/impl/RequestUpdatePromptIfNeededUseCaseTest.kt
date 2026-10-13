@@ -36,17 +36,18 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a downloaded update WHEN requesting THEN shows it with the startup source`() = runTest {
-        // Given
-        prepareScenario(availability = UpdateAvailability.Downloaded)
+    fun `GIVEN a downloaded update WHEN requesting THEN hands it over to be installed with the startup source`() =
+        runTest {
+            // Given
+            prepareScenario(availability = UpdateAvailability.Downloaded)
 
-        // When
-        useCase()
+            // When
+            useCase()
 
-        // Then
-        assertEquals(UpdateAvailability.Downloaded, shownAvailability)
-        assertEquals(UpdatePromptSource.STARTUP, shownSource)
-    }
+            // Then
+            assertEquals(UpdateAvailability.Downloaded, shownAvailability)
+            assertEquals(UpdatePromptSource.STARTUP, shownSource)
+        }
 
     @Test
     fun `GIVEN no available update WHEN requesting THEN shows nothing`() = runTest {
@@ -92,19 +93,20 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a downloaded update prompted 15 minutes ago WHEN requesting THEN shows it again`() = runTest {
-        // Given
-        prepareScenario(
-            availability = UpdateAvailability.Downloaded,
-            lastPromptedAt = NOW - 15.minutes.inWholeMilliseconds,
-        )
+    fun `GIVEN a downloaded update handled 15 minutes ago WHEN requesting THEN hands it over to be installed again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                availability = UpdateAvailability.Downloaded,
+                lastPromptedAt = NOW - 15.minutes.inWholeMilliseconds,
+            )
 
-        // When
-        useCase()
+            // When
+            useCase()
 
-        // Then
-        assertEquals(UpdateAvailability.Downloaded, shownAvailability)
-    }
+            // Then
+            assertEquals(UpdateAvailability.Downloaded, shownAvailability)
+        }
 
     @Test
     fun `GIVEN the last prompt was over an hour ago WHEN requesting THEN shows the prompt again`() = runTest {

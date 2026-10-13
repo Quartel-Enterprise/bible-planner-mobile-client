@@ -53,7 +53,6 @@ import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
-import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -133,7 +132,6 @@ class NavRouteToDestinationMapperImplTest {
             AnnotationsNavRoute to ("annotations" to DestinationType.SCREEN),
             SubscriptionDetailsNavRoute to ("subscription_details" to DestinationType.DIALOG),
             ThemeNavRoute to ("theme_selection" to DestinationType.RESPONSIVE),
-            UpdateDownloadedNavRoute to ("update_downloaded" to DestinationType.DIALOG),
         )
 
         // When

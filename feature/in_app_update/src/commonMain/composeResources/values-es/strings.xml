@@ -6,10 +6,6 @@
     <string name="update_action_store">Abrir en la App Store</string>
     <string name="update_dismiss">Ahora no</string>
     <string name="update_downloading">Descargando actualización…</string>
-    <string name="update_downloaded_title">Actualización descargada</string>
-    <string name="update_downloaded_message">La actualización se descargó. Reinicia la app para completar la instalación.</string>
-    <string name="update_restart_now">Reiniciar ahora</string>
-    <string name="update_restart_later">Más tarde</string>
     <string name="update_download_failed">No se pudo descargar la actualización. Inténtalo de nuevo más tarde.</string>
     <string name="update_icon_content_description">Actualización</string>
 </resources>
