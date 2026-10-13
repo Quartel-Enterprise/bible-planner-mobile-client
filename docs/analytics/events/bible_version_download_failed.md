@@ -10,7 +10,7 @@ The download pipeline returns failure for the version: the error notification is
 
 ## Trigger source
 
-`feature/preferences/bible_version/.../domain/InProcessBibleVersionDownloader.kt` — `startDownload(...)`, `onFailure` branch of `downloadBible(versionId)` (calls `BibleVersionDownloadNotifier.showError` and sets `DownloadStatus.PAUSED`)
+`feature/preferences/bible_version/.../domain/InProcessBibleVersionDownloader.kt` — `download(...)`, `onFailure` branch of `downloadBible(versionId)` (calls `BibleVersionDownloadNotifier.showError` and sets `DownloadStatus.PAUSED`)
 
 ## Parameters
 

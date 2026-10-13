@@ -5,9 +5,14 @@ import Foundation
 /// chapters nobody reads.
 enum LegacyBibleDownloadSession {
     private static let identifier = "com.quare.bibleplanner.bible.download"
+    private static let cancelledKey = "legacy_bible_download_session_cancelled"
 
+    /// Only the first launch after the update can find leftover tasks, so later launches skip the session.
     static func cancelLeftoverTasks() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: cancelledKey) else { return }
         let configuration = URLSessionConfiguration.background(withIdentifier: identifier)
         URLSession(configuration: configuration).invalidateAndCancel()
+        defaults.set(true, forKey: cancelledKey)
     }
 }

@@ -32,11 +32,24 @@ internal class IosBibleVersionDownloaderFacade(
     }
 
     override suspend fun pauseDownload(versionId: String) {
+        /*
+         * Why: stopping the download ends its background task, so iOS can suspend or end the app before
+         * the pause is saved; a version still in progress would then resume against the user's pause.
+         */
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.PAUSED,
+        )
         inProcessFacade.pauseDownload(versionId)
         liveActivity.showPaused(versionId)
     }
 
     override suspend fun deleteDownload(versionId: String) {
+        // Why: same as pausing, a version still in progress when iOS suspends the app would download again.
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.NOT_STARTED,
+        )
         inProcessFacade.deleteDownload(versionId)
         liveActivity.dismiss(versionId)
     }

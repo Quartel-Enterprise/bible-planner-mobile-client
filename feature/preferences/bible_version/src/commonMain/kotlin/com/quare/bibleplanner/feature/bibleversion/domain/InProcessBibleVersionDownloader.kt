@@ -79,25 +79,47 @@ class InProcessBibleVersionDownloader(
 
     private suspend fun download(versionId: String) {
         val versionName = resolveVersionName(versionId)
-        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
-        notifier.showProgress(versionId, versionName, 0f)
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.IN_PROGRESS,
+        )
+        notifier.showProgress(
+            versionId = versionId,
+            versionName = versionName,
+            progress = 0f,
+        )
 
         val result = coroutineScope {
             val progressObserver = launch {
                 observeDownloadProgress(versionId)
-                    .onEach { progress -> notifier.showProgress(versionId, versionName, progress) }
-                    .catch { error -> Logger.w(error) { "Progress observation failed; download continues" } }
+                    .onEach { progress ->
+                        notifier.showProgress(
+                            versionId = versionId,
+                            versionName = versionName,
+                            progress = progress,
+                        )
+                    }.catch { error -> Logger.w(error) { "Progress observation failed; download continues" } }
                     .collect()
             }
             downloadBible(versionId).also { progressObserver.cancel() }
         }
 
         result
-            .onSuccess { notifier.showComplete(versionId, versionName) }
-            .onFailure {
+            .onSuccess {
+                notifier.showComplete(
+                    versionId = versionId,
+                    versionName = versionName,
+                )
+            }.onFailure {
                 // Why: the version is paused before anyone hears of the error, so whoever reacts to it reads PAUSED.
-                bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
-                notifier.showError(versionId, versionName)
+                bibleVersionDao.updateStatus(
+                    id = versionId,
+                    status = DownloadStatus.PAUSED,
+                )
+                notifier.showError(
+                    versionId = versionId,
+                    versionName = versionName,
+                )
             }
     }
 

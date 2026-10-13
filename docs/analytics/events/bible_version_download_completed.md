@@ -10,7 +10,7 @@ All chapters of the version have been downloaded and the completion notification
 
 ## Trigger source
 
-`feature/preferences/bible_version/.../domain/InProcessBibleVersionDownloader.kt` — `startDownload(...)`, `onSuccess` branch of `downloadBible(versionId)`, alongside the `BibleVersionDownloadNotifier.showComplete` call (`core/books/.../domain/BibleVersionDownloadNotifier.kt`)
+`feature/preferences/bible_version/.../domain/InProcessBibleVersionDownloader.kt` — `download(...)`, `onSuccess` branch of `downloadBible(versionId)`, alongside the `BibleVersionDownloadNotifier.showComplete` call (`core/books/.../domain/BibleVersionDownloadNotifier.kt`)
 
 ## Parameters
 

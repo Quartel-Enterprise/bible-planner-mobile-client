@@ -21,17 +21,18 @@ class LiveActivityManager {
             lastReportedProgress.removeValue(forKey: versionId)
             pausedVersionIds.remove(versionId)
         }
-        let activity = activities[versionId]
         let wasPaused = pausedVersionIds.remove(versionId) != nil
+        guard let activity = activities[versionId] else {
+            // Still under the lock, so two progress updates can't each start an activity for the version.
+            startLocked(versionId: versionId, versionName: versionName, progress: progress)
+            lock.unlock()
+            return
+        }
         let last = lastReportedProgress[versionId] ?? -1
-        let shouldUpdate = activity != nil && (wasPaused || abs(progress - last) >= 0.01)
+        let shouldUpdate = wasPaused || abs(progress - last) >= 0.01
         if shouldUpdate { lastReportedProgress[versionId] = progress }
         lock.unlock()
 
-        guard let activity else {
-            start(versionId: versionId, versionName: versionName, progress: progress)
-            return
-        }
         guard shouldUpdate else { return }
         let state = BibleDownloadAttributes.ContentState(
             progress: progress,
@@ -110,7 +111,8 @@ class LiveActivityManager {
 
     // MARK: - Helpers
 
-    private func start(versionId: String, versionName: String, progress: Double) {
+    /// Must be called with `lock` held.
+    private func startLocked(versionId: String, versionName: String, progress: Double) {
         let attributes = BibleDownloadAttributes(versionId: versionId, versionName: versionName)
         let initialState = BibleDownloadAttributes.ContentState(
             progress: progress,
@@ -123,10 +125,8 @@ class LiveActivityManager {
                 attributes: attributes,
                 content: .init(state: initialState, staleDate: nil)
             )
-            lock.lock()
             activities[versionId] = activity
             lastReportedProgress[versionId] = progress
-            lock.unlock()
             dlog("start — \(versionId) activityId: \(activity.id)", tag: "LIVE_ACTIVITY")
         } catch {
             dlog("start FAILED — \(error)", tag: "LIVE_ACTIVITY")
