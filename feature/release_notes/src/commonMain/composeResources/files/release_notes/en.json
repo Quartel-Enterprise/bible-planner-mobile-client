@@ -4,7 +4,12 @@
       "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first."
     ],
     "android": [
-      "When an app update finishes downloading, the app now restarts on its own to install it, without you having to tap \"Restart now\"."
+      "When an app update finishes downloading, the app now restarts on its own to install it, without you having to tap \"Restart now\".",
+      "The download notification for a Bible version no longer jumps to 100% for a moment as the download starts."
+    ],
+    "ios": [
+      "Bible versions now download much faster, in just a few seconds, and keep downloading for a while after you leave the app. If the app gets closed in the middle of a download, it picks up where it left off the next time you open it.",
+      "Fixed the download progress on the lock screen and in the Dynamic Island, which showed 100% from the very start of the download."
     ]
   },
   "2.13.0": {

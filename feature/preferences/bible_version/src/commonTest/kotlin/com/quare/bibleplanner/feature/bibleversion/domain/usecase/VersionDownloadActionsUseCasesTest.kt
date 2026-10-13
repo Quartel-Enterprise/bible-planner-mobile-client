@@ -30,7 +30,7 @@ internal class VersionDownloadActionsUseCasesTest {
             ),
         )
         notifier = RecordingDownloadNotifier()
-        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
+        downloaderFacade = FakeBibleVersionDownloaderFacade()
         deletedVerseTexts = mutableListOf()
     }
 

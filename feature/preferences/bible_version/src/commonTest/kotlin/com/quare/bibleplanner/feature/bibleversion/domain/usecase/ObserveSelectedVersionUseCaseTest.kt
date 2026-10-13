@@ -72,7 +72,7 @@ internal class ObserveSelectedVersionUseCaseTest {
     }
 
     private fun prepareScenario(status: DownloadStatus) {
-        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
+        downloaderFacade = FakeBibleVersionDownloaderFacade()
         useCase = ObserveSelectedVersionUseCase(
             bibleVersionDao = FakeBibleVersionDao(
                 versions = listOf(

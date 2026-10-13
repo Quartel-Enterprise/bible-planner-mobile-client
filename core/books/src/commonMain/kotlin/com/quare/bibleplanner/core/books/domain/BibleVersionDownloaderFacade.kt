@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.core.books.domain
 
 interface BibleVersionDownloaderFacade {
-    val shouldShowDownloadTip: Boolean
-
     fun downloadVersion(versionId: String)
 
     suspend fun pauseDownload(versionId: String)

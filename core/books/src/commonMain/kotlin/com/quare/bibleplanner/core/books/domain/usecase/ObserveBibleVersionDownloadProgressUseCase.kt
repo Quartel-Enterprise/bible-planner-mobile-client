@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.mapNotNull
 
 /*
@@ -18,11 +18,19 @@ class ObserveBibleVersionDownloadProgressUseCase(
     override fun invoke(versionId: String): Flow<Float> = bibleRepository
         .getBiblesFlow()
         .mapNotNull { bibles -> bibles.find { it.version.id == versionId } }
-        .map(::toProgress)
+        /*
+         * Why: right as a download starts the shared stream can still carry the version's previous state,
+         * not started or downloaded, and reading it as complete made the Live Activity stick at 100%.
+         */
+        .dropWhile { bible -> bible.downloadStatus !is DownloadStatusModel.InProgress }
+        .mapNotNull(::toProgressOrNull)
         .distinctUntilChanged()
 
-    private fun toProgress(bible: BibleModel): Float =
-        (bible.downloadStatus as? DownloadStatusModel.InProgress)?.progress ?: COMPLETE_PROGRESS
+    private fun toProgressOrNull(bible: BibleModel): Float? = when (val status = bible.downloadStatus) {
+        is DownloadStatusModel.InProgress -> status.progress
+        DownloadStatusModel.Downloaded -> COMPLETE_PROGRESS
+        DownloadStatusModel.NotStarted -> null
+    }
 
     private companion object {
         const val COMPLETE_PROGRESS = 1f

@@ -90,15 +90,6 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
     }
 
     @Test
-    fun `GIVEN an in-process downloader WHEN asking for the download tip THEN never shows it`() {
-        // When
-        val shouldShowDownloadTip = facade.shouldShowDownloadTip
-
-        // Then
-        assertFalse(shouldShowDownloadTip)
-    }
-
-    @Test
     fun `GIVEN a version WHEN downloading it THEN the download runs in process`() {
         // When
         facade.downloadVersion(VERSION_ID)

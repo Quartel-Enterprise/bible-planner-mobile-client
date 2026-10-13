@@ -31,6 +31,7 @@ import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
@@ -106,6 +107,42 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
+    fun `GIVEN a running download WHEN starting it again THEN hands back the same download`() = runTest {
+        // Given
+        prepareScenario(bibleRepository = NeverLoadingBibleRepository())
+        val running = downloader.startDownload(VERSION_ID)
+
+        // When
+        val restarted = downloader.startDownload(VERSION_ID)
+
+        // Then
+        assertSame(
+            expected = running,
+            actual = restarted,
+        )
+        downloader.cancelDownload(VERSION_ID)
+    }
+
+    @Test
+    fun `GIVEN a version WHEN its download finishes THEN the started download completes`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val download = downloader.startDownload(VERSION_ID)
+        withContext(Dispatchers.Default) {
+            withTimeout(waitTimeout) { download.join() }
+        }
+
+        // Then
+        assertEquals(
+            expected = "complete $VERSION_ID Version $VERSION_ID",
+            actual = notifier.calls.last(),
+        )
+        assertFalse(downloader.hasActiveDownload(VERSION_ID))
+    }
+
+    @Test
     fun `GIVEN two running downloads WHEN cancelling all THEN no download stays active`() = runTest {
         // Given
         prepareScenario(bibleRepository = NeverLoadingBibleRepository())
@@ -119,40 +156,11 @@ internal class InProcessBibleVersionDownloaderTest {
         assertFalse(downloader.hasAnyActiveDownload())
     }
 
-    @Test
-    fun `GIVEN nothing pending WHEN resuming THEN completes right away`() = runTest {
-        // Given
-        prepareScenario(versionStatus = DownloadStatus.DONE)
-        val resumed = CompletableDeferred<Boolean>()
-
-        // When
-        downloader.resumePendingDownloads(resumed::complete)
-
-        // Then
-        assertTrue(awaitReal(resumed))
-        assertTrue(notifier.calls.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN a download left in progress WHEN resuming THEN restarts it and completes once it finishes`() = runTest {
-        // Given
-        prepareScenario(versionStatus = DownloadStatus.IN_PROGRESS)
-        val resumed = CompletableDeferred<Boolean>()
-
-        // When
-        downloader.resumePendingDownloads(resumed::complete)
-
-        // Then
-        assertTrue(awaitReal(resumed))
-        assertTrue("complete $VERSION_ID Version $VERSION_ID" in notifier.calls)
-    }
-
     private suspend fun <T> awaitReal(deferred: CompletableDeferred<T>): T = withContext(Dispatchers.Default) {
         withTimeout(waitTimeout) { deferred.await() }
     }
 
     private fun prepareScenario(
-        versionStatus: DownloadStatus = DownloadStatus.DONE,
         bibleRepository: BibleRepository = FakeBibleRepository(
             bibles = listOf(bibleModel(VERSION_ID)),
             selectedVersionId = "ACF",
@@ -166,7 +174,7 @@ internal class InProcessBibleVersionDownloaderTest {
             listOf(
                 BibleVersionEntity(
                     id = VERSION_ID,
-                    status = versionStatus,
+                    status = DownloadStatus.DONE,
                     totalChapters = 0,
                     contentVersion = "1.0.0",
                 ),

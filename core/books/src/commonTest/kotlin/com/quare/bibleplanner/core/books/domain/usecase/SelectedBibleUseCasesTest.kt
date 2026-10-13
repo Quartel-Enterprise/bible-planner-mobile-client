@@ -110,6 +110,58 @@ internal class SelectedBibleUseCasesTest {
         }
 
     @Test
+    fun `GIVEN a version not started yet WHEN its download starts THEN emits only the download progress`() = runTest {
+        // Given
+        prepareScenario(
+            bibles = listOf(
+                bible(
+                    id = "WEB",
+                    isSelected = true,
+                    downloadStatus = DownloadStatusModel.NotStarted,
+                ),
+            ),
+        )
+        val progress = mutableListOf<Float>()
+        backgroundScope.launch {
+            ObserveBibleVersionDownloadProgressUseCase(repository)("WEB").toList(progress)
+        }
+        runCurrent()
+
+        // When
+        repository.bibles.value = listOf(downloading(0.1f))
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(0.1f), progress)
+    }
+
+    @Test
+    fun `GIVEN a downloaded version WHEN it is downloaded again THEN emits only the new download progress`() = runTest {
+        // Given
+        prepareScenario(
+            bibles = listOf(
+                bible(
+                    id = "WEB",
+                    isSelected = true,
+                    downloadStatus = DownloadStatusModel.Downloaded,
+                ),
+            ),
+        )
+        val progress = mutableListOf<Float>()
+        backgroundScope.launch {
+            ObserveBibleVersionDownloadProgressUseCase(repository)("WEB").toList(progress)
+        }
+        runCurrent()
+
+        // When
+        repository.bibles.value = listOf(downloading(0.1f))
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(0.1f), progress)
+    }
+
+    @Test
     fun `GIVEN an unknown version WHEN observing its progress THEN emits nothing`() = runTest {
         // Given
         prepareScenario(bibles = listOf(downloading(0.25f)))

@@ -4,7 +4,12 @@
       "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día."
     ],
     "android": [
-      "Cuando una actualización de la app termina de descargarse, la app ahora se reinicia sola para instalarla, sin que tengas que tocar \"Reiniciar ahora\"."
+      "Cuando una actualización de la app termina de descargarse, la app ahora se reinicia sola para instalarla, sin que tengas que tocar \"Reiniciar ahora\".",
+      "La notificación de descarga de una versión de la Biblia ya no salta al 100% por un momento cuando empieza la descarga."
+    ],
+    "ios": [
+      "Las versiones de la Biblia ahora se descargan mucho más rápido, en pocos segundos, y siguen descargándose un rato después de salir de la app. Si la app se cierra en medio de una descarga, continúa donde se quedó la próxima vez que la abras.",
+      "Corregimos el progreso de la descarga en la pantalla bloqueada y en la Dynamic Island, que mostraba 100% desde el inicio de la descarga."
     ]
   },
   "2.13.0": {

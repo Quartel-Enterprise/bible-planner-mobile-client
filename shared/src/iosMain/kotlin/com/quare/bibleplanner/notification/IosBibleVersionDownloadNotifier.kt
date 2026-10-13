@@ -13,6 +13,7 @@ import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNUserNotificationCenter
 
 internal class IosBibleVersionDownloadNotifier(
+    private val liveActivity: IosDownloadLiveActivity,
     navigator: Navigator,
 ) : BibleVersionDownloadNotifier {
     init {
@@ -25,13 +26,21 @@ internal class IosBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) {}
+    ) {
+        liveActivity.showProgress(
+            versionId = versionId,
+            versionName = versionName,
+            progress = progress,
+        )
+    }
 
     override suspend fun showPaused(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) {}
+    ) {
+        liveActivity.showPaused(versionId)
+    }
 
     override suspend fun showComplete(
         versionId: String,
@@ -43,6 +52,7 @@ internal class IosBibleVersionDownloadNotifier(
         }
         val request = UNNotificationRequest.requestWithIdentifier(getCompleteId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
+        liveActivity.showComplete(versionId)
     }
 
     override suspend fun showError(
@@ -55,8 +65,13 @@ internal class IosBibleVersionDownloadNotifier(
         }
         val request = UNNotificationRequest.requestWithIdentifier(getErrorId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
+        liveActivity.dismiss(versionId)
     }
 
+    /*
+     * Why: pausing also dismisses, but a paused download keeps its Live Activity with the resume
+     * button, so the facade decides when the Live Activity goes away.
+     */
     override suspend fun dismiss(versionId: String) {
         removeNotifications(listOf(getProgressId(versionId), getCompleteId(versionId), getErrorId(versionId)))
     }

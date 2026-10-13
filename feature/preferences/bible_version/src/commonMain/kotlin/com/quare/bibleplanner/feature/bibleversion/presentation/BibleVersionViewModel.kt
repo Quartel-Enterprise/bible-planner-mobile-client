@@ -12,12 +12,9 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
-import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -33,9 +30,6 @@ class BibleVersionViewModel(
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
-    val uiAction: SharedFlow<BibleVersionUiAction>
-        field = MutableSharedFlow<BibleVersionUiAction>()
-
     val uiState: StateFlow<BibleVersionsUiState> = uiStateFactory
         .create()
         .stateIn(
@@ -70,9 +64,6 @@ class BibleVersionViewModel(
 
     private fun downloadVersion(id: String) {
         downloaderFacade.downloadVersion(id)
-        if (downloaderFacade.shouldShowDownloadTip) {
-            emitUiAction(BibleVersionUiAction.ShowDownloadTip)
-        }
         viewModelScope.launch {
             requestDownloadNotificationPermission()
         }
@@ -122,11 +113,5 @@ class BibleVersionViewModel(
 
     private fun dismiss() {
         navigator.navigateBack()
-    }
-
-    private fun emitUiAction(action: BibleVersionUiAction) {
-        viewModelScope.launch {
-            uiAction.emit(action)
-        }
     }
 }
