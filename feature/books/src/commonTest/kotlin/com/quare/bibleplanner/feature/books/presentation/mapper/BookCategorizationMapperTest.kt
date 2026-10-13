@@ -68,15 +68,18 @@ internal class BookCategorizationMapperTest {
 
         // Then
         assertEquals(
-            mapOf(
+            expected = mapOf(
                 BookTestament.NewTestament to listOf(
                     BookGroup.Gospels,
                     BookGroup.PaulineEpistles,
                     BookGroup.Revelation,
                 ),
-                BookTestament.OldTestament to listOf(BookGroup.Pentateuch, BookGroup.WisdomBooks),
+                BookTestament.OldTestament to listOf(
+                    BookGroup.Pentateuch,
+                    BookGroup.WisdomBooks,
+                ),
             ),
-            categorized.mapValues { (_, groups) -> groups.map { it.group } },
+            actual = categorized.mapValues { (_, groups) -> groups.map { it.group } },
         )
     }
 

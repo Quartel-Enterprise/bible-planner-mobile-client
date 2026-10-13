@@ -14,17 +14,16 @@ class BookCategorizationMapper(
 
     fun map(books: List<BookPresentationModel>): Map<BookTestament, List<BookGroupPresentationModel>> {
         val groupedBooks = books.groupBy { bookGroupMapper.fromBookId(it.id) }
-        return groupedBooks.keys
+        return canonicalGroupOrder
+            .filter(groupedBooks::containsKey)
             .groupBy { it.testament }
             .mapValues { (_, groups) ->
-                groups
-                    .sortedBy(canonicalGroupOrder::indexOf)
-                    .map { group ->
-                        BookGroupPresentationModel(
-                            group = group,
-                            books = groupedBooks[group].orEmpty(),
-                        )
-                    }
+                groups.map { group ->
+                    BookGroupPresentationModel(
+                        group = group,
+                        books = groupedBooks.getValue(group),
+                    )
+                }
             }
     }
 }

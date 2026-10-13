@@ -114,7 +114,10 @@ internal class BooksUiTest {
         onNodeWithText(getString(BookTestament.OldTestament.titleRes)).performClick()
 
         // Then
-        assertEquals(expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleTestamentMenu), actual = events)
+        assertEquals(
+            expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleTestamentMenu),
+            actual = events,
+        )
     }
 
     @Test
