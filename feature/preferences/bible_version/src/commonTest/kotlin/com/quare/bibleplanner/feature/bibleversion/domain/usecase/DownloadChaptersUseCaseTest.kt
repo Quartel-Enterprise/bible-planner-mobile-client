@@ -8,6 +8,7 @@ import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbre
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.StorageServer
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -138,6 +139,29 @@ internal class DownloadChaptersUseCaseTest {
     fun `GIVEN a chapter that fails twice WHEN downloading the book THEN retries it`() = runTest {
         // Given
         prepareScenario(failuresBeforeSuccessByPath = mapOf(CHAPTER_ONE_PATH to 2))
+
+        // When
+        val result = useCase(
+            versionId = VERSION_ID,
+            bookId = BookId.GEN,
+            contentVersion = NO_CONTENT_VERSION,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            expected = 3,
+            actual = server.requestedPaths.count { it == CHAPTER_ONE_PATH },
+        )
+    }
+
+    @Test
+    fun `GIVEN a rate-limited chapter WHEN downloading the book THEN retries it`() = runTest {
+        // Given
+        prepareScenario(
+            failuresBeforeSuccessByPath = mapOf(CHAPTER_ONE_PATH to 2),
+            failureStatus = HttpStatusCode.TooManyRequests,
+        )
 
         // When
         val result = useCase(
@@ -364,11 +388,13 @@ internal class DownloadChaptersUseCaseTest {
             CHAPTER_TWO_PATH to CHAPTER_TWO_JSON,
         ),
         failuresBeforeSuccessByPath: Map<String, Int> = emptyMap(),
+        failureStatus: HttpStatusCode = HttpStatusCode.InternalServerError,
         downloadedChapterIds: List<Long> = listOf(3L),
     ) {
         server = StorageServer(
             filesByPath = files,
             failuresBeforeSuccessByPath = failuresBeforeSuccessByPath,
+            failureStatus = failureStatus,
         )
         verseDao = InMemoryVerseDao(
             verses = verses,

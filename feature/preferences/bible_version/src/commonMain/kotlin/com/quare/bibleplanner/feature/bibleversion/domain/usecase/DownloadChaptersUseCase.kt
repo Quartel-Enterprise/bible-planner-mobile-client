@@ -124,8 +124,8 @@ class DownloadChaptersUseCase(
     }
 
     /*
-     * Why: a missing file comes back as a client error (Storage answers 400 "not_found"), and asking
-     * again only delays the fallback. A 429 is the exception, since it clears with time.
+     * Why: a missing file comes back as a client error (Storage answers a 400 carrying 404 "not_found"), and
+     * asking again only delays the fallback. A 429 is the exception, since it clears with time.
      */
     private fun Throwable.isRetryable(): Boolean = this !is RestException ||
         statusCode !in clientErrorStatusCodes ||

@@ -2,7 +2,8 @@
   "2.14.0": {
     "common": [
       "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día.",
-      "En la pestaña Libros, la elección entre Antiguo y Nuevo Testamento ahora es un botón con menú, con la nueva opción \"Todos\", que viene seleccionada y muestra todos los libros de la Biblia a la vez. Si ya habías elegido uno de los testamentos, tu elección se mantiene igual."
+      "En la pestaña Libros, la elección entre Antiguo y Nuevo Testamento ahora es un botón con menú, con la nueva opción \"Todos\", que viene seleccionada y muestra todos los libros de la Biblia a la vez. Si ya habías elegido uno de los testamentos, tu elección se mantiene igual.",
+      "Corregimos un problema que, en raras ocasiones, podía cerrar la app sola mientras sincronizaba tus datos con tus otros dispositivos."
     ],
     "android": [
       "Cuando una actualización de la app termina de descargarse, la app ahora se reinicia sola para instalarla, sin que tengas que tocar \"Reiniciar ahora\".",
