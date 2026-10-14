@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -17,11 +16,24 @@ sealed interface BooksUiEvent : UiEvent {
     }
 
     data class OnTestamentSelect(
-        val testament: BookTestament,
+        val testamentFilter: BookTestamentFilter,
     ) : BooksUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.TESTAMENT_SWITCHED,
+        )
+    }
+
+    data object OnToggleTestamentMenu : BooksUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.TESTAMENT_SWITCHED,
-            params = mapOf(AnalyticsParams.TESTAMENT to testament.toAnalyticsValue()),
+            name = AnalyticsEventNames.BOOKS_TESTAMENT_MENU_OPENED,
+            params = emptyMap(),
+        )
+    }
+
+    data object OnDismissTestamentMenu : BooksUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.BOOKS_TESTAMENT_MENU_DISMISSED,
+            params = emptyMap(),
         )
     }
 

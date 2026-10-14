@@ -5,13 +5,13 @@ import bibleplanner.feature.books.generated.resources.favorites
 import bibleplanner.feature.books.generated.resources.read
 import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilter
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 
 internal val genesis = BookPresentationModel(
@@ -68,9 +68,9 @@ internal fun booksUiState(): BooksUiState.Success {
     return BooksUiState.Success(
         books = pentateuch + historical,
         filteredBooks = pentateuch + historical,
-        selectedTestament = BookTestament.OldTestament,
+        selectedTestamentFilter = BookTestamentFilter.OldTestament,
         searchQuery = "",
-        groupsInTestament = listOf(
+        visibleGroups = listOf(
             BookGroupPresentationModel(
                 group = BookGroup.Pentateuch,
                 books = pentateuch,
@@ -84,6 +84,7 @@ internal fun booksUiState(): BooksUiState.Success {
         shouldShowTestamentToggle = true,
         isFilterMenuVisible = false,
         isSortMenuVisible = false,
+        isTestamentMenuVisible = false,
         sortOrder = null,
         layoutFormat = BookLayoutFormat.List,
     )

@@ -2,23 +2,24 @@
 
 **Tier:** P2 | **Domain:** Books
 
-Captures the user switching between Old and New Testament on the Books tab. Shows how browsing splits between the testaments and whether the persisted selection matches actual usage.
+Captures the user switching the testament filter on the Books tab (All, Old Testament or New Testament). Shows how browsing splits between the testaments and whether the persisted selection matches actual usage.
 
 ## When it fires
 
-User taps the Old/New Testament selector on the Books tab.
+User picks an option in the testament chip's dropdown menu on the Books tab.
 
 ## Trigger source
 
-`feature/books/src/commonMain/kotlin/com/quare/bibleplanner/feature/books/presentation/viewmodel/BooksViewModel.kt` — `BooksUiEvent.OnTestamentSelect(testament: BookTestament)`
+`feature/books/src/commonMain/kotlin/com/quare/bibleplanner/feature/books/presentation/viewmodel/BooksViewModel.kt` — `BooksUiEvent.OnTestamentSelect(testamentFilter: BookTestamentFilter)`
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `testament` | string | `new` | Selected `BookTestament` value mapped to `old` \| `new` (from `OldTestament` / `NewTestament`) |
+| `testament` | string | `new` | Selected `BookTestamentFilter` value mapped to `all` \| `old` \| `new` (from `All` / `OldTestament` / `NewTestament`) |
 
 ## Notes
 
-- The selection is persisted, so the event only fires on explicit switches — the restored value at screen entry does not fire.
+- The selection is persisted, so the event only fires on explicit switches — the restored value at screen entry does not fire, and picking the option that is already selected only closes the menu.
+- `all` was added when the selector became a dropdown chip; `All` is the default when nothing is persisted (it used to be `OldTestament`).
 - Related: [books_search_used](books_search_used.md), [books_filter_toggled](books_filter_toggled.md).

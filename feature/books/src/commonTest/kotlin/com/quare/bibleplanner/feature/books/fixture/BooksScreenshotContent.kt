@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -12,7 +11,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.theme.Theme
@@ -20,7 +18,9 @@ import com.quare.bibleplanner.feature.books.presentation.BooksScreen
 import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilter
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import org.jetbrains.compose.resources.stringResource
@@ -101,12 +101,7 @@ internal fun BooksScreenshotContent(statusBarHeight: Dp) {
                         BooksScreen(
                             state = rememberBooksUiState(),
                             isScrolled = false,
-                            searchGridState = rememberLazyGridState(),
-                            searchListState = rememberLazyGridState(),
-                            oldTestamentGridState = rememberLazyGridState(),
-                            oldTestamentListState = rememberLazyGridState(),
-                            newTestamentGridState = rememberLazyGridState(),
-                            newTestamentListState = rememberLazyGridState(),
+                            lazyGridStates = rememberBooksLazyGridStates(),
                             sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this@AnimatedVisibility,
                             onEvent = {},
@@ -125,9 +120,9 @@ private fun rememberBooksUiState(): BooksUiState.Success {
     return BooksUiState.Success(
         books = pentateuchBooks + historical,
         filteredBooks = pentateuchBooks + historical,
-        selectedTestament = BookTestament.OldTestament,
+        selectedTestamentFilter = BookTestamentFilter.All,
         searchQuery = "",
-        groupsInTestament = listOf(
+        visibleGroups = listOf(
             BookGroupPresentationModel(
                 group = BookGroup.Pentateuch,
                 books = pentateuchBooks,
@@ -141,6 +136,7 @@ private fun rememberBooksUiState(): BooksUiState.Success {
         shouldShowTestamentToggle = true,
         isFilterMenuVisible = false,
         isSortMenuVisible = false,
+        isTestamentMenuVisible = false,
         sortOrder = null,
         layoutFormat = BookLayoutFormat.Grid,
     )

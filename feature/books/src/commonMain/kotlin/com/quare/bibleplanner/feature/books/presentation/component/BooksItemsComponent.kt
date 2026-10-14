@@ -43,7 +43,8 @@ fun BooksItemsComponent(
                         key = "testament_toggle_item",
                     ) {
                         BookToggleRow(
-                            selectedTestament = state.selectedTestament,
+                            selectedTestamentFilter = state.selectedTestamentFilter,
+                            isTestamentMenuVisible = state.isTestamentMenuVisible,
                             selectedLayoutFormat = state.layoutFormat,
                             onEvent = onEvent,
                         )
@@ -66,7 +67,7 @@ fun BooksItemsComponent(
                         )
                     }
                 } else {
-                    state.groupsInTestament.forEach { presentationGroup ->
+                    state.visibleGroups.forEach { presentationGroup ->
                         responsiveItem(
                             span = { GridItemSpan(totalColumns) },
                             key = "header-${presentationGroup.group}",
