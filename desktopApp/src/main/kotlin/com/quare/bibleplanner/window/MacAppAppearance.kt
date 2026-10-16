@@ -30,7 +30,7 @@ internal object MacAppAppearance {
     }
 
     fun apply(isDarkTheme: Boolean) {
-        if (!isMac || appliedIsDarkTheme == isDarkTheme) return
+        if (appliedIsDarkTheme == isDarkTheme) return
         // Why: set before the native call so a broken JNA setup isn't retried on every recomposition.
         appliedIsDarkTheme = isDarkTheme
         runCatching { setApplicationAppearance(if (isDarkTheme) DARK_AQUA else AQUA) }
