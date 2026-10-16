@@ -102,6 +102,11 @@ compose.desktop {
                 $$"-Djava.library.path=$APPDIR/resources:$APPDIR",
                 $$"-Djna.boot.library.path=$APPDIR/resources",
             )
+            if (isMacAppStoreBuild) {
+                // In the sandbox JNA's unpack fallback hangs the AWT thread on a quarantined dlopen;
+                // disabling it turns a missing bundled libjnidispatch into a catchable UnsatisfiedLinkError.
+                jvmArgs += listOf("-Djna.nounpack=true")
+            }
         }
 
         nativeDistributions {
