@@ -1,4 +1,9 @@
 {
+  "2.15.0": {
+    "desktop": [
+      "On Mac, the window's title bar now follows the app's theme: it turns dark with the dark theme and light with the light theme, and changes right away when you switch themes."
+    ]
+  },
   "2.14.0": {
     "common": [
       "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first.",

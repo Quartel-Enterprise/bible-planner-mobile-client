@@ -19,6 +19,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionD
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.login.di.jvmLoginModule
 import com.quare.bibleplanner.notification.DesktopBibleVersionDownloadNotifier
+import com.quare.bibleplanner.window.MacAppAppearance
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.GlobalContext
@@ -27,6 +28,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun main() {
+    MacAppAppearance.followSystemAtLaunch()
     application {
         initializeKoin(
             platformModules = listOf(
@@ -54,7 +56,7 @@ fun main() {
             onCloseRequest = ::exitApplication,
             title = stringResource(Res.string.app_title),
         ) {
-            AppRoot()
+            AppRoot(onThemeResolved = MacAppAppearance::apply)
         }
     }
 }
