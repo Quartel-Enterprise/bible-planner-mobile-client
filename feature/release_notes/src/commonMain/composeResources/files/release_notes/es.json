@@ -1,4 +1,9 @@
 {
+  "2.15.0": {
+    "desktop": [
+      "En Mac, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema."
+    ]
+  },
   "2.14.0": {
     "common": [
       "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día.",

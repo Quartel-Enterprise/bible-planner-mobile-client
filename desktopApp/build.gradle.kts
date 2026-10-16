@@ -30,17 +30,26 @@ dependencies {
     // Room — getDatabaseBuilder() exposes RoomDatabase.Builder in its signature
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.sqlite.bundled)
+
+    // macOS window appearance (Objective-C runtime calls)
+    implementation(projects.core.model)
+    implementation(projects.core.preferences.themeSelection)
+    implementation(projects.core.utils)
+    implementation(libs.jna)
+    implementation(libs.kermit)
 }
 
-// BundledSQLiteDriver extracts libsqliteJni.dylib to a writable directory and dlopen()s it.
-// Under the macOS App Sandbox, files created by the process are auto-quarantined and dlopen
-// of quarantined code hangs forever (Gatekeeper with no UI), deadlocking Room on the first
-// writer connection. Shipping the dylib inside the app image and putting it on
-// java.library.path makes the loader's System.loadLibrary attempt succeed before the
-// extract-and-load fallback runs. Harmless outside the sandbox (issue #204 spike).
-val extractSqliteNativeLibraries = tasks.register<Sync>("extractSqliteNativeLibraries") {
+// BundledSQLiteDriver extracts libsqliteJni.dylib to a writable directory and dlopen()s it, and
+// JNA does the same with libjnidispatch. Under the macOS App Sandbox, files created by the
+// process are auto-quarantined and dlopen of quarantined code hangs forever (Gatekeeper with no
+// UI), deadlocking Room on the first writer connection and the first JNA call. Shipping both
+// libraries inside the app image and pointing java.library.path and jna.boot.library.path at it
+// makes each loader find them before its extract-and-load fallback runs. Harmless outside the
+// sandbox (issue #204 spike).
+val extractNativeLibraries = tasks.register<Sync>("extractNativeLibraries") {
     description =
-        "Extracts the bundled SQLite JNI library so it ships inside the app image instead of being extracted at runtime."
+        "Extracts the bundled SQLite and JNA native libraries so they ship inside the app image instead of being " +
+        "extracted at runtime."
     from(
         configurations.runtimeClasspath.map { classpath ->
             classpath
@@ -54,7 +63,20 @@ val extractSqliteNativeLibraries = tasks.register<Sync>("extractSqliteNativeLibr
         }
         includeEmptyDirs = false
     }
-    into(layout.buildDirectory.dir("sqliteNatives"))
+    from(
+        configurations.runtimeClasspath.map { classpath ->
+            classpath
+                .filter { file -> file.name.matches(Regex("""jna-\d.*\.jar""")) }
+                .map(::zipTree)
+        },
+    ) {
+        include("com/sun/jna/darwin-aarch64/libjnidispatch.jnilib")
+        eachFile {
+            relativePath = RelativePath(true, "macos-arm64", name)
+        }
+        includeEmptyDirs = false
+    }
+    into(layout.buildDirectory.dir("nativeLibraries"))
 }
 
 // Mac App Store variant, selected with `-Pmas` (e.g. `./gradlew :desktopApp:packagePkg -Pmas`).
@@ -78,7 +100,15 @@ compose.desktop {
             // $APPDIR is expanded by the jpackage launcher at runtime; during `:desktopApp:run`
             // the literal path simply misses and the driver falls back to extraction, which is
             // fine outside the sandbox.
-            jvmArgs += listOf($$"-Djava.library.path=$APPDIR/resources:$APPDIR")
+            jvmArgs += listOf(
+                $$"-Djava.library.path=$APPDIR/resources:$APPDIR",
+                $$"-Djna.boot.library.path=$APPDIR/resources",
+            )
+            if (isMacAppStoreBuild) {
+                // In the sandbox JNA's unpack fallback hangs the AWT thread on a quarantined dlopen;
+                // disabling it turns a missing bundled libjnidispatch into a catchable UnsatisfiedLinkError.
+                jvmArgs += listOf("-Djna.nounpack=true")
+            }
         }
 
         nativeDistributions {
@@ -102,7 +132,7 @@ compose.desktop {
             // bundled protobuf dies with NoClassDefFoundError on the first write.
             modules("java.instrument", "java.management", "java.prefs", "jdk.security.auth", "jdk.unsupported")
 
-            appResourcesRootDir.set(layout.dir(extractSqliteNativeLibraries.map(Sync::getDestinationDir)))
+            appResourcesRootDir.set(layout.dir(extractNativeLibraries.map(Sync::getDestinationDir)))
 
             macOS {
                 iconFile.set(project.file("../icons/bible_planner_logo.icns"))
