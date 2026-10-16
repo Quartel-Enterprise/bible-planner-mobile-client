@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.window
 
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.utils.DesktopOs
 import com.sun.jna.Function
 import com.sun.jna.Native
 import com.sun.jna.NativeLibrary
@@ -12,11 +13,14 @@ import java.awt.event.HierarchyEvent
 /*
  * Why: Windows draws a light title bar unless DWM is told the window is dark, and AWT never tells
  * it, so the title bar stayed white under the dark theme. DWMWA_USE_IMMERSIVE_DARK_MODE switches
- * it per window, live, on Windows 10 1809+ and Windows 11.
+ * it per window, live, on Windows 10 1809+ and Windows 11. It takes the resolved theme rather than
+ * the Theme flow MacAppAppearance follows, because DWM has no "follow the OS" value like nil on macOS.
  */
 internal class WindowsTitleBarAppearance(
     private val window: Window,
 ) {
+    private val isWindows = DesktopOs.detect() == DesktopOs.WINDOWS
+
     // Why: Win32 functions are stdcall, which only differs from the C convention on 32-bit Windows.
     private val dwmSetWindowAttribute by lazy {
         NativeLibrary.getInstance("dwmapi").getFunction("DwmSetWindowAttribute", Function.ALT_CONVENTION)
@@ -30,31 +34,39 @@ internal class WindowsTitleBarAppearance(
         listOf(DWMWA_USE_IMMERSIVE_DARK_MODE, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1)
     private var requestedIsDarkTheme: Boolean? = null
     private var appliedIsDarkTheme: Boolean? = null
+    private var isDarkModeSupported = true
 
     init {
         /*
          * Why: the first theme usually resolves before AWT creates the HWND. Applying it when the
-         * window becomes displayable, before it is shown, avoids a light title bar flashing first,
-         * and re-applies it if AWT ever recreates the native window.
+         * window becomes displayable, before it is shown, avoids a light title bar flashing first;
+         * showing it retries an attempt that failed before, and a recreated HWND gets it again.
          */
-        window.addHierarchyListener { event ->
-            if (event.changeFlags and HierarchyEvent.DISPLAYABILITY_CHANGED.toLong() == 0L) return@addHierarchyListener
-            appliedIsDarkTheme = null
-            if (window.isDisplayable) requestedIsDarkTheme?.let(::applyToNativeWindow)
+        if (isWindows) {
+            window.addHierarchyListener { event ->
+                val isDisplayabilityChange = event.changeFlags and HierarchyEvent.DISPLAYABILITY_CHANGED.toLong() != 0L
+                if (isDisplayabilityChange) appliedIsDarkTheme = null
+                if (window.isDisplayable) requestedIsDarkTheme?.let(::applyToNativeWindow)
+            }
         }
     }
 
     fun apply(isDarkTheme: Boolean) {
+        if (!isWindows) return
         requestedIsDarkTheme = isDarkTheme
         if (window.isDisplayable) applyToNativeWindow(isDarkTheme)
     }
 
     private fun applyToNativeWindow(isDarkTheme: Boolean) {
-        if (appliedIsDarkTheme == isDarkTheme) return
+        if (!isDarkModeSupported || appliedIsDarkTheme == isDarkTheme) return
         // Why: set before the native call so a broken JNA setup isn't retried on every recomposition.
         appliedIsDarkTheme = isDarkTheme
         runCatching { setImmersiveDarkMode(Native.getWindowPointer(window), isDarkTheme) }
-            .onFailure { throwable -> Logger.e(throwable) { "Failed to set the Windows title bar theme" } }
+            .onFailure { throwable ->
+                Logger.e(throwable) { "Failed to set the Windows title bar theme" }
+                // Why: JAWT may not hand out the HWND before the window is shown; showing it retries once.
+                if (!window.isShowing) appliedIsDarkTheme = null
+            }
     }
 
     private fun setImmersiveDarkMode(
@@ -67,6 +79,7 @@ internal class WindowsTitleBarAppearance(
         }
         if (!isApplied) {
             // Why: Windows 8.1 and Windows 10 before 1809 have no dark title bar; that's expected, not an error.
+            isDarkModeSupported = false
             Logger.w { "This Windows version doesn't support a dark title bar" }
             return
         }

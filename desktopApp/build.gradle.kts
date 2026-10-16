@@ -32,6 +32,8 @@ dependencies {
     implementation(libs.androidx.sqlite.bundled)
 
     // Window appearance (Objective-C runtime and Win32 calls)
+    implementation(projects.core.model)
+    implementation(projects.core.preferences.themeSelection)
     implementation(projects.core.utils)
     implementation(libs.jna)
     implementation(libs.kermit)
@@ -102,6 +104,11 @@ compose.desktop {
                 $$"-Djava.library.path=$APPDIR/resources:$APPDIR",
                 $$"-Djna.boot.library.path=$APPDIR/resources",
             )
+            if (isMacAppStoreBuild) {
+                // In the sandbox JNA's unpack fallback hangs the AWT thread on a quarantined dlopen;
+                // disabling it turns a missing bundled libjnidispatch into a catchable UnsatisfiedLinkError.
+                jvmArgs += listOf("-Djna.nounpack=true")
+            }
         }
 
         nativeDistributions {
