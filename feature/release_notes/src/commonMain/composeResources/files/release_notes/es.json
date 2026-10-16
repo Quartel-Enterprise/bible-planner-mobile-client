@@ -1,7 +1,7 @@
 {
   "2.15.0": {
     "desktop": [
-      "En Mac, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema."
+      "En Mac y Windows, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema."
     ]
   },
   "2.14.0": {

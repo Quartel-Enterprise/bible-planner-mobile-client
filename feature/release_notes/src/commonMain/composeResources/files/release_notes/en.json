@@ -1,7 +1,7 @@
 {
   "2.15.0": {
     "desktop": [
-      "On Mac, the window's title bar now follows the app's theme: it turns dark with the dark theme and light with the light theme, and changes right away when you switch themes."
+      "On Mac and Windows, the window's title bar now follows the app's theme: it turns dark with the dark theme and light with the light theme, and changes right away when you switch themes."
     ]
   },
   "2.14.0": {

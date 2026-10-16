@@ -31,7 +31,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.sqlite.bundled)
 
-    // macOS window appearance (Objective-C runtime calls)
+    // Window appearance (Objective-C runtime and Win32 calls)
     implementation(projects.core.utils)
     implementation(libs.jna)
     implementation(libs.kermit)
