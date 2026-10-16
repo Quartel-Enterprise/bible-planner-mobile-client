@@ -32,6 +32,8 @@ dependencies {
     implementation(libs.androidx.sqlite.bundled)
 
     // macOS window appearance (Objective-C runtime calls)
+    implementation(projects.core.model)
+    implementation(projects.core.preferences.themeSelection)
     implementation(projects.core.utils)
     implementation(libs.jna)
     implementation(libs.kermit)
