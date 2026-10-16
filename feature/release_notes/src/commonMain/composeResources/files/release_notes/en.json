@@ -1,6 +1,7 @@
 {
   "2.15.0": {
     "desktop": [
+      "On Mac, the window's title bar now follows the app's theme: it turns dark with the dark theme and light with the light theme, and changes right away when you switch themes.",
       "You can now listen to chapters on your computer too: click the headphones icon in the reader to hear the Bible narrated, with speed control, a sleep timer, the words highlighted as they are read and automatic moving on to the next chapter."
     ]
   },

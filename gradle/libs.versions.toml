@@ -68,6 +68,7 @@ kermit = "2.2.0"
 koin = "4.2.2"
 ktor = "3.6.0"
 install-referrer = "2.2"
+jna = "5.19.1"
 play-app-update = "2.1.0"
 # AdMob 25.5.0 brings hsdp 2.0.1, whose HsdpShimActivity crashes when launched without its extras (Crashlytics 80e49a5e);
 # drop once play-services-ads depends on hsdp >= 2.2.0
@@ -224,6 +225,9 @@ filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose
 
 # JLayer, the pure-Java MP3 decoder behind chapter listening on desktop
 javazoom-jlayer = { module = "javazoom:jlayer", version.ref = "javazoom-jlayer" }
+
+# JNA
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 
 # RevenueCat
 revenuecat-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "revenuecat" }
