@@ -1,4 +1,9 @@
 {
+  "2.15.0": {
+    "desktop": [
+      "You can now listen to chapters on your computer too: click the headphones icon in the reader to hear the Bible narrated, with speed control, a sleep timer, the words highlighted as they are read and automatic moving on to the next chapter."
+    ]
+  },
   "2.14.0": {
     "common": [
       "When you are behind in your plan, the \"Resume reading\" button now opens the reader right at the first chapter of the day you haven't read yet, without going through the day screen first.",

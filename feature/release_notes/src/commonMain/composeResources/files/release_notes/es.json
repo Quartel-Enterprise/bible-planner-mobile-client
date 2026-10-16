@@ -1,4 +1,9 @@
 {
+  "2.15.0": {
+    "desktop": [
+      "Ahora también puedes escuchar los capítulos en la computadora: haz clic en el ícono de auriculares en la lectura para escuchar la Biblia narrada, con control de velocidad, temporizador para dormir, las palabras resaltadas mientras se leen y el paso automático al siguiente capítulo."
+    ]
+  },
   "2.14.0": {
     "common": [
       "Cuando vas atrasado en el plan, el botón \"Retomar lectura\" ahora abre la lectura directamente en el primer capítulo del día que aún no has leído, sin pasar antes por la pantalla del día.",
