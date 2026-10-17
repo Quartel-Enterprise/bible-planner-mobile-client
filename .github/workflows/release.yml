@@ -691,6 +691,38 @@ jobs:
           $release_files
           EOF
 
+      # LGPL 2.1 requires every copy of the app to carry JLayer's notice, the
+      # license text and the library's source (docs/third-party-notices.md), and a
+      # change to the app resources would drop them without failing the build.
+      # Checks the resources handed to jpackage on every OS, the macOS app image,
+      # and the contents of the .deb and the .rpm.
+      - name: Verify the installers carry the third-party notices
+        shell: bash
+        run: |
+          required=(
+            'licenses/THIRD-PARTY-NOTICES\.txt'
+            'licenses/LGPL-2\.1\.txt'
+            'licenses/jlayer-[0-9.]+-sources\.jar'
+          )
+          check() {
+            local name="$1" listing="$2"
+            for pattern in "${required[@]}"; do
+              grep -qE "${pattern}\$" <<<"$listing" || {
+                echo "::error::${name} has no ${pattern//\\/}"
+                exit 1
+              }
+            done
+            echo "Third-party notices found in ${name}"
+          }
+          check "the app resources" "$(find desktopApp/build/compose/tmp/prepareAppResources -type f)"
+          if [ "$RUNNER_OS" = macOS ]; then
+            check "the macOS app image" "$(find desktopApp/build/compose/binaries/main/app -type f)"
+          fi
+          if [ "$RUNNER_OS" = Linux ]; then
+            check "the .deb" "$(dpkg-deb -c desktopApp/build/compose/binaries/main/deb/*.deb)"
+            check "the .rpm" "$(rpm -qlp desktopApp/build/compose/binaries/main/rpm/*.rpm)"
+          fi
+
       # Each format lands in its own directory, so uploading them directly would
       # root the Linux artifact at `main/` and nest the files under deb/ and rpm/.
       # finalize globs the download for files, so collect them flat instead.

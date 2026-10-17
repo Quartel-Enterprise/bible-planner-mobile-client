@@ -15,6 +15,11 @@ kotlin {
     }
 }
 
+// LGPL 2.1 section 6(a): the app ships each LGPL library's source next to its notice.
+val lgplLibrarySources = configurations.register("lgplLibrarySources") {
+    isTransitive = false
+}
+
 dependencies {
     implementation(projects.shared)
 
@@ -37,6 +42,8 @@ dependencies {
     implementation(projects.core.utils)
     implementation(libs.jna)
     implementation(libs.kermit)
+
+    lgplLibrarySources(variantOf(libs.javazoom.jlayer) { classifier("sources") })
 }
 
 // BundledSQLiteDriver extracts libsqliteJni.dylib to a writable directory and dlopen()s it, and
@@ -46,10 +53,18 @@ dependencies {
 // libraries inside the app image and pointing java.library.path and jna.boot.library.path at it
 // makes each loader find them before its extract-and-load fallback runs. Harmless outside the
 // sandbox (issue #204 spike).
-val extractNativeLibraries = tasks.register<Sync>("extractNativeLibraries") {
+// The same app resources carry desktopApp/licenses and the LGPL library sources: LGPL 2.1 requires
+// every copy of the app to include JLayer's notice, the license text and the library's source, and
+// `common` resources land in the app image of every target, the Mac App Store .pkg included
+// (docs/third-party-notices.md).
+val collectAppResources = tasks.register<Sync>("collectAppResources") {
     description =
-        "Extracts the bundled SQLite and JNA native libraries so they ship inside the app image instead of being " +
-        "extracted at runtime."
+        "Collects the app resources: the third-party license notices with the LGPL library sources, and the " +
+        "bundled SQLite and JNA native libraries so they ship inside the app image instead of being extracted at " +
+        "runtime."
+    from(files("licenses", lgplLibrarySources)) {
+        into("common/licenses")
+    }
     from(
         configurations.runtimeClasspath.map { classpath ->
             classpath
@@ -76,7 +91,7 @@ val extractNativeLibraries = tasks.register<Sync>("extractNativeLibraries") {
         }
         includeEmptyDirs = false
     }
-    into(layout.buildDirectory.dir("nativeLibraries"))
+    into(layout.buildDirectory.dir("appResources"))
 }
 
 // Mac App Store variant, selected with `-Pmas` (e.g. `./gradlew :desktopApp:packagePkg -Pmas`).
@@ -132,7 +147,7 @@ compose.desktop {
             // bundled protobuf dies with NoClassDefFoundError on the first write.
             modules("java.instrument", "java.management", "java.prefs", "jdk.security.auth", "jdk.unsupported")
 
-            appResourcesRootDir.set(layout.dir(extractNativeLibraries.map(Sync::getDestinationDir)))
+            appResourcesRootDir.set(layout.dir(collectAppResources.map(Sync::getDestinationDir)))
 
             macOS {
                 iconFile.set(project.file("../icons/bible_planner_logo.icns"))

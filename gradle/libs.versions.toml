@@ -63,6 +63,7 @@ coil = "3.6.3"
 crashkios = "0.10.0"
 filekit = "0.16.0"
 firebase-bom = "35.0.0"
+# Bump together with desktopApp/licenses/THIRD-PARTY-NOTICES.txt (docs/third-party-notices.md)
 javazoom-jlayer = "1.0.1"
 kermit = "2.2.0"
 koin = "4.2.2"
