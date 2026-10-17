@@ -12,7 +12,7 @@ repository's 10 GB cache budget:
   path set it: `build`, the `android` shards and `ios` of `ui-tests`. `unit-tests` stays
   read-only and restores `main`'s entry.
 - **`GRADLE_CACHE_READ_ONLY=true`** never writes, even on `main`. It is for jobs that barely use
-  Gradle (`ktlint`, `module-graph`): their small entries would take up the budget, and since
+  Gradle (`module-graph`): their small entries would take up the budget, and since
   setup-gradle falls back to the most recent entry of any job, another job could restore one of
   them instead of a useful one.
 
@@ -49,8 +49,8 @@ Crashlytics mapping file id and uploads its mapping file. Every other release bu
 the id is random per build and the commit changes on every run, so either would keep R8 from ever
 coming from the cache, even for a pull request that doesn't touch the app's code.
 
-The ktlint action caches its own things: the CLI, keyed by version, and the custom ruleset jar,
-keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
+The ktlint action needs no Gradle: it caches the ktlint CLI and the custom ruleset jar from Maven
+Central, keyed by their versions in the catalog.
 
 ## Merge when green
 

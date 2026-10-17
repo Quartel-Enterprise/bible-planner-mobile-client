@@ -30,8 +30,8 @@ This applies to:
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
 
-Both halves are enforced by the custom ktlint rule `bible-planner-style:unit-function-block-body` (in
-`tools/ktlint-custom-rules`). Ktlint has no type resolution, but it doesn't need it here: an expression body
+Both halves are enforced by the custom ktlint rule `quare:unit-function-block-body` (in
+[ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)). Ktlint has no type resolution, but it doesn't need it here: an expression body
 with no return type is wrong either way. If it returns `Unit` it needs a block body, otherwise it needs the
 type. So the rule flags every expression body that declares `: Unit` or no return type at all, including
 `= dataStore.write(...)` and `= Unit`. Two kinds are left alone:
@@ -117,7 +117,7 @@ Note that `get` is **not** a catch-all. In Kotlin a parameterless `getX()` shoul
 `get` on a factory would claim the instance already exists.
 
 This is enforced automatically by the custom ktlint rule
-`bible-planner-style:value-returning-function-naming` (in `tools/ktlint-custom-rules`), which flags any
+`quare:value-returning-function-naming` (in [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)), which flags any
 function with a non-`Unit` return type whose name does not start with an approved verb.
 
 **Exempt** (the rule skips these):
@@ -202,7 +202,7 @@ This does **not** apply to:
 - Actual constants: `private const val` at companion-object scope stays `UPPER_SNAKE_CASE` (see [dry.md](dry.md) / no-constant-value-params convention).
 - Public `CompositionLocal` instances (e.g. `val LocalSnackbarHostState = ...`) and public singleton-like objects (e.g. `val NoClip = object : ...`) — these keep `PascalCase`, following standard Compose/Kotlin convention for object-like values.
 
-This is enforced automatically: the custom ktlint rule `bible-planner-style:private-top-level-val-naming` (in `tools/ktlint-custom-rules`) fails the build on a violation. Stock ktlint's `standard:property-naming` rule permits `PascalCase` for this kind of file-scoped `Dp`/`Color`-typed `val` (it treats them as "constant-like"), which is why a dedicated rule was needed.
+This is enforced automatically: the custom ktlint rule `quare:private-top-level-val-naming` (in [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)) fails the build on a violation. Stock ktlint's `standard:property-naming` rule permits `PascalCase` for this kind of file-scoped `Dp`/`Color`-typed `val` (it treats them as "constant-like"), which is why a dedicated rule was needed.
 
 ## Positioning File-Scoped Constants
 
@@ -228,7 +228,7 @@ private val buttonMinHeight = 44.dp
 private const val ANIMATION_MILLIS = 300
 ```
 
-This is enforced automatically by the custom ktlint rule `bible-planner-style:top-level-val-position` (same module as above).
+This is enforced automatically by the custom ktlint rule `quare:top-level-val-position` (same module as above).
 
 ## Blank Lines Between File-Scoped Constants
 
@@ -251,7 +251,7 @@ private val progressIconSize = 44.dp
 private val progressSpacing = 18.dp
 ```
 
-Enforced by the custom ktlint rule `bible-planner-style:top-level-val-blank-line`. It is scoped to *private* top-level properties — public top-level `val`s (e.g. the generated color palettes in `ui/theme`) may keep blank lines between groups.
+Enforced by the custom ktlint rule `quare:top-level-val-blank-line`. It is scoped to *private* top-level properties — public top-level `val`s (e.g. the generated color palettes in `ui/theme`) may keep blank lines between groups.
 
 ## When-Entry Bodies
 
@@ -284,7 +284,7 @@ SessionStatus.NotAuthenticated ->
 
 Braces stay when a branch is genuinely multi-statement, or when the branch's sole statement is itself a bare lambda literal (removing the outer braces there would change meaning — the outer `{ }` is the required block syntax, not optional wrapping).
 
-Because this is the opposite of stock ktlint's `standard:when-entry-bracing` (which forces braces onto *every* entry in a `when` if *any* entry needs them), that stock rule is disabled in `.editorconfig` (`ktlint_standard_when-entry-bracing = disabled`) in favor of the custom rule `bible-planner-style:when-entry-single-statement-braces` (in `tools/ktlint-custom-rules`).
+Because this is the opposite of stock ktlint's `standard:when-entry-bracing` (which forces braces onto *every* entry in a `when` if *any* entry needs them), that stock rule is disabled in `.editorconfig` (`ktlint_standard_when-entry-bracing = disabled`) in favor of the custom rule `quare:when-entry-single-statement-braces` (in [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)).
 
 ## fun interface
 
@@ -304,7 +304,7 @@ interface GetUserUseCase {
 
 Exception: if the single abstract method has a parameter with a default value, it **cannot** be a `fun interface` (Kotlin forbids default parameter values on a SAM's abstract method) — leave it as a plain `interface`.
 
-Enforced by the custom ktlint rule `bible-planner-style:fun-interface-required`.
+Enforced by the custom ktlint rule `quare:fun-interface-required`.
 
 ### No redundant SAM constructors
 
@@ -318,7 +318,7 @@ someUseCaseConsumer(onResult = { user -> ... })
 someUseCaseConsumer(onResult = GetUserUseCase { user -> ... })
 ```
 
-Best-effort enforcement by the custom ktlint rule `bible-planner-style:redundant-sam-constructor-argument`. Note this rule can only see fun interfaces declared in the *same file* as the call site (ktlint rules don't do cross-file type resolution), so it won't catch every case — treat it as a net, not a guarantee, when reviewing code that constructs a fun interface from a different module than where it's declared.
+Best-effort enforcement by the custom ktlint rule `quare:redundant-sam-constructor-argument`. Note this rule can only see fun interfaces declared in the *same file* as the call site (ktlint rules don't do cross-file type resolution), so it won't catch every case — treat it as a net, not a guarantee, when reviewing code that constructs a fun interface from a different module than where it's declared.
 
 ## Method References
 
@@ -348,7 +348,7 @@ import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
 versionAbbreviation = selectedBible?.version?.id?.uppercase()?.let(::Loaded) ?: Loadable.Loading
 ```
 
-Partially enforced by the custom ktlint rule `bible-planner-style:prefer-method-reference`. Ktlint resolves
+Partially enforced by the custom ktlint rule `quare:prefer-method-reference`. Ktlint resolves
 no types, so the rule only fires when the called function is declared in the *same file* — there it can read
 the declaration and rule out the `suspend`, `@Composable` and receiver cases above. A forwarding lambda
 around a function from another file (including the `Loaded` example) is left alone rather than guessed at:
@@ -380,7 +380,7 @@ is inferred from its initializer, so `MutableStateFlow(DayUiState.Loading)` woul
 not on `var`, `open`, delegated properties or properties with a custom getter. A `Channel` exposed through
 `receiveAsFlow()` is not a subtype of the flow it exposes, so it keeps a private backing property.
 
-Enforced by the custom ktlint rule `bible-planner-style:explicit-backing-field`, which flags a private `_name`
+Enforced by the custom ktlint rule `quare:explicit-backing-field`, which flags a private `_name`
 `val` whose only purpose is to be exposed as `name` (directly, or through `asStateFlow()`/`asSharedFlow()`).
 
 ## Where a `private val` Lives
@@ -437,8 +437,8 @@ class ReaderSettingsRepositoryImpl(...) : ReaderSettingsRepository {
 }
 ```
 
-Enforced by two custom ktlint rules. `bible-planner-style:companion-object-constants` flags a non-`const`
-property that is private, or that sits in a `private companion object`. `bible-planner-style:top-level-val-ownership`
+Enforced by two custom ktlint rules. `quare:companion-object-constants` flags a non-`const`
+property that is private, or that sits in a `private companion object`. `quare:top-level-val-ownership`
 flags the opposite mistake — a top-level `private val` or `private const val` read by exactly one class or object
 of the file — and says where it goes. It decides by **where the value is read**, which keeps the exceptions above
 without type resolution: a constant read by a top-level `@Composable` has a reader outside every class, and a
@@ -464,7 +464,7 @@ class DevicesSynchronizer(...) {
 }
 ```
 
-Enforced by the custom ktlint rule `bible-planner-style:companion-object-duration`, which recognises a `Duration`
+Enforced by the custom ktlint rule `quare:companion-object-duration`, which recognises a `Duration`
 by its declared type or by an initializer such as `2.seconds`, `Duration.parse(...)` or `.toDuration(...)`. A
 private one is already reported by `companion-object-constants`, so this rule covers the public and internal ones.
 
@@ -488,7 +488,7 @@ private companion object {
 }
 ```
 
-Enforced by the custom ktlint rule `bible-planner-style:manual-time-unit-conversion`, which reports a multiplication
+Enforced by the custom ktlint rule `quare:manual-time-unit-conversion`, which reports a multiplication
 with two or more different factors out of 24, 60, 3600 and 1000, at least one of them other than 1000
 (`minutes * 60 * 1000`, `24L * 60 * 60`, `30u * 60u * 1000u`, `seconds * 60.0 * 1000`). A single factor
 (`seconds * 1000`) and a repeated one (`1000 * 1000`, `60 * 60`, `24 * 24`) are left alone, since they are as often
@@ -511,7 +511,7 @@ internal class DeviceClockTimestampProvider : CurrentTimestampProvider { ... }
 
 Exempt: a `sealed interface` and its cases (the hierarchy *is* the file), a `private` interface, and an
 implementation nested inside the interface itself. Enforced by the custom ktlint rule
-`bible-planner-style:interface-implementation-separate-files`.
+`quare:interface-implementation-separate-files`.
 
 ## Constructor Properties That Could Be Parameters
 
@@ -535,7 +535,7 @@ class DayStudyPanelViewModel(
 }
 ```
 
-Enforced by the custom ktlint rule `bible-planner-style:redundant-private-constructor-property`. It has no type
+Enforced by the custom ktlint rule `quare:redundant-private-constructor-property`. It has no type
 resolution, so it reports only what it can prove: any read from a method, an accessor, a nested class or through
 a qualifier (`this.x`) keeps the property.
 
@@ -546,7 +546,7 @@ as one block and what it only consumes while being built as another. When the ru
 into a plain parameter, the parameter also moves to the end. Call constructors with named arguments (or let Koin
 resolve them by type) and the order never reaches a call site.
 
-Enforced by the custom ktlint rule `bible-planner-style:constructor-property-order`. It is not autocorrected:
+Enforced by the custom ktlint rule `quare:constructor-property-order`. It is not autocorrected:
 moving a parameter changes the meaning of every positional call.
 
 ## Unused Parameters
@@ -554,7 +554,7 @@ moving a parameter changes the meaning of every positional call.
 Every parameter of a function is read by it. One that is not is a promise the signature does not keep: each
 caller has to produce a value that changes nothing. Remove it, along with the argument at every call site.
 
-Enforced by the custom ktlint rule `bible-planner-style:unused-function-parameter`. Functions whose signature is
+Enforced by the custom ktlint rule `quare:unused-function-parameter`. Functions whose signature is
 dictated from outside are skipped — `override`, `open`, `abstract`, `operator`, `expect`/`actual`, `external` and
 interface members — as is anything annotated with `@Suppress("UNUSED_PARAMETER")`.
 
@@ -611,7 +611,7 @@ data class EndChapterDto(
   configured with `explicitNulls = false`, which reads an absent key as `null`. The mapper decides what a missing
   value means.
 
-Enforced by the custom ktlint rule `bible-planner-style:dto-serial-name`, on every `@Serializable` class whose name
+Enforced by the custom ktlint rule `quare:dto-serial-name`, on every `@Serializable` class whose name
 ends in `Dto`. A `*Dto` that is not serialized (e.g. `ProfileDto`, built by hand from a `JsonObject`) is not held
 to it.
 
@@ -643,7 +643,7 @@ A Room `@ColumnInfo(defaultValue = ...)` is a schema default, not a Kotlin one, 
 whose fields may be missing, see [DTOs](#dtos): the type is nullable instead, or the mapper reads the
 `JsonObject` directly.
 
-Enforced by the custom ktlint rule `bible-planner-style:data-class-default-value`. A `@Serializable` `*Dto` is left
+Enforced by the custom ktlint rule `quare:data-class-default-value`. A `@Serializable` `*Dto` is left
 to `dto-serial-name`, which reports the same thing with a DTO-specific message.
 
 ### One per file
@@ -668,7 +668,7 @@ A data class nested inside another declaration (the cases of a `sealed interface
 class that builds it) belongs to that declaration and stays where it is. Tests follow the rule too: a fixture
 model moves to its own `internal` file in the test source set.
 
-Enforced by the custom ktlint rule `bible-planner-style:data-class-own-file`.
+Enforced by the custom ktlint rule `quare:data-class-own-file`.
 
 ## Composable Naming
 
@@ -708,7 +708,7 @@ Not held to the list:
   [Function Naming](#function-naming) instead.
 - **`@Preview` functions**, named after what they preview.
 
-Enforced by the custom ktlint rule `bible-planner-style:composable-naming-suffix`. A genuinely new kind of UI gets
+Enforced by the custom ktlint rule `quare:composable-naming-suffix`. A genuinely new kind of UI gets
 a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.
 
 ## Comments Say Why, Never What
@@ -764,7 +764,7 @@ Comments stay welcome everywhere they are structure rather than narration:
   `// Then` markers.
 - **The build** — Gradle scripts (`*.kts`), `build-logic` and the version catalog.
 
-Enforced by the custom ktlint rule `bible-planner-style:comments-say-why`, which accepts only a one-line `// Why:` and a
+Enforced by the custom ktlint rule `quare:comments-say-why`, which accepts only a one-line `// Why:` and a
 multi-line `Why:` block in the shape above; the exemptions above are sections of `.editorconfig` that disable it. The
 rule checks the form, not the content: whether a `Why:` really explains a reason is for the review.
 
@@ -796,7 +796,7 @@ private fun RemoteConfigs.toHeaderRes(): StringResource = when {
 ```
 
 A branch matching several values becomes an `||` (or an `in` on a set the class holds). Enforced by the custom
-ktlint rule `bible-planner-style:two-branch-when`, which flags any `when` with exactly two entries, one of them
+ktlint rule `quare:two-branch-when`, which flags any `when` with exactly two entries, one of them
 `else`.
 
 ## Catching Exceptions in Coroutines
@@ -824,7 +824,7 @@ try {
 itself (e.g. `BibleVersionDownloadWorker` showing a paused state) or that catches a specific exception type is a
 different intent and stays a `try`.
 
-Enforced by the custom ktlint rule `bible-planner-style:suspend-run-catching`: it flags a `try` with a catch
+Enforced by the custom ktlint rule `quare:suspend-run-catching`: it flags a `try` with a catch
 clause that only rethrows its `CancellationException` and another that catches `Exception` or `Throwable`.
 
 ## File Length
@@ -845,7 +845,7 @@ A constructor that reaches Koin's 22-parameter limit for `viewModelOf` after an 
 in a `*UseCases` data class (see [Use cases](use-cases.md#use-case-aggregation-when-a-viewmodel-needs-many-use-cases)),
 as `ReadChapterUseCases` does.
 
-Enforced by the custom ktlint rule `bible-planner-style:max-file-length`, which counts lines the way the editor
+Enforced by the custom ktlint rule `quare:max-file-length`, which counts lines the way the editor
 numbers them (it matches `wc -l` only when the file ends in a newline, which `.editorconfig` asks for). It is
 disabled for the test source sets in `.editorconfig`: a test class grows with its scenarios.
 
@@ -856,8 +856,8 @@ rules that only run on test source sets (they are disabled for production code i
 
 | Rule | Enforces |
 | --- | --- |
-| `bible-planner-style:test-name-given-when-then` | [`GIVEN … WHEN … THEN …` names](../testing/given-when-then.md#naming), with only the characters D8 accepts |
-| `bible-planner-style:test-body-sections` | [`// Given`, `// When`, `// Then`](../testing/given-when-then.md), once each and in order |
-| `bible-planner-style:prepare-scenario-returns-unit` | [`prepareScenario`](../testing/prepare-scenario.md) returns nothing |
-| `bible-planner-style:prepare-scenario-last-member` | `prepareScenario` is the last member, before only the companion object |
-| `bible-planner-style:prepare-scenario-in-given` | tests call `prepareScenario` under `// Given` |
+| `quare:test-name-given-when-then` | [`GIVEN … WHEN … THEN …` names](../testing/given-when-then.md#naming), with only the characters D8 accepts |
+| `quare:test-body-sections` | [`// Given`, `// When`, `// Then`](../testing/given-when-then.md), once each and in order |
+| `quare:prepare-scenario-returns-unit` | [`prepareScenario`](../testing/prepare-scenario.md) returns nothing |
+| `quare:prepare-scenario-last-member` | `prepareScenario` is the last member, before only the companion object |
+| `quare:prepare-scenario-in-given` | tests call `prepareScenario` under `// Given` |

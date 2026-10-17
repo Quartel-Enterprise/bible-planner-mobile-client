@@ -1,7 +1,7 @@
 # Code quality
 
 The project uses ktlint for formatting and style, extended with the custom rules in
-[`tools/ktlint-custom-rules`](../tools/ktlint-custom-rules). What those rules enforce, and the
+[`Quartel-Enterprise/ktlint-rules`](https://github.com/Quartel-Enterprise/ktlint-rules). What those rules enforce, and the
 conventions behind them, is documented in [Code style](architecture/code-style.md).
 
 ## Running it
@@ -16,8 +16,23 @@ CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same c
 ./scripts/ktlint.sh --format   # autocorrect what can be autocorrected
 ```
 
-The script downloads the ktlint CLI once (cached in `~/.cache/ktlint`) and rebuilds the custom
-ruleset jar only when its sources change.
+The script downloads the ktlint CLI and the custom ruleset jar once per version (cached in
+`~/.cache/ktlint`). Both versions live in `gradle/libs.versions.toml` (`ktlint` and
+`quare-ktlint-rules`), and the Gradle `ktlintRuleset` dependency reads the same entry.
+
+## Changing a custom rule
+
+The rules are shared with the other Quare projects, so a new or changed rule goes to
+[ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules) first. To try it here before it is
+released, build the jar there and point the script at it:
+
+```bash
+KTLINT_RULESET_JAR=../ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
+```
+
+Once it is released, bump `quare-ktlint-rules` in the catalog. Each ruleset release is built against
+one ktlint version, so a ktlint upgrade waits for a ruleset release built against it, and both
+versions move together.
 
 `./gradlew ktlintCheck` still works, but it is much slower: it drags KSP and Kotlin/Native
 compilation into the task graph to check files that are already on disk.

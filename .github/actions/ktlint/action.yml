@@ -1,50 +1,22 @@
 name: 'Run ktlint'
 description: 'Runs ktlint check and annotates results'
 
-inputs:
-  cache-encryption-key:
-    description: 'Forwarded to the Gradle setup used when the ruleset jar has to be rebuilt.'
-    required: false
-    default: ''
 runs:
   using: "composite"
   steps:
-    - name: Read ktlint version
-      id: ktlint-version
+    - name: Read ktlint and ruleset versions
+      id: versions
       shell: bash
       run: |
-        VERSION=$(sed -nE 's/^ktlint[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
-        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        KTLINT=$(sed -nE 's/^ktlint[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
+        RULESET=$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
+        echo "key=$KTLINT-$RULESET" >> "$GITHUB_OUTPUT"
 
-    - name: Cache ktlint CLI
+    - name: Cache ktlint CLI and ruleset
       uses: actions/cache@v6
       with:
         path: ~/.cache/ktlint
-        key: ktlint-cli-${{ steps.ktlint-version.outputs.version }}
-
-    - name: Cache custom ruleset jar
-      id: ruleset-cache
-      uses: actions/cache@v6
-      with:
-        path: tools/ktlint-custom-rules/build/libs/ktlint-custom-rules.jar
-        key: >-
-          ktlint-ruleset-${{ steps.ktlint-version.outputs.version }}-${{
-          hashFiles('tools/ktlint-custom-rules/**/*.kt', 'tools/ktlint-custom-rules/build.gradle.kts',
-          'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
-
-    # actions/checkout stamps every source file with the current time, so a restored jar would
-    # always look stale to the mtime check in ktlint.sh. The cache key already pins the sources.
-    - name: Mark cached ruleset jar as up to date
-      if: steps.ruleset-cache.outputs.cache-hit == 'true'
-      shell: bash
-      run: touch tools/ktlint-custom-rules/build/libs/ktlint-custom-rules.jar
-
-    # Gradle is only needed to rebuild the ruleset jar, which changes rarely
-    - name: Setup Gradle
-      if: steps.ruleset-cache.outputs.cache-hit != 'true'
-      uses: ./.github/actions/gradle
-      with:
-        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        key: ktlint-${{ steps.versions.outputs.key }}
 
     - name: Run ktlint check (same as local)
       id: ktlint-check

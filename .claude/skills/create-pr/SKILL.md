@@ -382,7 +382,7 @@ the branch (and the worktree, if there is one), so don't duplicate its logic her
 ## Edge cases
 
 - If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining
-  errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they
+  errors are ones ktlint cannot autocorrect (e.g. custom `quare:*` rules), so they
   must be fixed by hand
 - If there is nothing to commit and the branch is already pushed, still write the description and
   run the reviews (steps 8 and 9), then go directly to PR creation

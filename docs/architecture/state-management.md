@@ -111,7 +111,7 @@ Expose mutable state through an [explicit backing field](https://kotlinlang.org/
 instead of a `_uiState` backing property plus `asStateFlow()`: the public type stays read-only while the class itself
 smart-casts to the mutable one. Keep the type argument on the constructor (`MutableStateFlow<DayUiState>(...)`) — without
 it the field is inferred from the initial value (`MutableStateFlow<DayUiState.Loading>`) and later assignments stop
-compiling. The `bible-planner-style:explicit-backing-field` ktlint rule flags the old pattern. A `Channel` exposed through
+compiling. The `quare:explicit-backing-field` ktlint rule flags the old pattern. A `Channel` exposed through
 `receiveAsFlow()` is not a subtype of its public type, so it keeps a private backing property.
 
 Use the `observe()` extension from `ui/utils` instead of `.onEach { }.launchIn(viewModelScope)` when available.

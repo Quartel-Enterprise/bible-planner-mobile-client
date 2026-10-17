@@ -208,10 +208,8 @@ subprojects {
         rootProject.dependencies.add("kover", rootProject.dependencies.project(modulePath))
     }
 
-    if (path != ":tools:ktlint-custom-rules") {
-        dependencies {
-            add("ktlintRuleset", project(":tools:ktlint-custom-rules"))
-        }
+    dependencies {
+        add("ktlintRuleset", rootProject.libs.quare.ktlint.rules)
     }
 
     extensions.configure<KtlintExtension> {
