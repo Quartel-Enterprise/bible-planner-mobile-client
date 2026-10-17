@@ -13,7 +13,8 @@ Maintained by JavaZoom. Copyright notices in its sources:
   Copyright (C) 1993, 1994 Tobias Bading (bading@cs.tu-berlin.de)
   Copyright (c) 1991 MPEG/audio software simulation group, All Rights Reserved
 Upstream:    http://www.javazoom.net/javalayer/javalayer.html
-Source code: https://repo1.maven.org/maven2/javazoom/jlayer/1.0.1/jlayer-1.0.1-sources.jar
+Source code: jlayer-1.0.1-sources.jar, next to this file. Also available at
+             https://repo1.maven.org/maven2/javazoom/jlayer/1.0.1/jlayer-1.0.1-sources.jar
 
 JLayer is licensed under the GNU Library General Public License, version 2 or
 (at your option) any later version. It is distributed here under the GNU
