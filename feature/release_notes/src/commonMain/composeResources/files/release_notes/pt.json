@@ -1,7 +1,8 @@
 {
   "2.15.0": {
     "desktop": [
-      "No Mac e no Windows, a barra de título da janela agora acompanha o tema do app: fica escura no tema escuro e clara no tema claro, e muda na hora quando você troca o tema."
+      "No Mac e no Windows, a barra de título da janela agora acompanha o tema do app: fica escura no tema escuro e clara no tema claro, e muda na hora quando você troca o tema.",
+      "Agora você também pode ouvir os capítulos no computador: clique no ícone de fone na leitura para ouvir a Bíblia narrada, com controle de velocidade, timer para dormir, as palavras destacadas enquanto são lidas e a passagem automática para o próximo capítulo."
     ]
   },
   "2.14.0": {
