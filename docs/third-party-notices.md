@@ -28,9 +28,9 @@ of those libraries changes version:
 
 1. Add or update its entry in `desktopApp/licenses/THIRD-PARTY-NOTICES.txt`.
 2. Add the license text to `desktopApp/licenses/` if it isn't there yet, copied verbatim.
-3. Check the packaged macOS app has it. Packaging refuses a Homebrew JDK, so point
-   `DESKTOP_PACKAGING_JAVA_HOME` at a self-contained one (Temurin, Corretto) when Gradle runs on
-   Homebrew's:
+3. Check the packaged macOS app has it. An app packaged with a Homebrew JDK can't load its fonts
+   outside Homebrew, so point `DESKTOP_PACKAGING_JAVA_HOME` at a self-contained one (Temurin,
+   Corretto) when Gradle runs on Homebrew's:
 
    ```bash
    ./gradlew :desktopApp:createDistributable

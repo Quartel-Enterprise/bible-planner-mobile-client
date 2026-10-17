@@ -51,8 +51,8 @@ dependencies {
 // every target, the Mac App Store .pkg included (docs/third-party-notices.md).
 val collectAppResources = tasks.register<Sync>("collectAppResources") {
     description =
-        "Extracts the bundled SQLite and JNA native libraries so they ship inside the app image instead of being " +
-        "extracted at runtime, next to the third-party license notices."
+        "Collects the app resources: the third-party license notices, and the bundled SQLite and JNA native " +
+        "libraries so they ship inside the app image instead of being extracted at runtime."
     from("licenses") {
         into("common/licenses")
     }
