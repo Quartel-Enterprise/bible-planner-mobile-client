@@ -1,6 +1,7 @@
 package com.quare.bibleplanner
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import bibleplanner.shared.generated.resources.Res
@@ -22,6 +23,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionD
 import com.quare.bibleplanner.feature.login.di.jvmLoginModule
 import com.quare.bibleplanner.notification.DesktopBibleVersionDownloadNotifier
 import com.quare.bibleplanner.window.MacAppAppearance
+import com.quare.bibleplanner.window.WindowsTitleBarAppearance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
@@ -63,7 +65,8 @@ fun main() {
             onCloseRequest = ::exitApplication,
             title = stringResource(Res.string.app_title),
         ) {
-            AppRoot()
+            val windowsTitleBar = remember(window) { WindowsTitleBarAppearance(window) }
+            AppRoot(onThemeResolved = windowsTitleBar::apply)
         }
     }
 }
