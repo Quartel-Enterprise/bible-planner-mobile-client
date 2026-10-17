@@ -11,7 +11,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-// Why: listening is off on these platforms, so the cache directory is never touched and needs no real location yet.
+// Why: listening is off on the web, so the cache directory is never touched and needs no real location yet.
 internal actual val platformChapterListeningModule: Module = module {
     single { ChapterAudioCacheDirectory(Path(CHAPTER_AUDIO_DIRECTORY)) }
     singleOf(::UnsupportedChapterAudioPlayer).bind<ChapterAudioPlayer>()

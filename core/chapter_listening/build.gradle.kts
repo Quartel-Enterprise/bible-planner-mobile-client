@@ -78,16 +78,9 @@ kotlin {
             implementation(libs.ktor.client.mock)
         }
 
-        val nonMobileMain = create("nonMobileMain") {
-            dependsOn(commonMain.get())
-        }
-
-        jvmMain {
-            dependsOn(nonMobileMain)
-        }
-
-        wasmJsMain {
-            dependsOn(nonMobileMain)
+        jvmMain.dependencies {
+            // MP3 decoding, for playing the chapter audio on desktop
+            implementation(libs.javazoom.jlayer)
         }
 
         iosMain {

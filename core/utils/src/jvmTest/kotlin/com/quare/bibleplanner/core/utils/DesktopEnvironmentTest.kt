@@ -7,6 +7,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 internal class DesktopEnvironmentTest {
@@ -89,6 +90,97 @@ internal class DesktopEnvironmentTest {
         // Then
         assertEquals(File(dataRoot, "com.quare.bibleplanner").absoluteFile, directory.absoluteFile)
         assertTrue(directory.isDirectory)
+    }
+
+    @Test
+    fun `GIVEN macOS WHEN resolving the app cache directory THEN creates it under Library Caches`() {
+        // Given
+        System.setProperty("os.name", "Mac OS X")
+
+        // When
+        val directory = resolveAppCacheDirectory()
+
+        // Then
+        assertEquals(File(home, "Library/Caches/com.quare.bibleplanner"), directory)
+        assertTrue(directory.isDirectory)
+    }
+
+    @Test
+    fun `GIVEN Windows WHEN resolving the app cache directory THEN creates a Cache folder under the local app data`() {
+        // Given
+        System.setProperty("os.name", "Windows 11")
+        val localAppDataRoot = System.getenv("LOCALAPPDATA")?.takeIf(String::isNotBlank)?.let(::File)
+            ?: File(home, "AppData/Local")
+
+        // When
+        val directory = resolveAppCacheDirectory()
+
+        // Then
+        assertEquals(File(localAppDataRoot, "com.quare.bibleplanner/Cache").absoluteFile, directory.absoluteFile)
+        assertTrue(directory.isDirectory)
+    }
+
+    @Test
+    fun `GIVEN Linux WHEN resolving the app cache directory THEN creates it under the XDG cache home`() {
+        // Given
+        System.setProperty("os.name", "Linux")
+        val cacheRoot = System.getenv("XDG_CACHE_HOME")?.takeIf(String::isNotBlank)?.let(::File)
+            ?: File(home, ".cache")
+
+        // When
+        val directory = resolveAppCacheDirectory()
+
+        // Then
+        assertEquals(File(cacheRoot, "com.quare.bibleplanner").absoluteFile, directory.absoluteFile)
+        assertTrue(directory.isDirectory)
+    }
+
+    @Test
+    fun `GIVEN an unknown os WHEN resolving the app cache directory THEN uses the linux cache location`() {
+        // Given
+        System.setProperty("os.name", "FreeBSD")
+        val cacheRoot = System.getenv("XDG_CACHE_HOME")?.takeIf(String::isNotBlank)?.let(::File)
+            ?: File(home, ".cache")
+
+        // When
+        val directory = resolveAppCacheDirectory()
+
+        // Then
+        assertEquals(File(cacheRoot, "com.quare.bibleplanner").absoluteFile, directory.absoluteFile)
+        assertTrue(directory.isDirectory)
+    }
+
+    @Test
+    fun `GIVEN a cache directory with content WHEN resolving it again THEN returns it and keeps the content`() {
+        // Given
+        System.setProperty("os.name", "Mac OS X")
+        val existing = File(home, "Library/Caches/com.quare.bibleplanner").apply { mkdirs() }
+        val cachedAudio = File(existing, "chapter.mp3").apply { writeText("audio") }
+
+        // When
+        val directory = resolveAppCacheDirectory()
+
+        // Then
+        assertEquals(existing, directory)
+        assertEquals("audio", cachedAudio.readText())
+    }
+
+    @Test
+    fun `GIVEN the app data directory on each os WHEN resolving the app cache directory THEN never shares it`() {
+        // Given
+        val osNames = listOf("Mac OS X", "Windows 11", "Linux")
+
+        // When
+        val directoryPairs = osNames.map { osName ->
+            System.setProperty("os.name", osName)
+            resolveAppDataDirectory().absoluteFile to resolveAppCacheDirectory().absoluteFile
+        }
+
+        // Then
+        directoryPairs.forEach { (dataDirectory, cacheDirectory) ->
+            assertNotEquals(dataDirectory, cacheDirectory)
+            assertFalse(cacheDirectory.startsWith(dataDirectory))
+        }
     }
 
     @Test

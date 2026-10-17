@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.utils
 
 import java.io.File
 
-private const val APP_DATA_DIRECTORY_NAME = "com.quare.bibleplanner"
+internal const val APP_DATA_DIRECTORY_NAME = "com.quare.bibleplanner"
 
 fun resolveAppDataDirectory(): File {
     val userHome = System.getProperty("user.home")
