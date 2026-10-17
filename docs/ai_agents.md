@@ -23,6 +23,7 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/agent-cli.md](agent-cli.md)
 - [@docs/code-quality.md](code-quality.md)
 - [@docs/ci.md](ci.md)
+- [@docs/third-party-notices.md](third-party-notices.md)
 
 To check a ViewModel, use case or repository change in the running app without a simulator, drive it
 headlessly with `scripts/agent-cli.sh` (see [docs/agent-cli.md](agent-cli.md)).
