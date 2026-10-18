@@ -18,8 +18,10 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.supabase)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)

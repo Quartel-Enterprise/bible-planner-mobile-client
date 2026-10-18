@@ -14,7 +14,6 @@ kotlin {
             // Core
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.platform)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)
@@ -43,6 +42,9 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.loginNudge)
             implementation(projects.core.review)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // Features
             implementation(projects.feature.books)

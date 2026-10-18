@@ -26,6 +26,8 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
+
+            // Connectivity (the OfflineFirstSynchronizer constructor takes the observer)
             implementation(libs.quare.connectivity)
 
             // Room

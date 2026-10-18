@@ -27,7 +27,6 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.dayStudy)
             implementation(projects.core.sync)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.user)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.dataStore)
@@ -36,6 +35,9 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
+
+            // Connectivity (the OfflineFirstSynchronizer constructor takes the observer)
+            implementation(libs.quare.connectivity)
 
             // UI
             implementation(projects.ui.component)

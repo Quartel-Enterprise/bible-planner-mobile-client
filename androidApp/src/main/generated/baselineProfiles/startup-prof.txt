@@ -30599,7 +30599,6 @@ SPLsoftware/quare/connectivity/ConnectivityModuleKt$connectivityModule$lambda$0$
 SPLsoftware/quare/connectivity/ConnectivityModuleKt$connectivityModule$lambda$0$$inlined$factoryOf$default$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 SPLsoftware/quare/connectivity/ConnectivityModuleKt$connectivityModule$lambda$0$$inlined$factoryOf$default$1;->invoke(Lorg/koin/core/scope/Scope;Lorg/koin/core/parameter/ParametersHolder;)Ljava/lang/Object;
 Lsoftware/quare/connectivity/ConnectivityModule_androidKt;
-SPLsoftware/quare/connectivity/ConnectivityModule_androidKt;->$r8$lambda$0kmNCFs2d--J2gT960NsrdHrGww(Lorg/koin/core/scope/Scope;Lorg/koin/core/parameter/ParametersHolder;)Landroid/net/ConnectivityManager;
 SPLsoftware/quare/connectivity/ConnectivityModule_androidKt;-><clinit>()V
 SPLsoftware/quare/connectivity/ConnectivityModule_androidKt;->getPlatformConnectivityModule()Lorg/koin/core/module/Module;
 SPLsoftware/quare/connectivity/ConnectivityModule_androidKt;->platformConnectivityModule$lambda$0$0(Lorg/koin/core/scope/Scope;Lorg/koin/core/parameter/ParametersHolder;)Landroid/net/ConnectivityManager;

@@ -18,12 +18,14 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.sync)
             implementation(projects.core.user)
             implementation(projects.core.date)
             implementation(projects.core.utils)
+
+            // Connectivity (the OfflineFirstSynchronizer constructor takes the observer)
+            implementation(libs.quare.connectivity)
 
             // Room
             implementation(libs.androidx.room.runtime)

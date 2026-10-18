@@ -141,7 +141,6 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.date)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.verseAnnotations)
             implementation(libs.ktor.client.mock)
@@ -151,6 +150,9 @@ kotlin {
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.realtime)
             implementation(libs.supabase.storage)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
         }
     }
 }

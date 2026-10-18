@@ -25,9 +25,11 @@ kotlin {
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.billing)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.platform)
             implementation(projects.core.studyUnlock)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // UI
             implementation(projects.ui.component)

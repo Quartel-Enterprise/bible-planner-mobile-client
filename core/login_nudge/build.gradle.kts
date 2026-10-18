@@ -17,6 +17,8 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.date)
             implementation(projects.core.provider.analytics)
+
+            // Connectivity
             implementation(libs.quare.connectivity)
 
             // Coroutines

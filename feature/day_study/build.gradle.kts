@@ -27,11 +27,13 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.billing)
-            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.studyUnlock)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // UI
             implementation(projects.ui.component)
