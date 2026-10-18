@@ -143,7 +143,9 @@ behind by a task that was dropped without `finish-task`. Every task emulator has
 while its task is alive, because an emulator is only ever created after its task's branch.
 
 ```bash
-find ~/.android/avd -maxdepth 1 -name 'BiblePlanner_*.ini' 2>/dev/null | while read -r INI; do
+setopt null_glob 2>/dev/null
+for INI in ~/.android/avd/BiblePlanner_*.ini; do
+  [ -e "$INI" ] || continue
   AVD=$(basename "$INI" .ini)
   git for-each-ref --format='%(refname:short)' refs/heads \
     | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${AVD#BiblePlanner_}" && continue
@@ -154,8 +156,9 @@ find ~/.android/avd -maxdepth 1 -name 'BiblePlanner_*.ini' 2>/dev/null | while r
 done
 ```
 
-- The AVDs are listed with `find`, not a glob: in zsh, the default shell here, a glob with no match
-  aborts the whole command with "no matches found".
+- `setopt null_glob` is for zsh, the default shell here: without it, a glob with no match aborts the
+  whole command with "no matches found". Bash has no `setopt`, and there the `[ -e "$INI" ]` guard
+  skips the unmatched pattern instead.
 - Only `BiblePlanner_*` AVDs are ever deleted. `Medium_Phone`, `Pixel_9`, `Pixel_Tablet` and every
   `TuneScout_*` are shared or belong to another project.
 - A task whose branch still exists keeps its emulator, even if nobody is working on it. Finishing or
