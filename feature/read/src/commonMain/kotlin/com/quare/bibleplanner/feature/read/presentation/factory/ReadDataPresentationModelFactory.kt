@@ -9,8 +9,6 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
@@ -31,6 +29,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import org.jetbrains.compose.resources.StringResource
+import software.quare.loadable.Loadable
+import software.quare.loadable.Loadable.Loaded
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ReadDataPresentationModelFactory(

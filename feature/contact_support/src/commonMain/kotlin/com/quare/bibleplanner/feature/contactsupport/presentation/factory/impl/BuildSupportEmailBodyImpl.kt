@@ -7,13 +7,13 @@ import bibleplanner.feature.contact_support.generated.resources.diagnostics_app_
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_language_label
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_platform_label
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_subscription_label
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.contactsupport.presentation.factory.BuildSupportEmailBody
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.toStringResource
 import com.quare.bibleplanner.ui.component.language.toStringResource
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.valueOrNull
 
 internal class BuildSupportEmailBodyImpl : BuildSupportEmailBody {
     override suspend fun invoke(state: ContactSupportUiState): String {

@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.contactsupport.presentation.factory.impl
 
 import bibleplanner.feature.contact_support.generated.resources.Res
 import bibleplanner.feature.contact_support.generated.resources.contact_support_email_subject
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -11,6 +10,7 @@ import com.quare.bibleplanner.feature.contactsupport.domain.model.SupportContact
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

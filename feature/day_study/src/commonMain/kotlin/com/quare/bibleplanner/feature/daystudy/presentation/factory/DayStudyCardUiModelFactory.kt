@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.factory
 
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 internal class DayStudyCardUiModelFactory(
     private val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,

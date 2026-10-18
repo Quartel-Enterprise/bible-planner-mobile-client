@@ -26,7 +26,6 @@ import bibleplanner.feature.profile.generated.resources.annotations_option
 import bibleplanner.feature.profile.generated.resources.annotations_other_version_count
 import bibleplanner.feature.profile.generated.resources.annotations_saved_count
 import bibleplanner.feature.profile.generated.resources.annotations_summary_empty
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
@@ -34,6 +33,7 @@ import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
 
 private const val ICON_BACKGROUND_ALPHA = 0.12f
 private const val SUMMARY_SEPARATOR = " · "

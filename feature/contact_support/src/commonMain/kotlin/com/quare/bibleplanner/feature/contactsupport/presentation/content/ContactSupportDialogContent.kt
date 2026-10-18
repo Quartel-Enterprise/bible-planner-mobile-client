@@ -39,7 +39,6 @@ import bibleplanner.feature.contact_support.generated.resources.diagnostics_lang
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_platform_label
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_subscription_label
 import bibleplanner.feature.contact_support.generated.resources.open_email_button
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.contactsupport.domain.model.SupportContact
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiEvent
@@ -50,6 +49,7 @@ import com.quare.bibleplanner.ui.component.language.toStringResource
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.valueOrNull
 
 private val pillShape = RoundedCornerShape(percent = 50)
 

@@ -32,7 +32,6 @@ import bibleplanner.feature.profile.generated.resources.study_suggestion_option
 import bibleplanner.feature.profile.generated.resources.theme_option
 import bibleplanner.feature.profile.generated.resources.theme_system
 import bibleplanner.ui.component.generated.resources.language_english
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.fixture.SAMPLE_BIBLE_VERSION_NAME
 import com.quare.bibleplanner.feature.profile.fixture.profileUiState
@@ -47,6 +46,7 @@ import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes

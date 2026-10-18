@@ -20,8 +20,6 @@ import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -53,6 +51,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

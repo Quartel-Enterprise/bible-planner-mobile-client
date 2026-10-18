@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.annotations.presentation.component.AnnotationsTopBar
 import com.quare.bibleplanner.feature.verse.annotations.presentation.component.CustomRangePickerDialog
@@ -31,6 +30,7 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.content.Ann
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsContentUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiState
+import software.quare.loadable.valueOrNull
 
 private val wideLayoutMinWidth = 840.dp
 private val filterPanelWidth = 220.dp

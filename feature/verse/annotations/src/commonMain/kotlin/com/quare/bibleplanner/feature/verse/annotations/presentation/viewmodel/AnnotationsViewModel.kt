@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
@@ -49,6 +48,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import software.quare.loadable.Loadable
 import kotlin.time.Instant
 
 internal class AnnotationsViewModel(

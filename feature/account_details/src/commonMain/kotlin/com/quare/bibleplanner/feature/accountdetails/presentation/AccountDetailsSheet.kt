@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.account_details.generated.resources.Res
 import bibleplanner.feature.account_details.generated.resources.account_details_title
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.AccountInfoSection
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.ConnectedDevicesSection
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.LogoutRow
@@ -24,6 +23,7 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import software.quare.loadable.valueOrNull
 
 @Composable
 internal fun AccountDetailsSheet() {

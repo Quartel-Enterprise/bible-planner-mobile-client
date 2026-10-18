@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.factory
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
+import software.quare.loadable.Loadable
 
 internal class ContactSupportUiStateFactory(
     private val getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase?,

@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.verse.annotations.presentation.model
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
+import software.quare.loadable.Loadable
 
 internal data class AnnotationsUiState(
     val content: Loadable<AnnotationsContentUiModel>,

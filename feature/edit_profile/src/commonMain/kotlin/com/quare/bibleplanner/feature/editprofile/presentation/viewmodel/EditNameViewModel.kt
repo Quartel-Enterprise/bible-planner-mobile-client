@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.edit_profile.generated.resources.Res
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_name_updated
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.UpdateDisplayName
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
 
 internal class EditNameViewModel(
     private val observeUserProfile: ObserveUserProfile,

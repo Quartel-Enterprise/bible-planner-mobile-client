@@ -4,7 +4,6 @@ import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -25,6 +24,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.loadable.Loadable
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

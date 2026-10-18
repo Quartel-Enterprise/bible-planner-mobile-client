@@ -40,7 +40,6 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_toggle_title
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_title
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.studysuggestion.presentation.component.StudySuggestionModeCard
@@ -50,6 +49,7 @@ import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.ExpandableText
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.valueOrNull
 
 private val scopeNoteCornerRadius = 10.dp
 private val scopeNoteIconSize = 18.dp

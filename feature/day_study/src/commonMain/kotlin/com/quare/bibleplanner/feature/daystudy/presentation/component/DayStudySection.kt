@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.books.util.toReadingLabel
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiAction
@@ -16,6 +15,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
+import software.quare.loadable.Loadable
 
 @Composable
 fun DayStudySection(

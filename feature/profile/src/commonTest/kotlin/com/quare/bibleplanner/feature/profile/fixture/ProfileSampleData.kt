@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.profile.fixture
 
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.theme_system
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
@@ -13,6 +12,7 @@ import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import kotlinx.datetime.LocalDate
+import software.quare.loadable.Loadable
 
 internal const val SAMPLE_BIBLE_VERSION_NAME = "King James Version"
 

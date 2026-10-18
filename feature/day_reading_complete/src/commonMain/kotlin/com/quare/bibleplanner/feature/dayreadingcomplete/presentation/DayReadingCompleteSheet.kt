@@ -59,7 +59,6 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_overdue
 import bibleplanner.ui.component.generated.resources.ai_study_unlock
 import com.quare.bibleplanner.core.books.util.toReadingLabel
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
@@ -68,6 +67,7 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.valueOrNull
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 private val checkIconBoxSize = 52.dp

@@ -12,7 +12,6 @@ import bibleplanner.feature.contact_support.generated.resources.diagnostics_subs
 import bibleplanner.feature.contact_support.generated.resources.platform_android
 import bibleplanner.feature.contact_support.generated.resources.platform_ios
 import bibleplanner.ui.component.generated.resources.language_english
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
@@ -23,6 +22,7 @@ import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusM
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes

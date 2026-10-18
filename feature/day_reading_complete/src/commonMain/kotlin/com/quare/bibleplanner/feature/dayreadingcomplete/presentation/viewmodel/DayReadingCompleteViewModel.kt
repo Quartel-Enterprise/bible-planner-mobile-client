@@ -9,8 +9,6 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.core.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -50,6 +48,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 class DayReadingCompleteViewModel(
     private val route: DayReadingCompleteNavRoute,

@@ -30,7 +30,6 @@ import bibleplanner.ui.component.generated.resources.ai_study_generation_error_t
 import bibleplanner.ui.component.generated.resources.ai_study_retry
 import bibleplanner.ui.component.generated.resources.back
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyModel
 import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyUiState
@@ -45,6 +44,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteU
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes

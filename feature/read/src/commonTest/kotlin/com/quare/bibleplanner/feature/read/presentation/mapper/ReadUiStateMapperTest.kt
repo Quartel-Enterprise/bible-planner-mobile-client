@@ -4,7 +4,6 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
@@ -17,6 +16,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

@@ -23,6 +23,9 @@ kotlin {
             // Serialization
             implementation(libs.kotlinx.serialization.json)
 
+            // Loadable, part of every UiState
+            api(libs.quare.loadable)
+
             // Navigation 3 (NavKey)
             api(libs.navigation3.runtime)
 

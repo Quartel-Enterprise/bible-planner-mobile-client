@@ -40,7 +40,6 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_today
 import bibleplanner.ui.component.generated.resources.ai_study_unlock
 import com.quare.bibleplanner.core.books.util.toReadingLabel
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
@@ -56,6 +55,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import software.quare.loadable.valueOrNull
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 private val bannerCornerRadius = 18.dp

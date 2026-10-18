@@ -29,7 +29,6 @@ import bibleplanner.feature.account_details.generated.resources.account_details_
 import bibleplanner.feature.account_details.generated.resources.account_details_value_unknown
 import com.quare.bibleplanner.core.date.DateRepresentation
 import com.quare.bibleplanner.core.date.toDateRepresentation
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountInfo
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.LoginMethod
 import com.quare.bibleplanner.ui.component.appleLogo
@@ -41,6 +40,7 @@ import com.quare.bibleplanner.ui.utils.format
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
 import kotlin.time.Instant
 
 private const val SHIMMER_ROWS = 3

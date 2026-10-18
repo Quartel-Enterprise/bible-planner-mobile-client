@@ -18,7 +18,6 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
@@ -57,6 +56,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

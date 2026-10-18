@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.vertical
 
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
 
 internal class ReadVerticalChapters(
     private val scope: CoroutineScope,

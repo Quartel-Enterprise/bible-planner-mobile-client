@@ -6,7 +6,6 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_mode_blocked_message
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
@@ -23,6 +22,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.loadable.Loadable
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

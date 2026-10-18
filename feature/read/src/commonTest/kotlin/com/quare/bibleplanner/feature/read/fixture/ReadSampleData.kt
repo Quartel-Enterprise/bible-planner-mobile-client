@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.read.fixture
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
@@ -18,6 +17,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
+import software.quare.loadable.Loadable
 
 /**
  * Genesis 1:1-12, the opening of the chapter the day and study screenshots also land on, in the

@@ -7,12 +7,12 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.ExpandedPhotoOverlay
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import software.quare.loadable.valueOrNull
 
 fun EntryProviderScope<NavKey>.expandedPhoto() {
     entry<ExpandedPhotoNavRoute>(

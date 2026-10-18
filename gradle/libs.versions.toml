@@ -77,6 +77,7 @@ play-review = "2.0.2"
 play-services-ads = "25.5.0"
 play-services-ads-identifier = "18.3.0"
 play-services-time = "16.0.1"
+quare-loadable = "1.0.0"
 revenuecat = "3.13.0"
 sentry = "8.60.0"
 supabase = "3.9.0-beta-1"
@@ -228,6 +229,9 @@ javazoom-jlayer = { module = "javazoom:jlayer", version.ref = "javazoom-jlayer" 
 
 # JNA
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+
+# Quare
+quare-loadable = { module = "software.quare:loadable", version.ref = "quare-loadable" }
 
 # RevenueCat
 revenuecat-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "revenuecat" }
