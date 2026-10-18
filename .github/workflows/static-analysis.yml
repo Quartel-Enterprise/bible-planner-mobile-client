@@ -4,8 +4,6 @@ on:
   pull_request:
     paths:
       - '.github/workflows/static-analysis.yml'
-      - '.github/actions/ktlint/action.yml'
-      - '.github/actions/gradle/action.yml'
       - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
@@ -16,8 +14,6 @@ on:
       - main
     paths:
       - '.github/workflows/static-analysis.yml'
-      - '.github/actions/ktlint/action.yml'
-      - '.github/actions/gradle/action.yml'
       - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
@@ -50,23 +46,11 @@ jobs:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
-    # Gradle only runs here to rebuild the ruleset jar, which has a cache of its own. See
-    # .github/actions/gradle.
-    env:
-      GRADLE_CACHE_READ_ONLY: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
       - name: Run Static Analysis
-        uses: ./.github/actions/ktlint
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+        uses: Quartel-Enterprise/ktlint-rules/.github/actions/ktlint@1.0.2

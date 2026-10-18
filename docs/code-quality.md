@@ -1,12 +1,12 @@
 # Code quality
 
 The project uses ktlint for formatting and style, extended with the custom rules in
-[`tools/ktlint-custom-rules`](../tools/ktlint-custom-rules). What those rules enforce, and the
+[`Quartel-Enterprise/ktlint-rules`](https://github.com/Quartel-Enterprise/ktlint-rules). What those rules enforce, and the
 conventions behind them, is documented in [Code style](architecture/code-style.md).
 
 ## Running it
 
-CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same check locally:
+`scripts/ktlint.sh` runs the same check CI runs:
 
 ```bash
 ./scripts/ktlint.sh            # check (what CI runs)
@@ -16,17 +16,44 @@ CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same c
 ./scripts/ktlint.sh --format   # autocorrect what can be autocorrected
 ```
 
-The script downloads the ktlint CLI once (cached in `~/.cache/ktlint`) and rebuilds the custom
-ruleset jar only when its sources change.
+The script is a small wrapper that comes from ktlint-rules and never changes here. It reads
+`quare-ktlint-rules` in `gradle/libs.versions.toml` and downloads that release's runner, the ruleset jar,
+and the ktlint CLI the release is built against, once per version into `~/.cache/ktlint`. There is no
+Gradle ktlint task: the CLI checks the files on disk without configuring the build.
 
-`./gradlew ktlintCheck` still works, but it is much slower: it drags KSP and Kotlin/Native
-compilation into the task graph to check files that are already on disk.
+The runner comes from the release tag on GitHub, trusted the same way as a GitHub Action pinned to a tag
+(ktlint-rules releases are immutable, so a tag can't be moved). The jar and its POM come from Maven Central
+and the runner refuses them unless they are signed by the Quare release key. CI always checks the signature;
+a machine without gpg falls back to the `.sha1` checksum with a warning, which catches a corrupt download but
+not a tampered one, so install gpg (`brew install gnupg`) to get the same guarantee locally.
+
+The ktlint plugin for Android Studio can show the violations while typing; its setup is in the
+[ktlint-rules README](https://github.com/Quartel-Enterprise/ktlint-rules#in-the-ide).
+
+## Changing a custom rule
+
+The rules are shared with the other Quare projects, so a new or changed rule goes to
+[ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules) first. To try it here before it is
+released, build the jar there (`./gradlew jar`) and point the script at it, from any directory:
+
+```bash
+KTLINT_RULESET_JAR=~/StudioProjects/ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
+```
+
+Once it is released, bump the version in its two places, together: `quare-ktlint-rules` in the catalog,
+which picks the rules and the runner everywhere, and the `ktlint-rules` action ref in
+`.github/workflows/static-analysis.yml`, which only versions the CI steps (the action warns when the two
+differ). A ktlint upgrade is a ruleset release too: the ruleset picks the ktlint version, so it never
+drifts from the rules.
+
+Project-specific settings go in `.editorconfig` instead of the ruleset: turning a rule off for some
+files, or `ktlint_quare_composable_extra_suffixes` for a composable suffix only this app uses.
 
 ## In CI
 
-The `static-analysis` workflow runs the same script on every pull request — and on every push to
-`main` — that touches a `.kt` or `.kts` file, the version catalog, the ktlint script or
-`.editorconfig`.
+The `static-analysis` workflow runs the same script, through the ktlint-rules action, on every pull
+request — and on every push to `main` — that touches a `.kt` or `.kts` file, the version catalog, the
+ktlint script or `.editorconfig`.
 
 ## Test coverage
 

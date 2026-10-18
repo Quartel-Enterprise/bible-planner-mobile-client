@@ -69,8 +69,8 @@ weight as the docs, and the `project_*` ones give context on past decisions and 
 ones that relate to the files in the diff. When the folder doesn't exist, say so in your report and
 go on without them.
 
-Leave out anything ktlint already enforces (formatting, and the custom `bible-planner-style` rules in
-`tools/ktlint-custom-rules`): the `static-analysis` workflow catches those. Your job is what a linter
+Leave out anything ktlint already enforces (formatting, and the custom `quare` rules in
+[ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)): the `static-analysis` workflow catches those. Your job is what a linter
 can't see.
 
 ## 3. Check the product invariants

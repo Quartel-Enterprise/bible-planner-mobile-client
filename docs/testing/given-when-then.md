@@ -63,11 +63,11 @@ fun `GIVEN a successful logout WHEN confirming THEN emits NavigateBack`() = runT
 
 ## Enforcement
 
-Two custom ktlint rules (in `tools/ktlint-custom-rules`) check every test source set:
+Two custom ktlint rules (in [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)) check every test source set:
 
-- `bible-planner-style:test-name-given-when-then` — an `@Test` name matches `GIVEN … WHEN … THEN …` and holds
+- `quare:test-name-given-when-then` — an `@Test` name matches `GIVEN … WHEN … THEN …` and holds
   only the characters above.
-- `bible-planner-style:test-body-sections` — the body has `// Given`, `// When` and `// Then`, once each and in
+- `quare:test-body-sections` — the body has `// Given`, `// When` and `// Then`, once each and in
   that order (`// Given` optional in a class with a `@BeforeTest`, its own or one of a superclass declared in the
   same file).
 

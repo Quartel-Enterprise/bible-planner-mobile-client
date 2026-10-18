@@ -32,8 +32,8 @@ If there are Kotlin files changed, run from the project root:
 ./scripts/ktlint.sh --format
 ```
 
-This is the ktlint CLI, which is exactly what the `static-analysis` workflow runs in CI. Do **not**
-use `./gradlew ktlintFormat` — the Gradle plugin path is far slower and is no longer what CI checks.
+This is the ktlint CLI, which is exactly what the `static-analysis` workflow runs in CI. There is no
+Gradle ktlint task.
 
 If the command exits with a non-zero code, stop and notify the user:
 > "ktlint found issues it couldn't fix automatically. Please review and fix the reported errors, then try again."
@@ -382,7 +382,7 @@ the branch (and the worktree, if there is one), so don't duplicate its logic her
 ## Edge cases
 
 - If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining
-  errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they
+  errors are ones ktlint cannot autocorrect (e.g. custom `quare:*` rules), so they
   must be fixed by hand
 - If there is nothing to commit and the branch is already pushed, still write the description and
   run the reviews (steps 8 and 9), then go directly to PR creation

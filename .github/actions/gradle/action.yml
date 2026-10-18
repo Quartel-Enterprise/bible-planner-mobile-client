@@ -26,9 +26,9 @@ runs:
         # request starts from main's entries and recompiles the whole diff again. A job on the pull
         # request's critical path sets GRADLE_CACHE_WRITE_ON_PULL_REQUESTS=true: its entries are
         # scoped to the pull request's ref, so the next push only compiles what changed since the
-        # previous one. This is an environment variable and not an input because the ktlint action
-        # nests this one, and the runner evaluates a nested action's inputs as empty in the post
-        # step, which is exactly where the cache is written.
+        # previous one. This is an environment variable and not an input because the runner
+        # evaluates a nested action's inputs as empty in the post step, which is exactly where the
+        # cache is written, so it would break as soon as another action nested this one.
         # GRADLE_CACHE_READ_ONLY=true is the opposite switch, for a job that barely uses Gradle. On
         # main it would still save a few hundred MB of its own dependencies and transforms out of
         # the 10 GB budget, and setup-gradle falls back to the most recent entry of any job, so a

@@ -62,9 +62,9 @@ internal class LogoutViewModelTest {
 
 ## Enforcement
 
-Three custom ktlint rules (in `tools/ktlint-custom-rules`) check every test source set:
+Three custom ktlint rules (in [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)) check every test source set:
 
-- `bible-planner-style:prepare-scenario-returns-unit` — `prepareScenario` has a block body and no return type.
-- `bible-planner-style:prepare-scenario-last-member` — nothing but its overloads and the companion object comes
+- `quare:prepare-scenario-returns-unit` — `prepareScenario` has a block body and no return type.
+- `quare:prepare-scenario-last-member` — nothing but its overloads and the companion object comes
   after it in the class.
-- `bible-planner-style:prepare-scenario-in-given` — a test calls it under `// Given`.
+- `quare:prepare-scenario-in-given` — a test calls it under `// Given`.

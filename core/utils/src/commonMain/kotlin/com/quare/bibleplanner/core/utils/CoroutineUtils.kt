@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.utils
 
 import kotlinx.coroutines.CancellationException
 
-@Suppress("ktlint:bible-planner-style:suspend-run-catching")
+@Suppress("ktlint:quare:suspend-run-catching")
 inline fun <T> suspendRunCatching(block: () -> T): Result<T> = try {
     Result.success(block())
 } catch (e: CancellationException) {
