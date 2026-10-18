@@ -709,9 +709,9 @@ Not held to the list:
 - **`@Preview` functions**, named after what they preview.
 
 Enforced by the custom ktlint rule `quare:composable-naming-suffix`. A genuinely new kind of UI gets
-a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception. The rule is
-shared with the other Quare projects, so the suffix goes through a ruleset release (see
-[Changing a custom rule](../code-quality.md#changing-a-custom-rule)).
+a new suffix and a row in the table above — not a one-off exception. A suffix every Quare project can use goes into
+`ALLOWED_SUFFIXES` through a ruleset release (see [Changing a custom rule](../code-quality.md#changing-a-custom-rule));
+one only this app uses goes in `.editorconfig` as `ktlint_quare_composable_extra_suffixes`.
 
 ## Comments Say Why, Never What
 

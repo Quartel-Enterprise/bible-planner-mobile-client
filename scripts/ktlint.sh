@@ -35,7 +35,7 @@ if [ ! -f "$RUNNER" ]; then
     mkdir -p "$CACHE"
     TMP="$(mktemp "$RUNNER.XXXXXX")"
     if ! curl -fsSLo "$TMP" \
-        "https://raw.githubusercontent.com/Quartel-Enterprise/ktlint-rules/$VERSION/scripts/ktlint.sh"; then
+        "https://raw.githubusercontent.com/Quartel-Enterprise/ktlint-rules/refs/tags/$VERSION/scripts/ktlint.sh"; then
         rm -f "$TMP"
         echo "❌ Failed to download the ktlint runner of the ruleset $VERSION"
         exit 1

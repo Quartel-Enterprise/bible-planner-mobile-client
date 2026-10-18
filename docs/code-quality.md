@@ -23,7 +23,9 @@ Gradle ktlint task: the CLI checks the files on disk without configuring the bui
 
 The runner comes from the release tag on GitHub, trusted the same way as a GitHub Action pinned to a tag
 (ktlint-rules releases are immutable, so a tag can't be moved). The jar and its POM come from Maven Central
-and the runner refuses them unless they are signed by the Quare release key.
+and the runner refuses them unless they are signed by the Quare release key. CI always checks the signature;
+a machine without gpg falls back to the `.sha1` checksum with a warning, which catches a corrupt download but
+not a tampered one, so install gpg (`brew install gnupg`) to get the same guarantee locally.
 
 The ktlint plugin for Android Studio can show the violations while typing; its setup is in the
 [ktlint-rules README](https://github.com/Quartel-Enterprise/ktlint-rules#in-the-ide).
