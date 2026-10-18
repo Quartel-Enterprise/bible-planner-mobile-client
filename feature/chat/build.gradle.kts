@@ -36,9 +36,6 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
 
-            // Connectivity (the OfflineFirstSynchronizer constructor takes the observer)
-            implementation(libs.quare.connectivity)
-
             // UI
             implementation(projects.ui.component)
             implementation(projects.ui.utils)

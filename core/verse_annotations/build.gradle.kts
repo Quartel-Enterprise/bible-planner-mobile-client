@@ -24,9 +24,6 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.utils)
 
-            // Connectivity (the OfflineFirstSynchronizer constructor takes the observer)
-            implementation(libs.quare.connectivity)
-
             // Room
             implementation(libs.androidx.room.runtime)
 
