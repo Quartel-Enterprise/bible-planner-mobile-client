@@ -125,11 +125,8 @@ internal class AccountDetailsViewModel(
 
     private fun Loadable<List<DeviceUiModel>>.withSigningOut(
         signingOutIds: Set<String>,
-    ): Loadable<List<DeviceUiModel>> {
-        if (signingOutIds.isEmpty()) return this
-        return this.map { devices ->
-            devices.map { it.copy(isSigningOut = it.id in signingOutIds) }
-        }
+    ): Loadable<List<DeviceUiModel>> = this.map { devices ->
+        devices.map { it.copy(isSigningOut = it.id in signingOutIds) }
     }
 
     private fun emitAction(action: AccountDetailsUiAction) {
