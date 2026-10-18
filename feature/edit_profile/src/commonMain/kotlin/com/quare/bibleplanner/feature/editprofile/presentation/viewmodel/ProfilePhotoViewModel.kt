@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 internal class ProfilePhotoViewModel(
     private val removeProfilePhoto: RemoveProfilePhoto,
@@ -46,7 +47,7 @@ internal class ProfilePhotoViewModel(
     val uiState: StateFlow<ProfilePhotoUiState> = observeUserProfile()
         .map { profile ->
             ProfilePhotoUiState(
-                profile = Loadable.Loaded(profile),
+                profile = profile.toLoaded(),
                 isCameraAvailable = isCameraAvailable,
             )
         }.onStart { emit(createInitialState()) }

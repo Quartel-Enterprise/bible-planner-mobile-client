@@ -92,6 +92,30 @@ internal class ContactSupportViewModelTest {
         }
 
     @Test
+    fun `GIVEN a loaded unknown subscription WHEN sending the support email THEN logs is_pro as false`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sessionStatus = SessionStatus.NotAuthenticated(),
+                subscriptionStatusFlow = flowOf(null),
+            )
+
+            // When
+            viewModel.onEvent(ContactSupportUiEvent.OnSendEmailClick)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "contact_support_email_opened" to mapOf<String, Any>(
+                        "is_logged_in" to false,
+                        "is_pro" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
     fun `GIVEN a logged in pro user WHEN sending the support email THEN logs is_logged_in and is_pro as true`() =
         runTest(testDispatcher) {
             // Given

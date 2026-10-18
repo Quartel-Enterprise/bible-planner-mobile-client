@@ -17,7 +17,7 @@ import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import software.quare.loadable.Loadable
+import software.quare.loadable.loadedOrNull
 
 fun EntryProviderScope<NavKey>.editName() {
     entry<EditNameNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toNativeAlertDialogProperties())) {
@@ -33,8 +33,8 @@ fun EntryProviderScope<NavKey>.editName() {
                 )
             }
         }
-        val currentName = uiState.currentName
-        if (currentName is Loadable.Loaded) {
+        val currentName = uiState.currentName.loadedOrNull()
+        if (currentName != null) {
             EditNameDialog(
                 initialName = currentName.value.orEmpty(),
                 onDismiss = navigator::navigateBack,

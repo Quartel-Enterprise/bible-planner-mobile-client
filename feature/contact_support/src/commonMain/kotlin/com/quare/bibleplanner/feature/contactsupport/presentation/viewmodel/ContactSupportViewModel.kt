@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.loadedOrNull
 
 internal class ContactSupportViewModel(
     private val mailtoFactory: ContactSupportMailtoFactory,
@@ -78,7 +79,7 @@ internal class ContactSupportViewModel(
     }
 
     private fun Loadable<SubscriptionStatus?>.toIsPro(): Boolean? =
-        (this as? Loadable.Loaded)?.let { loaded -> loaded.value is SubscriptionStatus.Pro }
+        loadedOrNull()?.let { loaded -> loaded.value is SubscriptionStatus.Pro }
 
     private fun emitAction(action: ContactSupportUiAction) {
         viewModelScope.launch {

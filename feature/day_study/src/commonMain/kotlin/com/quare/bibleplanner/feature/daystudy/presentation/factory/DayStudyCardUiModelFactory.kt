@@ -6,6 +6,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMo
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 
 internal class DayStudyCardUiModelFactory(
@@ -21,12 +22,10 @@ internal class DayStudyCardUiModelFactory(
         )
         return DayStudyCardUiModel(
             mode = mode,
-            quota = Loadable.Loaded(
-                DayStudyCardQuotaUiModel(
-                    remainingFree = quota.remainingFree,
-                    freeLimit = quota.freeLimit,
-                ),
-            ),
+            quota = DayStudyCardQuotaUiModel(
+                remainingFree = quota.remainingFree,
+                freeLimit = quota.freeLimit,
+            ).toLoaded(),
             isPro = isPro,
             isRewardedUnlockOffered = mode == DayStudyCardMode.LOCKED &&
                 prepareRewardedUnlockOffer(quota.rewardedRemainingToday),
@@ -39,12 +38,10 @@ internal class DayStudyCardUiModelFactory(
         rewardedRemainingToday: Int,
     ): DayStudyCardUiModel = card.copy(
         mode = DayStudyCardMode.LOCKED,
-        quota = Loadable.Loaded(
-            DayStudyCardQuotaUiModel(
-                remainingFree = 0,
-                freeLimit = card.quota.valueOrNull()?.freeLimit ?: 0,
-            ),
-        ),
+        quota = DayStudyCardQuotaUiModel(
+            remainingFree = 0,
+            freeLimit = card.quota.valueOrNull()?.freeLimit ?: 0,
+        ).toLoaded(),
         isRewardedUnlockOffered = prepareRewardedUnlockOffer(rewardedRemainingToday),
         rewardedRemainingToday = rewardedRemainingToday,
     )

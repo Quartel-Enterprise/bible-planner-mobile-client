@@ -56,6 +56,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import kotlin.time.Clock
 
 internal class ProfileUiStateFactory(
@@ -86,7 +87,7 @@ internal class ProfileUiStateFactory(
     fun createInitialState(): ProfileUiState = ProfileUiState(
         accountStatusModel = AccountStatusModel.Loading,
         subscriptionStatus = Loadable.Loading,
-        isProCardVisible = Loadable.Loaded(true),
+        isProCardVisible = true.toLoaded(),
         shouldShowDonateOption = Loadable.Loading,
         headerRes = Loadable.Loading,
         isInstagramLinkVisible = Loadable.Loading,
@@ -110,38 +111,38 @@ internal class ProfileUiStateFactory(
         getProfileScreenRemoteConfigsFlow().map { remoteConfigs ->
             { state: ProfileUiState ->
                 state.copy(
-                    shouldShowDonateOption = Loadable.Loaded(remoteConfigs.shouldShowDonate),
-                    isInstagramLinkVisible = Loadable.Loaded(remoteConfigs.isInstagramVisible),
-                    isWebAppVisible = Loadable.Loaded(remoteConfigs.isWebAppVisible),
-                    headerRes = Loadable.Loaded(remoteConfigs.toHeaderRes()),
+                    shouldShowDonateOption = remoteConfigs.shouldShowDonate.toLoaded(),
+                    isInstagramLinkVisible = remoteConfigs.isInstagramVisible.toLoaded(),
+                    isWebAppVisible = remoteConfigs.isWebAppVisible.toLoaded(),
+                    headerRes = remoteConfigs.toHeaderRes().toLoaded(),
                 )
             }
         },
         getThemeConfigurationFlow().map { themeConfiguration ->
             { state: ProfileUiState ->
                 state.copy(
-                    themeRes = Loadable.Loaded(themeConfiguration.theme.toStringResource()),
-                    contrastRes = Loadable.Loaded(themeConfiguration.toContrastRes()),
+                    themeRes = themeConfiguration.theme.toStringResource().toLoaded(),
+                    contrastRes = themeConfiguration.toContrastRes().toLoaded(),
                 )
             }
         },
         getAppLanguageFlow().map { language ->
-            { state: ProfileUiState -> state.copy(selectedLanguage = Loadable.Loaded(language)) }
+            { state: ProfileUiState -> state.copy(selectedLanguage = language.toLoaded()) }
         },
         getPlanStartDate().map { startDate ->
-            { state: ProfileUiState -> state.copy(planStartDate = Loadable.Loaded(startDate)) }
+            { state: ProfileUiState -> state.copy(planStartDate = startDate.toLoaded()) }
         },
         observeStudySuggestionSettings().map { settings ->
-            { state: ProfileUiState -> state.copy(studySuggestion = Loadable.Loaded(settings)) }
+            { state: ProfileUiState -> state.copy(studySuggestion = settings.toLoaded()) }
         },
         observeSubscriptionStatus().map { subscriptionStatus ->
-            { state: ProfileUiState -> state.copy(subscriptionStatus = Loadable.Loaded(subscriptionStatus)) }
+            { state: ProfileUiState -> state.copy(subscriptionStatus = subscriptionStatus.toLoaded()) }
         },
         observeAccountStatus().map { accountStatusModel ->
             { state: ProfileUiState -> state.copy(accountStatusModel = accountStatusModel) }
         },
         observeAnnotationsSummary().map { summary ->
-            { state: ProfileUiState -> state.copy(annotationsSummary = Loadable.Loaded(summary)) }
+            { state: ProfileUiState -> state.copy(annotationsSummary = summary.toLoaded()) }
         },
         adsConsentService.isPrivacyOptionsRequired.map { isRequired ->
             { state: ProfileUiState -> state.copy(isPrivacyOptionsVisible = isRequired) }
@@ -149,8 +150,8 @@ internal class ProfileUiStateFactory(
         getBibleRowFlow().map { bibleRow ->
             { state: ProfileUiState ->
                 state.copy(
-                    bibleVersionName = Loadable.Loaded(bibleRow.name),
-                    bibleDownloadProgress = Loadable.Loaded(bibleRow.downloadProgress),
+                    bibleVersionName = bibleRow.name.toLoaded(),
+                    bibleDownloadProgress = bibleRow.downloadProgress.toLoaded(),
                 )
             }
         },

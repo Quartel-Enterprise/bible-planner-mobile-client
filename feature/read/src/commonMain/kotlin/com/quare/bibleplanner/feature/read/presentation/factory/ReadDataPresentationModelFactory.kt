@@ -31,6 +31,9 @@ import kotlinx.coroutines.flow.onStart
 import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
 import software.quare.loadable.Loadable.Loaded
+import software.quare.loadable.isLoaded
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ReadDataPresentationModelFactory(
@@ -77,7 +80,7 @@ internal class ReadDataPresentationModelFactory(
                             chapterNumber = chapterNumber,
                             isChapterRead = chapter?.isRead ?: isInitiallyRead,
                             navigationSuggestions = navigationSuggestions,
-                            versionAbbreviation = Loaded(versionId.uppercase()),
+                            versionAbbreviation = versionId.uppercase().toLoaded(),
                         ),
                         content = toContent(
                             chapterResult = chapterResult,
@@ -109,8 +112,8 @@ internal class ReadDataPresentationModelFactory(
             errorUiEvent = ReadUiEvent.OnRetryClick,
         )
 
-        ChapterLoadResult.TextMissing -> if (selectedBible is Loaded) {
-            val bible = selectedBible.value
+        ChapterLoadResult.TextMissing -> if (selectedBible.isLoaded()) {
+            val bible = selectedBible.valueOrNull()
             ReadContentUiState.Error.ChapterNotFound(
                 errorUiEvent = ReadUiEvent.ManageBibleVersions,
                 selectedBibleVersionName = bible?.version?.name.orEmpty(),

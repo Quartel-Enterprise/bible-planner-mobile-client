@@ -49,6 +49,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import kotlin.time.Instant
 
 internal class AnnotationsViewModel(
@@ -84,7 +85,7 @@ internal class AnnotationsViewModel(
             observeOtherVersionAnnotationCounts(),
             filters,
             contentFactory::create,
-        ).map<AnnotationsContentUiModel, Loadable<AnnotationsContentUiModel>> { content -> Loadable.Loaded(content) }
+        ).map<AnnotationsContentUiModel, Loadable<AnnotationsContentUiModel>>(AnnotationsContentUiModel::toLoaded)
             .onStart { emit(Loadable.Loading) },
         overlay,
         filters,
