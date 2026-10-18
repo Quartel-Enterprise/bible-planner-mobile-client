@@ -17,7 +17,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseC
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreSubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.TrackCustomPaywallImpression
-import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigDataSource
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import software.quare.connectivity.NetworkConnectivityObserver
 
 private const val SUPABASE_URL = "https://e2e.supabase.co"
 private const val SUPABASE_KEY = "e2e-anon-key"

@@ -18,7 +18,7 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.sync)
             implementation(projects.core.user)

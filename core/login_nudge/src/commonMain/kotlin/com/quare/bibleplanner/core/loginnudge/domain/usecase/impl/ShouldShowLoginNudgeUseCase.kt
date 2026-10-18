@@ -4,8 +4,8 @@ import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.loginnudge.domain.LoginNudgePreferences
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.ShouldShowLoginNudge
-import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
+import software.quare.connectivity.IsConnected
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 

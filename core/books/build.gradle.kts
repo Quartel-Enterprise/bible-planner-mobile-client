@@ -23,7 +23,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.provider.supabase)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
             implementation(projects.core.sync)
             implementation(projects.core.user)
             implementation(projects.core.date)

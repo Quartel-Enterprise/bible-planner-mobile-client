@@ -25,7 +25,7 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
             implementation(projects.core.utils)
             implementation(projects.core.provider.billing)
             implementation(projects.core.books)

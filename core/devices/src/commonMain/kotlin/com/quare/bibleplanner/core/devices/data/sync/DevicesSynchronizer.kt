@@ -4,7 +4,6 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.devices.data.UserDevicesRemoteStore
 import com.quare.bibleplanner.core.devices.data.local.UserDeviceLocalStore
 import com.quare.bibleplanner.core.devices.data.model.DeviceChange
-import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
 import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
@@ -14,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant

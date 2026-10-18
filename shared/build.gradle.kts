@@ -141,7 +141,7 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.date)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.verseAnnotations)
             implementation(libs.ktor.client.mock)

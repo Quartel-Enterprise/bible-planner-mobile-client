@@ -27,7 +27,7 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.billing)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.remoteConfig)

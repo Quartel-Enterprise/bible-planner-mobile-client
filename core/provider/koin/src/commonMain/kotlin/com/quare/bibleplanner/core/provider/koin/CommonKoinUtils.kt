@@ -21,7 +21,6 @@ import com.quare.bibleplanner.core.profile.di.profileModule
 import com.quare.bibleplanner.core.provider.ads.di.adsModule
 import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
-import com.quare.bibleplanner.core.provider.connectivity.di.connectivityModule
 import com.quare.bibleplanner.core.provider.crashlytics.di.crashlyticsModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
@@ -76,6 +75,7 @@ import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
 import com.quare.bibleplanner.feature.verse.annotations.di.annotationsModule
 import com.quare.bibleplanner.feature.verse.selectionmenu.di.verseSelectionModule
 import com.quare.bibleplanner.feature.verse.share.di.shareVerseModule
+import software.quare.connectivity.connectivityModule
 
 object CommonKoinUtils {
     val modules = listOf(

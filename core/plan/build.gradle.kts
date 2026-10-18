@@ -26,7 +26,7 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
-            implementation(projects.core.provider.connectivity)
+            implementation(libs.quare.connectivity)
 
             // Room
             implementation(libs.androidx.room.runtime)

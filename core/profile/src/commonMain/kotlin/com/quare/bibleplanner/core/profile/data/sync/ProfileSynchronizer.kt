@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.profile.data.sync
 
 import co.touchlab.kermit.Logger
-import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
 import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
