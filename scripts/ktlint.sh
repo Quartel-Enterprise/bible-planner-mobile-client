@@ -1,160 +1,41 @@
 #!/bin/bash
 
-# Runs ktlint over the whole repository, with the project's custom ruleset.
-# This is the same check the static-analysis workflow runs in CI.
+# Runs ktlint with the Quare ruleset (github.com/Quartel-Enterprise/ktlint-rules):
+#   ./scripts/ktlint.sh            check
+#   ./scripts/ktlint.sh --format   autocorrect what can be autocorrected
+#
+# This file never changes: the ruleset version pinned in gradle/libs.versions.toml (quare-ktlint-rules) or in
+# .ktlint-rules-version picks the runner, the rules and the ktlint CLI, all downloaded from that release.
 
 set -e
 
-# --format rewrites the offending files instead of only reporting them
-FORMAT_MODE=false
+ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
 
-if [ "$1" = "--format" ]; then
-    FORMAT_MODE=true
+if [ -f "$ROOT/.ktlint-rules-version" ]; then
+    VERSION="$(tr -d '[:space:]' < "$ROOT/.ktlint-rules-version")"
+else
+    VERSION="$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' \
+        "$ROOT/gradle/libs.versions.toml" 2> /dev/null | head -1)"
 fi
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Find project root by looking for gradlew or build.gradle.kts
-# Start from script directory and go up until we find it
-CURRENT_DIR="$SCRIPT_DIR"
-PROJECT_ROOT=""
-
-while [ "$CURRENT_DIR" != "/" ]; do
-    if [ -f "$CURRENT_DIR/gradlew" ] || [ -f "$CURRENT_DIR/build.gradle.kts" ]; then
-        PROJECT_ROOT="$CURRENT_DIR"
-        break
-    fi
-    CURRENT_DIR="$(dirname "$CURRENT_DIR")"
-done
-
-if [ -z "$PROJECT_ROOT" ]; then
-    echo "❌ Could not find project root (looking for gradlew or build.gradle.kts)"
+if [ -z "$VERSION" ]; then
+    echo "❌ Pin the ruleset version: quare-ktlint-rules in gradle/libs.versions.toml, or .ktlint-rules-version"
     exit 1
 fi
 
-# KTLINT_RULESET_JAR is relative to where the script was called from, not to the project root
-if [ -n "$KTLINT_RULESET_JAR" ]; then
-    if [ ! -f "$KTLINT_RULESET_JAR" ]; then
-        echo "❌ KTLINT_RULESET_JAR does not point at a file: $KTLINT_RULESET_JAR"
+CACHE="${KTLINT_CACHE_DIR:-$HOME/.cache/ktlint}"
+RUNNER="$CACHE/runner-$VERSION.sh"
+
+if [ ! -f "$RUNNER" ]; then
+    mkdir -p "$CACHE"
+    TMP="$(mktemp "$RUNNER.XXXXXX")"
+    if ! curl -fsSLo "$TMP" \
+        "https://raw.githubusercontent.com/Quartel-Enterprise/ktlint-rules/$VERSION/scripts/ktlint.sh"; then
+        rm -f "$TMP"
+        echo "❌ Failed to download the ktlint runner of the ruleset $VERSION"
         exit 1
     fi
-    KTLINT_RULESET_JAR="$(cd "$(dirname "$KTLINT_RULESET_JAR")" && pwd)/$(basename "$KTLINT_RULESET_JAR")"
+    mv "$TMP" "$RUNNER"
 fi
 
-# Change to project root
-cd "$PROJECT_ROOT"
-
-echo "🔍 Running ktlint..."
-echo "📁 Working directory: $PROJECT_ROOT"
-echo ""
-
-# Check if Java is available (the ktlint CLI is a self-executing jar)
-if ! command -v java &> /dev/null; then
-    echo "❌ Java is not installed. Please install JDK 21 (Temurin distribution recommended)."
-    exit 1
-fi
-
-# The version catalog is the single source of truth for the ktlint version
-KTLINT_VERSION=$(sed -nE 's/^ktlint[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
-
-if [ -z "$KTLINT_VERSION" ]; then
-    echo "❌ Could not read the ktlint version from gradle/libs.versions.toml"
-    exit 1
-fi
-
-# The custom rules come from Maven Central (github.com/Quartel-Enterprise/ktlint-rules), pinned in the catalog too
-RULESET_VERSION=$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
-
-if [ -z "$RULESET_VERSION" ]; then
-    echo "❌ Could not read the quare-ktlint-rules version from gradle/libs.versions.toml"
-    exit 1
-fi
-
-KTLINT_CACHE_DIR="${KTLINT_CACHE_DIR:-$HOME/.cache/ktlint}"
-KTLINT_BIN="$KTLINT_CACHE_DIR/ktlint-$KTLINT_VERSION"
-RULESET_JAR="$KTLINT_CACHE_DIR/ktlint-rules-$RULESET_VERSION.jar"
-RULESET_URL="https://repo1.maven.org/maven2/software/quare/ktlint-rules/$RULESET_VERSION/ktlint-rules-$RULESET_VERSION.jar"
-REPORT_PATH="build/ktlint-report.xml"
-
-# Downloads $2 to $1 once, through a temporary file so an interrupted download never gets cached as valid
-download_once() {
-    local target="$1"
-    local url="$2"
-    local label="$3"
-
-    if [ -f "$target" ]; then
-        return
-    fi
-
-    echo "⬇️  Downloading $label..."
-    mkdir -p "$KTLINT_CACHE_DIR"
-
-    if ! curl -fsSLo "$target.tmp" "$url"; then
-        rm -f "$target.tmp"
-        echo "❌ Failed to download $label from $url"
-        exit 1
-    fi
-
-    mv "$target.tmp" "$target"
-    echo ""
-}
-
-download_once "$KTLINT_BIN" \
-    "https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint" \
-    "the ktlint $KTLINT_VERSION CLI"
-chmod +x "$KTLINT_BIN"
-
-# KTLINT_RULESET_JAR points at a local build of the ruleset, to try a rule change before releasing it
-if [ -n "$KTLINT_RULESET_JAR" ]; then
-    echo "⚠️  Using the local ruleset $KTLINT_RULESET_JAR instead of $RULESET_VERSION (KTLINT_RULESET_JAR is set)"
-    echo ""
-    RULESET_JAR="$KTLINT_RULESET_JAR"
-else
-    download_once "$RULESET_JAR" "$RULESET_URL" "the custom ruleset $RULESET_VERSION"
-fi
-
-KTLINT_ARGS=(
-    --ruleset="$RULESET_JAR"
-    --relative
-    --reporter=plain
-)
-
-if [ "$FORMAT_MODE" = true ]; then
-    echo "🛠️  Running ktlint format..."
-    KTLINT_ARGS+=(--format)
-else
-    echo "📋 Running ktlint check..."
-    mkdir -p build
-    KTLINT_ARGS+=(--reporter=checkstyle,output="$REPORT_PATH")
-fi
-echo ""
-
-set +e
-"$KTLINT_BIN" "${KTLINT_ARGS[@]}" \
-    "**/src/**/*.kt" \
-    "**/*.kts" \
-    "!**/build/**" \
-    "!**/generated/**"
-KTLINT_EXIT_CODE=$?
-set -e
-
-echo ""
-if [ $KTLINT_EXIT_CODE -ne 0 ]; then
-    if [ "$FORMAT_MODE" = true ]; then
-        echo "❌ ktlint found errors that cannot be autocorrected. Fix them by hand."
-    else
-        echo "❌ ktlint found formatting errors."
-        echo ""
-        echo "To fix them, run:"
-        echo "  ./scripts/ktlint.sh --format"
-    fi
-    echo ""
-    echo "✨ ktlint finished (with errors)!"
-    exit $KTLINT_EXIT_CODE
-fi
-
-if [ "$FORMAT_MODE" = false ]; then
-    echo "✅ Report saved to: $REPORT_PATH"
-fi
-echo "✨ ktlint finished!"
+KTLINT_PROJECT_ROOT="$ROOT" exec bash "$RUNNER" "$VERSION" "$@"

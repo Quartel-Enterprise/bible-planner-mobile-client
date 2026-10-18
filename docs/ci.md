@@ -49,8 +49,8 @@ Crashlytics mapping file id and uploads its mapping file. Every other release bu
 the id is random per build and the commit changes on every run, so either would keep R8 from ever
 coming from the cache, even for a pull request that doesn't touch the app's code.
 
-The ktlint action needs no Gradle: it caches the ktlint CLI and the custom ruleset jar from Maven
-Central, keyed by their versions in the catalog.
+The ktlint job uses the action from ktlint-rules and needs no Gradle: it caches the ktlint CLI and the
+ruleset jar, each keyed by its own version.
 
 ## Merge when green
 

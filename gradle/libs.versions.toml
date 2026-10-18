@@ -4,10 +4,9 @@ agp = "9.4.1"
 kotlin = "2.4.21"
 ksp = "2.3.12"
 buildkonfig = "0.23.0"
-ktlint = "1.8.0"
-# Built against the ktlint version above: bump both together (github.com/Quartel-Enterprise/ktlint-rules)
-quare-ktlint-rules = "1.0.0"
-ktlint-gradle = "14.2.0"
+# Read by scripts/ktlint.sh: the ruleset, its runner and the ktlint CLI all come from this release
+# (github.com/Quartel-Enterprise/ktlint-rules)
+quare-ktlint-rules = "1.0.1"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.8"
 store-screenshots = "1.6.1"
@@ -238,9 +237,6 @@ revenuecat-result = { module = "com.revenuecat.purchases:purchases-kmp-result", 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
 
-# Ktlint custom rule set
-quare-ktlint-rules = { module = "software.quare:ktlint-rules", version.ref = "quare-ktlint-rules" }
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
@@ -260,6 +256,5 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 bibleplanner-kotlin-multiplatform = { id = "bibleplanner.kotlin.multiplatform" }
 bibleplanner-kotlin-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }

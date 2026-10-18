@@ -6,7 +6,7 @@ conventions behind them, is documented in [Code style](architecture/code-style.m
 
 ## Running it
 
-CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same check locally:
+`scripts/ktlint.sh` runs the same check CI runs:
 
 ```bash
 ./scripts/ktlint.sh            # check (what CI runs)
@@ -16,9 +16,14 @@ CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same c
 ./scripts/ktlint.sh --format   # autocorrect what can be autocorrected
 ```
 
-The script downloads the ktlint CLI and the custom ruleset jar once per version (cached in
-`~/.cache/ktlint`). Both versions live in `gradle/libs.versions.toml` (`ktlint` and
-`quare-ktlint-rules`), and the Gradle `ktlintRuleset` dependency reads the same entry.
+The script is a small wrapper that comes from ktlint-rules and never changes here. It reads
+`quare-ktlint-rules` in `gradle/libs.versions.toml`, the only version this repository pins, and
+downloads that release's runner, the ruleset jar, and the ktlint CLI the release is built against, once
+per version into `~/.cache/ktlint`. The runner refuses a jar that isn't signed by the Quare release key.
+There is no Gradle ktlint task: the CLI checks the files on disk without configuring the build.
+
+The ktlint plugin for Android Studio can show the violations while typing; its setup is in the
+[ktlint-rules README](https://github.com/Quartel-Enterprise/ktlint-rules#in-the-ide).
 
 ## Changing a custom rule
 
@@ -30,18 +35,17 @@ released, build the jar there (`./gradlew jar`) and point the script at it, from
 KTLINT_RULESET_JAR=~/StudioProjects/ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
 ```
 
-Once it is released, bump `quare-ktlint-rules` in the catalog. Each ruleset release is built against
-one ktlint version, so a ktlint upgrade waits for a ruleset release built against it, and both
-versions move together.
+Once it is released, bump `quare-ktlint-rules` in the catalog. A ktlint upgrade is a ruleset release
+too: the ruleset picks the ktlint version, so it never drifts from the rules.
 
-`./gradlew ktlintCheck` still works, but it is much slower: it drags KSP and Kotlin/Native
-compilation into the task graph to check files that are already on disk.
+Project-specific settings go in `.editorconfig` instead of the ruleset: turning a rule off for some
+files, or `ktlint_quare_composable_extra_suffixes` for a composable suffix only this app uses.
 
 ## In CI
 
-The `static-analysis` workflow runs the same script on every pull request — and on every push to
-`main` — that touches a `.kt` or `.kts` file, the version catalog, the ktlint script or
-`.editorconfig`.
+The `static-analysis` workflow runs the same script, through the ktlint-rules action, on every pull
+request — and on every push to `main` — that touches a `.kt` or `.kts` file, the version catalog, the
+ktlint script or `.editorconfig`.
 
 ## Test coverage
 

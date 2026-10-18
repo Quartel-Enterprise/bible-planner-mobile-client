@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - '.github/workflows/static-analysis.yml'
-      - '.github/actions/ktlint/action.yml'
       - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
@@ -15,7 +14,6 @@ on:
       - main
     paths:
       - '.github/workflows/static-analysis.yml'
-      - '.github/actions/ktlint/action.yml'
       - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
@@ -54,11 +52,5 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
       - name: Run Static Analysis
-        uses: ./.github/actions/ktlint
+        uses: Quartel-Enterprise/ktlint-rules/.github/actions/ktlint@1.0.1
