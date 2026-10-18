@@ -7,7 +7,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.EditNameNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.EditNameDialog
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiAction
@@ -18,6 +17,7 @@ import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import software.quare.loadable.Loadable
 
 fun EntryProviderScope<NavKey>.editName() {
     entry<EditNameNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toNativeAlertDialogProperties())) {

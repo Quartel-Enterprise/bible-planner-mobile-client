@@ -343,7 +343,7 @@ does not compile, because `Loadable` is generic and `Loadable::x` is read as a m
 its type argument:
 
 ```kotlin
-import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
+import software.quare.loadable.Loadable.Loaded
 
 versionAbbreviation = selectedBible?.version?.id?.uppercase()?.let(::Loaded) ?: Loadable.Loading
 ```

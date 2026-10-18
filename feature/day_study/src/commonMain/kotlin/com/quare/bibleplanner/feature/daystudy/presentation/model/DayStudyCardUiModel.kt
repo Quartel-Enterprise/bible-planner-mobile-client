@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.model
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
+import software.quare.loadable.Loadable
 
 data class DayStudyCardUiModel(
     val mode: DayStudyCardMode?,

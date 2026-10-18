@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.read.presentation.mapper
 
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
@@ -15,6 +14,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import org.jetbrains.compose.resources.StringResource
+import software.quare.loadable.Loadable
 
 internal class ReadUiStateMapper {
     fun map(

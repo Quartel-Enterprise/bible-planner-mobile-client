@@ -7,7 +7,6 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_too_large
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_unreadable
 import com.quare.bibleplanner.core.image.MAX_AVATAR_SOURCE_BYTES
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
+import software.quare.loadable.Loadable
 
 internal class ProfilePhotoViewModel(
     private val removeProfilePhoto: RemoveProfilePhoto,

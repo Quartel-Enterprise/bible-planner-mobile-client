@@ -20,8 +20,6 @@ import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError
@@ -29,6 +27,8 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenera
 import com.quare.bibleplanner.ui.component.study.AiStudyErrorContent
 import com.quare.bibleplanner.ui.component.study.AiStudyHeroContent
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 @Composable
 internal fun DayStudyPane(

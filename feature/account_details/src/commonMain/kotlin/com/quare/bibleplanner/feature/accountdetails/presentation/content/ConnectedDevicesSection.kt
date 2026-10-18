@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.account_details.generated.resources.Res
 import bibleplanner.feature.account_details.generated.resources.account_details_connected_devices
 import bibleplanner.feature.account_details.generated.resources.account_details_devices_active
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiEvent
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.DeviceUiModel
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
@@ -30,6 +29,7 @@ import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
 
 private const val SHIMMER_ROWS = 2
 

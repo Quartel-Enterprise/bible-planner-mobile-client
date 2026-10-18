@@ -7,7 +7,6 @@ import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.edit_profile.generated.resources.Res
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_title
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.route.EditPhotoSourceNavRoute
 import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.editprofile.presentation.content.PhotoSourceSheetContent
@@ -16,6 +15,7 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import software.quare.loadable.valueOrNull
 
 fun EntryProviderScope<NavKey>.editPhotoSource() {
     entry<EditPhotoSourceNavRoute>(metadata = getSheetPane()) {

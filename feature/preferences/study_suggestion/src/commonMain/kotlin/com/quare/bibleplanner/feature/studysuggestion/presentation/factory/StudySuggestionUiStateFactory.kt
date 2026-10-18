@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation.factory
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.GetStudySuggestionSyncEnabledFlow
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import software.quare.loadable.Loadable
 
 internal class StudySuggestionUiStateFactory(
     private val observeStudySuggestionSettings: ObserveStudySuggestionSettings,

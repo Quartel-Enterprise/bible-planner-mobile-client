@@ -12,8 +12,6 @@ import bibleplanner.feature.profile.generated.resources.study_suggestion_disable
 import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_banner
 import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_dialog
 import bibleplanner.feature.profile.generated.resources.today
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOptionsFactory
@@ -25,6 +23,8 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 @Composable
 internal fun PreferencesSection(

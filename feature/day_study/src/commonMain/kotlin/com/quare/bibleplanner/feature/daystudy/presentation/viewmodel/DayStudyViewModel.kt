@@ -13,8 +13,6 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
@@ -50,6 +48,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 

@@ -18,8 +18,6 @@ import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCa
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
@@ -69,6 +67,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource

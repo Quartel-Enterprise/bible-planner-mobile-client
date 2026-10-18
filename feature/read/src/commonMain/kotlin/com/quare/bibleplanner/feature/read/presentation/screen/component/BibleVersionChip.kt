@@ -14,9 +14,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.change_bible_version
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
 
 private val abbreviationShimmerWidth = 32.dp
 private val abbreviationShimmerHeight = 14.dp

@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.factory
 
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import kotlinx.coroutines.test.runTest
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -8,7 +8,6 @@ import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDevices
 import com.quare.bibleplanner.core.devices.domain.usecase.SignOutDevice
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -36,6 +35,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
 
 internal class AccountDetailsViewModel(
     private val signOutDevice: SignOutDevice,

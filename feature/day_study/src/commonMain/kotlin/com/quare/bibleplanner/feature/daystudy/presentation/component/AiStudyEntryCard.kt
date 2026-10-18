@@ -43,8 +43,6 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
 import bibleplanner.feature.day_study.generated.resources.ai_study_view_hint
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
@@ -52,6 +50,8 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.component.study.AiStudyBadge
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 private const val BORDER_ALPHA = 0.2f

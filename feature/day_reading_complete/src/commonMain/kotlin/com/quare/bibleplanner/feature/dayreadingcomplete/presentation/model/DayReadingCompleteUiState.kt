@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import kotlinx.datetime.LocalDate
+import software.quare.loadable.Loadable
 
 sealed interface DayReadingCompleteUiState {
     data object Loading : DayReadingCompleteUiState

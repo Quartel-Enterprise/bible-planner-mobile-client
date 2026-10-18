@@ -23,8 +23,6 @@ import bibleplanner.feature.profile.generated.resources.donate_option
 import bibleplanner.feature.profile.generated.resources.donate_subtitle
 import bibleplanner.feature.profile.generated.resources.pro_description_simple
 import bibleplanner.feature.profile.generated.resources.you_re_pro
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
@@ -35,6 +33,8 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.theme.gold
 import org.jetbrains.compose.resources.stringResource
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 internal fun ResponsiveContentScope.headerSection(
     state: ProfileUiState,

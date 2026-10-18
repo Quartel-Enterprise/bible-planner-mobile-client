@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.model
 
-import com.quare.bibleplanner.core.model.loadable.Loadable
+import software.quare.loadable.Loadable
 
 internal data class EditNameUiState(
     val currentName: Loadable<String?>,

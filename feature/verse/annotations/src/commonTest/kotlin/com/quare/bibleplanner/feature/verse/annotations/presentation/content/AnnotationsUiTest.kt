@@ -35,7 +35,6 @@ import bibleplanner.feature.verse.annotations.generated.resources.search
 import bibleplanner.feature.verse.annotations.generated.resources.search_hint_short
 import bibleplanner.feature.verse.annotations.generated.resources.type_notes
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
@@ -52,6 +51,7 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.model.Annot
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
+import software.quare.loadable.Loadable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

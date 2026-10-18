@@ -13,7 +13,6 @@ import bibleplanner.feature.profile.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
-import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
@@ -56,6 +55,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
+import software.quare.loadable.Loadable
 import kotlin.time.Clock
 
 internal class ProfileUiStateFactory(
