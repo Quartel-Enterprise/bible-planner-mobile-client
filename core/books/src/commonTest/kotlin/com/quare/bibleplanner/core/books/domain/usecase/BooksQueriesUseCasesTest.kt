@@ -83,11 +83,11 @@ internal class BooksQueriesUseCasesTest {
         repository.setSelectedTestament("old")
 
         // When
-        val result = GetBooksWithInformationBoxVisibilityUseCase(repository)().first()
+        val result = ObserveBooksScreenPreferencesUseCase(repository)().first()
 
         // Then
         assertEquals(
-            GetBooksWithInformationBoxVisibilityUseCase.Result(
+            ObserveBooksScreenPreferencesUseCase.Result(
                 books = listOf(genesis),
                 layoutFormat = "list",
                 selectedTestament = "old",

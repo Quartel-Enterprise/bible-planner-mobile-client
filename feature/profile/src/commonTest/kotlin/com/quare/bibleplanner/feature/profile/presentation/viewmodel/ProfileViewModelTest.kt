@@ -86,7 +86,6 @@ internal class ProfileViewModelTest {
         canRequestAds = true,
     )
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val webAppUrl = "https://web.bibleplanner.app"
     private lateinit var viewModel: ProfileViewModel
     private lateinit var navigator: Navigator
     private lateinit var commands: List<NavigationCommand>
@@ -249,22 +248,6 @@ internal class ProfileViewModelTest {
         // Then
         assertEquals(
             expected = listOf(ProfileUiAction.OpenLink("https://www.instagram.com/bible.planner")),
-            actual = actions,
-        )
-    }
-
-    @Test
-    fun `GIVEN the profile WHEN tapping the web app row THEN opens the web app url`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.WEB_APP))
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = listOf(ProfileUiAction.OpenLink(webAppUrl)),
             actual = actions,
         )
     }
@@ -568,7 +551,6 @@ internal class ProfileViewModelTest {
                     ),
                 ),
             ),
-            getWebAppUrl = { webAppUrl },
             getInstagramUrl = GetInstagramUrlUseCase(languageProvider),
             getAppStoreLink = GetAppStoreLinkUseCase(
                 platform = platform,
@@ -593,7 +575,6 @@ internal class ProfileViewModelTest {
                 getThemeOptionFlow = { flowOf(Theme.SYSTEM) },
                 getContrastTypeFlow = { flowOf(ContrastType.Standard) },
                 getIsDynamicColorsEnabledFlow = { flowOf(false) },
-                isProfileWebAppEnabled = { flowOf(false) },
                 isDynamicColorSupported = { false },
                 sessionStatus = MutableStateFlow(SessionStatus.NotAuthenticated()),
                 observeUserProfile = { flowOf(null) },

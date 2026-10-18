@@ -18,8 +18,6 @@ import bibleplanner.feature.profile.generated.resources.release_notes_subtitle
 import bibleplanner.feature.profile.generated.resources.start_date
 import bibleplanner.feature.profile.generated.resources.study_suggestion_option
 import bibleplanner.feature.profile.generated.resources.theme_option
-import bibleplanner.feature.profile.generated.resources.web_app
-import bibleplanner.feature.profile.generated.resources.web_app_subtitle
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileIcon
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileMenuItemPresentationModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -49,12 +47,6 @@ internal object ProfileMenuOptionsFactory {
         icon = ProfileIcon.DrawableResourceIcon(Res.drawable.ic_instagram),
         type = ProfileOptionItemType.INSTAGRAM,
         subtitle = null,
-    )
-    val webApp = ProfileMenuItemPresentationModel(
-        name = Res.string.web_app,
-        subtitle = Res.string.web_app_subtitle,
-        icon = ProfileIcon.SystemIcon(AppIcon.Language),
-        type = ProfileOptionItemType.WEB_APP,
     )
     val deleteProgress = ProfileMenuItemPresentationModel(
         name = Res.string.delete_progress_option,

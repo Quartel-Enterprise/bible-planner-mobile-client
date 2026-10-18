@@ -113,11 +113,4 @@ sealed interface BooksUiEvent : UiEvent {
             params = mapOf(AnalyticsParams.LAYOUT to layoutFormat.toAnalyticsValue()),
         )
     }
-
-    data object OnWebAppLinkClick : BooksUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.WEB_APP_LINK_OPENED,
-            params = emptyMap(),
-        )
-    }
 }

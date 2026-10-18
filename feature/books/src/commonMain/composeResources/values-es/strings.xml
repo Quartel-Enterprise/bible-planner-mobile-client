@@ -8,10 +8,6 @@
     <string name="content_description_clear_search">Borrar búsqueda</string>
     <string name="sort_alphabetical_ascending">Alfabética (A-Z)</string>
     <string name="sort_alphabetical_descending">Alfabética (Z-A)</string>
-    <string name="reading_not_available_yet">Los libros estarán disponibles para lectura en versiones futuras, pero ya están disponibles en la versión web: www.web.bibleplanner.app</string>
-    <string name="open_site">Abrir sitio</string>
-    <string name="content_description_dismiss">Descartar</string>
-    <string name="content_description_info">Información</string>
     <string name="grid">Cuadrícula</string>
     <string name="list">Lista</string>
     <string name="content_description_sort">Ordenar</string>

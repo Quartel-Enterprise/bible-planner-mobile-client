@@ -29,7 +29,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstag
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveProfileWebAppEnabled
 import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
 import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnotatedPassages
@@ -67,7 +66,6 @@ internal class ProfileUiStateFactory(
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getContrastTypeFlow: GetContrastTypeFlow,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
-    private val isProfileWebAppEnabled: ObserveProfileWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val sessionStatus: StateFlow<SessionStatus>,
     private val observeUserProfile: ObserveUserProfile,
@@ -91,7 +89,6 @@ internal class ProfileUiStateFactory(
         shouldShowDonateOption = Loadable.Loading,
         headerRes = Loadable.Loading,
         isInstagramLinkVisible = Loadable.Loading,
-        isWebAppVisible = Loadable.Loading,
         themeRes = Loadable.Loading,
         contrastRes = Loadable.Loading,
         selectedLanguage = Loadable.Loading,
@@ -113,7 +110,6 @@ internal class ProfileUiStateFactory(
                 state.copy(
                     shouldShowDonateOption = remoteConfigs.shouldShowDonate.toLoaded(),
                     isInstagramLinkVisible = remoteConfigs.isInstagramVisible.toLoaded(),
-                    isWebAppVisible = remoteConfigs.isWebAppVisible.toLoaded(),
                     headerRes = remoteConfigs.toHeaderRes().toLoaded(),
                 )
             }
@@ -220,12 +216,10 @@ internal class ProfileUiStateFactory(
     private fun getProfileScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = combine(
         isInstagramLinkVisible(),
         shouldShowDonateOption(),
-        isProfileWebAppEnabled(),
-    ) { isInstagramVisible, shouldShowDonate, isWebAppVisible ->
+    ) { isInstagramVisible, shouldShowDonate ->
         RemoteConfigs(
             isInstagramVisible = isInstagramVisible,
             shouldShowDonate = shouldShowDonate,
-            isWebAppVisible = isWebAppVisible,
         )
     }.distinctUntilChanged()
 
@@ -269,7 +263,6 @@ internal class ProfileUiStateFactory(
     private data class RemoteConfigs(
         val isInstagramVisible: Boolean,
         val shouldShowDonate: Boolean,
-        val isWebAppVisible: Boolean,
     )
 
     private data class ThemeConfiguration(

@@ -237,7 +237,6 @@ internal class ProfileUiStateFactoryTest {
             // Given
             prepareScenario(
                 isInstagramVisible = false,
-                isWebAppEnabled = false,
                 subscriptionStatus = SubscriptionStatus.Free,
             )
             runCurrent()
@@ -256,7 +255,6 @@ internal class ProfileUiStateFactoryTest {
         // Given
         prepareScenario(
             isInstagramVisible = true,
-            isWebAppEnabled = true,
             subscriptionStatus = SubscriptionStatus.Free,
         )
 
@@ -268,10 +266,6 @@ internal class ProfileUiStateFactoryTest {
         assertEquals(
             expected = Loadable.Loaded(true),
             actual = state.isInstagramLinkVisible,
-        )
-        assertEquals(
-            expected = Loadable.Loaded(true),
-            actual = state.isWebAppVisible,
         )
         assertEquals(
             expected = Loadable.Loaded(false),
@@ -629,7 +623,6 @@ internal class ProfileUiStateFactoryTest {
         platform: Platform = Platform.Android,
         isInstagramVisible: Boolean = false,
         shouldShowDonate: Boolean = false,
-        isWebAppEnabled: Boolean = false,
         theme: Theme = Theme.SYSTEM,
         contrast: ContrastType = ContrastType.Standard,
         isDynamicColorsEnabled: Boolean = false,
@@ -676,7 +669,6 @@ internal class ProfileUiStateFactoryTest {
             getThemeOptionFlow = { flowOf(theme) },
             getContrastTypeFlow = { flowOf(contrast) },
             getIsDynamicColorsEnabledFlow = { flowOf(isDynamicColorsEnabled) },
-            isProfileWebAppEnabled = { flowOf(isWebAppEnabled) },
             isDynamicColorSupported = { isDynamicColorSupported },
             sessionStatus = MutableStateFlow(sessionStatus),
             observeUserProfile = { flowOf(profile) },

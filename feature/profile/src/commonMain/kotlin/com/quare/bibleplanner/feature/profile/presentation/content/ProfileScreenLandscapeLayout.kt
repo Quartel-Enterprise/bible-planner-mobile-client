@@ -21,7 +21,6 @@ import com.quare.bibleplanner.feature.profile.presentation.content.component.Log
 import com.quare.bibleplanner.feature.profile.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.SocialSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.SupportSection
-import com.quare.bibleplanner.feature.profile.presentation.content.component.WebSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.headerSection
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
@@ -83,11 +82,6 @@ internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
                 SupportSection(
                     onEvent = onEvent,
                 )
-                if (state.isWebAppVisible.valueOrNull() == true) {
-                    WebSection(
-                        onEvent = onEvent,
-                    )
-                }
                 AppSection(
                     state = state,
                     onEvent = onEvent,

@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.viewmodel
 
-import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBooksScreenPreferencesUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
@@ -573,18 +573,6 @@ internal class BooksViewModelTest {
         }
 
     @Test
-    fun `GIVEN a web app url WHEN clicking the web app link THEN opens it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        sendEvent(BooksUiEvent.OnWebAppLinkClick)
-
-        // Then
-        assertEquals(listOf<BooksUiAction>(BooksUiAction.OpenWebAppLink(WEB_APP_URL)), actions)
-    }
-
-    @Test
     fun `GIVEN no persisted testament WHEN opening THEN lists every book grouped old testament first`() =
         runTest(testDispatcher) {
             // Given
@@ -846,22 +834,17 @@ internal class BooksViewModelTest {
         viewModel = BooksViewModel(
             booksRepository = repository,
             toggleBookFavorite = ToggleBookFavoriteUseCase(repository),
-            getWebAppUrl = { WEB_APP_URL },
             bookGroupMapper = bookGroupMapper,
             bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper),
             requestLoginNudgeIfNeeded = { loginNudgeRequests++ },
             navigator = navigator,
             trackEvent = { name, params -> recordedEvents += name to params },
-            getBooksWithInformationBoxVisibility = GetBooksWithInformationBoxVisibilityUseCase(repository),
+            observeBooksScreenPreferences = ObserveBooksScreenPreferencesUseCase(repository),
         )
         viewModel.uiState.first { it is BooksUiState.Success }
         actions = mutableListOf<BooksUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }
         runCurrent()
-    }
-
-    private companion object {
-        const val WEB_APP_URL = "https://bibleplanner.app"
     }
 }

@@ -15,7 +15,6 @@ internal data class ProfileUiState(
     val shouldShowDonateOption: Loadable<Boolean>,
     val headerRes: Loadable<StringResource?>,
     val isInstagramLinkVisible: Loadable<Boolean>,
-    val isWebAppVisible: Loadable<Boolean>,
     val themeRes: Loadable<StringResource>,
     val contrastRes: Loadable<StringResource?>,
     val selectedLanguage: Loadable<Language>,

@@ -28,10 +28,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.MoreVert
@@ -143,10 +141,6 @@ enum class AppIcon(
         material = Icons.Default::History,
         sfSymbol = SFSymbol.clockArrowTriangleheadCounterclockwiseRotate90,
     ),
-    Info(
-        material = Icons.Default::Info,
-        sfSymbol = SFSymbol.infoCircleFill,
-    ),
     KeyboardArrowDown(
         material = Icons.Default::KeyboardArrowDown,
         sfSymbol = SFSymbol.chevronDown,
@@ -154,10 +148,6 @@ enum class AppIcon(
     KeyboardArrowUp(
         material = Icons.Default::KeyboardArrowUp,
         sfSymbol = SFSymbol.chevronUp,
-    ),
-    Language(
-        material = Icons.Default::Language,
-        sfSymbol = SFSymbol.globe,
     ),
     ListView(
         material = Icons.AutoMirrored.Filled::List,
