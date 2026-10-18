@@ -143,6 +143,7 @@ behind by a task that was dropped without `finish-task`. Every task emulator has
 while its task is alive, because an emulator is only ever created after its task's branch.
 
 ```bash
+setopt null_glob 2>/dev/null
 for INI in ~/.android/avd/BiblePlanner_*.ini; do
   [ -e "$INI" ] || continue
   AVD=$(basename "$INI" .ini)
@@ -155,6 +156,9 @@ for INI in ~/.android/avd/BiblePlanner_*.ini; do
 done
 ```
 
+- `setopt null_glob` is for zsh, the default shell here: without it, a glob with no match aborts the
+  whole command with "no matches found". Bash has no `setopt`, and there the `[ -e "$INI" ]` guard
+  skips the unmatched pattern instead.
 - Only `BiblePlanner_*` AVDs are ever deleted. `Medium_Phone`, `Pixel_9`, `Pixel_Tablet` and every
   `TuneScout_*` are shared or belong to another project.
 - A task whose branch still exists keeps its emulator, even if nobody is working on it. Finishing or
