@@ -10,13 +10,21 @@ runs:
       run: |
         KTLINT=$(sed -nE 's/^ktlint[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
         RULESET=$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
-        echo "key=$KTLINT-$RULESET" >> "$GITHUB_OUTPUT"
+        echo "ktlint=$KTLINT" >> "$GITHUB_OUTPUT"
+        echo "ruleset=$RULESET" >> "$GITHUB_OUTPUT"
 
-    - name: Cache ktlint CLI and ruleset
+    # Two entries, so a ruleset bump doesn't download the much larger CLI again
+    - name: Cache ktlint CLI
       uses: actions/cache@v6
       with:
-        path: ~/.cache/ktlint
-        key: ktlint-${{ steps.versions.outputs.key }}
+        path: ~/.cache/ktlint/ktlint-${{ steps.versions.outputs.ktlint }}
+        key: ktlint-cli-${{ steps.versions.outputs.ktlint }}
+
+    - name: Cache custom ruleset jar
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ktlint/ktlint-rules-${{ steps.versions.outputs.ruleset }}.jar
+        key: ktlint-ruleset-${{ steps.versions.outputs.ruleset }}
 
     - name: Run ktlint check (same as local)
       id: ktlint-check

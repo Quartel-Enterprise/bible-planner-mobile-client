@@ -228,7 +228,7 @@ private val buttonMinHeight = 44.dp
 private const val ANIMATION_MILLIS = 300
 ```
 
-This is enforced automatically by the custom ktlint rule `quare:top-level-val-position` (same module as above).
+This is enforced automatically by the custom ktlint rule `quare:top-level-val-position` (same ruleset as above).
 
 ## Blank Lines Between File-Scoped Constants
 
@@ -709,7 +709,9 @@ Not held to the list:
 - **`@Preview` functions**, named after what they preview.
 
 Enforced by the custom ktlint rule `quare:composable-naming-suffix`. A genuinely new kind of UI gets
-a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.
+a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception. The rule is
+shared with the other Quare projects, so the suffix goes through a ruleset release (see
+[Changing a custom rule](../code-quality.md#changing-a-custom-rule)).
 
 ## Comments Say Why, Never What
 

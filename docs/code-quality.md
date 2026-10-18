@@ -24,10 +24,10 @@ The script downloads the ktlint CLI and the custom ruleset jar once per version 
 
 The rules are shared with the other Quare projects, so a new or changed rule goes to
 [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules) first. To try it here before it is
-released, build the jar there and point the script at it:
+released, build the jar there (`./gradlew jar`) and point the script at it, from any directory:
 
 ```bash
-KTLINT_RULESET_JAR=../ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
+KTLINT_RULESET_JAR=~/StudioProjects/ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
 ```
 
 Once it is released, bump `quare-ktlint-rules` in the catalog. Each ruleset release is built against

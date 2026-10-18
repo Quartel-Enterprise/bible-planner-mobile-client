@@ -33,6 +33,15 @@ if [ -z "$PROJECT_ROOT" ]; then
     exit 1
 fi
 
+# KTLINT_RULESET_JAR is relative to where the script was called from, not to the project root
+if [ -n "$KTLINT_RULESET_JAR" ]; then
+    if [ ! -f "$KTLINT_RULESET_JAR" ]; then
+        echo "❌ KTLINT_RULESET_JAR does not point at a file: $KTLINT_RULESET_JAR"
+        exit 1
+    fi
+    KTLINT_RULESET_JAR="$(cd "$(dirname "$KTLINT_RULESET_JAR")" && pwd)/$(basename "$KTLINT_RULESET_JAR")"
+fi
+
 # Change to project root
 cd "$PROJECT_ROOT"
 
@@ -98,6 +107,8 @@ chmod +x "$KTLINT_BIN"
 
 # KTLINT_RULESET_JAR points at a local build of the ruleset, to try a rule change before releasing it
 if [ -n "$KTLINT_RULESET_JAR" ]; then
+    echo "⚠️  Using the local ruleset $KTLINT_RULESET_JAR instead of $RULESET_VERSION (KTLINT_RULESET_JAR is set)"
+    echo ""
     RULESET_JAR="$KTLINT_RULESET_JAR"
 else
     download_once "$RULESET_JAR" "$RULESET_URL" "the custom ruleset $RULESET_VERSION"
