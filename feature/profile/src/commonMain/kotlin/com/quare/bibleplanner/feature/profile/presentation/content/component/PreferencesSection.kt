@@ -23,7 +23,7 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
 
 @Composable
@@ -38,21 +38,21 @@ internal fun PreferencesSection(
             ProfileMenuItem(
                 itemModel = ProfileMenuOptionsFactory.theme,
                 subtitle = themeSubtitle(state),
-                isSubtitleLoading = state.themeRes is Loadable.Loading,
+                isSubtitleLoading = state.themeRes.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.THEME)) },
             )
             HorizontalDivider()
             ProfileMenuItem(
                 itemModel = ProfileMenuOptionsFactory.appLanguage,
                 subtitle = state.selectedLanguage.valueOrNull()?.let { stringResource(it.toStringResource()) },
-                isSubtitleLoading = state.selectedLanguage is Loadable.Loading,
+                isSubtitleLoading = state.selectedLanguage.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.APP_LANGUAGE)) },
             )
             HorizontalDivider()
             ProfileMenuItem(
                 itemModel = ProfileMenuOptionsFactory.bibleVersion,
                 subtitle = bibleVersionSubtitle(state),
-                isSubtitleLoading = state.bibleVersionName is Loadable.Loading,
+                isSubtitleLoading = state.bibleVersionName.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.BIBLE_VERSION)) },
             )
             HorizontalDivider()
@@ -61,7 +61,7 @@ internal fun PreferencesSection(
                 subtitle = state.planStartDate.valueOrNull()?.let { startDate ->
                     formatPlanStartDateSubtitle(startDate, state.currentDate)
                 },
-                isSubtitleLoading = state.planStartDate is Loadable.Loading,
+                isSubtitleLoading = state.planStartDate.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.EDIT_PLAN_START_DAY)) },
             )
             HorizontalDivider()
@@ -70,7 +70,7 @@ internal fun PreferencesSection(
                 subtitle = state.studySuggestion.valueOrNull()?.let { settings ->
                     stringResource(settings.toSubtitleResource())
                 },
-                isSubtitleLoading = state.studySuggestion is Loadable.Loading,
+                isSubtitleLoading = state.studySuggestion.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.STUDY_SUGGESTION)) },
             )
         }

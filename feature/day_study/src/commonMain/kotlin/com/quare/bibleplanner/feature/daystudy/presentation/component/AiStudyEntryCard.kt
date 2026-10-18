@@ -50,7 +50,7 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.component.study.AiStudyBadge
 import org.jetbrains.compose.resources.stringResource
-import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
 
 private const val SOFT_PRIMARY_ALPHA = 0.12f
@@ -289,7 +289,7 @@ internal fun CardBadge(card: DayStudyCardUiModel) {
     if (card.mode == null) return
     val isGenerated = card.mode == DayStudyCardMode.VIEW
     val isProBadge = card.isPro || card.mode == DayStudyCardMode.LOCKED
-    if (!isGenerated && !isProBadge && card.quota is Loadable.Loading) {
+    if (!isGenerated && !isProBadge && card.quota.isLoading()) {
         SkeletonBox(
             modifier = Modifier
                 .width(44.dp)

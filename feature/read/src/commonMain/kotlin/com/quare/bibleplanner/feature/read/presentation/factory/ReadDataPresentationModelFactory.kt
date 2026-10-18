@@ -30,7 +30,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
-import software.quare.loadable.Loadable.Loaded
+import software.quare.loadable.loadedOrNull
+import software.quare.loadable.toLoaded
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ReadDataPresentationModelFactory(
@@ -77,7 +78,7 @@ internal class ReadDataPresentationModelFactory(
                             chapterNumber = chapterNumber,
                             isChapterRead = chapter?.isRead ?: isInitiallyRead,
                             navigationSuggestions = navigationSuggestions,
-                            versionAbbreviation = Loaded(versionId.uppercase()),
+                            versionAbbreviation = versionId.uppercase().toLoaded(),
                         ),
                         content = toContent(
                             chapterResult = chapterResult,
@@ -96,7 +97,7 @@ internal class ReadDataPresentationModelFactory(
     }
 
     private fun observeSelectedBible(): Flow<Loadable<BibleModel?>> = getSelectedBibleFlow()
-        .map<BibleModel?, Loadable<BibleModel?>>(::Loaded)
+        .map<BibleModel?, Loadable<BibleModel?>>(BibleModel?::toLoaded)
         .onStart { emit(Loadable.Loading) }
 
     private fun toContent(
@@ -109,17 +110,15 @@ internal class ReadDataPresentationModelFactory(
             errorUiEvent = ReadUiEvent.OnRetryClick,
         )
 
-        ChapterLoadResult.TextMissing -> if (selectedBible is Loaded) {
-            val bible = selectedBible.value
+        ChapterLoadResult.TextMissing -> selectedBible.loadedOrNull()?.let { loaded ->
+            val bible = loaded.value
             ReadContentUiState.Error.ChapterNotFound(
                 errorUiEvent = ReadUiEvent.ManageBibleVersions,
                 selectedBibleVersionName = bible?.version?.name.orEmpty(),
                 downloadStatus = bible?.downloadStatus ?: DownloadStatusModel.NotStarted,
                 versionSizeInBytes = bible?.version?.size,
             )
-        } else {
-            ReadContentUiState.Loading
-        }
+        } ?: ReadContentUiState.Loading
 
         is ChapterLoadResult.Loaded -> ReadContentUiState.Success(
             chapters = precedingChapters + chapterResult.chapter + followingChapters,

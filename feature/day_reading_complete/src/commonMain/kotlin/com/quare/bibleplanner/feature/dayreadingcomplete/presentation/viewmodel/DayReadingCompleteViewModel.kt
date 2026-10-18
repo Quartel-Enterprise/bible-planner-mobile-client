@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 
 class DayReadingCompleteViewModel(
@@ -177,7 +178,7 @@ class DayReadingCompleteViewModel(
         val ctaState = resolveStudyCtaState(isPro, quota)
         uiState.update { state ->
             (state as? DayReadingCompleteUiState.Loaded)
-                ?.copy(ctaState = Loadable.Loaded(ctaState))
+                ?.copy(ctaState = ctaState.toLoaded())
                 ?: state
         }
         trackShownOnce(

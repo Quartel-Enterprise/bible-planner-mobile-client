@@ -49,6 +49,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
+import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -142,10 +144,10 @@ internal class DayStudyViewModel(
     }
 
     private suspend fun showCachedCard() {
-        if (uiState.value.card !is Loadable.Loading) return
+        if (!uiState.value.card.isLoading()) return
         if (!hasCachedStudy(passages)) return
         uiState.update { state ->
-            state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
+            state.copy(card = cardUiModelFactory.createFromCache(isPro = isPro).toLoaded())
         }
         trackLoad(
             pro = isPro,
@@ -205,12 +207,11 @@ internal class DayStudyViewModel(
             .onSuccess { quota ->
                 uiState.update { state ->
                     state.copy(
-                        card = Loadable.Loaded(
-                            cardUiModelFactory.create(
+                        card = cardUiModelFactory
+                            .create(
                                 isPro = pro,
                                 quota = quota,
-                            ),
-                        ),
+                            ).toLoaded(),
                     )
                 }
                 trackLoad(
@@ -374,7 +375,7 @@ internal class DayStudyViewModel(
             card = card,
             rewardedRemainingToday = rewardedRemainingToday,
         )
-        uiState.update { it.copy(card = Loadable.Loaded(lockedCard)) }
+        uiState.update { it.copy(card = lockedCard.toLoaded()) }
     }
 
     private fun buildRewardedUnlockRequestKey(key: String): String = REWARDED_UNLOCK_REQUEST_PREFIX + key

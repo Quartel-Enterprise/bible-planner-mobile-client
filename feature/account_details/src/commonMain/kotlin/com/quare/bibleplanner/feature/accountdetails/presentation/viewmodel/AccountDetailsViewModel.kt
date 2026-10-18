@@ -36,6 +36,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.map
+import software.quare.loadable.toLoaded
 
 internal class AccountDetailsViewModel(
     private val signOutDevice: SignOutDevice,
@@ -57,7 +59,7 @@ internal class AccountDetailsViewModel(
 
     private val devicesFlow: Flow<Loadable<List<DeviceUiModel>>> = observeDevices()
         .map<List<DeviceModel>, Loadable<List<DeviceUiModel>>> { devices ->
-            Loadable.Loaded(devices.map(deviceUiModelMapper::map))
+            devices.map(deviceUiModelMapper::map).toLoaded()
         }.onStart { emit(Loadable.Loading) }
 
     val uiState: StateFlow<AccountDetailsUiState> = combine(
@@ -123,9 +125,8 @@ internal class AccountDetailsViewModel(
 
     private fun Loadable<List<DeviceUiModel>>.withSigningOut(
         signingOutIds: Set<String>,
-    ): Loadable<List<DeviceUiModel>> = when (this) {
-        Loadable.Loading -> this
-        is Loadable.Loaded -> Loadable.Loaded(value.map { it.copy(isSigningOut = it.id in signingOutIds) })
+    ): Loadable<List<DeviceUiModel>> = this.map { devices ->
+        devices.map { it.copy(isSigningOut = it.id in signingOutIds) }
     }
 
     private fun emitAction(action: AccountDetailsUiAction) {

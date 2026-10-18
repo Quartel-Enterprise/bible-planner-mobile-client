@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.loadedOrNull
+import software.quare.loadable.toLoaded
 
 internal class ReadVerticalChapters(
     private val scope: CoroutineScope,
@@ -74,8 +76,8 @@ internal class ReadVerticalChapters(
     }
 
     private fun consumeNextChapter() {
-        val resolvedNextChapter = nextChapter.value
-        if (resolvedNextChapter !is Loadable.Loaded || !isAppendRequested.value) return
+        val resolvedNextChapter = nextChapter.value.loadedOrNull()
+        if (resolvedNextChapter == null || !isAppendRequested.value) return
         isAppendRequested.update { false }
         val chapter = resolvedNextChapter.value ?: return
         nextChapter.update { Loadable.Loading }
@@ -91,13 +93,13 @@ internal class ReadVerticalChapters(
             chapterNumber = lastChapter?.chapterNumber ?: chapterNumber,
             shouldForceCanonOrder = shouldForceCanonOrder,
         )
-        nextChapter.update { Loadable.Loaded(next) }
+        nextChapter.update { next.toLoaded() }
         consumeNextChapter()
     }
 
     private fun consumePreviousChapter() {
-        val resolvedPreviousChapter = previousChapter.value
-        if (resolvedPreviousChapter !is Loadable.Loaded || !isPrependRequested.value) return
+        val resolvedPreviousChapter = previousChapter.value.loadedOrNull()
+        if (resolvedPreviousChapter == null || !isPrependRequested.value) return
         isPrependRequested.update { false }
         val chapter = resolvedPreviousChapter.value ?: return
         previousChapter.update { Loadable.Loading }
@@ -113,7 +115,7 @@ internal class ReadVerticalChapters(
             chapterNumber = firstChapter?.chapterNumber ?: chapterNumber,
             shouldForceCanonOrder = shouldForceCanonOrder,
         )
-        previousChapter.update { Loadable.Loaded(previous) }
+        previousChapter.update { previous.toLoaded() }
         consumePreviousChapter()
     }
 }

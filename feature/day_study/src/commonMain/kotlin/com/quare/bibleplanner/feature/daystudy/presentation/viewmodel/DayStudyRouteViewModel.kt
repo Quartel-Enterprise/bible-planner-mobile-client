@@ -68,6 +68,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
+import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
@@ -200,10 +202,10 @@ internal class DayStudyRouteViewModel(
     }
 
     private suspend fun showCachedCard() {
-        if (uiState.value.card !is Loadable.Loading) return
+        if (!uiState.value.card.isLoading()) return
         if (!hasCachedStudy(passages)) return
         uiState.update { state ->
-            state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
+            state.copy(card = cardUiModelFactory.createFromCache(isPro = isPro).toLoaded())
         }
         trackLoad(
             pro = isPro,
@@ -270,12 +272,11 @@ internal class DayStudyRouteViewModel(
             .onSuccess { quota ->
                 uiState.update { state ->
                     state.copy(
-                        card = Loadable.Loaded(
-                            cardUiModelFactory.create(
+                        card = cardUiModelFactory
+                            .create(
                                 isPro = pro,
                                 quota = quota,
-                            ),
-                        ),
+                            ).toLoaded(),
                     )
                 }
                 trackLoad(
@@ -457,7 +458,7 @@ internal class DayStudyRouteViewModel(
             card = card,
             rewardedRemainingToday = rewardedRemainingToday,
         )
-        uiState.update { it.copy(card = Loadable.Loaded(lockedCard)) }
+        uiState.update { it.copy(card = lockedCard.toLoaded()) }
     }
 
     private fun trackStudyOpened(isCached: Boolean) {

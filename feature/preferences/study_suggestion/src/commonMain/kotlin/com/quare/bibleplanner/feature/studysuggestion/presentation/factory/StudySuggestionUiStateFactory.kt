@@ -7,6 +7,7 @@ import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySu
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 internal class StudySuggestionUiStateFactory(
     private val observeStudySuggestionSettings: ObserveStudySuggestionSettings,
@@ -25,7 +26,7 @@ internal class StudySuggestionUiStateFactory(
         observeAuthenticatedUserId(),
     ) { settings, isSyncEnabled, userId ->
         StudySuggestionUiState(
-            settings = Loadable.Loaded(settings),
+            settings = settings.toLoaded(),
             isSyncEnabled = isSyncEnabled,
             isLoggedIn = userId != null,
         )

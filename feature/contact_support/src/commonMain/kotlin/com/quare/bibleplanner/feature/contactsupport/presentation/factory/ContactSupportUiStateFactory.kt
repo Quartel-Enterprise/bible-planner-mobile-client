@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
 import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 internal class ContactSupportUiStateFactory(
     private val getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase?,
@@ -34,10 +35,10 @@ internal class ContactSupportUiStateFactory(
 
     fun create(): Flow<ContactSupportUiState> = merge(
         observeSubscriptionStatus().map { status ->
-            { state: ContactSupportUiState -> state.copy(subscriptionStatus = Loadable.Loaded(status)) }
+            { state: ContactSupportUiState -> state.copy(subscriptionStatus = status.toLoaded()) }
         },
         getAppLanguageFlow().map { language ->
-            { state: ContactSupportUiState -> state.copy(selectedLanguage = Loadable.Loaded(language)) }
+            { state: ContactSupportUiState -> state.copy(selectedLanguage = language.toLoaded()) }
         },
         sessionStatus.map { status ->
             { state: ContactSupportUiState -> state.copy(accountStatusModel = status.toAccountStatusModel()) }
