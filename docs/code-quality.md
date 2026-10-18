@@ -17,10 +17,13 @@ conventions behind them, is documented in [Code style](architecture/code-style.m
 ```
 
 The script is a small wrapper that comes from ktlint-rules and never changes here. It reads
-`quare-ktlint-rules` in `gradle/libs.versions.toml`, the only version this repository pins, and
-downloads that release's runner, the ruleset jar, and the ktlint CLI the release is built against, once
-per version into `~/.cache/ktlint`. The runner refuses a jar that isn't signed by the Quare release key.
-There is no Gradle ktlint task: the CLI checks the files on disk without configuring the build.
+`quare-ktlint-rules` in `gradle/libs.versions.toml` and downloads that release's runner, the ruleset jar,
+and the ktlint CLI the release is built against, once per version into `~/.cache/ktlint`. There is no
+Gradle ktlint task: the CLI checks the files on disk without configuring the build.
+
+The runner comes from the release tag on GitHub, trusted the same way as a GitHub Action pinned to a tag
+(ktlint-rules releases are immutable, so a tag can't be moved). The jar and its POM come from Maven Central
+and the runner refuses them unless they are signed by the Quare release key.
 
 The ktlint plugin for Android Studio can show the violations while typing; its setup is in the
 [ktlint-rules README](https://github.com/Quartel-Enterprise/ktlint-rules#in-the-ide).
@@ -35,8 +38,11 @@ released, build the jar there (`./gradlew jar`) and point the script at it, from
 KTLINT_RULESET_JAR=~/StudioProjects/ktlint-rules/build/libs/ktlint-rules-<version>.jar ./scripts/ktlint.sh
 ```
 
-Once it is released, bump `quare-ktlint-rules` in the catalog. A ktlint upgrade is a ruleset release
-too: the ruleset picks the ktlint version, so it never drifts from the rules.
+Once it is released, bump the version in its two places, together: `quare-ktlint-rules` in the catalog,
+which picks the rules and the runner everywhere, and the `ktlint-rules` action ref in
+`.github/workflows/static-analysis.yml`, which only versions the CI steps (the action warns when the two
+differ). A ktlint upgrade is a ruleset release too: the ruleset picks the ktlint version, so it never
+drifts from the rules.
 
 Project-specific settings go in `.editorconfig` instead of the ruleset: turning a rule off for some
 files, or `ktlint_quare_composable_extra_suffixes` for a composable suffix only this app uses.

@@ -53,4 +53,4 @@ jobs:
           fetch-depth: 1
 
       - name: Run Static Analysis
-        uses: Quartel-Enterprise/ktlint-rules/.github/actions/ktlint@1.0.1
+        uses: Quartel-Enterprise/ktlint-rules/.github/actions/ktlint@1.0.2

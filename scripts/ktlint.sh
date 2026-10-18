@@ -4,22 +4,27 @@
 #   ./scripts/ktlint.sh            check
 #   ./scripts/ktlint.sh --format   autocorrect what can be autocorrected
 #
-# This file never changes: the ruleset version pinned in gradle/libs.versions.toml (quare-ktlint-rules) or in
-# .ktlint-rules-version picks the runner, the rules and the ktlint CLI, all downloaded from that release.
+# This file never changes: the ruleset version pinned in gradle/libs.versions.toml (quare-ktlint-rules), or in
+# .ktlint-rules-version without a catalog, picks the runner, the rules and the ktlint CLI of that release.
+# The runner comes from the release tag on GitHub (trusted like a GitHub Action pinned to a tag); the jar
+# it runs is checked against the release signature.
 
 set -e
 
 ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
 
-if [ -f "$ROOT/.ktlint-rules-version" ]; then
+VERSION="$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' \
+    "$ROOT/gradle/libs.versions.toml" 2> /dev/null | head -1)"
+
+# Only a project without a version catalog uses the file
+if [ -z "$VERSION" ] && [ -f "$ROOT/.ktlint-rules-version" ]; then
     VERSION="$(tr -d '[:space:]' < "$ROOT/.ktlint-rules-version")"
-else
-    VERSION="$(sed -nE 's/^quare-ktlint-rules[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' \
-        "$ROOT/gradle/libs.versions.toml" 2> /dev/null | head -1)"
 fi
 
-if [ -z "$VERSION" ]; then
-    echo "❌ Pin the ruleset version: quare-ktlint-rules in gradle/libs.versions.toml, or .ktlint-rules-version"
+# A release version, never a branch: its runner is cached for good, and release tags never move
+if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "❌ Pin a ruleset release (X.Y.Z) as quare-ktlint-rules in gradle/libs.versions.toml, or in"
+    echo "   .ktlint-rules-version for a project without a catalog. Found: '$VERSION'"
     exit 1
 fi
 
