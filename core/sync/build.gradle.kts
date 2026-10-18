@@ -18,8 +18,10 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
-            implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.supabase)
+
+            // Connectivity, api because OfflineFirstSynchronizer's public constructor takes the observer
+            api(libs.quare.connectivity)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)

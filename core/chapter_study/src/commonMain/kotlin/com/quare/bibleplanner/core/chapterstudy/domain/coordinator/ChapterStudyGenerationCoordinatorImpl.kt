@@ -11,8 +11,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
-import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
-import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.delay
@@ -25,6 +23,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.connectivity.IsConnected
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark

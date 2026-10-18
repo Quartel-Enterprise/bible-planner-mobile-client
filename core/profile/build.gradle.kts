@@ -19,7 +19,9 @@ kotlin {
             implementation(projects.core.sync)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.room)
-            implementation(projects.core.provider.connectivity)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))

@@ -24,7 +24,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
-import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
@@ -44,6 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.connectivity.IsConnected
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull

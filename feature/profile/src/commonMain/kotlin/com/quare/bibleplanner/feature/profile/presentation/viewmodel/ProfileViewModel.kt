@@ -36,7 +36,6 @@ import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentService
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
@@ -59,6 +58,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
+import software.quare.connectivity.IsConnected
 
 internal class ProfileViewModel(
     private val calculateBibleProgress: CalculateBibleProgressUseCase,

@@ -22,10 +22,12 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.billing)
-            implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))

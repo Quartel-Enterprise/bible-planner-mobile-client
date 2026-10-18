@@ -25,7 +25,6 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
-            implementation(projects.core.provider.connectivity)
             implementation(projects.core.utils)
             implementation(projects.core.provider.billing)
             implementation(projects.core.books)
@@ -37,6 +36,9 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.verseAnnotations)
             implementation(libs.androidx.room.runtime)
+
+            // Connectivity
+            implementation(libs.quare.connectivity)
 
             // Features
             implementation(projects.core.preferences.themeSelection)

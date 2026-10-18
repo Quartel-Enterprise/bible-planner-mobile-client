@@ -7,9 +7,9 @@ import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAc
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyQuota
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.RefreshChapterStudyCache
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
-import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
+import software.quare.connectivity.IsConnected
 
 internal data class ChapterStudyUseCases(
     val findCachedStudy: FindCachedChapterStudy,
