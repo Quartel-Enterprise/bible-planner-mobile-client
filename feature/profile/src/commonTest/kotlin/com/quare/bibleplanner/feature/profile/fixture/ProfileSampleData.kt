@@ -40,7 +40,6 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
     shouldShowDonateOption = Loadable.Loaded(false),
     headerRes = Loadable.Loaded(null),
     isInstagramLinkVisible = Loadable.Loaded(false),
-    isWebAppVisible = Loadable.Loaded(false),
     themeRes = Loadable.Loaded(Res.string.theme_system),
     contrastRes = Loadable.Loaded(null),
     selectedLanguage = Loadable.Loaded(Language.ENGLISH),

@@ -12,7 +12,6 @@ internal class ProfileMenuOptionsFactoryTest {
         ProfileMenuOptionsFactory.theme,
         ProfileMenuOptionsFactory.appLanguage,
         ProfileMenuOptionsFactory.instagram,
-        ProfileMenuOptionsFactory.webApp,
         ProfileMenuOptionsFactory.deleteProgress,
         ProfileMenuOptionsFactory.deleteAccount,
         ProfileMenuOptionsFactory.studySuggestion,

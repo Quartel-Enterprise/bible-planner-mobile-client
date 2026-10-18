@@ -6,7 +6,7 @@ import bibleplanner.feature.books.generated.resources.favorites
 import bibleplanner.feature.books.generated.resources.read
 import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
-import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBooksScreenPreferencesUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
@@ -19,7 +19,6 @@ import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
@@ -49,13 +48,12 @@ import kotlin.time.Duration.Companion.seconds
 class BooksViewModel(
     private val booksRepository: BooksRepository,
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
-    private val getWebAppUrl: GetWebAppUrl,
     private val bookGroupMapper: BookGroupMapper,
     private val bookCategorizationMapper: BookCategorizationMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
-    getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
+    observeBooksScreenPreferences: ObserveBooksScreenPreferencesUseCase,
 ) : TrackedViewModel<BooksUiEvent>(trackEvent) {
     val uiState: StateFlow<BooksUiState>
         field = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
@@ -67,7 +65,7 @@ class BooksViewModel(
     private var bookNames: Map<BookId, String> = emptyMap()
 
     init {
-        observe(getBooksWithInformationBoxVisibility()) { result ->
+        observe(observeBooksScreenPreferences()) { result ->
             allBooks = result.books
 
             result.layoutFormat?.let { persistedFormat ->
@@ -191,12 +189,6 @@ class BooksViewModel(
                 viewModelScope.launch {
                     booksRepository.setBookLayoutFormat(event.layoutFormat.name)
                     uiAction.emit(BooksUiAction.ScrollToTop)
-                }
-            }
-
-            BooksUiEvent.OnWebAppLinkClick -> {
-                viewModelScope.launch {
-                    uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
             }
         }

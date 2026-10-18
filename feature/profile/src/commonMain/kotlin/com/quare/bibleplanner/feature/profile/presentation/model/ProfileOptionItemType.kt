@@ -10,7 +10,6 @@ enum class ProfileOptionItemType {
     PRIVACY_OPTIONS,
     TERMS,
     DONATE,
-    WEB_APP,
     DELETE_PROGRESS,
     DELETE_ACCOUNT,
     EDIT_PLAN_START_DAY,

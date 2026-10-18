@@ -30,7 +30,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.AreAllPassagesReadUseCas
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ClearLocalReadingDataUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseContents
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseContentsUseCase
@@ -56,6 +55,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownl
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBooksScreenPreferencesUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersionUseCase
@@ -165,7 +165,7 @@ val booksModule = module {
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::ToggleWholeChapterReadStatusUseCase).bind<ToggleWholeChapterReadStatus>()
     factoryOf(::CalculateBibleProgressUseCase)
-    factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
+    factoryOf(::ObserveBooksScreenPreferencesUseCase)
     factoryOf(::GetChapterIdUseCase)
     factoryOf(::ToggleBookFavoriteUseCase)
     factoryOf(::UpdateBookReadStatusUseCase)

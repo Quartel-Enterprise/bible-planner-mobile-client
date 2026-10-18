@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.model.book.BookDataModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-class GetBooksWithInformationBoxVisibilityUseCase(
+class ObserveBooksScreenPreferencesUseCase(
     private val booksRepository: BooksRepository,
 ) {
     data class Result(

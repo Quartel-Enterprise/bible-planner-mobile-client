@@ -37,7 +37,6 @@ import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentService
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -62,7 +61,6 @@ import software.quare.connectivity.IsConnected
 
 internal class ProfileViewModel(
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
-    private val getWebAppUrl: GetWebAppUrl,
     private val getInstagramUrl: GetInstagramUrlUseCase,
     private val getAppStoreLink: GetAppStoreLinkUseCase,
     private val isConnected: IsConnected,
@@ -125,12 +123,6 @@ internal class ProfileViewModel(
                     }
 
                     ProfileOptionItemType.DONATE -> goToRoute(DonationNavRoute)
-
-                    ProfileOptionItemType.WEB_APP -> {
-                        viewModelScope.launch {
-                            emitAction(OpenLink(getWebAppUrl()))
-                        }
-                    }
 
                     ProfileOptionItemType.RELEASE_NOTES -> goToRoute(ReleaseNotesNavRoute)
 

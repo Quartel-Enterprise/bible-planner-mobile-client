@@ -564,7 +564,6 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [books_testament_menu_dismissed](events/books_testament_menu_dismissed.md) | P2 | Books |
 | [books_search_cleared](events/books_search_cleared.md) | P2 | Books |
 | [testament_switched](events/testament_switched.md) | P2 | Books |
-| [web_app_link_opened](events/web_app_link_opened.md) | P2 | Books |
 | [synopsis_toggled](events/synopsis_toggled.md) | P2 | Books |
 | [plan_week_toggled](events/plan_week_toggled.md) | P2 | Books |
 | [plan_group_toggled](events/plan_group_toggled.md) | P2 | Books |

@@ -217,7 +217,6 @@ object AnalyticsEventNames {
     const val BOOKS_TESTAMENT_MENU_DISMISSED = "books_testament_menu_dismissed"
     const val BOOKS_LAYOUT_CHANGED = "books_layout_changed"
     const val TESTAMENT_SWITCHED = "testament_switched"
-    const val WEB_APP_LINK_OPENED = "web_app_link_opened"
     const val SYNOPSIS_TOGGLED = "synopsis_toggled"
     const val PLAN_WEEK_TOGGLED = "plan_week_toggled"
     const val PLAN_GROUP_TOGGLED = "plan_group_toggled"

@@ -8,12 +8,8 @@
     <string name="content_description_clear_search">Clear search</string>
     <string name="sort_alphabetical_ascending">Alphabetical (A-Z)</string>
     <string name="sort_alphabetical_descending">Alphabetical (Z-A)</string>
-    <string name="content_description_dismiss">Dismiss</string>
-    <string name="content_description_info">Information</string>
-    <string name="reading_not_available_yet">Books will be available for reading in future versions of the app, but they are already available in web version: www.web.bibleplanner.app</string>
     <string name="list">List</string>
     <string name="grid">Grid</string>
-    <string name="open_site">Open site</string>
     <string name="content_description_sort">Sort</string>
     <string name="content_description_filter">Filter</string>
     <string name="all_testaments">All</string>

@@ -8,14 +8,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.books.presentation.utils.BooksUiActionCollector
 import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
-import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,14 +51,10 @@ private fun BooksTabContent(
             activeState.firstVisibleItemIndex > 0 || activeState.firstVisibleItemScrollOffset > 0
         }
     }
-    val snackbarHostState = LocalSnackbarHostState.current
 
-    val uriHandler = LocalUriHandler.current
     BooksUiActionCollector(
         uiAction = viewModel.uiAction,
         lazyGridStates = lazyGridStates,
-        uriHandler = uriHandler,
-        snackbarHostState = snackbarHostState,
     )
 
     MainTabScaffold(

@@ -30,9 +30,6 @@
     <string name="check_for_updates_subtitle">Versão %1$s</string>
     <string name="up_to_date_message">Você já está na versão mais recente</string>
     <string name="update_check_failed_message">Não foi possível buscar atualizações. Verifique sua conexão e tente de novo.</string>
-    <string name="web_section">Web</string>
-    <string name="web_app">Web App</string>
-    <string name="web_app_subtitle">Abra a versão web em seu navegador</string>
     <string name="become_pro_subtitle">Desbloqueie recursos exclusivos e apoie nossa missão.</string>
     <string name="donate_subtitle">Apoie nosso trabalho e nos ajude a manter o desenvolvimento.</string>
     <string name="today">Hoje</string>
