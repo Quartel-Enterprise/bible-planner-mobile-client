@@ -46,7 +46,9 @@ internal fun rememberFileDialogImageSaver(
             onResult(result)
         }
     }
-    return { imageBytes, fileName ->
+    return saveImage@{ imageBytes, fileName ->
+        // Why: a second tap while the dialog is open would overwrite the staged image the first dialog reads.
+        if (pendingFileName != null) return@saveImage
         coroutineScope.launch {
             suspendRunCatching { (FileKit.cacheDir / fileName).write(imageBytes) }
                 .onSuccess {

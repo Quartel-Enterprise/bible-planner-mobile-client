@@ -77,6 +77,48 @@ internal class ShareCardPaletteMapperTest {
     }
 
     @Test
+    fun `GIVEN a light custom color with dark text WHEN mapping it THEN the gradient ends 8 lighter`() {
+        // Given
+        val color = ShareCardCustomColor(
+            hue = 200,
+            lightness = 62,
+        )
+
+        // When
+        val palette = ShareCardBackgroundUiModel.Custom(color).toPalette()
+
+        // Then
+        assertEquals(
+            expected = ShareCardCustomColor(
+                hue = 212,
+                lightness = 70,
+            ).toSwatchColor(),
+            actual = palette.endColor,
+        )
+    }
+
+    @Test
+    fun `GIVEN the lightest custom color WHEN mapping it THEN the gradient end stays at lightness 90`() {
+        // Given
+        val color = ShareCardCustomColor(
+            hue = 200,
+            lightness = 88,
+        )
+
+        // When
+        val palette = ShareCardBackgroundUiModel.Custom(color).toPalette()
+
+        // Then
+        assertEquals(
+            expected = ShareCardCustomColor(
+                hue = 212,
+                lightness = 90,
+            ).toSwatchColor(),
+            actual = palette.endColor,
+        )
+    }
+
+    @Test
     fun `GIVEN a very dark custom color WHEN mapping it THEN the gradient end stays at lightness 8`() {
         // Given
         val color = ShareCardCustomColor(

@@ -10,6 +10,8 @@ private const val FULL_TURN = 360
 private const val CUSTOM_END_HUE_SHIFT = 12
 private const val CUSTOM_END_DARKENING = 18
 private const val CUSTOM_MIN_END_LIGHTNESS = 8
+private const val CUSTOM_END_LIGHTENING = 8
+private const val CUSTOM_MAX_END_LIGHTNESS = 90
 private const val DARK_TEXT_FROM_LIGHTNESS = 62
 private const val DARK_TEXT_SATURATION = 0.35f
 private const val DARK_TEXT_LIGHTNESS = 0.16f
@@ -42,8 +44,13 @@ internal fun ShareCardCustomColor.toSwatchColor(): Color = createHslColor(
     lightness = lightness,
 )
 
+/*
+ * Why: dark text sits on light colors, so their gradient turns lighter instead of darker, or the
+ * reference and mark at the darker end would lose contrast.
+ */
 private fun ShareCardCustomColor.toPalette(): ShareCardPalette {
-    val textColor = if (lightness >= DARK_TEXT_FROM_LIGHTNESS) {
+    val hasDarkText = lightness >= DARK_TEXT_FROM_LIGHTNESS
+    val textColor = if (hasDarkText) {
         Color.hsl(
             hue = hue.toFloat(),
             saturation = DARK_TEXT_SATURATION,
@@ -52,12 +59,17 @@ private fun ShareCardCustomColor.toPalette(): ShareCardPalette {
     } else {
         Color.White
     }
-    val subtitleAlpha = if (lightness >= DARK_TEXT_FROM_LIGHTNESS) DARK_SUBTITLE_ALPHA else LIGHT_SUBTITLE_ALPHA
+    val subtitleAlpha = if (hasDarkText) DARK_SUBTITLE_ALPHA else LIGHT_SUBTITLE_ALPHA
+    val endLightness = if (hasDarkText) {
+        (lightness + CUSTOM_END_LIGHTENING).coerceAtMost(CUSTOM_MAX_END_LIGHTNESS)
+    } else {
+        (lightness - CUSTOM_END_DARKENING).coerceAtLeast(CUSTOM_MIN_END_LIGHTNESS)
+    }
     return ShareCardPalette(
         startColor = toSwatchColor(),
         endColor = createHslColor(
             hue = (hue + CUSTOM_END_HUE_SHIFT) % FULL_TURN,
-            lightness = (lightness - CUSTOM_END_DARKENING).coerceAtLeast(CUSTOM_MIN_END_LIGHTNESS),
+            lightness = endLightness,
         ),
         textColor = textColor,
         subtitleColor = textColor.copy(alpha = subtitleAlpha),

@@ -182,7 +182,7 @@ private fun PlanStatusChip(
     modifier: Modifier = Modifier,
 ) {
     val daysSinceLastRead = planStatus.daysSinceLastRead
-    val animatedStreak by animateIntAsState(targetValue = planStatus.streakDays, label = "streakDaysAnimation")
+    val animatedStreak by animateIntAsState(targetValue = planStatus.shownStreakDays, label = "streakDaysAnimation")
     val animatedLapse by animateIntAsState(targetValue = daysSinceLastRead ?: 0, label = "lapseDaysAnimation")
     when {
         planStatus.mode == PlanMode.Behind && daysSinceLastRead != null -> StatusChip(
@@ -198,12 +198,12 @@ private fun PlanStatusChip(
             iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        planStatus.mode.showsStreak() && planStatus.streakDays > 0 -> StatusChip(
+        planStatus.shownStreakDays > 0 -> StatusChip(
             modifier = modifier,
             icon = AppIcon.LocalFireDepartment,
             text = pluralStringResource(
                 Res.plurals.streak_days_label,
-                planStatus.streakDays,
+                planStatus.shownStreakDays,
                 animatedStreak,
             ),
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -247,9 +247,6 @@ private fun StatusChip(
         }
     }
 }
-
-private fun PlanMode.showsStreak(): Boolean =
-    this == PlanMode.OnTrack || this == PlanMode.Ahead || this == PlanMode.CaughtUp
 
 private fun Float.formatProgress(): String {
     val rounded = round(this * 100.0f) / 100.0f

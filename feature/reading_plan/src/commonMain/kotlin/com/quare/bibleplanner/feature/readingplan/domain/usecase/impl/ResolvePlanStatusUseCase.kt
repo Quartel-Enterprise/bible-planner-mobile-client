@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
 import com.quare.bibleplanner.core.plan.domain.readingStreak
+import com.quare.bibleplanner.core.plan.domain.shownReadingStreak
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanDayRef
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
@@ -28,6 +29,7 @@ internal class ResolvePlanStatusUseCase : ResolvePlanStatus {
             .maxOfOrNull { it.globalIndex }
             ?: 0
         val todayGlobalIndex = todayDay?.globalIndex
+        val days = indexedDays.map { it.day }
         return PlanStatus(
             mode = resolveMode(
                 nextDay = nextDay,
@@ -38,7 +40,8 @@ internal class ResolvePlanStatusUseCase : ResolvePlanStatus {
             todayDay = todayDay?.toRef(),
             totalDays = indexedDays.size,
             readDays = readDays,
-            streakDays = indexedDays.map { it.day }.readingStreak,
+            streakDays = days.readingStreak,
+            shownStreakDays = days.shownReadingStreak,
             daysAhead = getDiffOrZero(todayGlobalIndex, lastReadGlobalIndex),
             daysBehind = getDiffOrZero(todayGlobalIndex, nextDay?.globalIndex, reversed = true),
             daysSinceLastRead = getDiffOrZero(todayGlobalIndex, lastReadGlobalIndex, reversed = true)

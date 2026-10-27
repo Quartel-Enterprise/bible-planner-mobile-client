@@ -22,7 +22,7 @@ import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseU
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -48,7 +48,7 @@ internal class ShareVerseViewModelTest {
     private val navigator = Navigator()
     private lateinit var commands: List<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
-    private lateinit var isProUser: MutableStateFlow<Boolean>
+    private lateinit var isProUser: MutableSharedFlow<Boolean>
     private lateinit var decodedFiles: MutableList<PlatformFile>
 
     @BeforeTest
@@ -633,7 +633,7 @@ internal class ShareVerseViewModelTest {
             prepareScenario(isPro = false)
 
             // When
-            isProUser.value = true
+            isProUser.tryEmit(true)
             runCurrent()
 
             // Then
@@ -645,7 +645,7 @@ internal class ShareVerseViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPro = false)
-            isProUser.value = true
+            isProUser.tryEmit(true)
             runCurrent()
 
             // When
@@ -662,7 +662,7 @@ internal class ShareVerseViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPro = true)
-            isProUser.value = false
+            isProUser.tryEmit(false)
             runCurrent()
 
             // When
@@ -724,7 +724,7 @@ internal class ShareVerseViewModelTest {
             // Given
             prepareScenario(isPro = true)
             viewModel.onEvent(ShareVerseUiEvent.OnCustomColorClick)
-            isProUser.value = false
+            isProUser.tryEmit(false)
             val stateBefore = viewModel.uiState.value.copy(isProUser = false)
 
             // When
@@ -798,14 +798,76 @@ internal class ShareVerseViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN the Pro status is loading WHEN tapping the photo background THEN opens the picker once Pro loads`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPro = null)
+            viewModel.onEvent(ShareVerseUiEvent.OnPhotoBackgroundClick)
+
+            // When
+            isProUser.tryEmit(true)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<ShareVerseUiAction>(ShareVerseUiAction.LaunchPhotoPicker),
+                actual = actions,
+            )
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a Pro card with a photo and no mark WHEN Pro ends THEN falls back to the free card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                isPro = true,
+                decodeResult = Result.success(pickedPhoto),
+            )
+            viewModel.onEvent(ShareVerseUiEvent.OnPhotoPicked(PlatformFile("photo.jpg")))
+            viewModel.onEvent(ShareVerseUiEvent.OnWatermarkToggleClick)
+
+            // When
+            isProUser.tryEmit(false)
+            runCurrent()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                expected = ShareCardBackgroundUiModel.Preset(ShareCardBackground.VIOLET),
+                actual = state.background,
+            )
+            assertTrue(state.isWatermarkShown)
+            assertFalse(state.isColorPickerOpen)
+            assertFalse(state.isProUser)
+        }
+
+    @Test
+    fun `GIVEN a Pro card on a preset color WHEN Pro ends THEN keeps that preset`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = true)
+        viewModel.onEvent(ShareVerseUiEvent.OnBackgroundClick(ShareCardBackground.FOREST))
+
+        // When
+        isProUser.tryEmit(false)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = ShareCardBackgroundUiModel.Preset(ShareCardBackground.FOREST),
+            actual = viewModel.uiState.value.background,
+        )
+    }
+
     private fun TestScope.prepareScenario(
-        isPro: Boolean = false,
+        isPro: Boolean? = false,
         readingStreak: GetReadingStreak = GetReadingStreak { 0 },
         decodeResult: Result<ImageBitmap> = Result.failure(IllegalStateException("unused")),
         verseNumbers: List<Int> = this@ShareVerseViewModelTest.verseNumbers,
     ) {
         trackedEvents = mutableListOf()
-        isProUser = MutableStateFlow(isPro)
+        isProUser = MutableSharedFlow<Boolean>(replay = 1).apply { isPro?.let(::tryEmit) }
         decodedFiles = mutableListOf()
         viewModel = ShareVerseViewModel(
             route = ShareVerseNavRoute(

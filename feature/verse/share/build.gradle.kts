@@ -52,24 +52,6 @@ kotlin {
             implementation(libs.filekit.dialogs.compose)
         }
 
-        val fileDialogMain = create("fileDialogMain") {
-            dependsOn(commonMain.get())
-        }
-
-        androidMain {
-            dependsOn(fileDialogMain)
-        }
-
-        iosMain {
-            dependsOn(commonMain.get())
-        }
-        iosArm64Main {
-            dependsOn(iosMain.get())
-        }
-        iosSimulatorArm64Main {
-            dependsOn(iosMain.get())
-        }
-
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)

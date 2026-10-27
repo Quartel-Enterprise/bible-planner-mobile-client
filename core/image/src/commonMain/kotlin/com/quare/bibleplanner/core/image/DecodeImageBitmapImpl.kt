@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -23,7 +22,7 @@ internal class DecodeImageBitmapImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : DecodeImageBitmap {
     override suspend fun invoke(file: PlatformFile): Result<ImageBitmap> = suspendRunCatching {
-        withContext(dispatcher) { file.readBytes().decodeToImageBitmap().toCapped() }
+        withContext(dispatcher) { file.readBytes().decodeSampledImageBitmap(MAX_DIMENSION_PX).toCapped() }
     }
 
     private fun ImageBitmap.toCapped(): ImageBitmap {

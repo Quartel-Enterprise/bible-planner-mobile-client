@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -52,6 +53,8 @@ internal class ShareVerseViewModel(
     private val verseNumbers = route.verseNumbers
 
     private var shareContent: VersesShareContentModel? = null
+    private val isProUserFlow = observeIsProUser()
+    private val defaultBackground = ShareCardBackgroundUiModel.Preset(ShareCardBackground.VIOLET)
 
     val uiState: StateFlow<ShareVerseUiState>
         field = MutableStateFlow(
@@ -59,7 +62,7 @@ internal class ShareVerseViewModel(
                 quote = "",
                 reference = "",
                 versionAbbreviation = "",
-                background = ShareCardBackgroundUiModel.Preset(ShareCardBackground.VIOLET),
+                background = defaultBackground,
                 customColor = ShareCardCustomColor(
                     hue = DEFAULT_CUSTOM_HUE,
                     lightness = DEFAULT_CUSTOM_LIGHTNESS,
@@ -80,9 +83,7 @@ internal class ShareVerseViewModel(
     init {
         loadContent()
         loadStreak()
-        observe(observeIsProUser()) { isPro ->
-            uiState.update { it.copy(isProUser = isPro) }
-        }
+        observe(isProUserFlow, ::onProStatusChange)
     }
 
     override fun handleEvent(event: ShareVerseUiEvent) {
@@ -185,12 +186,39 @@ internal class ShareVerseViewModel(
         trackStyleChange()
     }
 
-    private fun toggleCustomColor() {
-        val state = uiState.value
-        if (!state.isProUser) {
-            openProPaywall(ShareProOption.CUSTOM_COLOR)
-            return
+    // Why: a Pro choice made before Pro ended must not keep sharing for free, so they fall back to the free card.
+    private fun onProStatusChange(isPro: Boolean) {
+        uiState.update { state ->
+            if (isPro) {
+                state.copy(isProUser = true)
+            } else {
+                state.copy(
+                    isProUser = false,
+                    isWatermarkShown = true,
+                    isColorPickerOpen = false,
+                    background = state.background.takeIf { it is ShareCardBackgroundUiModel.Preset }
+                        ?: defaultBackground,
+                )
+            }
         }
+    }
+
+    // Why: until the Pro status loads the UI state reads as free, so gated taps wait for the real status.
+    private fun runIfPro(
+        option: ShareProOption,
+        action: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            if (isProUserFlow.first()) action() else openProPaywall(option)
+        }
+    }
+
+    private fun toggleCustomColor() {
+        runIfPro(ShareProOption.CUSTOM_COLOR, ::applyCustomColorToggle)
+    }
+
+    private fun applyCustomColorToggle() {
+        val state = uiState.value
         val isOpen = !state.isColorPickerOpen
         uiState.update {
             it.copy(
@@ -219,10 +247,10 @@ internal class ShareVerseViewModel(
     }
 
     private fun openPhotoPicker() {
-        if (!uiState.value.isProUser) {
-            openProPaywall(ShareProOption.PHOTO)
-            return
-        }
+        runIfPro(ShareProOption.PHOTO, ::launchPhotoPicker)
+    }
+
+    private fun launchPhotoPicker() {
         trackEvent(
             name = AnalyticsEventNames.VERSE_SHARE_PHOTO_PICKER_OPENED,
             params = emptyMap(),
@@ -233,8 +261,8 @@ internal class ShareVerseViewModel(
     }
 
     private fun applyPhoto(file: PlatformFile) {
-        if (!uiState.value.isProUser) return
         viewModelScope.launch {
+            if (!isProUserFlow.first()) return@launch
             decodeImageBitmap(file)
                 .onSuccess { image -> changeBackground(ShareCardBackgroundUiModel.Photo(image)) }
                 .onFailure { uiAction.emit(ShareVerseUiAction.ShowMessage(Res.string.share_photo_load_failed)) }
@@ -254,12 +282,11 @@ internal class ShareVerseViewModel(
     }
 
     private fun toggleWatermark() {
-        val state = uiState.value
-        if (!state.isProUser) {
-            openProPaywall(ShareProOption.WATERMARK)
-            return
-        }
-        val isShown = !state.isWatermarkShown
+        runIfPro(ShareProOption.WATERMARK, ::applyWatermarkToggle)
+    }
+
+    private fun applyWatermarkToggle() {
+        val isShown = !uiState.value.isWatermarkShown
         uiState.update { it.copy(isWatermarkShown = isShown) }
         trackEvent(
             name = AnalyticsEventNames.VERSE_SHARE_WATERMARK_TOGGLED,
