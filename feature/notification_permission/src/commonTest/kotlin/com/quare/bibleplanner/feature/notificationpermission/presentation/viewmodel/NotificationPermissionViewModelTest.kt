@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiAction
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -18,6 +21,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class NotificationPermissionViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val navigator = Navigator()
     private lateinit var viewModel: NotificationPermissionViewModel
     private lateinit var trackedEvents: List<Pair<String, Map<String, Any>>>
 
@@ -63,6 +67,37 @@ internal class NotificationPermissionViewModelTest {
     }
 
     @Test
+    fun `GIVEN a permanently denied dialog WHEN confirming THEN opens the settings and closes`() =
+        runTest(testDispatcher) {
+            // Given
+            val commands = mutableListOf<NavigationCommand>()
+            val actions = mutableListOf<NotificationPermissionUiAction>()
+            backgroundScope.launch { navigator.commands.collect { commands += it } }
+            backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
+            viewModel.onEvent(
+                NotificationPermissionUiEvent.OnPermissionResult(
+                    granted = false,
+                    canAskAgain = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(NotificationPermissionUiEvent.OnConfirm)
+
+            // Then
+            assertEquals(
+                expected = listOf<NotificationPermissionUiAction>(
+                    NotificationPermissionUiAction.OpenNotificationSettings,
+                ),
+                actual = actions,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+        }
+
+    @Test
     fun `GIVEN a confirmed system prompt WHEN the result arrives THEN logs notification_permission_result`() =
         runTest(testDispatcher) {
             // Given
@@ -105,7 +140,7 @@ internal class NotificationPermissionViewModelTest {
         val collected = mutableListOf<Pair<String, Map<String, Any>>>()
         trackedEvents = collected
         viewModel = NotificationPermissionViewModel(
-            navigator = Navigator(),
+            navigator = navigator,
             trackEvent = TrackEvent { name, params -> collected += name to params },
         )
     }

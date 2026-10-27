@@ -1,5 +1,12 @@
 {
   "2.15.0": {
+    "common": [
+      "En la lectura, al eliminar un color de resaltado personalizado, la ventana de confirmación ahora se cierra después de elegir \"Eliminar color y mantener resaltados\" o \"Eliminar color y resaltados\".",
+      "En los detalles de la cuenta, la ventana \"Renombrar dispositivo\" ahora se cierra cuando guardas el nuevo nombre, cancelas o tocas fuera de ella."
+    ],
+    "android": [
+      "La ventana que pide permiso para las notificaciones ahora se cierra cuando tocas \"Abrir configuración\", en lugar de quedarse atascada en la pantalla cuando vuelves a la app."
+    ],
     "desktop": [
       "En Mac y Windows, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema.",
       "Ahora también puedes escuchar los capítulos en la computadora: haz clic en el ícono de auriculares en la lectura para escuchar la Biblia narrada, con control de velocidad, temporizador para dormir, las palabras resaltadas mientras se leen y el paso automático al siguiente capítulo."
