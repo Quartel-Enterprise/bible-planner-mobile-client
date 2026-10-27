@@ -56,14 +56,12 @@ jobs:
           echo "found=false" >> "$GITHUB_OUTPUT"
 
       # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
-      # commit the comments are anchored to. No persisted credentials: this review pushes nothing, and
-      # the file checkout would keep GITHUB_TOKEN's header in is one less secret on the runner.
+      # commit the comments are anchored to.
       - uses: actions/checkout@v6
         if: steps.in-progress.outputs.found == 'false'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
-          persist-credentials: false
 
       - uses: ./.github/actions/claude-review
         if: steps.in-progress.outputs.found == 'false'
