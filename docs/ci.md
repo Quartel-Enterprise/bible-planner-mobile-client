@@ -135,12 +135,17 @@ The action hides Claude's output, since the logs of this repository are public. 
 was denied still shows as a warning on the run, with only its name, and for a Bash command its
 program and subcommand: allow it in `.github/actions/claude-review` when the review needs it.
 
-The commands the review is allowed (`cat`, `grep`, `git diff --no-index`…) can still read the
-runner's environment, where the Claude OAuth token and the GitHub tokens live. `Read` on `/proc` is
-denied, and `post-review.sh` masks anything shaped like a Claude (`sk-ant-`) or GitHub (`ghs_`,
-`ghp_`, `github_pat_`…) token before posting, so a prompt injection in a diff can't get one into a
-public comment as it is. An encoded token would still get through: what keeps that out is that only
-branches of this repository are reviewed, never forks.
+The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection
+in a diff could ask the review to quote one in a public comment. So the session reads files only
+through the Read, Grep and Glob tools, denied `/proc`, `/sys`, the checkout's `.git` and the home's
+dot directories. Its Bash commands are limited to `gh`'s read-only ones, which take the diff from
+GitHub (`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`,
+`git log`, `git show` and `git blame` all read or write a file they are given (`--no-index`,
+`--contents`, `--output`). A suggestion's lines are read from a copy of the reviewed commit,
+extracted before the session. On top of that, `post-review.sh` masks anything shaped like a token
+(Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a JWT, a Basic or Bearer header)
+before posting, and the hook's log goes through the same mask. An otherwise encoded token would
+still get through the mask: only branches of this repository are reviewed, never forks.
 
 The review on request is a workflow of its own because every label added to a pull request starts
 it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,
@@ -213,12 +218,12 @@ and so doesn't hold the merge. With no findings the review says so, and a reply 
 request shows the review ran. The exception is the job's 30-minute timeout: GitHub cancels the job
 and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the checkout before the review,
 into a directory made read-only, and the model's file tools are blocked (with `fix`, editing is
-allowed only inside the checkout, never under `.git`, `.github`, `.claude` or `.agent-memory`, nor on
-those copies). The read-only directory matters because an allowed `git diff` or `git show` can still
-write any file with `--output`: the hook's markers live in a state directory of their own, and what
-it acts on (when the review started, whether it commits fixes) comes in its arguments, so a forged
-marker can at most keep a review from posting. Nothing the review does changes what runs with the
-App's token. At high effort the skill runs its angles one after another in a single context, so a
+allowed only inside the checkout, never under `.git`, `.github`, `.claude` or `.agent-memory`). The
+hook's markers live in a state directory of their own, and what it acts on (when the review
+started, whether it commits fixes) comes in its arguments. A marker is checked before it counts: the
+posting step looks the review up on GitHub instead of trusting `.posted`, and `post-review.sh` only
+lists findings as fixed in the commit `.pushed` names when that commit is the checkout's head, on
+top of the reviewed one. At high effort the skill runs its angles one after another in a single context, so a
 large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,

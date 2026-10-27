@@ -138,9 +138,15 @@ runs:
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
           .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh "$dir/"
         chmod -R a-w "$dir"
+        # The reviewed commit's files, for the suggestions: with fix the working tree holds the review's
+        # own changes, and git show, which would read the commit, isn't allowed (see the claude step).
+        reviewed="$RUNNER_TEMP/reviewed-head"
+        mkdir -p "$reviewed"
+        git archive HEAD | tar -x -C "$reviewed"
         {
           echo "dir=$dir"
           echo "state=$state"
+          echo "reviewed=$reviewed"
           echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         } >> "$GITHUB_OUTPUT"
 
@@ -207,10 +213,16 @@ runs:
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
     # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
     # pull request number and the reviewed commits from the runner's environment, and has time for the
-    # script's retries, so it isn't killed between a post and its marker. The gh and git commands are the read-only
-    # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
-    # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
-    # here when the review needs it.
+    # script's retries, so it isn't killed between a post and its marker.
+    #
+    # The session can only read through the Read, Grep and Glob tools, whose deny rules cover the
+    # runner's environment (/proc), the checkout's credentials (.git) and the home's dot directories.
+    # A Bash command that reads or writes a file of its choosing would get around them: cat, grep,
+    # jq, git diff --no-index or git blame --contents read any file, and git diff, log and show write
+    # one with --output, which once let a prompt injection rewrite the Stop hook. So the only Bash
+    # commands allowed are gh's read-only ones, which take the diff from GitHub (gh pr diff), and git
+    # commands that print no file. A command the review was denied shows as a warning on the run
+    # (last step): allow it here only when it can't read or write a file it is given.
     #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
@@ -250,18 +262,23 @@ runs:
           - "suggestion": only when replacing lines "start_line" to "line" (or "line" alone) of the
             file, and nothing else, fully fixes the finding: the exact text that replaces those
             lines, every line whole and indented as in the file. Read those lines from the reviewed
-            commit with `git show HEAD:<file>` instead of recalling them or reading the working
-            tree, and keep "line" and "start_line" on exactly the lines it replaces. An empty string
+            commit's copy, `${{ steps.tools.outputs.reviewed }}/<file>`, instead of recalling them or
+            reading the working tree, and keep "line" and "start_line" on exactly the lines it
+            replaces. An empty string
             deletes them. Leave "suggestion" out whenever it would only be a sketch, the fix touches
             other lines, or the working tree already holds the fix.
+
+          Take the pull request's diff from `gh pr diff ${{ github.event.pull_request.number }}`, and
+          read files with the Read, Grep and Glob tools: git diff, git log, git show and the shell's
+          file commands (cat, grep, head, tail, jq) are blocked in this session.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)${{ steps.mode.outputs.allowed }}"
-          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),ScheduleWakeup,Monitor,SendMessage"
+          --allowedTools "Skill(code-review),Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*)${{ steps.mode.outputs.allowed }}"
+          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(/${{ github.workspace }}/.git/**),Read(//home/runner/.*/**),ScheduleWakeup,Monitor,SendMessage"
 
     # The Stop hook leaves a log of what it saw. A review on the reviewed commit since the review
     # started counts as posted by it; its .posted marker isn't trusted, since the session can write
