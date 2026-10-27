@@ -1,8 +1,10 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -85,13 +87,24 @@ private fun NotificationPermissionUiActionCollector(
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             NotificationPermissionUiAction.RequestSystemPermission -> permissionLauncher()
-
-            NotificationPermissionUiAction.OpenNotificationSettings -> {
-                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                }
-                context.startActivity(intent)
-            }
+            NotificationPermissionUiAction.OpenNotificationSettings -> openNotificationSettings(context)
         }
+    }
+}
+
+private fun openNotificationSettings(context: Context) {
+    val notificationSettings = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    }
+    try {
+        context.startActivity(notificationSettings)
+    } catch (_: ActivityNotFoundException) {
+        // Why: some OEM builds and work profiles have no app notification settings screen.
+        context.startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", context.packageName, null),
+            ),
+        )
     }
 }

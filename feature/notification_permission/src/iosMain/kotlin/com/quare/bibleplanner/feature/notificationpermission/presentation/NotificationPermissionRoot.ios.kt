@@ -40,7 +40,7 @@ private fun NotificationPermissionUiActionCollector(uiActionFlow: Flow<Notificat
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             NotificationPermissionUiAction.RequestSystemPermission -> navigator.navigateBack()
-            NotificationPermissionUiAction.OpenNotificationSettings -> navigator.navigateBack()
+            NotificationPermissionUiAction.OpenNotificationSettings -> Unit
         }
     }
 }
