@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.editprofile.presentation
+package com.quare.bibleplanner.core.image
 
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,6 +50,28 @@ internal class DecodeImageBitmapImplTest {
         assertEquals(30, bitmap.width)
         assertEquals(20, bitmap.height)
     }
+
+    @Test
+    fun `GIVEN an image larger than the cap WHEN decoding it THEN scales it down keeping the ratio`() =
+        runTest(testDispatcher) {
+            // Given
+            ImageIO.write(
+                BufferedImage(
+                    4096,
+                    3072,
+                    BufferedImage.TYPE_INT_RGB,
+                ),
+                "png",
+                imageFile,
+            )
+
+            // When
+            val bitmap = decodeImageBitmap(PlatformFile(imageFile)).getOrThrow()
+
+            // Then
+            assertEquals(2048, bitmap.width)
+            assertEquals(1536, bitmap.height)
+        }
 
     @Test
     fun `GIVEN a file that is not an image WHEN decoding it THEN fails`() = runTest(testDispatcher) {

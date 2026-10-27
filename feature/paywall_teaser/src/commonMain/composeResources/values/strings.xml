@@ -13,4 +13,7 @@
     <string name="paywall_teaser_chapter_listening_limit_dismiss">Not now</string>
     <string name="paywall_teaser_chapter_listening_pro_only_title">Listen with Pro</string>
     <string name="paywall_teaser_chapter_listening_pro_only_body">With Pro you can listen to any chapter read by natural voices, as many as you want — and keep going into the next one on its own.</string>
+    <string name="paywall_teaser_share_image_style_title">Make the card yours with Pro</string>
+    <string name="paywall_teaser_share_image_style_body">Fonts and the ready-made backgrounds stay free. With Pro you can pick any color, use your own photos and share without the Bible Planner mark.</string>
+    <string name="paywall_teaser_share_image_style_dismiss">Use the free styles</string>
 </resources>

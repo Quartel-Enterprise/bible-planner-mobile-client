@@ -145,6 +145,7 @@ private fun planStatus(): PlanStatus {
         totalDays = TOTAL_DAYS,
         readDays = READ_DAYS,
         streakDays = 14,
+        shownStreakDays = 14,
         daysAhead = 0,
         daysBehind = 0,
         daysSinceLastRead = 0,

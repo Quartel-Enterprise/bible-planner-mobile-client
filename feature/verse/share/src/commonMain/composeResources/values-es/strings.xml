@@ -10,4 +10,19 @@
     <string name="share_background">Fondo</string>
     <string name="share_action">Compartir</string>
     <string name="app_name">Bible Planner</string>
+    <string name="share_add_streak">Añadir racha</string>
+    <string name="share_remove_streak">Quitar racha</string>
+    <string name="share_remove_watermark">Quitar marca</string>
+    <string name="share_show_watermark">Mostrar marca</string>
+    <string name="share_custom_color">Color personalizado</string>
+    <string name="share_photo_background">Foto de fondo</string>
+    <string name="share_download">Guardar imagen</string>
+    <string name="share_image_saved">Imagen guardada</string>
+    <string name="share_image_save_failed">No se pudo guardar la imagen</string>
+    <string name="share_photo_load_failed">No se pudo abrir esta foto</string>
+    <string name="share_pro_only">Solo en Pro</string>
+    <plurals name="share_streak_days">
+        <item quantity="one">%1$d día seguido</item>
+        <item quantity="other">%1$d días seguidos</item>
+    </plurals>
 </resources>

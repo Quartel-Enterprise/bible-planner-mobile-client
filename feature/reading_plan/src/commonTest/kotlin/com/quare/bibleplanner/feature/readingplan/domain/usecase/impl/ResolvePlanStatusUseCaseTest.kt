@@ -194,6 +194,40 @@ internal class ResolvePlanStatusUseCaseTest {
         assertEquals(1, status.streakDays)
     }
 
+    @Test
+    fun `GIVEN reads up to today WHEN resolving THEN shows the streak`() {
+        // Given
+        val weeks = singleWeek(
+            day(number = 1, isRead = true),
+            day(number = 2, isRead = true),
+            day(number = 3, isToday = true),
+        )
+
+        // When
+        val status = useCase(weeks)
+
+        // Then
+        assertEquals(2, status.shownStreakDays)
+    }
+
+    @Test
+    fun `GIVEN the reader is behind today WHEN resolving THEN hides the streak but keeps counting it`() {
+        // Given
+        val weeks = singleWeek(
+            day(number = 1, isRead = true),
+            day(number = 2),
+            day(number = 3, isToday = true),
+        )
+
+        // When
+        val status = useCase(weeks)
+
+        // Then
+        assertEquals(PlanMode.Behind, status.mode)
+        assertEquals(0, status.shownStreakDays)
+        assertEquals(1, status.streakDays)
+    }
+
     private fun singleWeek(vararg days: DayModel): List<WeekPlanModel> =
         listOf(WeekPlanModel(number = 1, days = days.toList()))
 }

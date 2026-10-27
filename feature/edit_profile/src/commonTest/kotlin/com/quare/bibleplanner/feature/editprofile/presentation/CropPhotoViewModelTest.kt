@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
 import androidx.compose.ui.graphics.ImageBitmap
+import com.quare.bibleplanner.core.image.DecodeImageBitmap
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute

@@ -7,6 +7,7 @@ internal data class PlanStatus(
     val totalDays: Int,
     val readDays: Int,
     val streakDays: Int,
+    val shownStreakDays: Int,
     val daysAhead: Int,
     val daysBehind: Int,
     val daysSinceLastRead: Int?,

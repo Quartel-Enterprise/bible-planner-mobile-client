@@ -10,8 +10,6 @@ import com.quare.bibleplanner.feature.editprofile.domain.usecase.impl.RemoveProf
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.impl.SetProfilePhotoUseCase
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.impl.UpdateDisplayNameUseCase
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.impl.UseProviderPhotoUseCase
-import com.quare.bibleplanner.feature.editprofile.presentation.DecodeImageBitmap
-import com.quare.bibleplanner.feature.editprofile.presentation.DecodeImageBitmapImpl
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.CropPhotoViewModel
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.EditNameViewModel
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.EditProfileViewModel
@@ -30,7 +28,6 @@ val editProfileModule = module {
     viewModelOf(::EditProfileViewModel)
     viewModelOf(::EditNameViewModel)
     viewModelOf(::ProfilePhotoViewModel)
-    factory<DecodeImageBitmap> { DecodeImageBitmapImpl() }
     factory<AvatarImageCropper> { createAvatarImageCropper() }
     viewModel { params ->
         CropPhotoViewModel(

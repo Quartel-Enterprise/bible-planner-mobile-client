@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.date.di.dateModule
 import com.quare.bibleplanner.core.daystudy.di.dayStudyModule
 import com.quare.bibleplanner.core.devices.di.devicesModule
 import com.quare.bibleplanner.core.di.modelModule
+import com.quare.bibleplanner.core.image.di.imageModule
 import com.quare.bibleplanner.core.inappupdate.di.inAppUpdateModule
 import com.quare.bibleplanner.core.installattribution.di.installAttributionModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
@@ -81,6 +82,7 @@ object CommonKoinUtils {
     val modules = listOf(
         booksModule,
         planModule,
+        imageModule,
         clearModule,
         syncModule,
         verseAnnotationsModule,

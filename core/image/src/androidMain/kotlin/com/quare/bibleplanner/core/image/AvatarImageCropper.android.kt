@@ -16,9 +16,7 @@ internal class AndroidAvatarImageCropper : AvatarImageCropper {
         params: CropParams,
     ): ByteArray {
         val crop = computeCropRect(params)
-        val decoded = BitmapFactory
-            .decodeByteArray(source, 0, source.size, decodeOptions(source))
-            ?: throw UnsupportedImageFormatException()
+        val decoded = source.decodeUprightBitmap(getSampleSize(source)) ?: throw UnsupportedImageFormatException()
         val oriented = decoded.orient(params.orientation)
         if (oriented !== decoded) decoded.recycle()
         val output = createBitmap(
@@ -65,16 +63,14 @@ internal class AndroidAvatarImageCropper : AvatarImageCropper {
         )
     }
 
-    private fun decodeOptions(source: ByteArray): BitmapFactory.Options {
+    private fun getSampleSize(source: ByteArray): Int {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(source, 0, source.size, bounds)
-        return BitmapFactory.Options().apply {
-            inSampleSize = calculateSampleSize(
-                width = bounds.outWidth,
-                height = bounds.outHeight,
-                targetPx = AVATAR_OUTPUT_SIZE_PX,
-            )
-        }
+        return calculateSampleSize(
+            width = bounds.outWidth,
+            height = bounds.outHeight,
+            targetPx = AVATAR_OUTPUT_SIZE_PX,
+        )
     }
 
     private companion object {

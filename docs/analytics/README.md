@@ -272,6 +272,12 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [verse_share_image_opened](events/verse_share_image_opened.md) | P2 | Verse annotations |
 | [verse_share_style_changed](events/verse_share_style_changed.md) | P2 | Verse annotations |
 | [verse_share_dismissed](events/verse_share_dismissed.md) | P2 | Verse annotations |
+| [verse_share_image_downloaded](events/verse_share_image_downloaded.md) | P1 | Verse annotations |
+| [verse_share_streak_toggled](events/verse_share_streak_toggled.md) | P2 | Verse annotations |
+| [verse_share_watermark_toggled](events/verse_share_watermark_toggled.md) | P2 | Verse annotations |
+| [verse_share_color_picker_toggled](events/verse_share_color_picker_toggled.md) | P2 | Verse annotations |
+| [verse_share_photo_picker_opened](events/verse_share_photo_picker_opened.md) | P2 | Verse annotations |
+| [verse_share_pro_option_locked_clicked](events/verse_share_pro_option_locked_clicked.md) | P2 | Verse annotations |
 | [annotations_back_clicked](events/annotations_back_clicked.md) | P2 | Verse annotations |
 | [annotations_search_opened](events/annotations_search_opened.md) | P2 | Verse annotations |
 | [annotations_search_cleared](events/annotations_search_cleared.md) | P2 | Verse annotations |

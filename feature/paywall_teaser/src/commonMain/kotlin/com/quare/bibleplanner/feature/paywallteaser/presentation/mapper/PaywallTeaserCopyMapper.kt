@@ -13,6 +13,9 @@ import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_ch
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_body
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_title
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_share_image_style_body
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_share_image_style_dismiss
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_share_image_style_title
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserCopy
 
@@ -45,5 +48,11 @@ internal fun PaywallTeaserReason.toCopy(): PaywallTeaserCopy = when (this) {
         title = Res.string.paywall_teaser_chapter_listening_pro_only_title,
         body = Res.string.paywall_teaser_chapter_listening_pro_only_body,
         dismiss = Res.string.paywall_teaser_chapter_listening_limit_dismiss,
+    )
+
+    PaywallTeaserReason.SHARE_IMAGE_STYLE -> PaywallTeaserCopy(
+        title = Res.string.paywall_teaser_share_image_style_title,
+        body = Res.string.paywall_teaser_share_image_style_body,
+        dismiss = Res.string.paywall_teaser_share_image_style_dismiss,
     )
 }

@@ -1,6 +1,8 @@
 {
   "2.15.0": {
     "common": [
+      "When sharing a verse as an image, you can now add your reading plan streak to the card and save the image straight to your device.",
+      "With Pro, you can also remove the app's mark from the card, pick any background color or use one of your own photos as the background.",
       "In the reader, when you delete a custom highlight color, the confirmation window now closes after you pick \"Delete color, keep highlights\" or \"Delete color and highlights\".",
       "In account details, the \"Rename device\" window now closes when you save the new name, cancel or tap outside it."
     ],

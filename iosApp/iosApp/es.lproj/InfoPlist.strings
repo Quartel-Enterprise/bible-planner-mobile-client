@@ -3,3 +3,4 @@
 CFBundleDisplayName = "Planner Bíblico";
 NSLocalNetworkUsageDescription = "Esta aplicación necesita acceso a la red para cargar configuraciones dinámicas.";
 NSCameraUsageDescription = "Esta aplicación necesita acceso a la cámara para tomar una nueva foto de perfil.";
+NSPhotoLibraryAddUsageDescription = "Esta aplicación necesita permiso para guardar en tu fototeca las imágenes de versículos que creas.";
