@@ -88,6 +88,7 @@ already_posted() {
   local url
   url=$(SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
     --jq '.[] | select((.body | startswith("### Code review"))
+      and (.user.login == "claude[bot]" or .user.login == "github-actions[bot]")
       and (if env.RUN_TAG != "" then (.body | contains(env.RUN_TAG)) else .submitted_at >= env.SINCE end))
       | .html_url' 2> /dev/null | tail -1) || return 2
   [ -n "$url" ] && echo "$url"

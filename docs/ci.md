@@ -141,23 +141,30 @@ through the Read, Grep and Glob tools, and only in the checkout (`.agent-memory`
 copy of the files the pull request changes, as of the reviewed commit, for the suggestions' lines.
 Every other path is denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `/tmp`,
 `$RUNNER_TEMP` (where checkout keeps its credentials), the checkout's `.git` and the home's
-dotfiles. `claude-review`'s checkout doesn't persist its credentials, and a symlink the pull
-request adds that leaves the checkout is removed for the review and restored before the fix
-commit. The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub
-(`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`, `git log`,
-`git show` and `git blame` all read or write a file they are given (`--no-index`, `--contents`,
-`--output`). The allowlist only matches a command's start, so a PreToolUse hook (`bash-guard.sh`)
-refuses what would still print the environment: `gh`'s `--jq`, `-q`, `--template` and `-t`, an
-expanded `$VAR` or `$(...)`, a redirection. On top of that, `post-review.sh` masks anything shaped
+files that hold credentials (`~/.ssh`, `~/.config`, `~/.gitconfig`, `~/.claude.json`…). Claude
+Code's own session folder (`~/.claude/projects`) stays readable, since a Bash output too long to
+show, such as a large `gh pr diff`, is saved there. `claude-review`'s checkout doesn't persist its
+credentials, and a symlink the pull request adds that leaves the checkout or enters its `.git` is
+removed for the review and restored before the fix commit. The session's Bash commands are `gh`'s
+read-only ones, which take the diff from GitHub (`gh pr diff`), and git commands that print no
+file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and `git blame` all read or write a
+file they are given (`--no-index`, `--contents`, `--output`). A PreToolUse hook (`bash-guard.sh`)
+decides before every Bash call, the read-only ones Claude Code approves on its own included: it
+lets through only one plain line of those commands, with no quoting, expansion, pipe or
+redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment. A
+search therefore runs without quotes. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth
+token out of the environment of every Bash command and hook; the hook's log says whether it was
+there. The GitHub token `gh` needs stays. On top of that, `post-review.sh` masks anything shaped
 like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a JWT, a Basic or Bearer
 value with a digit) before posting, and the hook's log goes through the same mask. So does
-`commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix holds such a
+`commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix adds such a
 string. Each review carries its workflow run in a hidden comment, so a run only takes its own
-review for posted.
+review for posted, and only from `claude[bot]` or `github-actions[bot]`.
 
-**What is left.** The tokens are still in the session's environment: `claude-code-action` hands
-the session the OAuth token, and `gh` needs a GitHub token. Every way to print them that a review
-found is closed, but a list of refused commands can't prove there is no other, and the mask only
+**What is left.** The tokens are still in the session's own environment: `claude-code-action`
+hands the session the OAuth token, and `gh` needs a GitHub token in its commands'. Every way to
+print them that a review found is closed, but an allowlist can't prove a listed command has no
+other way, and the mask only
 knows a token's plain shapes: one the model is talked into encoding still gets through. Only
 someone who can push a branch to this repository can try, since forks are never reviewed. If a
 token ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token with

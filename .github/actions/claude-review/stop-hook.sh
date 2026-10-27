@@ -53,6 +53,14 @@ if [ -z "${PR_HEAD_SHA:-}" ] && [ -n "${GITHUB_EVENT_PATH:-}" ] && [ -f "$GITHUB
   export PR_HEAD_SHA PR_BASE_SHA
 fi
 
+# Whether CLAUDE_CODE_SUBPROCESS_ENV_SCRUB kept the OAuth token out of the hooks, as it does for Bash:
+# only present or absent, never the value.
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+  note "the Claude OAuth token is in the hook's environment"
+else
+  note "the Claude OAuth token is not in the hook's environment"
+fi
+
 replies=$(jq -r '.last_assistant_message // "" | select(length > 0) | @base64' <<< "$input")
 if [ -n "$replies" ]; then
   note "reading the last assistant message from the hook input"
@@ -95,7 +103,8 @@ if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already
 fi
 
 # With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
-# finds them pushed already, and keeps the first attempt's log.
+# finds them pushed already. After a failed attempt it tries again, and .commit-log then holds the
+# second attempt's error: the hook log keeps both.
 if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
   if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
     echo "$sha" > "$state/.pushed"
