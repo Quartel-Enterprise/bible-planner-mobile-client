@@ -35,11 +35,32 @@
 # outcome ignored.
 set -euo pipefail
 
+# Masks anything shaped like a credential before it reaches this public repository: the review's
+# shell can read the runner's environment and files, where the Claude OAuth token (sk-ant-...), the
+# GitHub tokens (ghs_, ghp_, gho_, ghu_, ghr_, github_pat_), the OIDC request token (a JWT) and
+# checkout's Basic header (base64 of x-access-token:...) live, and a prompt injection in the diff
+# could ask for one in a finding. Only those shapes are matched, so an otherwise encoded token still
+# gets through: forks, whose diffs nobody vetted, are never reviewed. `post-review.sh --redact`
+# filters stdin, for the hook's log.
+redact() {
+  sed -E 's/sk-ant-[A-Za-z0-9_-]{8,}/[redacted]/g
+    s/(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g
+    s/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/[redacted]/g
+    s/eC1hY2Nlc3MtdG9rZW46[A-Za-z0-9+\/=]*/[redacted]/g
+    s/([Bb]asic|[Bb]earer) [A-Za-z0-9+\/=_.-]{16,}/\1 [redacted]/g'
+}
+
 mode=post
-if [ "${1:-}" = --already ]; then
-  mode=already
-  shift
-fi
+case "${1:-}" in
+  --already)
+    mode=already
+    shift
+    ;;
+  --redact)
+    redact
+    exit 0
+    ;;
+esac
 pr=$1
 repo=${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set}
 run_url=${RUN_URL:-${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID:-}}
@@ -76,20 +97,20 @@ already_posted() {
   [ -n "$url" ] && echo "$url"
 }
 
+# The fix commit is named by a marker the review's session can write, so it only counts when it is the
+# checkout's head and its parent is the reviewed commit: the session can't commit.
+if [ -n "$FIXED_IN" ] && { [ -z "$WORKSPACE" ] || [ -z "$head_sha" ] ||
+  [ "$(git -C "$WORKSPACE" rev-parse HEAD 2> /dev/null)" != "$FIXED_IN" ] ||
+  [ "$(git -C "$WORKSPACE" rev-parse HEAD^ 2> /dev/null)" != "$head_sha" ]; }; then
+  warn "$FIXED_IN isn't a fix commit on top of the reviewed commit, so the findings are posted as not fixed."
+  FIXED_IN=""
+fi
+
 if [ "$mode" = already ]; then
   already_posted "${STARTED:?STARTED is not set}"
   exit $?
 fi
 input=$(cat)
-
-# Masks anything shaped like a credential before it reaches this public repository: the review's
-# shell can read the runner's environment (/proc), where the Claude OAuth token (sk-ant-...) and the
-# GitHub tokens (ghs_, ghp_, gho_, ghu_, ghr_, github_pat_) live, and a prompt injection in the diff
-# could ask for one in a finding. Only the token's shape is matched, so an encoded token still gets
-# through: forks, whose diffs nobody vetted, are never reviewed.
-redact() {
-  sed -E 's/sk-ant-[A-Za-z0-9_-]{8,}/[redacted]/g; s/(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g'
-}
 
 # Posts the review payload on stdin and prints its url. Transient errors are retried, but creating a
 # review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit

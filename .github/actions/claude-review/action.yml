@@ -163,7 +163,7 @@ runs:
           {
             echo "arguments=high $PR_NUMBER --fix --max-findings all"
             echo "allowed=,Edit(/$WORKSPACE/**)"
-            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),Edit(/$TOOLS/**),Edit(/$STATE/**),"
+            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),"
             echo "task<<TASK_END"
             echo "and let it apply its findings to the working tree, which is the pull request's head"
             echo "commit. Apply a fix only when it is clear and stays within what the finding describes,"
@@ -263,9 +263,9 @@ runs:
           --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)${{ steps.mode.outputs.allowed }}"
           --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),ScheduleWakeup,Monitor,SendMessage"
 
-    # The Stop hook leaves a marker with the url of the review it posted, and a log of what it saw.
-    # Without the marker, a review by claude[bot] on the reviewed commit since the review started still
-    # counts as posted (the hook may have been killed between its post and the marker). Otherwise the
+    # The Stop hook leaves a log of what it saw. A review on the reviewed commit since the review
+    # started counts as posted by it; its .posted marker isn't trusted, since the session can write
+    # the state directory and a forged one would leave the pull request with no review. Otherwise the
     # findings of Claude's last message (extract-findings.py reads the ```json fence) are posted here,
     # with the workflow's token, and a notice when there is no findings list (a refusal, a skill that
     # stopped early, a session that never ran: an expired token), so the pull request shows the run.
@@ -273,7 +273,8 @@ runs:
     # that; the failed check is the signal. A cancelled run (a newer run of the same pull request took
     # its place, or someone stopped it) posts nothing either. Only the hook commits fixes, while the
     # App's token is valid: when it pushed some and then didn't post, the review here still lists them
-    # as fixed by that commit; otherwise every finding is an inline comment.
+    # as fixed by that commit (post-review.sh checks the commit the .pushed marker names); otherwise
+    # every finding is an inline comment.
     - name: Post the findings when the hook didn't
       if: ${{ !cancelled() && steps.tools.outputs.dir != '' }}
       shell: bash
@@ -288,17 +289,14 @@ runs:
         STATE: ${{ steps.tools.outputs.state }}
         STARTED: ${{ steps.tools.outputs.started }}
       run: |
+        # The session can write the log too, so it is printed through the same mask as the review.
         if [ -f "$STATE/.hook-log" ]; then
-          cat "$STATE/.hook-log"
+          "$TOOLS/post-review.sh" --redact < "$STATE/.hook-log"
         else
           echo "The Stop hook left no log: it didn't run."
         fi
-        if [ -f "$STATE/.posted" ]; then
-          echo "The review was posted from the session: $(cat "$STATE/.posted")"
-          exit 0
-        fi
         if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
-          echo "The review was posted from the session, without a marker: $posted"
+          echo "The review was posted from the session: $posted"
           exit 0
         fi
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."

@@ -15,13 +15,19 @@
 #
 # The scripts sit in a read-only directory, and the markers in the state directory. What the hook
 # acts on comes in its arguments, set by the action, since an allowed git diff --output can still
-# write a file there: a forged marker can at most stop a review from posting.
+# write a file there. A marker is checked before it counts: the posting step looks the review up on
+# GitHub rather than trusting .posted, and post-review.sh only names a fix commit that is the
+# checkout's head on top of the reviewed commit.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
-state=${1:?usage: stop-hook.sh <state dir> <started> <fix>}
+state=${1:-}
 started=${2:-}
 fix=${3:-false}
+if [ -z "$state" ] || [ ! -d "$state" ]; then
+  echo "stop-hook: no state directory, the action's posting step takes over" >&2
+  exit 0
+fi
 log="$state/.hook-log"
 note() { echo "stop-hook: $*" | tee -a "$log" >&2; }
 
@@ -87,9 +93,9 @@ if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already
   exit 0
 fi
 
-# With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
-# finds them pushed already.
-if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
+# With fix, the fixes are pushed first, so the review can name their commit. A Stop that fires again
+# finds nothing left to commit: the checkout is no longer the reviewed head.
+if [ "$fix" = true ]; then
   if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
     echo "$sha" > "$state/.pushed"
     note "pushed the fixes as $sha"
