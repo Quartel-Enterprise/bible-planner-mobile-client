@@ -146,15 +146,18 @@ Code's own session folder (`~/.claude/projects`) stays readable, since a Bash ou
 show, such as a large `gh pr diff`, is saved there. `claude-review`'s checkout doesn't persist its
 credentials, and a symlink the pull request adds that leaves the checkout or enters its `.git` is
 removed for the review and restored before the fix commit. The session's Bash commands are `gh`'s
-read-only ones, which take the diff from GitHub (`gh pr diff`), and git commands that print no
-file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and `git blame` all read or write a
-file they are given (`--no-index`, `--contents`, `--output`). A PreToolUse hook (`bash-guard.sh`)
+read-only ones, which take the diff from GitHub (`gh pr diff`), plus `git status` and
+`git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
+`git blame` are left out, since they read or write a file they are given (`--no-index`,
+`--contents`, `--output`). A PreToolUse hook (`bash-guard.sh`)
 decides before every Bash call, the read-only ones Claude Code approves on its own included: it
 lets through only one plain line of those commands, with no quoting, expansion, pipe or
-redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment. A
-search therefore runs without quotes. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth
+redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment,
+even with a value attached. A search therefore runs without quotes, and what the hook refuses
+shows as a warning on the run. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth
 token out of the environment of every Bash command and hook; the hook's log says whether it was
-there. The GitHub token `gh` needs stays. On top of that, `post-review.sh` masks anything shaped
+there. The GitHub token `gh` needs stays. It runs every Bash command in Claude Code's sandbox, so
+the action installs bubblewrap and socat first, and warns when the sandbox can't start. On top of that, `post-review.sh` masks anything shaped
 like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a JWT, a Basic or Bearer
 value with a digit) before posting, and the hook's log goes through the same mask. So does
 `commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix adds such a

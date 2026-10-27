@@ -274,13 +274,35 @@ runs:
     # quoting, expansion, pipe or redirection, and none of gh's --jq, -q, --template or -t, which read
     # the environment. On top of that, CLAUDE_CODE_SUBPROCESS_ENV_SCRUB keeps the Claude OAuth token
     # out of every Bash command's and hook's environment; the GitHub token gh needs stays. A command
-    # the review was denied shows as a warning on the run (last step): allow it here and in the
-    # guard only when it can neither read or write a file it is given nor print the environment.
+    # the review was denied, or the guard refused, shows as a warning on the run (last step): allow it
+    # only when it can neither read nor write a file it is given, nor print the environment, and then
+    # in the four places that list the commands together: --allowedTools, bash-guard.sh, the prompt
+    # and docs/ci.md.
     #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
     # without posting anything (anthropics/claude-code-action#1646). Background tasks are turned off
     # so the agents run in the foreground, and the tools for waiting on them are blocked.
+    #
+    # CLAUDE_CODE_SUBPROCESS_ENV_SCRUB runs every Bash command in Claude Code's sandbox, which on Linux
+    # needs bubblewrap and socat. The runner has neither, and without them every Bash call failed, so
+    # the review had no diff. Ubuntu's AppArmor also keeps an unprivileged user from creating the user
+    # namespace bubblewrap needs; the runner is a throwaway VM, so that restriction is lifted here.
+    # The step warns when the sandbox still can't start, so a run that reviews without Bash shows it.
+    - name: Install the sandbox's dependencies
+      shell: bash
+      run: |
+        if ! command -v bwrap > /dev/null || ! command -v socat > /dev/null; then
+          sudo apt-get update -qq || true
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null || true
+        fi
+        if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+          sudo sysctl -q -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+        fi
+        if ! command -v socat > /dev/null || ! bwrap --ro-bind / / --dev /dev --proc /proc --unshare-all true; then
+          echo "::warning::bubblewrap can't start a sandbox on this runner, so the review's Bash commands will fail."
+        fi
+
     - id: claude
       uses: anthropics/claude-code-action@v1
       env:
@@ -289,7 +311,7 @@ runs:
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/bash-guard.sh"}]}], "Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
+          {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/bash-guard.sh ${{ steps.tools.outputs.state }}"}]}], "Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `${{ steps.mode.outputs.arguments }}` as its arguments,
@@ -323,8 +345,8 @@ runs:
 
           Take the pull request's diff from `gh pr diff ${{ github.event.pull_request.number }}`, and
           read files with the Read, Grep and Glob tools. Bash only runs gh pr view/diff/list, gh issue
-          view/list, gh search, git status, git merge-base and git branch --show-current, each as one
-          plain line: no quotes, pipes, redirections or shell variables, and no --jq or --template.
+          view/list, gh search, git status and git branch --show-current, each as one plain line: no
+          quotes, pipes, redirections or shell variables, and no --jq, --template, -q or -t.
           A search runs without quotes.
 
           ${{ steps.memory-instructions.outputs.text }}
@@ -332,7 +354,7 @@ runs:
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Read(~/.claude/projects/**),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current),Bash(git merge-base:*)${{ steps.mode.outputs.allowed }}"
+          --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Read(~/.claude/projects/**),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current)${{ steps.mode.outputs.allowed }}"
           --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(//etc/**),Read(/${{ runner.temp }}/**),Read(//tmp/**),Read(/${{ github.workspace }}/.git/**),Read(~/.ssh/**),Read(~/.gnupg/**),Read(~/.config/**),Read(~/.docker/**),Read(~/.gradle/**),Read(~/.m2/**),Read(~/.git-credentials),Read(~/.gitconfig),Read(~/.netrc),Read(~/.npmrc),Read(~/.claude.json),Read(~/.claude/.credentials.json),Read(~/actions-runner/**),Read(~/runners/**),ScheduleWakeup,Monitor,SendMessage"
 
     # The Stop hook leaves a log of what it saw. A review this action posted since the review started
@@ -393,14 +415,24 @@ runs:
     # path to a script counts), its flags and its subcommand (two for gh, whose verbs come in pairs),
     # enough to allow it above: a word that doesn't look like one (a path argument, a value, an
     # assignment) is left out. A compound command (&&, ||, |, ;) is denied as a whole when one of its
-    # parts isn't allowed, so every part is printed, joined with "+". Reading the file never fails the
-    # review.
+    # parts isn't allowed, so every part is printed, joined with "+". A command the Bash guard refused
+    # never reaches the permission rules, so it is in the guard's log instead, in the same shape, and
+    # goes through the review's mask, since a refused command's first word could be anything. Reading
+    # either never fails the review.
     - name: List the tools the review was denied
-      if: always() && steps.claude.outputs.execution_file != ''
+      if: always() && steps.tools.outputs.dir != ''
       shell: bash
       env:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        TOOLS: ${{ steps.tools.outputs.dir }}
+        STATE: ${{ steps.tools.outputs.state }}
       run: |
+        if [ -f "$STATE/.guard-log" ]; then
+          "$TOOLS/post-review.sh" --redact < "$STATE/.guard-log" | sort | uniq -c | while read -r count tool; do
+            echo "::warning::The review's Bash guard refused $tool ($count time(s))."
+          done
+        fi
+        [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ] || exit 0
         if ! denied=$(jq -r '.[] | select(.type == "result") | .permission_denials[]?
           | if .tool_name == "Bash"
             then [.tool_input.command // "" | split("\n")[0] | splits("\\s*(&&|\\|\\||\\||;)\\s*") | select(. != "")]
