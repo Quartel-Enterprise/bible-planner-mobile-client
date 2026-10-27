@@ -3,24 +3,40 @@
 # holds as one pull request review, through post-review.sh. It runs inside the session, so gh posts
 # with the Claude GitHub App's token, as claude[bot], before the action revokes it. The hook's JSON
 # arrives on stdin with the last assistant message; the transcript it names is the fallback, though
-# it may not hold that message yet. A marker file tells the action's own posting step the review is
-# already posted; a log file tells it what the hook saw (counts and sizes only: the session's output
+# it may not hold that message yet. A marker file tells a Stop that fires again the review is already
+# posted, though the action's posting step looks it up on GitHub instead; a log file tells that step
+# what the hook saw (counts and sizes only: the session's output
 # is hidden because the logs are public, and the log must not leak it). When the hook finds no
 # findings list, it posts nothing and leaves the posting to that step, which reads the reply from the
 # action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
 # from ending. With fix (action.yml), it first commits the fixes and pushes them through
 # commit-fixes.sh.
+#
+#   stop-hook.sh <state dir> <started> <fix: true|false>
+#
+# The scripts sit in a read-only directory, and the markers in the state directory, both outside the
+# checkout, where the session's tools can't write. What the hook acts on comes in its arguments, set
+# by the action, and a marker is checked before it counts, in case a later change lets the session
+# write there: the posting step looks the review up on GitHub rather than trusting .posted, and
+# post-review.sh only names a fix commit that is the checkout's head on top of the reviewed commit.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
-log="$dir/.hook-log"
+state=${1:-}
+started=${2:-}
+fix=${3:-false}
+if [ -z "$state" ] || [ ! -d "$state" ]; then
+  echo "stop-hook: no state directory, the action's posting step takes over" >&2
+  exit 0
+fi
+log="$state/.hook-log"
 note() { echo "stop-hook: $*" | tee -a "$log" >&2; }
 
 input=$(cat)
 
 # One review per session: a Stop that fires again posts nothing more.
-if [ -f "$dir/.posted" ]; then
-  note "the review is already posted ($(cat "$dir/.posted")), nothing more to do"
+if [ -f "$state/.posted" ]; then
+  note "the review is already posted ($(cat "$state/.posted")), nothing more to do"
   exit 0
 fi
 
@@ -35,6 +51,14 @@ if [ -z "${PR_HEAD_SHA:-}" ] && [ -n "${GITHUB_EVENT_PATH:-}" ] && [ -f "$GITHUB
   PR_HEAD_SHA=$(jq -r '.pull_request.head.sha // ""' "$GITHUB_EVENT_PATH")
   PR_BASE_SHA=$(jq -r '.pull_request.base.sha // ""' "$GITHUB_EVENT_PATH")
   export PR_HEAD_SHA PR_BASE_SHA
+fi
+
+# Whether CLAUDE_CODE_SUBPROCESS_ENV_SCRUB kept the OAuth token out of the hooks, as it does for Bash:
+# only present or absent, never the value.
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+  note "the Claude OAuth token is in the hook's environment"
+else
+  note "the Claude OAuth token is not in the hook's environment"
 fi
 
 replies=$(jq -r '.last_assistant_message // "" | select(length > 0) | @base64' <<< "$input")
@@ -72,29 +96,30 @@ if [ -z "$findings" ]; then
 fi
 
 # A review posted since the review started (a Stop that fired twice without the marker) counts too.
-if [ -f "$dir/.started" ] && url=$(STARTED="$(cat "$dir/.started")" "$dir/post-review.sh" --already "$pr"); then
-  echo "$url" > "$dir/.posted"
+if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already "$pr"); then
+  echo "$url" > "$state/.posted"
   note "a review was already posted since the review started: $url"
   exit 0
 fi
 
 # With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
-# finds them pushed already.
-if [ -f "$dir/.fix" ] && [ ! -f "$dir/.pushed" ]; then
-  if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$dir/.commit-log"); then
-    echo "$sha" > "$dir/.pushed"
+# finds them pushed already. After a failed attempt it tries again, and .commit-log then holds the
+# second attempt's error: the hook log keeps both.
+if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
+  if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
+    echo "$sha" > "$state/.pushed"
     note "pushed the fixes as $sha"
   else
-    note "no fixes pushed: $(tr '\n' ' ' < "$dir/.commit-log")"
+    note "no fixes pushed: $(tr '\n' ' ' < "$state/.commit-log")"
   fi
 fi
-if [ -f "$dir/.pushed" ]; then
-  FIXED_IN=$(cat "$dir/.pushed")
+if [ -f "$state/.pushed" ]; then
+  FIXED_IN=$(cat "$state/.pushed")
   export FIXED_IN
 fi
 
 if url=$("$dir/post-review.sh" "$pr" <<< "$findings"); then
-  echo "$url" > "$dir/.posted"
+  echo "$url" > "$state/.posted"
   note "posted $url"
 else
   note "post-review.sh failed, the action's posting step takes over"

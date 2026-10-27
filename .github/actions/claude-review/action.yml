@@ -9,16 +9,16 @@ description: 'Reviews the pull request with the /code-review skill bundled with 
 # below posts the same findings with the workflow's token, as github-actions. The model posts nothing
 # itself: the skill's --comment flag posts one review per finding, each with its own notification,
 # and a script run by the model depends on a Bash allowlist the action didn't honour for it. The hook
-# and the scripts it runs are copied out of the checkout first, so nothing the model does to the
-# working tree (its file tools are blocked, but git diff can still write a file) changes what runs
-# with the App's token.
+# and the scripts it runs are copied out of the checkout first, into a read-only directory the
+# session can't write: its Edit rule covers the checkout only, and none of the Bash commands it is
+# allowed writes a file (see the claude step).
 #
 # With fix, the review also applies its findings to the working tree, and the hook commits them and
 # pushes the commit to the pull request's branch (commit-fixes.sh) before it posts: the review then
 # lists the fixed findings in its body, which opens no thread, and only the others as inline
 # comments. A push with the App's token starts the pull request's workflows on the new commit, which
 # a push with GITHUB_TOKEN wouldn't. The model may only edit files of the checkout, never under .git,
-# .github, .claude or .agent-memory, nor the hook's copy of the scripts, and never create a file.
+# .github, .claude or .agent-memory, and never create a file.
 
 inputs:
   oauth-token:
@@ -105,6 +105,7 @@ runs:
           gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
               | .body | select(test("^### Code review\\s+[0-9]+ finding"))
+              | gsub("\\s*<!-- claude-review run [^>]*-->"; "")
               | split("\n\n")[1:]
               | reduce .[] as $paragraph ({items: [], fenced: false};
                   (if (.fenced | not) and ($paragraph | test("^[0-9]+\\. (`|\\(no file\\))")) then .items += [$paragraph]
@@ -123,47 +124,97 @@ runs:
           echo "EARLIER_COMMENTS_END"
         } >> "$GITHUB_OUTPUT"
 
-    # The hook and the scripts it runs live outside the checkout for the session: the model's file tools
-    # are blocked, but an allowed git diff can still write a file (--output), and the hook runs with the
-    # App's token. The step also records when the review started, for the posting step to tell a review
-    # the hook posted from one it didn't, and whether the hook commits the fixes.
+    # The hook and the scripts it runs live outside the checkout for the session, in a directory made
+    # read-only, since the hook runs with the App's token. The session can't write there anyway (its
+    # Edit rule covers the checkout only, and none of its Bash commands writes a file); the read-only
+    # copy and the checks on the markers (stop-hook.sh) keep that true if a later change lets it. The
+    # hook's markers go to a state directory of their own. When the review started, for the posting
+    # step to tell a review the hook posted from one it didn't, and whether the hook commits the fixes
+    # reach the hook as arguments rather than files. The Bash guard (bash-guard.sh) is the session's
+    # PreToolUse hook, copied with them.
     - id: tools
       shell: bash
       env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
         FIX: ${{ inputs.fix }}
       run: |
         dir="$RUNNER_TEMP/claude-review"
-        mkdir -p "$dir"
+        state="$RUNNER_TEMP/claude-review-state"
+        # A run before this one in the same job left its copy read-only, and its markers and logs.
+        if [ -d "$dir" ]; then
+          chmod -R u+w "$dir"
+          rm -rf "$dir"
+        fi
+        rm -rf "$state"
+        mkdir -p "$dir" "$state"
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
-          .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh "$dir/"
-        date -u +%Y-%m-%dT%H:%M:%SZ > "$dir/.started"
+          .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh \
+          .github/actions/claude-review/bash-guard.sh "$dir/"
+        chmod -R a-w "$dir"
+        # A symlink the pull request adds could point the session's Read allow rule for the checkout at
+        # /proc, $RUNNER_TEMP or the checkout's .git, or its Edit allow rule at .github or .claude, if a
+        # deny rule checks the link's path rather than its target. One that leaves the checkout or
+        # enters one of those is removed for the review; commit-fixes.sh restores it before committing.
+        # The checkout's own path is resolved first, in case the workspace sits behind a symlink.
+        root=$(realpath "$PWD")
+        while IFS= read -r -d '' link; do
+          case "$(realpath -m "$link")" in
+            "$root"/.git | "$root"/.git/* | "$root"/.github | "$root"/.github/*) ;;
+            "$root"/.claude | "$root"/.claude/*) ;;
+            "$root"/*) continue ;;
+          esac
+          rm -f "$link"
+          echo "::notice::$link points outside the checkout or into .git, .github or .claude, so the review doesn't see it."
+        done < <(find . -path ./.git -prune -o -type l -print0)
+        # With fix, the reviewed commit's version of each file the pull request changes, for the
+        # suggestions: the working tree then holds the review's own changes, and git show, which would
+        # read the commit, isn't allowed (see the claude step). Without fix, the checkout is that
+        # commit. The copy is cleared first, since it lives outside $RUNNER_TEMP (which the session
+        # can't read: checkout keeps its credentials there) and a reused runner would keep the last
+        # one. The files come from the API, which has no diff size limit; a file the pull request
+        # deletes has no version to copy, and without the list suggestions are only left out.
+        reviewed="$PWD"
         if [ "$FIX" = true ]; then
-          touch "$dir/.fix"
+          reviewed="$(dirname "$RUNNER_TEMP")/reviewed-head"
+          rm -rf "$reviewed"
+          mkdir -p "$reviewed"
+          if files=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/files?per_page=100" \
+            --jq '.[] | select(.status != "removed") | .filename'); then
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              mkdir -p "$reviewed/$(dirname "$file")"
+              git show "HEAD:$file" > "$reviewed/$file" 2> /dev/null || rm -f "$reviewed/$file"
+            done <<< "$files"
+          else
+            echo "::warning::The pull request's files couldn't be listed, so the review has no copy of the reviewed commit."
+          fi
         fi
         {
           echo "dir=$dir"
-          echo "started=$(cat "$dir/.started")"
+          echo "state=$state"
+          echo "reviewed=$reviewed"
+          echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         } >> "$GITHUB_OUTPUT"
 
     # What changes with fix: the skill's --fix flag, the task, the outcome of each finding, and the
     # model's file tools: Edit and MultiEdit are allowed inside the checkout only, never under .git,
-    # .github, .claude (settings and hooks the session could pick up) or .agent-memory, nor on the
-    # hook's copy of the scripts; Write stays denied, since the commit only takes files the branch
-    # already tracks. Edit rules cover every tool that edits a file; the deny rules win over the allow
-    # rule.
+    # .github, .claude (settings and hooks the session could pick up) or .agent-memory; Write stays
+    # denied, since the commit only takes files the branch already tracks. Edit rules cover every tool
+    # that edits a file; the deny rules win over the allow rule.
     - id: mode
       shell: bash
       env:
         FIX: ${{ inputs.fix }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         WORKSPACE: ${{ github.workspace }}
-        TOOLS: ${{ steps.tools.outputs.dir }}
       run: |
         if [ "$FIX" = true ]; then
           {
             echo "arguments=high $PR_NUMBER --fix --max-findings all"
             echo "allowed=,Edit(/$WORKSPACE/**)"
-            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),Edit(/$TOOLS/**),"
+            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),"
             echo "task<<TASK_END"
             echo "and let it apply its findings to the working tree, which is the pull request's head"
             echo "commit. Apply a fix only when it is clear and stays within what the finding describes,"
@@ -207,23 +258,65 @@ runs:
     # Without a tool to report through, the skill returns its findings as a JSON array, which is what
     # the Stop hook (settings) and the posting step read from Claude's last message. The hook gets the
     # pull request number and the reviewed commits from the runner's environment, and has time for the
-    # script's retries, so it isn't killed between a post and its marker. The gh and git commands are the read-only
-    # ones the skill runs; the checkout has no history (fetch-depth 1), so the git ones only serve the
-    # diff. A command the review was denied shows as a warning on the run (last step), to be allowed
-    # here when the review needs it.
+    # script's retries, so it isn't killed between a post and its marker.
+    #
+    # The session can only read through the Read, Grep and Glob tools, and only the checkout and the
+    # reviewed commit's copy: a path no allow rule names is denied, since nobody is there to approve
+    # it, and Read rules cover Grep and Glob too. The deny rules repeat it for what must never be
+    # read: the runner's environment (/proc), $RUNNER_TEMP (checkout's credentials, the hook's state),
+    # /etc, /tmp, the checkout's .git and the home's files that hold credentials. Claude Code's own
+    # folder for the session (~/.claude/projects) stays readable: a Bash output too long to show,
+    # such as a large gh pr diff, is saved there.
+    #
+    # A Bash command that reads or writes a file of its choosing would get around them: cat, grep,
+    # jq, git diff --no-index and git blame --contents read any file, and git diff, log and show write
+    # one with --output, which once let a prompt injection rewrite the Stop hook. So the only Bash
+    # commands allowed are gh's read-only ones, which take the diff from GitHub (gh pr diff), and git
+    # commands that print neither a file nor their arguments. The allowlist only matches a command's
+    # start, and Claude Code runs some read-only commands without asking, so the Bash guard
+    # (bash-guard.sh) decides before every Bash call: one plain line of a few known commands, with no
+    # quoting, expansion, pipe or redirection, and none of gh's --jq, -q, --template or -t, which read
+    # the environment. On top of that, CLAUDE_CODE_SUBPROCESS_ENV_SCRUB keeps the Claude OAuth token
+    # out of every Bash command's and hook's environment; the GitHub token gh needs stays. A command
+    # the review was denied, or the guard refused, shows as a warning on the run (last step): allow it
+    # only when it can neither read nor write a file it is given, nor print the environment, and then
+    # in the four places that list the commands together: --allowedTools, bash-guard.sh, the prompt
+    # and docs/ci.md.
     #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
     # without posting anything (anthropics/claude-code-action#1646). Background tasks are turned off
     # so the agents run in the foreground, and the tools for waiting on them are blocked.
+    #
+    # CLAUDE_CODE_SUBPROCESS_ENV_SCRUB runs every Bash command in Claude Code's sandbox, which on Linux
+    # needs bubblewrap and socat. The runner has neither, and without them every Bash call failed, so
+    # the review had no diff. Ubuntu's AppArmor also keeps an unprivileged user from creating the user
+    # namespace bubblewrap needs; the runner is a throwaway VM, so that restriction is lifted here.
+    # The step warns when the sandbox still can't start, so a run that reviews without Bash shows it.
+    - name: Install the sandbox's dependencies
+      shell: bash
+      run: |
+        # The package index is only refreshed when the image's own is too old to install them.
+        install() { sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null; }
+        if ! command -v bwrap > /dev/null || ! command -v socat > /dev/null; then
+          install || { sudo apt-get update -qq && install; } || true
+        fi
+        if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+          sudo sysctl -q -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+        fi
+        if ! command -v socat > /dev/null || ! bwrap --ro-bind / / --dev /dev --proc /proc --unshare-all true; then
+          echo "::warning::bubblewrap can't start a sandbox on this runner, so the review's Bash commands will fail."
+        fi
+
     - id: claude
       uses: anthropics/claude-code-action@v1
       env:
         CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: "1"
+        CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh", "timeout": 600}]}]}}
+          {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/bash-guard.sh ${{ steps.tools.outputs.state }}"}]}], "Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `${{ steps.mode.outputs.arguments }}` as its arguments,
@@ -250,22 +343,28 @@ runs:
           - "suggestion": only when replacing lines "start_line" to "line" (or "line" alone) of the
             file, and nothing else, fully fixes the finding: the exact text that replaces those
             lines, every line whole and indented as in the file. Read those lines from the reviewed
-            commit with `git show HEAD:<file>` instead of recalling them or reading the working
-            tree, and keep "line" and "start_line" on exactly the lines it replaces. An empty string
+            commit's copy, `${{ steps.tools.outputs.reviewed }}/<file>`, instead of recalling them,
+            and keep "line" and "start_line" on exactly the lines it replaces. An empty string
             deletes them. Leave "suggestion" out whenever it would only be a sketch, the fix touches
             other lines, or the working tree already holds the fix.
+
+          Take the pull request's diff from `gh pr diff ${{ github.event.pull_request.number }}`, and
+          read files with the Read, Grep and Glob tools. Bash only runs gh pr view/diff/list, gh issue
+          view/list, gh search, git status and git branch --show-current, each as one plain line: no
+          quotes, pipes, redirections or shell variables, and no --jq, --template, -q or -t.
+          A search runs without quotes.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)${{ steps.mode.outputs.allowed }}"
-          --disallowedTools "${{ steps.mode.outputs.denied }}ScheduleWakeup,Monitor,SendMessage"
+          --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Read(~/.claude/projects/**),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current)${{ steps.mode.outputs.allowed }}"
+          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(//etc/**),Read(/${{ runner.temp }}/**),Read(//tmp/**),Read(/${{ github.workspace }}/.git/**),Read(~/.ssh/**),Read(~/.gnupg/**),Read(~/.config/**),Read(~/.docker/**),Read(~/.gradle/**),Read(~/.m2/**),Read(~/.git-credentials),Read(~/.gitconfig),Read(~/.netrc),Read(~/.npmrc),Read(~/.claude.json),Read(~/.claude/.credentials.json),Read(~/actions-runner/**),Read(~/runners/**),ScheduleWakeup,Monitor,SendMessage"
 
-    # The Stop hook leaves a marker with the url of the review it posted, and a log of what it saw.
-    # Without the marker, a review by claude[bot] on the reviewed commit since the review started still
-    # counts as posted (the hook may have been killed between its post and the marker). Otherwise the
+    # The Stop hook leaves a log of what it saw. A review this action posted since the review started
+    # counts as posted by it, on whatever commit it landed. Its .posted marker only counts when GitHub
+    # can't be read: a forged one would otherwise leave the pull request with no review. Otherwise the
     # findings of Claude's last message (extract-findings.py reads the ```json fence) are posted here,
     # with the workflow's token, and a notice when there is no findings list (a refusal, a skill that
     # stopped early, a session that never ran: an expired token), so the pull request shows the run.
@@ -273,7 +372,8 @@ runs:
     # that; the failed check is the signal. A cancelled run (a newer run of the same pull request took
     # its place, or someone stopped it) posts nothing either. Only the hook commits fixes, while the
     # App's token is valid: when it pushed some and then didn't post, the review here still lists them
-    # as fixed by that commit; otherwise every finding is an inline comment.
+    # as fixed by that commit (post-review.sh checks the commit the .pushed marker names); otherwise
+    # every finding is an inline comment.
     - name: Post the findings when the hook didn't
       if: ${{ !cancelled() && steps.tools.outputs.dir != '' }}
       shell: bash
@@ -285,24 +385,25 @@ runs:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         TOOLS: ${{ steps.tools.outputs.dir }}
+        STATE: ${{ steps.tools.outputs.state }}
         STARTED: ${{ steps.tools.outputs.started }}
       run: |
-        if [ -f "$TOOLS/.hook-log" ]; then
-          cat "$TOOLS/.hook-log"
+        # The log quotes what the hook found, so it is printed through the same mask as the review.
+        if [ -f "$STATE/.hook-log" ]; then
+          "$TOOLS/post-review.sh" --redact < "$STATE/.hook-log"
         else
           echo "The Stop hook left no log: it didn't run."
         fi
-        if [ -f "$TOOLS/.posted" ]; then
-          echo "The review was posted from the session: $(cat "$TOOLS/.posted")"
-          exit 0
-        fi
         if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
-          echo "The review was posted from the session, without a marker: $posted"
+          echo "The review was posted from the session: $posted"
+          exit 0
+        elif [ $? -eq 2 ] && [ -f "$STATE/.posted" ]; then
+          echo "::warning::GitHub's reviews couldn't be read, so the hook's marker is trusted and nothing more is posted."
           exit 0
         fi
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
-        if [ -f "$TOOLS/.pushed" ]; then
-          FIXED_IN=$(cat "$TOOLS/.pushed")
+        if [ -f "$STATE/.pushed" ]; then
+          FIXED_IN=$(cat "$STATE/.pushed")
           export FIXED_IN
         fi
         if [ -z "$EXECUTION_FILE" ] || [ ! -f "$EXECUTION_FILE" ]; then
@@ -319,14 +420,24 @@ runs:
     # path to a script counts), its flags and its subcommand (two for gh, whose verbs come in pairs),
     # enough to allow it above: a word that doesn't look like one (a path argument, a value, an
     # assignment) is left out. A compound command (&&, ||, |, ;) is denied as a whole when one of its
-    # parts isn't allowed, so every part is printed, joined with "+". Reading the file never fails the
-    # review.
+    # parts isn't allowed, so every part is printed, joined with "+". A command the Bash guard refused
+    # never reaches the permission rules, so it is in the guard's log instead, in the same shape, and
+    # goes through the review's mask, since a refused command's first word could be anything. Reading
+    # either never fails the review.
     - name: List the tools the review was denied
-      if: always() && steps.claude.outputs.execution_file != ''
+      if: always() && steps.tools.outputs.dir != ''
       shell: bash
       env:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        TOOLS: ${{ steps.tools.outputs.dir }}
+        STATE: ${{ steps.tools.outputs.state }}
       run: |
+        if [ -f "$STATE/.guard-log" ]; then
+          "$TOOLS/post-review.sh" --redact < "$STATE/.guard-log" | sort | uniq -c | while read -r count tool; do
+            echo "::warning::The review's Bash guard refused $tool ($count time(s))."
+          done
+        fi
+        [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ] || exit 0
         if ! denied=$(jq -r '.[] | select(.type == "result") | .permission_denials[]?
           | if .tool_name == "Bash"
             then [.tool_input.command // "" | split("\n")[0] | splits("\\s*(&&|\\|\\||\\||;)\\s*") | select(. != "")]
