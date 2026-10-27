@@ -137,14 +137,16 @@ program and subcommand: allow it in `.github/actions/claude-review` when the rev
 
 The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection
 in a diff could ask the review to quote one in a public comment. So the session reads files only
-through the Read, Grep and Glob tools, denied `/proc`, `/sys`, the checkout's `.git` and the home's
-dot directories. Its Bash commands are limited to `gh`'s read-only ones, which take the diff from
-GitHub (`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`,
-`git log`, `git show` and `git blame` all read or write a file they are given (`--no-index`,
-`--contents`, `--output`). A suggestion's lines are read from a copy of the reviewed commit,
-extracted before the session. On top of that, `post-review.sh` masks anything shaped like a token
-(Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a JWT, a Basic or Bearer header)
-before posting, and the hook's log goes through the same mask. An otherwise encoded token would
+through the Read, Grep and Glob tools, and only in the checkout (`.agent-memory` included) and in a
+copy of the files the pull request changes, as of the reviewed commit, for the suggestions' lines.
+Every other path is denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`,
+`$RUNNER_TEMP` (where checkout keeps its credentials), the checkout's `.git` and the home's dot
+directories. Neither review persists checkout's credentials. The session's Bash commands are
+`gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), and git commands that print
+no file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and `git blame` all read or write a
+file they are given (`--no-index`, `--contents`, `--output`). On top of that, `post-review.sh`
+masks anything shaped like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a
+JWT, a Basic or Bearer value with a digit) before posting, and the hook's log goes through the same mask. An otherwise encoded token would
 still get through the mask: only branches of this repository are reviewed, never forks.
 
 The review on request is a workflow of its own because every label added to a pull request starts
@@ -219,11 +221,12 @@ request shows the review ran. The exception is the job's 30-minute timeout: GitH
 and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the checkout before the review,
 into a directory made read-only, and the model's file tools are blocked (with `fix`, editing is
 allowed only inside the checkout, never under `.git`, `.github`, `.claude` or `.agent-memory`). The
-hook's markers live in a state directory of their own, and what it acts on (when the review
-started, whether it commits fixes) comes in its arguments. A marker is checked before it counts: the
-posting step looks the review up on GitHub instead of trusting `.posted`, and `post-review.sh` only
-lists findings as fixed in the commit `.pushed` names when that commit is the checkout's head, on
-top of the reviewed one. At high effort the skill runs its angles one after another in a single context, so a
+hook's markers live in a state directory of their own, outside the checkout, where the session
+can't write, and what it acts on (when the review started, whether it commits fixes) comes in its
+arguments. A marker is still checked before it counts: the posting step looks the review up on
+GitHub, on any commit, and only trusts `.posted` when GitHub can't be read, and `post-review.sh`
+only lists findings as fixed in the commit `.pushed` names when that commit is the checkout's head,
+on top of the reviewed one. At high effort the skill runs its angles one after another in a single context, so a
 large pull request may take long: the workflows give it 30 minutes.
 
 Until October 2026 the two reviews ran the `code-review` plugin of the official marketplace instead,

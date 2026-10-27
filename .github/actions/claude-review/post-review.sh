@@ -9,9 +9,9 @@
 #
 #   STARTED=<when the review started> post-review.sh --already <pr-number>
 #
-# The second form only looks for a review this script posted on the reviewed commit since the given
-# time (the one test the hook and the action's posting step share) and prints its url, exiting 1 when
-# there is none.
+# The second form only looks for a review this script posted since the given time, on any commit (the
+# one test the hook and the action's posting step share), and prints its url, exiting 1 when there is
+# none and 2 when GitHub couldn't be read.
 #
 # The objects are the ones the /code-review skill returns, plus what the review step adds to them:
 # "severity" (must-fix, should-fix or nitpick) labels the comment and orders the findings, "fix" says
@@ -41,13 +41,14 @@ set -euo pipefail
 # checkout's Basic header (base64 of x-access-token:...) live, and a prompt injection in the diff
 # could ask for one in a finding. Only those shapes are matched, so an otherwise encoded token still
 # gets through: forks, whose diffs nobody vetted, are never reviewed. `post-review.sh --redact`
-# filters stdin, for the hook's log.
+# filters stdin, for the hook's log. A Basic or Bearer value has to hold a digit and 20 characters, so
+# prose after the word ("Bearer authentication") stays.
 redact() {
-  sed -E 's/sk-ant-[A-Za-z0-9_-]{8,}/[redacted]/g
-    s/(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g
-    s/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/[redacted]/g
-    s/eC1hY2Nlc3MtdG9rZW46[A-Za-z0-9+\/=]*/[redacted]/g
-    s/([Bb]asic|[Bb]earer) [A-Za-z0-9+\/=_.-]{16,}/\1 [redacted]/g'
+  perl -pe 's/sk-ant-[A-Za-z0-9_-]{8,}/[redacted]/g;
+    s/(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g;
+    s/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/[redacted]/g;
+    s/eC1hY2Nlc3MtdG9rZW46[A-Za-z0-9+\/=]*/[redacted]/g;
+    s/\b(basic|bearer) (?=[A-Za-z0-9+\/=_.-]*[0-9])[A-Za-z0-9+\/=_.-]{20,}/$1 [redacted]/gi'
 }
 
 mode=post
@@ -87,28 +88,31 @@ if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
   fi
 fi
 
-# Prints the url of a review this script posted on the reviewed commit since $1, if any.
+# Prints the url of a review this script posted since $1, if any, on any commit: post() moves a review
+# to the current head when GitHub refuses the reviewed one. Returns 1 when there is none and 2 when
+# GitHub couldn't be read, so a caller can tell the two apart.
 already_posted() {
   local url
-  [ -n "$head_sha" ] || return 1
-  url=$(HEAD_SHA="$head_sha" SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
-    --jq '.[] | select(.commit_id == env.HEAD_SHA and .submitted_at >= env.SINCE
-      and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1) || return 1
+  url=$(SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
+    --jq '.[] | select(.submitted_at >= env.SINCE
+      and (.user.login == "claude[bot]" or .user.login == "github-actions[bot]")
+      and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1) || return 2
   [ -n "$url" ] && echo "$url"
 }
-
-# The fix commit is named by a marker the review's session can write, so it only counts when it is the
-# checkout's head and its parent is the reviewed commit: the session can't commit.
-if [ -n "$FIXED_IN" ] && { [ -z "$WORKSPACE" ] || [ -z "$head_sha" ] ||
-  [ "$(git -C "$WORKSPACE" rev-parse HEAD 2> /dev/null)" != "$FIXED_IN" ] ||
-  [ "$(git -C "$WORKSPACE" rev-parse HEAD^ 2> /dev/null)" != "$head_sha" ]; }; then
-  warn "$FIXED_IN isn't a fix commit on top of the reviewed commit, so the findings are posted as not fixed."
-  FIXED_IN=""
-fi
 
 if [ "$mode" = already ]; then
   already_posted "${STARTED:?STARTED is not set}"
   exit $?
+fi
+
+# The fix commit is named by a marker outside the session's reach, but it only counts when it is the
+# checkout's head and its parent is the reviewed commit: the session can't commit. The marker's text
+# isn't printed, in case it holds something else.
+if [ -n "$FIXED_IN" ] && { [ -z "$WORKSPACE" ] || [ -z "$head_sha" ] ||
+  [ "$(git -C "$WORKSPACE" rev-parse HEAD 2> /dev/null)" != "$FIXED_IN" ] ||
+  [ "$(git -C "$WORKSPACE" rev-parse HEAD^ 2> /dev/null)" != "$head_sha" ]; }; then
+  warn "The .pushed marker doesn't name a fix commit on top of the reviewed commit, so the findings are posted as not fixed."
+  FIXED_IN=""
 fi
 input=$(cat)
 

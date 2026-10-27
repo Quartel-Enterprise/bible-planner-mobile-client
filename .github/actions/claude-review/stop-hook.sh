@@ -13,11 +13,11 @@
 #
 #   stop-hook.sh <state dir> <started> <fix: true|false>
 #
-# The scripts sit in a read-only directory, and the markers in the state directory. What the hook
-# acts on comes in its arguments, set by the action, since an allowed git diff --output can still
-# write a file there. A marker is checked before it counts: the posting step looks the review up on
-# GitHub rather than trusting .posted, and post-review.sh only names a fix commit that is the
-# checkout's head on top of the reviewed commit.
+# The scripts sit in a read-only directory, and the markers in the state directory, both outside the
+# checkout, where the session's tools can't write. What the hook acts on comes in its arguments, set
+# by the action, and a marker is checked before it counts, in case a later change lets the session
+# write there: the posting step looks the review up on GitHub rather than trusting .posted, and
+# post-review.sh only names a fix commit that is the checkout's head on top of the reviewed commit.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
