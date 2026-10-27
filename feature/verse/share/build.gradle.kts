@@ -17,7 +17,9 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.image)
             implementation(projects.core.model)
+            implementation(projects.core.plan)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.billing)
             implementation(projects.core.provider.platform)
             implementation(projects.core.utils)
 
@@ -45,6 +47,31 @@ kotlin {
             implementation(libs.compose.components.resources)
 
             implementation(libs.kotlinx.coroutines.core)
+
+            // FileKit
+            implementation(libs.filekit.dialogs.compose)
+        }
+
+        val fileDialogMain = create("fileDialogMain") {
+            dependsOn(commonMain.get())
+        }
+
+        androidMain {
+            dependsOn(fileDialogMain)
+        }
+
+        jvmMain {
+            dependsOn(fileDialogMain)
+        }
+
+        iosMain {
+            dependsOn(commonMain.get())
+        }
+        iosArm64Main {
+            dependsOn(iosMain.get())
+        }
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
         }
 
         commonTest.dependencies {

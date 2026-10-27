@@ -13,6 +13,7 @@ enum class PaywallEntrySource {
     HIGHLIGHT_CUSTOM_COLOR,
     CHAPTER_STUDY,
     CHAPTER_LISTENING,
+    SHARE_IMAGE,
     ;
 
     val key: String

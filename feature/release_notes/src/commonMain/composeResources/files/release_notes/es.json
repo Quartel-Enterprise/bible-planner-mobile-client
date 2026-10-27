@@ -1,5 +1,9 @@
 {
   "2.15.0": {
+    "common": [
+      "Al compartir un versículo como imagen, ahora puedes añadir a la tarjeta tu racha de días seguidos en el plan y guardar la imagen directamente en tu dispositivo.",
+      "Con Pro, también puedes quitar la marca de la app de la tarjeta, elegir cualquier color de fondo o usar una de tus propias fotos como fondo."
+    ],
     "desktop": [
       "En Mac y Windows, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema.",
       "Ahora también puedes escuchar los capítulos en la computadora: haz clic en el ícono de auriculares en la lectura para escuchar la Biblia narrada, con control de velocidad, temporizador para dormir, las palabras resaltadas mientras se leen y el paso automático al siguiente capítulo."

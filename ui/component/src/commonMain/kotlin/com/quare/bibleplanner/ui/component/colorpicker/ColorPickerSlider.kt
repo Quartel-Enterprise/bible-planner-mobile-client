@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.verse.selectionmenu.presentation.component
+package com.quare.bibleplanner.ui.component.colorpicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

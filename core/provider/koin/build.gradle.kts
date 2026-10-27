@@ -22,6 +22,7 @@ kotlin {
             implementation(projects.core.remoteConfig)
             implementation(projects.core.books)
             implementation(projects.core.plan)
+            implementation(projects.core.image)
             implementation(projects.core.clear)
             implementation(projects.core.sync)
             implementation(projects.core.verseAnnotations)

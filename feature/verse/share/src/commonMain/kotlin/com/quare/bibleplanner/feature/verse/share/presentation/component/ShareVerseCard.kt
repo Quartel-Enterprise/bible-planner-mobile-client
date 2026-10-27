@@ -3,14 +3,20 @@ package com.quare.bibleplanner.feature.verse.share.presentation.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,9 +35,14 @@ import androidx.compose.ui.unit.sp
 import bibleplanner.feature.verse.share.generated.resources.Res
 import bibleplanner.feature.verse.share.generated.resources.app_name
 import bibleplanner.feature.verse.share.generated.resources.bible_planner_logo
+import bibleplanner.feature.verse.share.generated.resources.share_streak_days
+import com.quare.bibleplanner.feature.verse.share.presentation.mapper.toPalette
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackgroundUiModel
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardPalette
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 private const val CARD_ASPECT_RATIO = 0.59f
@@ -43,6 +55,7 @@ private val quoteFontStep = 0.5.sp
 private val referenceFontSize = 10.5.sp
 private val referenceLetterSpacing = 1.6.sp
 private val logoSize = 22.dp
+private val streakIconSize = 14.dp
 
 /*
  * Why: one composable serves both preview and capture, guaranteeing the image matches what the
@@ -54,73 +67,134 @@ internal fun ShareVerseCard(
     modifier: Modifier = Modifier,
 ) {
     val background = uiState.background
-    Column(
+    val palette = background.toPalette()
+    val gradient = Brush.linearGradient(listOf(palette.startColor, palette.endColor))
+    Box(
         modifier = modifier
             .aspectRatio(CARD_ASPECT_RATIO)
-            .clip(RoundedCornerShape(22.dp))
-            .background(
-                Brush.linearGradient(listOf(background.startColor, background.endColor)),
-            ).padding(26.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
+            .clip(RoundedCornerShape(22.dp)),
     ) {
+        if (background is ShareCardBackgroundUiModel.Photo) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                bitmap = background.image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Brush.verticalGradient(listOf(palette.startColor, palette.endColor))),
+            )
+        } else {
+            Box(modifier = Modifier.fillMaxSize().background(gradient))
+        }
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize().padding(26.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            /*
-             * Why: the mark sits on a line shorter than itself, as the design draws it; at nearly 3x the body
-             * size its own leading would eat the passage's room.
-             */
-            Text(
-                text = "“",
-                fontFamily = uiState.font.toFontFamily(),
-                fontSize = quoteFontSize * QUOTE_MARK_RATIO,
-                lineHeight = QUOTE_MARK_LINE_HEIGHT_RATIO.em,
-                color = background.subtitleColor,
-            )
-            BasicText(
+            Column(
                 modifier = Modifier.weight(1f),
-                text = uiState.quote,
-                style = TextStyle(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                /*
+                 * Why: the mark sits on a line shorter than itself, as the design draws it; at nearly 3x the body
+                 * size its own leading would eat the passage's room.
+                 */
+                Text(
+                    text = "“",
                     fontFamily = uiState.font.toFontFamily(),
-                    /*
-                     * Why: relative line height; an absolute one keeps every line as tall as it started, so shrinking
-                     * the glyphs would never shorten the block enough to fit.
-                     */
-                    lineHeight = QUOTE_LINE_HEIGHT_RATIO.em,
-                    fontStyle = FontStyle.Italic,
-                    color = background.textColor,
-                ),
-                autoSize = TextAutoSize.StepBased(
-                    minFontSize = minQuoteFontSize,
-                    maxFontSize = quoteFontSize,
-                    stepSize = quoteFontStep,
-                ),
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = "${uiState.reference.uppercase()} · ${uiState.versionAbbreviation}",
-                fontSize = referenceFontSize,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = referenceLetterSpacing,
-                color = background.subtitleColor,
+                    fontSize = quoteFontSize * QUOTE_MARK_RATIO,
+                    lineHeight = QUOTE_MARK_LINE_HEIGHT_RATIO.em,
+                    color = palette.subtitleColor,
+                )
+                BasicText(
+                    modifier = Modifier.weight(1f),
+                    text = uiState.quote,
+                    style = TextStyle(
+                        fontFamily = uiState.font.toFontFamily(),
+                        /*
+                         * Why: relative line height; an absolute one keeps every line as tall as it started, so shrinking
+                         * the glyphs would never shorten the block enough to fit.
+                         */
+                        lineHeight = QUOTE_LINE_HEIGHT_RATIO.em,
+                        fontStyle = FontStyle.Italic,
+                        color = palette.textColor,
+                    ),
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = minQuoteFontSize,
+                        maxFontSize = quoteFontSize,
+                        stepSize = quoteFontStep,
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${uiState.reference.uppercase()} · ${uiState.versionAbbreviation}",
+                    fontSize = referenceFontSize,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = referenceLetterSpacing,
+                    color = palette.subtitleColor,
+                )
+            }
+            ShareCardFooter(
+                uiState = uiState,
+                palette = palette,
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Image(
-                modifier = Modifier.size(logoSize).clip(RoundedCornerShape(6.dp)),
-                painter = painterResource(Res.drawable.bible_planner_logo),
-                contentDescription = null,
-            )
-            Text(
-                text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = background.textColor,
-            )
+    }
+}
+
+@Composable
+private fun ShareCardFooter(
+    uiState: ShareVerseUiState,
+    palette: ShareCardPalette,
+) {
+    val isStreakShown = uiState.isStreakShown && uiState.streakDays > 0
+    if (!uiState.isWatermarkShown && !isStreakShown) return
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        if (isStreakShown) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.size(streakIconSize),
+                    imageVector = Icons.Default.LocalFireDepartment,
+                    contentDescription = null,
+                    tint = palette.textColor,
+                )
+                Text(
+                    text = pluralStringResource(
+                        Res.plurals.share_streak_days,
+                        uiState.streakDays,
+                        uiState.streakDays,
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = palette.textColor,
+                )
+            }
+        }
+        if (uiState.isWatermarkShown) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Image(
+                    modifier = Modifier.size(logoSize).clip(RoundedCornerShape(6.dp)),
+                    painter = painterResource(Res.drawable.bible_planner_logo),
+                    contentDescription = null,
+                )
+                Text(
+                    text = stringResource(Res.string.app_name),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = palette.textColor,
+                )
+            }
         }
     }
 }

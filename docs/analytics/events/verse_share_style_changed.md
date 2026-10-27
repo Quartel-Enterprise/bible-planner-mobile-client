@@ -6,17 +6,17 @@ The card was restyled before sharing. Which backgrounds and typefaces get chosen
 
 ## When it fires
 
-The user taps a background swatch or a typeface tile in the image composer.
+The user taps a background swatch or a typeface tile in the image composer, opens the custom colour (Pro), or picks a photo as the background (Pro).
 
 ## Trigger source
 
-`feature/share_verse/.../presentation/ShareVerseViewModel.kt` — `ShareVerseUiEvent.OnBackgroundClick` and `ShareVerseUiEvent.OnFontClick`
+`feature/verse/share/.../presentation/ShareVerseViewModel.kt` — `ShareVerseUiEvent.OnBackgroundClick`, `ShareVerseUiEvent.OnFontClick`, `ShareVerseUiEvent.OnCustomColorClick` and `ShareVerseUiEvent.OnPhotoPicked`
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `background` | string | `forest` | The card background in use |
+| `background` | string | `forest` | The card background in use: a preset name, `custom` or `photo` |
 | `font` | string | `lora` | The typeface in use |
 
 ## Notes

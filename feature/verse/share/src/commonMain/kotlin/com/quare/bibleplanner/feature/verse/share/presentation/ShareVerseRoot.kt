@@ -1,7 +1,13 @@
 package com.quare.bibleplanner.feature.verse.share.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -25,17 +31,28 @@ fun EntryProviderScope<NavKey>.shareVerse() {
     entry<ShareVerseNavRoute>(metadata = getSheetPane()) { route ->
         val viewModel = koinViewModel<ShareVerseViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
-        ShareVerseUiActionCollector(uiActionFlow = viewModel.uiAction)
         val onEvent = viewModel::onEvent
+        val snackbarHostState = remember { SnackbarHostState() }
+        ShareVerseUiActionCollector(
+            uiActionFlow = viewModel.uiAction,
+            snackbarHostState = snackbarHostState,
+            onPhotoPicked = { file -> onEvent(ShareVerseUiEvent.OnPhotoPicked(file)) },
+        )
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ShareVerseUiEvent.OnDismiss) },
             title = stringResource(Res.string.share_verse_title),
             sheetBottomBreathingRoom = 12.dp,
         ) {
-            ShareVerseContent(
-                uiState = uiState,
-                onEvent = onEvent,
-            )
+            Box {
+                ShareVerseContent(
+                    uiState = uiState,
+                    onEvent = onEvent,
+                )
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+            }
         }
     }
 
@@ -50,8 +67,13 @@ fun EntryProviderScope<NavKey>.shareVerse() {
             )
         }
         val uiState by viewModel.uiState.collectAsState()
-        ShareVerseUiActionCollector(uiActionFlow = viewModel.uiAction)
         val onEvent = viewModel::onEvent
+        val snackbarHostState = remember { SnackbarHostState() }
+        ShareVerseUiActionCollector(
+            uiActionFlow = viewModel.uiAction,
+            snackbarHostState = snackbarHostState,
+            onPhotoPicked = { file -> onEvent(ShareVerseUiEvent.OnPhotoPicked(file)) },
+        )
         val isWide = LocalIsWideLayout.current
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ShareVerseUiEvent.OnDismiss) },
@@ -59,17 +81,23 @@ fun EntryProviderScope<NavKey>.shareVerse() {
             cardMaxWidth = if (isWide) wideShareImageDialogWidth else 460.dp,
             sheetBottomBreathingRoom = 12.dp,
         ) {
-            if (isWide) {
-                ShareVerseImageWideContent(
-                    uiState = uiState,
-                    onEvent = onEvent,
-                    platform = viewModel.platform,
-                )
-            } else {
-                ShareVerseImageContent(
-                    uiState = uiState,
-                    onEvent = onEvent,
-                    platform = viewModel.platform,
+            Box {
+                if (isWide) {
+                    ShareVerseImageWideContent(
+                        uiState = uiState,
+                        onEvent = onEvent,
+                        platform = viewModel.platform,
+                    )
+                } else {
+                    ShareVerseImageContent(
+                        uiState = uiState,
+                        onEvent = onEvent,
+                        platform = viewModel.platform,
+                    )
+                }
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
         }

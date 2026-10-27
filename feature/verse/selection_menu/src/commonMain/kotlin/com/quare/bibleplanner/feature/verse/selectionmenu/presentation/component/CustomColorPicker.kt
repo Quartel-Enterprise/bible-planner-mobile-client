@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.verse.selection_menu.generated.resources.Res
@@ -28,36 +27,19 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.apply_color
 import bibleplanner.feature.verse.selection_menu.generated.resources.cancel
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.CustomColorUiModel
+import com.quare.bibleplanner.ui.component.colorpicker.HueLightnessPicker
 import com.quare.bibleplanner.ui.component.highlight.toSwatchColor
 import org.jetbrains.compose.resources.stringResource
 
-private const val MIN_HUE = 0f
-private const val MAX_HUE = 360f
-private const val MIN_LIGHTNESS = 30f
-private const val MAX_LIGHTNESS = 85f
+private const val MIN_LIGHTNESS = 30
+private const val MAX_LIGHTNESS = 85
+private const val MAX_LIGHTNESS_TRACK = 88
 private const val SATURATION = 0.8f
 private const val PREVIEW_RING_ALPHA = 0.12f
-private const val PERCENT = 100f
-private const val MAX_LIGHTNESS_TRACK = 88f
 private val previewSize = 46.dp
 private val previewRingWidth = 2.dp
-private val sliderSpacing = 4.dp
-private val hueBrush = Brush.horizontalGradient(
-    listOf(
-        Color(0xFFFF5555),
-        Color(0xFFFFFF55),
-        Color(0xFF55FF55),
-        Color(0xFF55FFFF),
-        Color(0xFF5555FF),
-        Color(0xFFFF55FF),
-        Color(0xFFFF5555),
-    ),
-)
 
-/*
- * Why: saturation is fixed so every mix stays legible behind verse text; the 4dp spacer gives
- * the design's 12dp track gap because each thumb overhangs its track by 4dp.
- */
+// Why: saturation is fixed so every mix stays legible behind verse text.
 @Composable
 internal fun CustomColorPicker(
     color: CustomColorUiModel,
@@ -95,27 +77,15 @@ internal fun CustomColorPicker(
                             shape = CircleShape,
                         ),
                 )
-                Column(
+                HueLightnessPicker(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(sliderSpacing),
-                ) {
-                    ColorPickerSlider(
-                        value = color.hue.toFloat(),
-                        valueRange = MIN_HUE..MAX_HUE,
-                        trackBrush = hueBrush,
-                        onValueChange = { hue ->
-                            onColorChange(hue.toInt(), color.lightness)
-                        },
-                    )
-                    ColorPickerSlider(
-                        value = color.lightness.toFloat(),
-                        valueRange = MIN_LIGHTNESS..MAX_LIGHTNESS,
-                        trackBrush = color.hue.toLightnessBrush(),
-                        onValueChange = { lightness ->
-                            onColorChange(color.hue, lightness.toInt())
-                        },
-                    )
-                }
+                    hue = color.hue,
+                    lightness = color.lightness,
+                    lightnessRange = MIN_LIGHTNESS..MAX_LIGHTNESS,
+                    lightnessTrackEnd = MAX_LIGHTNESS_TRACK,
+                    saturation = SATURATION,
+                    onColorChange = onColorChange,
+                )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -137,18 +107,3 @@ internal fun CustomColorPicker(
         }
     }
 }
-
-private fun Int.toLightnessBrush(): Brush = Brush.horizontalGradient(
-    listOf(
-        Color.hsl(
-            hue = toFloat(),
-            saturation = SATURATION,
-            lightness = MIN_LIGHTNESS / PERCENT,
-        ),
-        Color.hsl(
-            hue = toFloat(),
-            saturation = SATURATION,
-            lightness = MAX_LIGHTNESS_TRACK / PERCENT,
-        ),
-    ),
-)

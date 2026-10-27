@@ -13,4 +13,7 @@
     <string name="paywall_teaser_chapter_listening_limit_dismiss">Ahora no</string>
     <string name="paywall_teaser_chapter_listening_pro_only_title">Escucha con Pro</string>
     <string name="paywall_teaser_chapter_listening_pro_only_body">Con Pro puedes escuchar cualquier capítulo narrado por voces naturales, todos los que quieras, y seguir con el siguiente solo.</string>
+    <string name="paywall_teaser_share_image_style_title">Haz la tarjeta a tu manera con Pro</string>
+    <string name="paywall_teaser_share_image_style_body">Las fuentes y los fondos predefinidos siguen gratis. Con Pro eliges cualquier color, usas tus propias fotos y compartes sin la marca de Bible Planner.</string>
+    <string name="paywall_teaser_share_image_style_dismiss">Usar los estilos gratis</string>
 </resources>

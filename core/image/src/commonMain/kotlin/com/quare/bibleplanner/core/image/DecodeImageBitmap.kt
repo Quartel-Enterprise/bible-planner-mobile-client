@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.editprofile.presentation
+package com.quare.bibleplanner.core.image
 
 import androidx.compose.ui.graphics.ImageBitmap
 import io.github.vinceglb.filekit.PlatformFile

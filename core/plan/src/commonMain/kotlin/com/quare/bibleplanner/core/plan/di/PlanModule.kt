@@ -22,6 +22,8 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseC
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetReadingStreak
+import com.quare.bibleplanner.core.plan.domain.usecase.GetReadingStreakUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDay
 import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
@@ -86,6 +88,7 @@ val planModule = module {
     }
     factoryOf(::GetScheduledDayUseCase).bind<GetScheduledDay>()
     factoryOf(::GetCompletedDayForChapterUseCase).bind<GetCompletedDayForChapter>()
+    factoryOf(::GetReadingStreakUseCase).bind<GetReadingStreak>()
     factoryOf(::ObserveDayCompletionCandidatesUseCase).bind<ObserveDayCompletionCandidates>()
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::MigratePlanPreferencesToSyncStoreUseCase)

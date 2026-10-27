@@ -141,6 +141,7 @@ internal class RouteConversionsTest {
                 "highlight_custom_color",
                 "chapter_study",
                 "chapter_listening",
+                "share_image",
                 "day_fab",
                 "day_study_questions",
                 "chapter_study",
@@ -149,6 +150,7 @@ internal class RouteConversionsTest {
                 "chapter_listening_limit",
                 "chapter_listening_free_limit",
                 "chapter_listening_pro_only",
+                "share_image_style",
             ),
             keys,
         )

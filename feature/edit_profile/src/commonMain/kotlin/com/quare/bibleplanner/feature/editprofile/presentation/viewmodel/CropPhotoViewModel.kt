@@ -6,6 +6,7 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_updated
 import com.quare.bibleplanner.core.image.AvatarImageCropper
 import com.quare.bibleplanner.core.image.CropParams
+import com.quare.bibleplanner.core.image.DecodeImageBitmap
 import com.quare.bibleplanner.core.image.PhotoOrientation
 import com.quare.bibleplanner.core.image.getMaxPanOffset
 import com.quare.bibleplanner.core.model.Navigator
@@ -13,7 +14,6 @@ import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.SetProfilePhoto
-import com.quare.bibleplanner.feature.editprofile.presentation.DecodeImageBitmap
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiState

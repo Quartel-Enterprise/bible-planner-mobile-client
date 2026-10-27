@@ -1,5 +1,9 @@
 {
   "2.15.0": {
+    "common": [
+      "When sharing a verse as an image, you can now add your reading plan streak to the card and save the image straight to your device.",
+      "With Pro, you can also remove the app's mark from the card, pick any background color or use one of your own photos as the background."
+    ],
     "desktop": [
       "On Mac and Windows, the window's title bar now follows the app's theme: it turns dark with the dark theme and light with the light theme, and changes right away when you switch themes.",
       "You can now listen to chapters on your computer too: click the headphones icon in the reader to hear the Bible narrated, with speed control, a sleep timer, the words highlighted as they are read and automatic moving on to the next chapter."
