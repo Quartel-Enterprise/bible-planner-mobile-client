@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.utils
 
 import androidx.compose.runtime.Composable
-import bibleplanner.feature.account_details.generated.resources.Res
-import bibleplanner.feature.account_details.generated.resources.account_details_action_error
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.RenameDeviceUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -15,9 +13,9 @@ internal fun RenameDeviceUiActionCollector(uiActionFlow: Flow<RenameDeviceUiActi
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            RenameDeviceUiAction.NotifyRenameFailed -> appSnackbarController.show(
+            is RenameDeviceUiAction.ShowSnackbar -> appSnackbarController.show(
                 AppSnackbarMessage(
-                    stringResource = Res.string.account_details_action_error,
+                    stringResource = uiAction.message,
                     isDismissible = true,
                 ),
             )

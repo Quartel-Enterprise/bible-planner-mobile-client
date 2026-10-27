@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
+import bibleplanner.feature.account_details.generated.resources.Res
+import bibleplanner.feature.account_details.generated.resources.account_details_action_error
 import com.quare.bibleplanner.core.devices.domain.usecase.RenameDevice
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -119,7 +121,10 @@ internal class RenameDeviceViewModelTest {
         runCurrent()
 
         // Then
-        assertEquals(listOf<RenameDeviceUiAction>(RenameDeviceUiAction.NotifyRenameFailed), actions)
+        assertEquals(
+            listOf<RenameDeviceUiAction>(RenameDeviceUiAction.ShowSnackbar(Res.string.account_details_action_error)),
+            actions,
+        )
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
     }
 

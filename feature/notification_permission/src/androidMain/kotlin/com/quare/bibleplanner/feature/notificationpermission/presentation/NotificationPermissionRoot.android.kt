@@ -96,15 +96,23 @@ private fun openNotificationSettings(context: Context) {
     val notificationSettings = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
         putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
     }
-    try {
-        context.startActivity(notificationSettings)
-    } catch (_: ActivityNotFoundException) {
-        // Why: some OEM builds and work profiles have no app notification settings screen.
-        context.startActivity(
-            Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", context.packageName, null),
-            ),
-        )
+    val appDetails = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", context.packageName, null),
+    )
+    // Why: some OEM builds and work profiles have no app notification settings screen, or neither screen.
+    context.startFirstAvailableActivity(notificationSettings, appDetails)
+}
+
+private fun Context.startFirstAvailableActivity(vararg intents: Intent) {
+    for (intent in intents) {
+        try {
+            startActivity(intent)
+            return
+        } catch (_: ActivityNotFoundException) {
+            continue
+        } catch (_: SecurityException) {
+            continue
+        }
     }
 }
