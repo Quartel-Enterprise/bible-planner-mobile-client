@@ -142,27 +142,31 @@ runs:
       run: |
         dir="$RUNNER_TEMP/claude-review"
         state="$RUNNER_TEMP/claude-review-state"
-        # A run before this one in the same job left its copy read-only.
+        # A run before this one in the same job left its copy read-only, and its markers and logs.
         if [ -d "$dir" ]; then
           chmod -R u+w "$dir"
           rm -rf "$dir"
         fi
+        rm -rf "$state"
         mkdir -p "$dir" "$state"
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
           .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh \
           .github/actions/claude-review/bash-guard.sh "$dir/"
         chmod -R a-w "$dir"
         # A symlink the pull request adds could point the session's Read allow rule for the checkout at
-        # /proc, $RUNNER_TEMP or the checkout's .git, if a deny rule checks the link's path rather than
-        # its target. One that leaves the checkout or enters .git is removed for the review;
-        # commit-fixes.sh restores it before committing.
+        # /proc, $RUNNER_TEMP or the checkout's .git, or its Edit allow rule at .github or .claude, if a
+        # deny rule checks the link's path rather than its target. One that leaves the checkout or
+        # enters one of those is removed for the review; commit-fixes.sh restores it before committing.
+        # The checkout's own path is resolved first, in case the workspace sits behind a symlink.
+        root=$(realpath "$PWD")
         while IFS= read -r -d '' link; do
           case "$(realpath -m "$link")" in
-            "$PWD"/.git | "$PWD"/.git/*) ;;
-            "$PWD"/*) continue ;;
+            "$root"/.git | "$root"/.git/* | "$root"/.github | "$root"/.github/*) ;;
+            "$root"/.claude | "$root"/.claude/*) ;;
+            "$root"/*) continue ;;
           esac
           rm -f "$link"
-          echo "::notice::$link points outside the checkout or into .git, so the review doesn't see it."
+          echo "::notice::$link points outside the checkout or into .git, .github or .claude, so the review doesn't see it."
         done < <(find . -path ./.git -prune -o -type l -print0)
         # With fix, the reviewed commit's version of each file the pull request changes, for the
         # suggestions: the working tree then holds the review's own changes, and git show, which would
@@ -292,9 +296,10 @@ runs:
     - name: Install the sandbox's dependencies
       shell: bash
       run: |
+        # The package index is only refreshed when the image's own is too old to install them.
+        install() { sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null; }
         if ! command -v bwrap > /dev/null || ! command -v socat > /dev/null; then
-          sudo apt-get update -qq || true
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null || true
+          install || { sudo apt-get update -qq && install; } || true
         fi
         if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
           sudo sysctl -q -w kernel.apparmor_restrict_unprivileged_userns=0 || true

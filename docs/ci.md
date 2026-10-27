@@ -132,8 +132,11 @@ there, and a run that failed (an expired token) holds the merge until it is reru
 brings a head commit with no review check, so the merge no longer waits for it.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
-was denied still shows as a warning on the run, with only its name, and for a Bash command its
-program and subcommand: allow it in `.github/actions/claude-review` when the review needs it.
+was denied, or a Bash command the guard refused, still shows as a warning on the run, with only
+its name, and for a Bash command its program and subcommand. Allow it only when it can neither
+read nor write a file it is given, nor print the environment, and then in the four places that
+list the commands together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this
+page.
 
 The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection
 in a diff could ask the review to quote one in a public comment. So the session reads files only
@@ -144,7 +147,7 @@ Every other path is denied, and the deny rules repeat it for `/proc`, `/sys`, `/
 files that hold credentials (`~/.ssh`, `~/.config`, `~/.gitconfig`, `~/.claude.json`…). Claude
 Code's own session folder (`~/.claude/projects`) stays readable, since a Bash output too long to
 show, such as a large `gh pr diff`, is saved there. `claude-review`'s checkout doesn't persist its
-credentials, and a symlink the pull request adds that leaves the checkout or enters its `.git` is
+credentials, and a symlink the pull request adds that leaves the checkout or enters its `.git`, `.github` or `.claude` is
 removed for the review and restored before the fix commit. The session's Bash commands are `gh`'s
 read-only ones, which take the diff from GitHub (`gh pr diff`), plus `git status` and
 `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
@@ -167,11 +170,11 @@ review for posted, and only from `claude[bot]` or `github-actions[bot]`.
 **What is left.** The tokens are still in the session's own environment: `claude-code-action`
 hands the session the OAuth token, and `gh` needs a GitHub token in its commands'. Every way to
 print them that a review found is closed, but an allowlist can't prove a listed command has no
-other way, and the mask only
-knows a token's plain shapes: one the model is talked into encoding still gets through. Only
-someone who can push a branch to this repository can try, since forks are never reviewed. If a
-token ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token with
-`claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
+other way, and the mask only knows a token's plain shapes: one the model is talked into encoding
+still gets through. Only someone who can push a branch to this repository can try, since forks
+are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a
+new OAuth token with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens
+expire with the job.
 
 The review on request is a workflow of its own because every label added to a pull request starts
 it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,

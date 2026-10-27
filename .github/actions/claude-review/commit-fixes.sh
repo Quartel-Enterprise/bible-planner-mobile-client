@@ -42,8 +42,8 @@ fixed=$(jq -c '[.[]? | select(type == "object" and .outcome == "fixed")]' <<< "$
 
 # The review can't delete a file, so a tracked file missing from the working tree is a symlink the
 # action removed before the review (action.yml): it is put back before anything is committed.
-if ! restored=$(safe_git ls-files -d -z |
-  xargs -0 -r git -c core.hooksPath=/dev/null -c core.fsmonitor=false checkout -- 2>&1); then
+if [ -n "$(safe_git ls-files -d)" ] &&
+  ! restored=$(safe_git ls-files -d -z | safe_git checkout --pathspec-from-file=- --pathspec-file-nul 2>&1); then
   fail "the files removed before the review couldn't be restored: $(tr '\n' ' ' <<< "$restored")"
 fi
 
@@ -60,8 +60,10 @@ fi
 # The fixes and their summaries become a public commit, so they get the review's mask
 # (post-review.sh): the summaries are masked, and a fix that adds a token-shaped string pushes
 # nothing. Only the added lines count: a sample token already in the file next to a fix isn't new.
+# They are the + lines inside a hunk, so a file header is left out and an added line that itself
+# starts with ++ is kept.
 redact() { "$(dirname "$0")/post-review.sh" --redact; }
-added=$(safe_git diff -U0 | grep '^+' | grep -v '^+++' || true)
+added=$(safe_git diff -U0 | awk '/^diff --git /{hunk = 0} /^@@/{hunk = 1; next} hunk && /^\+/')
 [ "$(redact <<< "$added")" = "$added" ] || fail "the fixes add a token-shaped string"
 
 message="fix: apply the Claude review findings
