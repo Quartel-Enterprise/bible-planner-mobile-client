@@ -27,13 +27,11 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class RenameDeviceViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val renamedCalls = mutableListOf<Pair<String, String>>()
-    private val trackedEvents = mutableListOf<String>()
-    private val navigator = Navigator()
-    private val recordingRenameDevice = RenameDevice { deviceRowId, name ->
-        renamedCalls += deviceRowId to name
-        Result.success(Unit)
-    }
+    private lateinit var viewModel: RenameDeviceViewModel
+    private lateinit var renamedCalls: List<Pair<String, String>>
+    private lateinit var trackedEvents: List<String>
+    private lateinit var commands: List<NavigationCommand>
+    private lateinit var actions: List<RenameDeviceUiAction>
 
     @BeforeTest
     fun setUp() {
@@ -48,11 +46,7 @@ internal class RenameDeviceViewModelTest {
     @Test
     fun `GIVEN a new name WHEN confirming THEN renames and navigates back`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(
-            currentName = "Old name",
-            renameDevice = recordingRenameDevice,
-        )
-        val commands = collectCommands()
+        prepareScenario(currentName = "Old name")
 
         // When
         viewModel.onEvent(RenameDeviceUiEvent.OnConfirmClick("New name"))
@@ -67,11 +61,7 @@ internal class RenameDeviceViewModelTest {
     @Test
     fun `GIVEN the unchanged name WHEN confirming THEN only navigates back`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(
-            currentName = "Same",
-            renameDevice = recordingRenameDevice,
-        )
-        val commands = collectCommands()
+        prepareScenario(currentName = "Same")
 
         // When
         viewModel.onEvent(RenameDeviceUiEvent.OnConfirmClick("  Same  "))
@@ -86,11 +76,7 @@ internal class RenameDeviceViewModelTest {
     @Test
     fun `GIVEN a dismiss WHEN handling THEN tracks cancellation and navigates back`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(
-            currentName = "Old",
-            renameDevice = recordingRenameDevice,
-        )
-        val commands = collectCommands()
+        prepareScenario(currentName = "Old")
 
         // When
         viewModel.onEvent(RenameDeviceUiEvent.OnDismiss)
@@ -103,37 +89,30 @@ internal class RenameDeviceViewModelTest {
     }
 
     @Test
-    fun `GIVEN a rename in progress WHEN it has not finished THEN keeps the dialog open until it does`() =
-        runTest(testDispatcher) {
-            // Given
-            val renameResult = CompletableDeferred<Result<Unit>>()
-            val viewModel = viewModel(
-                currentName = "Old name",
-                renameDevice = RenameDevice { _, _ -> renameResult.await() },
-            )
-            val commands = collectCommands()
-            viewModel.onEvent(RenameDeviceUiEvent.OnConfirmClick("New name"))
-            runCurrent()
-            assertTrue(commands.isEmpty())
+    fun `GIVEN a rename that has not finished WHEN confirming THEN keeps the dialog open`() = runTest(testDispatcher) {
+        // Given
+        val pendingRename = CompletableDeferred<Result<Unit>>()
+        prepareScenario(
+            currentName = "Old name",
+            renameResult = { pendingRename.await() },
+        )
 
-            // When
-            renameResult.complete(Result.success(Unit))
-            runCurrent()
+        // When
+        viewModel.onEvent(RenameDeviceUiEvent.OnConfirmClick("New name"))
+        runCurrent()
 
-            // Then
-            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-        }
+        // Then
+        assertEquals(listOf("row-1" to "New name"), renamedCalls)
+        assertTrue(commands.isEmpty())
+    }
 
     @Test
     fun `GIVEN a rename that fails WHEN confirming THEN notifies the failure and closes`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(
+        prepareScenario(
             currentName = "Old name",
-            renameDevice = RenameDevice { _, _ -> Result.failure(IllegalStateException("disk full")) },
+            renameResult = { Result.failure(IllegalStateException("disk full")) },
         )
-        val commands = collectCommands()
-        val actions = mutableListOf<RenameDeviceUiAction>()
-        backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
 
         // When
         viewModel.onEvent(RenameDeviceUiEvent.OnConfirmClick("New name"))
@@ -144,19 +123,32 @@ internal class RenameDeviceViewModelTest {
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
     }
 
-    private fun viewModel(
+    private fun TestScope.prepareScenario(
         currentName: String,
-        renameDevice: RenameDevice,
-    ): RenameDeviceViewModel = RenameDeviceViewModel(
-        route = RenameDeviceNavRoute(deviceRowId = "row-1", currentName = currentName),
-        renameDevice = renameDevice,
-        navigator = navigator,
-        trackEvent = TrackEvent { name, _ -> trackedEvents += name },
-    )
-
-    private fun TestScope.collectCommands(): List<NavigationCommand> {
-        val commands = mutableListOf<NavigationCommand>()
-        backgroundScope.launch { navigator.commands.collect { commands += it } }
-        return commands
+        renameResult: suspend () -> Result<Unit> = { Result.success(Unit) },
+    ) {
+        val navigator = Navigator()
+        val recordedRenames = mutableListOf<Pair<String, String>>()
+        val recordedEvents = mutableListOf<String>()
+        renamedCalls = recordedRenames
+        trackedEvents = recordedEvents
+        viewModel = RenameDeviceViewModel(
+            route = RenameDeviceNavRoute(
+                deviceRowId = "row-1",
+                currentName = currentName,
+            ),
+            renameDevice = RenameDevice { deviceRowId, name ->
+                recordedRenames += deviceRowId to name
+                renameResult()
+            },
+            navigator = navigator,
+            trackEvent = TrackEvent { name, _ -> recordedEvents += name },
+        )
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
+        }
+        actions = mutableListOf<RenameDeviceUiAction>().also { collected ->
+            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        }
     }
 }
