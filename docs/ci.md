@@ -141,7 +141,7 @@ through the Read, Grep and Glob tools, and only in the checkout (`.agent-memory`
 copy of the files the pull request changes, as of the reviewed commit, for the suggestions' lines.
 Every other path is denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`,
 `$RUNNER_TEMP` (where checkout keeps its credentials), the checkout's `.git` and the home's dot
-directories. Neither review persists checkout's credentials. The session's Bash commands are
+directories. `claude-review`'s checkout doesn't persist its credentials. The session's Bash commands are
 `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), and git commands that print
 no file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and `git blame` all read or write a
 file they are given (`--no-index`, `--contents`, `--output`). On top of that, `post-review.sh`
