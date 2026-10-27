@@ -68,7 +68,6 @@ internal fun ShareVerseCard(
 ) {
     val background = uiState.background
     val palette = background.toPalette()
-    val gradient = Brush.linearGradient(listOf(palette.startColor, palette.endColor))
     Box(
         modifier = modifier
             .aspectRatio(CARD_ASPECT_RATIO)
@@ -87,7 +86,11 @@ internal fun ShareVerseCard(
                     .background(Brush.verticalGradient(listOf(palette.startColor, palette.endColor))),
             )
         } else {
-            Box(modifier = Modifier.fillMaxSize().background(gradient))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Brush.linearGradient(listOf(palette.startColor, palette.endColor))),
+            )
         }
         Column(
             modifier = Modifier.fillMaxSize().padding(26.dp),

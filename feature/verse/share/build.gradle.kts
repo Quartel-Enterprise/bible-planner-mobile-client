@@ -60,10 +60,6 @@ kotlin {
             dependsOn(fileDialogMain)
         }
 
-        jvmMain {
-            dependsOn(fileDialogMain)
-        }
-
         iosMain {
             dependsOn(commonMain.get())
         }
