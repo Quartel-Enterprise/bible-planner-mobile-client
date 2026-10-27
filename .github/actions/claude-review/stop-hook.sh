@@ -10,17 +10,26 @@
 # action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
 # from ending. With fix (action.yml), it first commits the fixes and pushes them through
 # commit-fixes.sh.
+#
+#   stop-hook.sh <state dir> <started> <fix: true|false>
+#
+# The scripts sit in a read-only directory, and the markers in the state directory. What the hook
+# acts on comes in its arguments, set by the action, since an allowed git diff --output can still
+# write a file there: a forged marker can at most stop a review from posting.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
-log="$dir/.hook-log"
+state=${1:?usage: stop-hook.sh <state dir> <started> <fix>}
+started=${2:-}
+fix=${3:-false}
+log="$state/.hook-log"
 note() { echo "stop-hook: $*" | tee -a "$log" >&2; }
 
 input=$(cat)
 
 # One review per session: a Stop that fires again posts nothing more.
-if [ -f "$dir/.posted" ]; then
-  note "the review is already posted ($(cat "$dir/.posted")), nothing more to do"
+if [ -f "$state/.posted" ]; then
+  note "the review is already posted ($(cat "$state/.posted")), nothing more to do"
   exit 0
 fi
 
@@ -72,29 +81,29 @@ if [ -z "$findings" ]; then
 fi
 
 # A review posted since the review started (a Stop that fired twice without the marker) counts too.
-if [ -f "$dir/.started" ] && url=$(STARTED="$(cat "$dir/.started")" "$dir/post-review.sh" --already "$pr"); then
-  echo "$url" > "$dir/.posted"
+if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already "$pr"); then
+  echo "$url" > "$state/.posted"
   note "a review was already posted since the review started: $url"
   exit 0
 fi
 
 # With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
 # finds them pushed already.
-if [ -f "$dir/.fix" ] && [ ! -f "$dir/.pushed" ]; then
-  if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$dir/.commit-log"); then
-    echo "$sha" > "$dir/.pushed"
+if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
+  if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
+    echo "$sha" > "$state/.pushed"
     note "pushed the fixes as $sha"
   else
-    note "no fixes pushed: $(tr '\n' ' ' < "$dir/.commit-log")"
+    note "no fixes pushed: $(tr '\n' ' ' < "$state/.commit-log")"
   fi
 fi
-if [ -f "$dir/.pushed" ]; then
-  FIXED_IN=$(cat "$dir/.pushed")
+if [ -f "$state/.pushed" ]; then
+  FIXED_IN=$(cat "$state/.pushed")
   export FIXED_IN
 fi
 
 if url=$("$dir/post-review.sh" "$pr" <<< "$findings"); then
-  echo "$url" > "$dir/.posted"
+  echo "$url" > "$state/.posted"
   note "posted $url"
 else
   note "post-review.sh failed, the action's posting step takes over"

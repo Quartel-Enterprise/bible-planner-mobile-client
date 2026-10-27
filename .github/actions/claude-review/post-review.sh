@@ -82,6 +82,15 @@ if [ "$mode" = already ]; then
 fi
 input=$(cat)
 
+# Masks anything shaped like a credential before it reaches this public repository: the review's
+# shell can read the runner's environment (/proc), where the Claude OAuth token (sk-ant-...) and the
+# GitHub tokens (ghs_, ghp_, gho_, ghu_, ghr_, github_pat_) live, and a prompt injection in the diff
+# could ask for one in a finding. Only the token's shape is matched, so an encoded token still gets
+# through: forks, whose diffs nobody vetted, are never reviewed.
+redact() {
+  sed -E 's/sk-ant-[A-Za-z0-9_-]{8,}/[redacted]/g; s/(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g'
+}
+
 # Posts the review payload on stdin and prints its url. Transient errors are retried, but creating a
 # review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit
 # since the script started means GitHub took the request whose answer was lost, and counts as posted.
@@ -90,7 +99,7 @@ input=$(cat)
 # more on the pull request's current head instead.
 post() {
   local payload attempt out already
-  payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)')
+  payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)' | redact)
   for attempt in 1 2 3; do
     if out=$(gh api --method POST "repos/$repo/pulls/$pr/reviews" --input - --jq .html_url <<< "$payload" 2>&1); then
       echo "$out"

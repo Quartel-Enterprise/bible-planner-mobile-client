@@ -9,9 +9,9 @@ description: 'Reviews the pull request with the /code-review skill bundled with 
 # below posts the same findings with the workflow's token, as github-actions. The model posts nothing
 # itself: the skill's --comment flag posts one review per finding, each with its own notification,
 # and a script run by the model depends on a Bash allowlist the action didn't honour for it. The hook
-# and the scripts it runs are copied out of the checkout first, so nothing the model does to the
-# working tree (its file tools are blocked, but git diff can still write a file) changes what runs
-# with the App's token.
+# and the scripts it runs are copied out of the checkout first, into a read-only directory, so
+# nothing the model does (its file tools are blocked, but git diff can still write a file anywhere
+# with --output) changes what runs with the App's token.
 #
 # With fix, the review also applies its findings to the working tree, and the hook commits them and
 # pushes the commit to the pull request's branch (commit-fixes.sh) before it posts: the review then
@@ -123,26 +123,25 @@ runs:
           echo "EARLIER_COMMENTS_END"
         } >> "$GITHUB_OUTPUT"
 
-    # The hook and the scripts it runs live outside the checkout for the session: the model's file tools
-    # are blocked, but an allowed git diff can still write a file (--output), and the hook runs with the
-    # App's token. The step also records when the review started, for the posting step to tell a review
-    # the hook posted from one it didn't, and whether the hook commits the fixes.
+    # The hook and the scripts it runs live outside the checkout for the session, in a directory made
+    # read-only: the model's file tools are blocked, but an allowed git diff can still write any file
+    # the runner's user can (--output), and the hook runs with the App's token. The hook's markers go
+    # to a state directory of their own. When the review started, for the posting step to tell a
+    # review the hook posted from one it didn't, and whether the hook commits the fixes reach the hook
+    # as arguments rather than files, so the session can't forge them.
     - id: tools
       shell: bash
-      env:
-        FIX: ${{ inputs.fix }}
       run: |
         dir="$RUNNER_TEMP/claude-review"
-        mkdir -p "$dir"
+        state="$RUNNER_TEMP/claude-review-state"
+        mkdir -p "$dir" "$state"
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
           .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh "$dir/"
-        date -u +%Y-%m-%dT%H:%M:%SZ > "$dir/.started"
-        if [ "$FIX" = true ]; then
-          touch "$dir/.fix"
-        fi
+        chmod -R a-w "$dir"
         {
           echo "dir=$dir"
-          echo "started=$(cat "$dir/.started")"
+          echo "state=$state"
+          echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         } >> "$GITHUB_OUTPUT"
 
     # What changes with fix: the skill's --fix flag, the task, the outcome of each finding, and the
@@ -158,12 +157,13 @@ runs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
         WORKSPACE: ${{ github.workspace }}
         TOOLS: ${{ steps.tools.outputs.dir }}
+        STATE: ${{ steps.tools.outputs.state }}
       run: |
         if [ "$FIX" = true ]; then
           {
             echo "arguments=high $PR_NUMBER --fix --max-findings all"
             echo "allowed=,Edit(/$WORKSPACE/**)"
-            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),Edit(/$TOOLS/**),"
+            echo "denied=Write,NotebookEdit,Edit(/$WORKSPACE/.git/**),Edit(/$WORKSPACE/.github/**),Edit(/$WORKSPACE/.claude/**),Edit(/$WORKSPACE/.agent-memory/**),Edit(/$TOOLS/**),Edit(/$STATE/**),"
             echo "task<<TASK_END"
             echo "and let it apply its findings to the working tree, which is the pull request's head"
             echo "commit. Apply a fix only when it is clear and stays within what the finding describes,"
@@ -223,7 +223,7 @@ runs:
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh", "timeout": 600}]}]}}
+          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `${{ steps.mode.outputs.arguments }}` as its arguments,
@@ -261,7 +261,7 @@ runs:
         claude_args: >-
           --model opus
           --allowedTools "Skill(code-review),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(grep:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(jq:*),Bash(cd:*)${{ steps.mode.outputs.allowed }}"
-          --disallowedTools "${{ steps.mode.outputs.denied }}ScheduleWakeup,Monitor,SendMessage"
+          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),ScheduleWakeup,Monitor,SendMessage"
 
     # The Stop hook leaves a marker with the url of the review it posted, and a log of what it saw.
     # Without the marker, a review by claude[bot] on the reviewed commit since the review started still
@@ -285,15 +285,16 @@ runs:
         EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         TOOLS: ${{ steps.tools.outputs.dir }}
+        STATE: ${{ steps.tools.outputs.state }}
         STARTED: ${{ steps.tools.outputs.started }}
       run: |
-        if [ -f "$TOOLS/.hook-log" ]; then
-          cat "$TOOLS/.hook-log"
+        if [ -f "$STATE/.hook-log" ]; then
+          cat "$STATE/.hook-log"
         else
           echo "The Stop hook left no log: it didn't run."
         fi
-        if [ -f "$TOOLS/.posted" ]; then
-          echo "The review was posted from the session: $(cat "$TOOLS/.posted")"
+        if [ -f "$STATE/.posted" ]; then
+          echo "The review was posted from the session: $(cat "$STATE/.posted")"
           exit 0
         fi
         if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
@@ -301,8 +302,8 @@ runs:
           exit 0
         fi
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
-        if [ -f "$TOOLS/.pushed" ]; then
-          FIXED_IN=$(cat "$TOOLS/.pushed")
+        if [ -f "$STATE/.pushed" ]; then
+          FIXED_IN=$(cat "$STATE/.pushed")
           export FIXED_IN
         fi
         if [ -z "$EXECUTION_FILE" ] || [ ! -f "$EXECUTION_FILE" ]; then
