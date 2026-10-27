@@ -60,7 +60,11 @@ internal class NotificationPermissionViewModel(
             )
             emit(NotificationPermissionUiAction.RequestSystemPermission)
         } else {
-            emit(NotificationPermissionUiAction.OpenNotificationSettings)
+            viewModelScope.launch {
+                uiAction.emit(NotificationPermissionUiAction.OpenNotificationSettings)
+                // Why: the dialog only offers settings, so it closes once they open; the user returns to the app without it.
+                navigator.navigateBack()
+            }
         }
     }
 

@@ -2,7 +2,12 @@
   "2.15.0": {
     "common": [
       "Al compartir un versículo como imagen, ahora puedes añadir a la tarjeta tu racha de días seguidos en el plan y guardar la imagen directamente en tu dispositivo.",
-      "Con Pro, también puedes quitar la marca de la app de la tarjeta, elegir cualquier color de fondo o usar una de tus propias fotos como fondo."
+      "Con Pro, también puedes quitar la marca de la app de la tarjeta, elegir cualquier color de fondo o usar una de tus propias fotos como fondo.",
+      "En la lectura, al eliminar un color de resaltado personalizado, la ventana de confirmación ahora se cierra después de elegir \"Eliminar color y mantener resaltados\" o \"Eliminar color y resaltados\".",
+      "En los detalles de la cuenta, la ventana \"Renombrar dispositivo\" ahora se cierra cuando guardas el nuevo nombre, cancelas o tocas fuera de ella."
+    ],
+    "android": [
+      "La ventana que pide permiso para las notificaciones ahora se cierra cuando tocas \"Abrir configuración\", en lugar de quedarse atascada en la pantalla cuando vuelves a la app."
     ],
     "desktop": [
       "En Mac y Windows, la barra de título de la ventana ahora sigue el tema de la app: se pone oscura con el tema oscuro y clara con el tema claro, y cambia al instante cuando cambias el tema.",

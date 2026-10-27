@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.RenameDeviceDialog
+import com.quare.bibleplanner.feature.accountdetails.presentation.utils.RenameDeviceUiActionCollector
 import com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel.RenameDeviceViewModel
 import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
@@ -16,6 +17,7 @@ fun EntryProviderScope<NavKey>.renameDevice() {
         metadata = DialogSceneStrategy.dialog(DialogProperties().toNativeAlertDialogProperties()),
     ) { route ->
         val viewModel: RenameDeviceViewModel = koinViewModel { parametersOf(route) }
+        RenameDeviceUiActionCollector(uiActionFlow = viewModel.uiAction)
         RenameDeviceDialog(
             initialName = viewModel.currentName,
             onEvent = viewModel::onEvent,

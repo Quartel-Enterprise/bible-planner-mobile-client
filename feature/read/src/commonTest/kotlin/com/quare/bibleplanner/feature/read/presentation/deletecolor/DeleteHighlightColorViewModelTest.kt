@@ -71,7 +71,7 @@ internal class DeleteHighlightColorViewModelTest {
     }
 
     @Test
-    fun `GIVEN the dialog WHEN confirming and keeping the highlights THEN removes only the color`() =
+    fun `GIVEN the dialog WHEN confirming and keeping the highlights THEN removes only the color and closes`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(colorKey = customColorKey)
@@ -99,10 +99,14 @@ internal class DeleteHighlightColorViewModelTest {
                 ),
                 actual = trackedEvents,
             )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
         }
 
     @Test
-    fun `GIVEN the dialog WHEN confirming without keeping the highlights THEN removes them with the color`() =
+    fun `GIVEN the dialog WHEN confirming without keeping the highlights THEN removes them too and closes`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(colorKey = customColorKey)
@@ -120,6 +124,10 @@ internal class DeleteHighlightColorViewModelTest {
                     DeleteHighlightColorUiAction.NotifyDeletion(Res.string.highlight_color_removed),
                 ),
                 actual = actions,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
             )
         }
 

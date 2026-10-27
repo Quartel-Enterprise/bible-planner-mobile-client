@@ -2,7 +2,12 @@
   "2.15.0": {
     "common": [
       "Ao compartilhar um versículo como imagem, agora você pode colocar no card a sua sequência de dias seguidos no plano e salvar a imagem direto no aparelho.",
-      "Com o Pro, você também pode tirar a marca do app do card, escolher qualquer cor de fundo ou usar uma foto sua como fundo."
+      "Com o Pro, você também pode tirar a marca do app do card, escolher qualquer cor de fundo ou usar uma foto sua como fundo.",
+      "Na leitura, ao excluir uma cor personalizada de destaque, a janela de confirmação agora fecha depois que você escolhe \"Excluir cor e manter destaques\" ou \"Excluir cor e destaques\".",
+      "Nos detalhes da conta, a janela \"Renomear dispositivo\" agora fecha quando você salva o novo nome, cancela ou toca fora dela."
+    ],
+    "android": [
+      "A janela que pede permissão para notificações agora fecha quando você toca em \"Abrir configurações\", em vez de ficar travada na tela quando você volta para o app."
     ],
     "desktop": [
       "No Mac e no Windows, a barra de título da janela agora acompanha o tema do app: fica escura no tema escuro e clara no tema claro, e muda na hora quando você troca o tema.",

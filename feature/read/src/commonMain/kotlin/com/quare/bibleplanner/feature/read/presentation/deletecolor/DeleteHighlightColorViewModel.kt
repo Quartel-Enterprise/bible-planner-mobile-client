@@ -58,6 +58,8 @@ internal class DeleteHighlightColorViewModel(
                     },
                 ),
             )
+            // Why: going back disposes the entry's action collector, so the snackbar must be emitted first.
+            navigator.navigateBack()
         }
     }
 }

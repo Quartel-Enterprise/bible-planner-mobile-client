@@ -40,7 +40,9 @@ private fun NotificationPermissionUiActionCollector(uiActionFlow: Flow<Notificat
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             NotificationPermissionUiAction.RequestSystemPermission -> navigator.navigateBack()
-            NotificationPermissionUiAction.OpenNotificationSettings -> navigator.navigateBack()
+
+            // Why: only Android reports a permanent denial, so iOS never reaches the open-settings state.
+            NotificationPermissionUiAction.OpenNotificationSettings -> Unit
         }
     }
 }
