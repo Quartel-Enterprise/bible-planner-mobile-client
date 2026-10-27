@@ -105,6 +105,7 @@ runs:
           gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" or .user.login == "claude[bot]")
               | .body | select(test("^### Code review\\s+[0-9]+ finding"))
+              | gsub("\\s*<!-- claude-review run [^>]*-->"; "")
               | split("\n\n")[1:]
               | reduce .[] as $paragraph ({items: [], fenced: false};
                   (if (.fenced | not) and ($paragraph | test("^[0-9]+\\. (`|\\(no file\\))")) then .items += [$paragraph]
@@ -129,34 +130,57 @@ runs:
     # copy and the checks on the markers (stop-hook.sh) keep that true if a later change lets it. The
     # hook's markers go to a state directory of their own. When the review started, for the posting
     # step to tell a review the hook posted from one it didn't, and whether the hook commits the fixes
-    # reach the hook as arguments rather than files.
+    # reach the hook as arguments rather than files. The Bash guard (bash-guard.sh) is the session's
+    # PreToolUse hook, copied with them.
     - id: tools
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
+        FIX: ${{ inputs.fix }}
       run: |
         dir="$RUNNER_TEMP/claude-review"
         state="$RUNNER_TEMP/claude-review-state"
         mkdir -p "$dir" "$state"
         cp .github/actions/claude-review/stop-hook.sh .github/actions/claude-review/post-review.sh \
-          .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh "$dir/"
+          .github/actions/claude-review/extract-findings.py .github/actions/claude-review/commit-fixes.sh \
+          .github/actions/claude-review/bash-guard.sh "$dir/"
         chmod -R a-w "$dir"
-        # The reviewed commit's version of each file the pull request changes, for the suggestions: with
-        # fix the working tree holds the review's own changes, and git show, which would read the
-        # commit, isn't allowed (see the claude step). Outside $RUNNER_TEMP, which the session can't
-        # read: checkout keeps its credentials there. A file the pull request deletes has no version to
-        # copy; without the list, suggestions are only left out.
-        reviewed="$(dirname "$RUNNER_TEMP")/reviewed-head"
-        mkdir -p "$reviewed"
-        if files=$(gh pr diff "$PR_NUMBER" --name-only); then
-          while IFS= read -r file; do
-            [ -n "$file" ] || continue
-            mkdir -p "$reviewed/$(dirname "$file")"
-            git show "HEAD:$file" > "$reviewed/$file" 2> /dev/null || rm -f "$reviewed/$file"
-          done <<< "$files"
-        else
-          echo "::warning::The pull request's files couldn't be listed, so the review has no copy of the reviewed commit."
+        # A symlink the pull request adds could point the session's Read allow rule for the checkout at
+        # /proc or $RUNNER_TEMP, if a deny rule checks the link's path rather than its target. One that
+        # leaves the checkout is removed for the review; commit-fixes.sh restores it before committing.
+        while IFS= read -r -d '' link; do
+          case "$(realpath -m "$link")" in
+            "$PWD"/*) ;;
+            *)
+              rm -f "$link"
+              echo "::notice::$link points outside the checkout, so the review doesn't see it."
+              ;;
+          esac
+        done < <(find . -path ./.git -prune -o -type l -print0)
+        # With fix, the reviewed commit's version of each file the pull request changes, for the
+        # suggestions: the working tree then holds the review's own changes, and git show, which would
+        # read the commit, isn't allowed (see the claude step). Without fix, the checkout is that
+        # commit. The copy is cleared first, since it lives outside $RUNNER_TEMP (which the session
+        # can't read: checkout keeps its credentials there) and a reused runner would keep the last
+        # one. The files come from the API, which has no diff size limit; a file the pull request
+        # deletes has no version to copy, and without the list suggestions are only left out.
+        reviewed="$PWD"
+        if [ "$FIX" = true ]; then
+          reviewed="$(dirname "$RUNNER_TEMP")/reviewed-head"
+          rm -rf "$reviewed"
+          mkdir -p "$reviewed"
+          if files=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/files?per_page=100" \
+            --jq '.[] | select(.status != "removed") | .filename'); then
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              mkdir -p "$reviewed/$(dirname "$file")"
+              git show "HEAD:$file" > "$reviewed/$file" 2> /dev/null || rm -f "$reviewed/$file"
+            done <<< "$files"
+          else
+            echo "::warning::The pull request's files couldn't be listed, so the review has no copy of the reviewed commit."
+          fi
         fi
         {
           echo "dir=$dir"
@@ -168,16 +192,14 @@ runs:
     # What changes with fix: the skill's --fix flag, the task, the outcome of each finding, and the
     # model's file tools: Edit and MultiEdit are allowed inside the checkout only, never under .git,
     # .github, .claude (settings and hooks the session could pick up) or .agent-memory; Write stays
-    # denied, since the commit only takes files the branch already tracks. Edit rules cover every tool that edits a file; the deny rules win over the allow
-    # rule.
+    # denied, since the commit only takes files the branch already tracks. Edit rules cover every tool
+    # that edits a file; the deny rules win over the allow rule.
     - id: mode
       shell: bash
       env:
         FIX: ${{ inputs.fix }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         WORKSPACE: ${{ github.workspace }}
-        TOOLS: ${{ steps.tools.outputs.dir }}
-        STATE: ${{ steps.tools.outputs.state }}
       run: |
         if [ "$FIX" = true ]; then
           {
@@ -230,16 +252,20 @@ runs:
     # script's retries, so it isn't killed between a post and its marker.
     #
     # The session can only read through the Read, Grep and Glob tools, and only the checkout and the
-    # reviewed commit's copy: a path the allow rules don't name is denied, since nobody is there to
-    # approve it. The deny rules repeat it for what must never be read: the runner's environment
-    # (/proc), $RUNNER_TEMP (checkout's credentials, the hook's state), the checkout's .git and the
-    # home's dot directories. A Bash command that reads or writes a file of its choosing would get
-    # around them: cat, grep,
-    # jq, git diff --no-index or git blame --contents read any file, and git diff, log and show write
+    # reviewed commit's copy: a path no allow rule names is denied, since nobody is there to approve
+    # it, and Read rules cover Grep and Glob too. The deny rules repeat it for what must never be
+    # read: the runner's environment (/proc), $RUNNER_TEMP (checkout's credentials, the hook's state),
+    # /etc, /tmp, the checkout's .git and the home's dotfiles.
+    #
+    # A Bash command that reads or writes a file of its choosing would get around them: cat, grep,
+    # jq, git diff --no-index and git blame --contents read any file, and git diff, log and show write
     # one with --output, which once let a prompt injection rewrite the Stop hook. So the only Bash
     # commands allowed are gh's read-only ones, which take the diff from GitHub (gh pr diff), and git
-    # commands that print no file. A command the review was denied shows as a warning on the run
-    # (last step): allow it here only when it can't read or write a file it is given.
+    # commands that print neither a file nor their arguments. The allowlist only matches a command's
+    # start, so the Bash guard (bash-guard.sh) refuses what would still print the environment: gh's
+    # --jq, -q, --template and -t, an expanded $VAR or $(...), a redirection. A command the review was
+    # denied shows as a warning on the run (last step): allow it here only when it can neither read
+    # or write a file it is given nor print the environment.
     #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
@@ -252,7 +278,7 @@ runs:
       with:
         claude_code_oauth_token: ${{ inputs.oauth-token }}
         settings: |
-          {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
+          {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/bash-guard.sh"}]}], "Stop": [{"hooks": [{"type": "command", "command": "${{ steps.tools.outputs.dir }}/stop-hook.sh ${{ steps.tools.outputs.state }} ${{ steps.tools.outputs.started }} ${{ inputs.fix }}", "timeout": 600}]}]}}
         prompt: |
           Review pull request #${{ github.event.pull_request.number }} of this repository: invoke the
           `code-review` skill once, with `${{ steps.mode.outputs.arguments }}` as its arguments,
@@ -279,23 +305,23 @@ runs:
           - "suggestion": only when replacing lines "start_line" to "line" (or "line" alone) of the
             file, and nothing else, fully fixes the finding: the exact text that replaces those
             lines, every line whole and indented as in the file. Read those lines from the reviewed
-            commit's copy, `${{ steps.tools.outputs.reviewed }}/<file>`, instead of recalling them or
-            reading the working tree, and keep "line" and "start_line" on exactly the lines it
-            replaces. An empty string
+            commit's copy, `${{ steps.tools.outputs.reviewed }}/<file>`, instead of recalling them,
+            and keep "line" and "start_line" on exactly the lines it replaces. An empty string
             deletes them. Leave "suggestion" out whenever it would only be a sketch, the fix touches
             other lines, or the working tree already holds the fix.
 
           Take the pull request's diff from `gh pr diff ${{ github.event.pull_request.number }}`, and
-          read files with the Read, Grep and Glob tools: git diff, git log, git show and the shell's
-          file commands (cat, grep, head, tail, jq) are blocked in this session.
+          read files with the Read, Grep and Glob tools: git diff, git log, git show, the shell's file
+          commands (cat, grep, head, tail, jq), gh's --jq and --template, and shell variables are
+          blocked in this session.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
-          --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current),Bash(git rev-parse:*),Bash(git merge-base:*)${{ steps.mode.outputs.allowed }}"
-          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(//etc/**),Read(/${{ runner.temp }}/**),Read(/${{ github.workspace }}/.git/**),Read(//home/runner/.*/**),ScheduleWakeup,Monitor,SendMessage"
+          --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current),Bash(git merge-base:*)${{ steps.mode.outputs.allowed }}"
+          --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(//etc/**),Read(/${{ runner.temp }}/**),Read(//tmp/**),Read(/${{ github.workspace }}/.git/**),Read(~/.*),Read(~/.*/**),ScheduleWakeup,Monitor,SendMessage"
 
     # The Stop hook leaves a log of what it saw. A review this action posted since the review started
     # counts as posted by it, on whatever commit it landed. Its .posted marker only counts when GitHub
@@ -323,7 +349,7 @@ runs:
         STATE: ${{ steps.tools.outputs.state }}
         STARTED: ${{ steps.tools.outputs.started }}
       run: |
-        # The session can write the log too, so it is printed through the same mask as the review.
+        # The log quotes what the hook found, so it is printed through the same mask as the review.
         if [ -f "$STATE/.hook-log" ]; then
           "$TOOLS/post-review.sh" --redact < "$STATE/.hook-log"
         else

@@ -3,8 +3,9 @@
 # holds as one pull request review, through post-review.sh. It runs inside the session, so gh posts
 # with the Claude GitHub App's token, as claude[bot], before the action revokes it. The hook's JSON
 # arrives on stdin with the last assistant message; the transcript it names is the fallback, though
-# it may not hold that message yet. A marker file tells the action's own posting step the review is
-# already posted; a log file tells it what the hook saw (counts and sizes only: the session's output
+# it may not hold that message yet. A marker file tells a Stop that fires again the review is already
+# posted, though the action's posting step looks it up on GitHub instead; a log file tells that step
+# what the hook saw (counts and sizes only: the session's output
 # is hidden because the logs are public, and the log must not leak it). When the hook finds no
 # findings list, it posts nothing and leaves the posting to that step, which reads the reply from the
 # action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
@@ -93,9 +94,9 @@ if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already
   exit 0
 fi
 
-# With fix, the fixes are pushed first, so the review can name their commit. A Stop that fires again
-# finds nothing left to commit: the checkout is no longer the reviewed head.
-if [ "$fix" = true ]; then
+# With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
+# finds them pushed already, and keeps the first attempt's log.
+if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
   if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
     echo "$sha" > "$state/.pushed"
     note "pushed the fixes as $sha"

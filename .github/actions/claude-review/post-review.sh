@@ -9,9 +9,10 @@
 #
 #   STARTED=<when the review started> post-review.sh --already <pr-number>
 #
-# The second form only looks for a review this script posted since the given time, on any commit (the
-# one test the hook and the action's posting step share), and prints its url, exiting 1 when there is
-# none and 2 when GitHub couldn't be read.
+# The second form only looks for a review this script posted in the same workflow run, on any commit
+# (the one test the hook and the action's posting step share), and prints its url, exiting 1 when
+# there is none and 2 when GitHub couldn't be read. Each review carries its run in a hidden comment;
+# outside a workflow run, a review since the given time counts.
 #
 # The objects are the ones the /code-review skill returns, plus what the review step adds to them:
 # "severity" (must-fix, should-fix or nitpick) labels the comment and orders the findings, "fix" says
@@ -73,11 +74,32 @@ base_sha=${PR_BASE_SHA:-}
 started=$(date -u -d '2 minutes ago' +%Y-%m-%dT%H:%M:%SZ 2> /dev/null || date -u -v-2M +%Y-%m-%dT%H:%M:%SZ)
 export WORKSPACE=${GITHUB_WORKSPACE:-}
 export FIXED_IN=${FIXED_IN:-}
+# Marks the reviews of this workflow run, so another run's review posted meanwhile (a review on
+# request next to the opening one) never counts as this one's.
+export RUN_TAG=""
+[ -z "${GITHUB_RUN_ID:-}" ] || RUN_TAG="<!-- claude-review run ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT:-1} -->"
 
 warn() { echo "::warning::$*" >&2; }
 
+# Prints the url of a review this script posted in this workflow run (since $1 outside one), if any,
+# on any commit: post() moves a review to the current head when GitHub refuses the reviewed one.
+# Returns 1 when there is none and 2 when GitHub couldn't be read, so a caller can tell them apart.
+already_posted() {
+  local url
+  url=$(SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
+    --jq '.[] | select((.body | startswith("### Code review"))
+      and (if env.RUN_TAG != "" then (.body | contains(env.RUN_TAG)) else .submitted_at >= env.SINCE end))
+      | .html_url' 2> /dev/null | tail -1) || return 2
+  [ -n "$url" ] && echo "$url"
+}
+
+if [ "$mode" = already ]; then
+  already_posted "${STARTED:?STARTED is not set}"
+  exit $?
+fi
+
 # The reviewed commits, when the caller didn't name them: the pull request's current head and base.
-# Known before anything is posted, so every review carries its commit and can be recognised later.
+# Known before anything is posted, so every review carries its commit.
 if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
   if shas=$(gh pr view "$pr" --repo "$repo" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid' 2>&1); then
     read -r current_head current_base <<< "$shas"
@@ -86,23 +108,6 @@ if [ -z "$head_sha" ] || [ -z "$base_sha" ]; then
   else
     warn "The pull request's commits couldn't be read ($(tr '\n' ' ' <<< "$shas" | cut -c1-200))."
   fi
-fi
-
-# Prints the url of a review this script posted since $1, if any, on any commit: post() moves a review
-# to the current head when GitHub refuses the reviewed one. Returns 1 when there is none and 2 when
-# GitHub couldn't be read, so a caller can tell the two apart.
-already_posted() {
-  local url
-  url=$(SINCE="$1" gh api --paginate "repos/$repo/pulls/$pr/reviews" \
-    --jq '.[] | select(.submitted_at >= env.SINCE
-      and (.user.login == "claude[bot]" or .user.login == "github-actions[bot]")
-      and (.body | startswith("### Code review"))) | .html_url' 2> /dev/null | tail -1) || return 2
-  [ -n "$url" ] && echo "$url"
-}
-
-if [ "$mode" = already ]; then
-  already_posted "${STARTED:?STARTED is not set}"
-  exit $?
 fi
 
 # The fix commit is named by a marker outside the session's reach, but it only counts when it is the
@@ -117,14 +122,15 @@ fi
 input=$(cat)
 
 # Posts the review payload on stdin and prints its url. Transient errors are retried, but creating a
-# review isn't idempotent: before each retry, a review of this script's kind on the reviewed commit
-# since the script started means GitHub took the request whose answer was lost, and counts as posted.
+# review isn't idempotent: before each retry, a review of this run means GitHub took the request whose
+# answer was lost, and counts as posted. Every body ends with the run's hidden tag.
 # A 422, GitHub refusing the payload, returns 22 right away so the caller can post the findings
 # another way; a body-only review refused with its commit (gone after a force-push) is posted once
 # more on the pull request's current head instead.
 post() {
   local payload attempt out already
-  payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)' | redact)
+  payload=$(jq -c --arg sha "$head_sha" '. + (if $sha != "" then {commit_id: $sha} else {} end)
+    | if env.RUN_TAG != "" then .body += "\n\n" + env.RUN_TAG else . end' | redact)
   for attempt in 1 2 3; do
     if out=$(gh api --method POST "repos/$repo/pulls/$pr/reviews" --input - --jq .html_url <<< "$payload" 2>&1); then
       echo "$out"

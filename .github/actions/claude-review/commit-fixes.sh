@@ -40,6 +40,11 @@ fixed=$(jq -c '[.[]? | select(type == "object" and .outcome == "fixed")]' <<< "$
 [ -n "$branch" ] && [ -n "$head_sha" ] || fail "the event names no pull request branch"
 [ "$(safe_git rev-parse HEAD)" = "$head_sha" ] || fail "the checkout is no longer the reviewed head"
 
+# The review can't delete a file, so a tracked file missing from the working tree is a symlink the
+# action removed before the review (action.yml): it is put back before anything is committed.
+safe_git ls-files -d -z | xargs -0 -r git -c core.hooksPath=/dev/null checkout -- 2> /dev/null ||
+  fail "the files removed before the review couldn't be restored"
+
 changed=$(safe_git diff --name-only)
 [ -n "$changed" ] || fail "the working tree has no change"
 if grep -qE '^\.(github|claude)/' <<< "$changed"; then
@@ -50,9 +55,15 @@ if [ -n "$untracked" ]; then
   fail "the working tree has untracked files: $(tr '\n' ' ' <<< "$untracked")"
 fi
 
+# The fixes and their summaries become a public commit, so they get the review's mask
+# (post-review.sh): the summaries are masked, and a fix with a token-shaped string pushes nothing.
+redact() { "$(dirname "$0")/post-review.sh" --redact; }
+diff=$(safe_git diff)
+[ "$(redact <<< "$diff")" = "$diff" ] || fail "the fixes hold a token-shaped string"
+
 message="fix: apply the Claude review findings
 
-$(jq -r '.[] | "- " + (.summary // "Finding" | tostring | gsub("\\s+"; " "))' <<< "$fixed")"
+$(jq -r '.[] | "- " + (.summary // "Finding" | tostring | gsub("\\s+"; " "))' <<< "$fixed" | redact)"
 safe_git commit --all --no-verify --quiet --message "$message" > /dev/null 2>&1 || fail "git commit failed"
 
 # A plain push, never forced: a branch that moved during the review keeps its commits.
