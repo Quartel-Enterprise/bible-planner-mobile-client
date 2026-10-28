@@ -29,9 +29,12 @@ concurrency:
 jobs:
   review:
     # GitHub withholds secrets from pull requests opened from forks, so the review can't run there.
+    # Dependabot's pull requests only get Dependabot's secrets, and they only bump the review's own
+    # refs, which claude-code-action refuses to review anyway.
     if: >-
       !github.event.pull_request.draft &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
