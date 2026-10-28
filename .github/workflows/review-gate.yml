@@ -31,7 +31,7 @@ jobs:
       proceed: ${{ steps.gate.outputs.proceed }}
     steps:
       - id: gate
-        uses: Quartel-Enterprise/claude-review/gate@1.0.1
+        uses: Quartel-Enterprise/claude-review/gate@1.1.0
         with:
           # Under timeout-minutes, so a review stuck in the queue still lets the checks run.
           wait-minutes: 40
