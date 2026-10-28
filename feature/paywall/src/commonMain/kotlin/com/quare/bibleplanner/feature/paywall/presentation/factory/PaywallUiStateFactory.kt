@@ -17,8 +17,11 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePack
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetOfferingsResultUseCase
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
+import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
+import com.quare.bibleplanner.feature.paywall.presentation.model.PremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -75,8 +78,10 @@ class PaywallUiStateFactory(
                             subscriptionPlans = initialPlans,
                             isPurchasing = false,
                             storeName = storeName,
-                            maxFreeNotes = maxFreeNotes,
-                            isChapterListeningAvailable = isChapterListeningAvailable,
+                            premiumFeatures = buildPremiumFeatures(
+                                maxFreeNotes = maxFreeNotes,
+                                isChapterListeningAvailable = isChapterListeningAvailable,
+                            ),
                         ),
                         storePackages = offerings,
                     )
@@ -87,6 +92,22 @@ class PaywallUiStateFactory(
                 PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList())
             },
         )
+    }
+
+    private fun buildPremiumFeatures(
+        maxFreeNotes: Int,
+        isChapterListeningAvailable: Boolean,
+    ): List<PremiumFeature> = buildList {
+        add(FixedPremiumFeature.AI_DAY_STUDY)
+        add(FixedPremiumFeature.AI_CHAPTER_STUDY)
+        add(FixedPremiumFeature.AI_CHAT)
+        if (isChapterListeningAvailable) {
+            add(FixedPremiumFeature.CHAPTER_LISTENING)
+        }
+        add(FixedPremiumFeature.AD_FREE)
+        add(UnlimitedNotesPremiumFeature(maxFreeNotes))
+        add(FixedPremiumFeature.HIGHLIGHT_COLORS)
+        add(FixedPremiumFeature.SHARE_IMAGE_STYLE)
     }
 
     private fun getSavePercentage(

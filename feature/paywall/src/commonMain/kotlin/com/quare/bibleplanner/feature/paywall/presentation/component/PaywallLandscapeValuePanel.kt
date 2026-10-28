@@ -21,6 +21,7 @@ import bibleplanner.feature.paywall.generated.resources.paywall_subtitle
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallLandscapeDimensions
+import com.quare.bibleplanner.feature.paywall.presentation.model.PremiumFeature
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -30,8 +31,7 @@ private const val BACK_ICON_BOTTOM_SPACING = 18
 @Composable
 internal fun PaywallLandscapeValuePanel(
     platform: Platform,
-    maxFreeNotes: Int?,
-    isChapterListeningAvailable: Boolean,
+    premiumFeatures: List<PremiumFeature>,
     dimensions: PaywallLandscapeDimensions,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -94,8 +94,7 @@ internal fun PaywallLandscapeValuePanel(
         VerticalSpacer(dimensions.heroBottomSpacing)
         PremiumFeaturesList(
             modifier = Modifier.padding(start = dimensions.panelContentStartPadding),
-            maxFreeNotes = maxFreeNotes,
-            isChapterListeningAvailable = isChapterListeningAvailable,
+            premiumFeatures = premiumFeatures,
             titleColor = contentColor,
             subtitleColor = contentColor,
             itemSpacing = dimensions.featureSpacing,

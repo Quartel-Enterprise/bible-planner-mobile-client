@@ -9,6 +9,8 @@
     <string name="what_you_unlock">WHAT YOU UNLOCK</string>
     <string name="feature_ai_day_study">Unlimited AI daily study</string>
     <string name="feature_ai_day_study_subtext">Overview, historical context, and guided questions for every reading.</string>
+    <string name="feature_ai_chapter_study">Unlimited AI chapter study</string>
+    <string name="feature_ai_chapter_study_subtext">Study any chapter of the Bible with AI, as many times as you want.</string>
     <string name="feature_ai_chat">Unlimited AI chat</string>
     <string name="feature_ai_chat_subtext">Ask anything about the Bible and keep the conversation going.</string>
     <string name="feature_chapter_listening">Unlimited chapter listening</string>
@@ -19,6 +21,8 @@
     <string name="feature_unlimited_notes_subtext">Free plan limited to %1$d notes.</string>
     <string name="feature_highlight_colors">Full highlight palette</string>
     <string name="feature_highlight_colors_subtext">Unlock every preset color and create your own.</string>
+    <string name="feature_share_image_style">Verse cards your way</string>
+    <string name="feature_share_image_style_subtext">Pick any color, use your own photos and share without the Bible Planner mark.</string>
     <string name="plan_monthly">Monthly</string>
     <string name="plan_monthly_description">Flexible, cancel anytime</string>
     <string name="plan_annual">Annual</string>
