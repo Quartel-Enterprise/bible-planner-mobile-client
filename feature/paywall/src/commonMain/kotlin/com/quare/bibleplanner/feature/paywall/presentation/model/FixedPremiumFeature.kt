@@ -19,7 +19,7 @@ import org.jetbrains.compose.resources.StringResource
 
 enum class FixedPremiumFeature(
     override val title: StringResource,
-    override val subtext: StringResource,
+    val subtext: StringResource,
 ) : PremiumFeature {
     AI_DAY_STUDY(
         title = Res.string.feature_ai_day_study,

@@ -9,5 +9,5 @@ data class UnlimitedNotesPremiumFeature(
     val maxFreeNotes: Int,
 ) : PremiumFeature {
     override val title: StringResource = Res.string.feature_unlimited_notes
-    override val subtext: StringResource = Res.string.feature_unlimited_notes_subtext
+    val subtext: StringResource = Res.string.feature_unlimited_notes_subtext
 }

@@ -4,5 +4,4 @@ import org.jetbrains.compose.resources.StringResource
 
 sealed interface PremiumFeature {
     val title: StringResource
-    val subtext: StringResource
 }
