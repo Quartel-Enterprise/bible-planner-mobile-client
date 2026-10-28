@@ -7,25 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.feature_ad_free
-import bibleplanner.feature.paywall.generated.resources.feature_ad_free_subtext
-import bibleplanner.feature.paywall.generated.resources.feature_ai_chat
-import bibleplanner.feature.paywall.generated.resources.feature_ai_chat_subtext
-import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study
-import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study_subtext
-import bibleplanner.feature.paywall.generated.resources.feature_chapter_listening
-import bibleplanner.feature.paywall.generated.resources.feature_chapter_listening_subtext
-import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors
-import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors_subtext
-import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes
-import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes_subtext
+import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
+import com.quare.bibleplanner.feature.paywall.presentation.model.PremiumFeature
+import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PremiumFeaturesList(
-    maxFreeNotes: Int?,
-    isChapterListeningAvailable: Boolean,
+    premiumFeatures: List<PremiumFeature>,
     itemSpacing: Dp,
     iconSize: Dp,
     modifier: Modifier = Modifier,
@@ -36,49 +25,17 @@ internal fun PremiumFeaturesList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(itemSpacing),
     ) {
-        PremiumFeatureItem(
-            text = stringResource(Res.string.feature_ai_day_study),
-            subtext = stringResource(Res.string.feature_ai_day_study_subtext),
-            titleColor = titleColor,
-            subtitleColor = subtitleColor,
-            iconSize = iconSize,
-        )
-        PremiumFeatureItem(
-            text = stringResource(Res.string.feature_ai_chat),
-            subtext = stringResource(Res.string.feature_ai_chat_subtext),
-            titleColor = titleColor,
-            subtitleColor = subtitleColor,
-            iconSize = iconSize,
-        )
-        if (isChapterListeningAvailable) {
+        premiumFeatures.forEach { feature ->
             PremiumFeatureItem(
-                text = stringResource(Res.string.feature_chapter_listening),
-                subtext = stringResource(Res.string.feature_chapter_listening_subtext),
+                text = stringResource(feature.title),
+                subtext = when (feature) {
+                    is FixedPremiumFeature -> stringResource(feature.subtext)
+                    is UnlimitedNotesPremiumFeature -> stringResource(feature.subtext, feature.maxFreeNotes)
+                },
                 titleColor = titleColor,
                 subtitleColor = subtitleColor,
                 iconSize = iconSize,
             )
         }
-        PremiumFeatureItem(
-            text = stringResource(Res.string.feature_ad_free),
-            subtext = stringResource(Res.string.feature_ad_free_subtext),
-            titleColor = titleColor,
-            subtitleColor = subtitleColor,
-            iconSize = iconSize,
-        )
-        PremiumFeatureItem(
-            text = stringResource(Res.string.feature_unlimited_notes),
-            subtext = maxFreeNotes?.let { stringResource(Res.string.feature_unlimited_notes_subtext, it) },
-            titleColor = titleColor,
-            subtitleColor = subtitleColor,
-            iconSize = iconSize,
-        )
-        PremiumFeatureItem(
-            text = stringResource(Res.string.feature_highlight_colors),
-            subtext = stringResource(Res.string.feature_highlight_colors_subtext),
-            titleColor = titleColor,
-            subtitleColor = subtitleColor,
-            iconSize = iconSize,
-        )
     }
 }

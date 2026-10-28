@@ -165,21 +165,20 @@ private fun PaywallPortraitContent(
                     itemSpacing = portraitPlansSpacing,
                 )
                 VerticalSpacer(26)
+                Text(
+                    text = stringResource(Res.string.what_you_unlock),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                VerticalSpacer(14)
+                PremiumFeaturesList(
+                    premiumFeatures = uiState.premiumFeatures,
+                    itemSpacing = portraitFeatureSpacing,
+                    iconSize = portraitFeatureIconSize,
+                )
+                VerticalSpacer(8)
             }
-            Text(
-                text = stringResource(Res.string.what_you_unlock),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            VerticalSpacer(14)
-            PremiumFeaturesList(
-                maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
-                isChapterListeningAvailable = (uiState as? PaywallUiState.Success)?.isChapterListeningAvailable == true,
-                itemSpacing = portraitFeatureSpacing,
-                iconSize = portraitFeatureIconSize,
-            )
-            VerticalSpacer(8)
         }
     }
 }
@@ -208,8 +207,7 @@ private fun PaywallLandscapeContent(
                     .widthIn(max = valuePanelMaxWidth)
                     .fillMaxHeight(),
                 platform = platform,
-                maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
-                isChapterListeningAvailable = (uiState as? PaywallUiState.Success)?.isChapterListeningAvailable == true,
+                premiumFeatures = (uiState as? PaywallUiState.Success)?.premiumFeatures.orEmpty(),
                 dimensions = dimensions,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,

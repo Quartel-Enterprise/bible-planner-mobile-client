@@ -14,12 +14,15 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePack
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
+import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -83,14 +86,39 @@ internal class PaywallUiStateFactoryTest {
                     ),
                     isPurchasing = false,
                     storeName = STORE_NAME,
-                    maxFreeNotes = MAX_FREE_NOTES,
-                    isChapterListeningAvailable = true,
+                    premiumFeatures = listOf(
+                        FixedPremiumFeature.AI_DAY_STUDY,
+                        FixedPremiumFeature.AI_CHAPTER_STUDY,
+                        FixedPremiumFeature.AI_CHAT,
+                        FixedPremiumFeature.CHAPTER_LISTENING,
+                        FixedPremiumFeature.AD_FREE,
+                        UnlimitedNotesPremiumFeature(MAX_FREE_NOTES),
+                        FixedPremiumFeature.HIGHLIGHT_COLORS,
+                        FixedPremiumFeature.SHARE_IMAGE_STYLE,
+                    ),
                 ),
                 storePackages = listOf(monthlyPackage, annualPackage),
             ),
             actual = result,
         )
     }
+
+    @Test
+    fun `GIVEN chapter listening is unavailable WHEN creating THEN leaves listening out of the premium features`() =
+        runTest {
+            // Given
+            prepareScenario(
+                offerings = Result.success(listOf(monthlyPackage, annualPackage)),
+                isChapterListeningEnabled = false,
+            )
+
+            // When
+            val result = factory.create(STORE_NAME)
+
+            // Then
+            val state = assertIs<PaywallUiState.Success>(result.uiState)
+            assertFalse(FixedPremiumFeature.CHAPTER_LISTENING in state.premiumFeatures)
+        }
 
     @Test
     fun `GIVEN only a monthly package WHEN creating THEN selects the first plan`() = runTest {
@@ -166,11 +194,14 @@ internal class PaywallUiStateFactoryTest {
         )
     }
 
-    private fun prepareScenario(offerings: Result<List<StorePackage>>) {
+    private fun prepareScenario(
+        offerings: Result<List<StorePackage>>,
+        isChapterListeningEnabled: Boolean = true,
+    ) {
         factory = PaywallUiStateFactory(
             getOfferingsResult = { offerings },
             getMaxFreeNotesAmount = GetMaxFreeNotesAmountUseCase(FakeGetIntRemoteConfig(MAX_FREE_NOTES)),
-            observeIsChapterListeningEnabled = { flowOf(true) },
+            observeIsChapterListeningEnabled = { flowOf(isChapterListeningEnabled) },
         )
     }
 

@@ -5,8 +5,7 @@ sealed interface PaywallUiState {
         val subscriptionPlans: List<SubscriptionPlanPresentationModel>,
         val isPurchasing: Boolean,
         val storeName: String,
-        val maxFreeNotes: Int,
-        val isChapterListeningAvailable: Boolean,
+        val premiumFeatures: List<PremiumFeature>,
     ) : PaywallUiState
 
     data object Error : PaywallUiState
