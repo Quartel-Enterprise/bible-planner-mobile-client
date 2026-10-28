@@ -71,8 +71,8 @@ completion starts `merge-when-green` again; the list of those workflows is in it
 every check passed` step.
 
 A green pull request with an unresolved review conversation is not merged: the workflow removes the
-label and comments on the pull request instead. See [Unresolved
-conversations](#unresolved-conversations).
+label and comments on the pull request instead. See
+[Unresolved conversations](#unresolved-conversations).
 
 The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with
 `GITHUB_TOKEN` triggers no other workflow, so the push to `main` would run no checks and
@@ -319,12 +319,12 @@ on the merge.
 
 For each Claude finding, either fix it, or reply with why the code stays as it is, then resolve the
 conversation. Resolving one starts no workflow, so add the `merge-when-green` label again
-afterwards. When the opening review's threads held the checks (see [Fixes and the review
-gate](#fixes-and-the-review-gate)), `merge-when-green` doesn't count the failed gates as failed
-checks: with a conversation still open it removes its label and comments, as above, and once every
-conversation is resolved it re-runs the held runs, keeps its label and merges when they pass. To run
-the held checks without merging, add `run-checks` instead. The ruleset has no bypass, so this
-applies to admins too.
+afterwards. When the opening review's threads held the checks (see
+[Fixes and the review gate](#fixes-and-the-review-gate)), `merge-when-green` doesn't count the
+failed gates as failed checks: with a conversation still open it removes its label and comments, as
+above, and once every conversation is resolved it re-runs the held runs, keeps its label and merges
+when they pass. To run the held checks without merging, add `run-checks` instead. The ruleset has no
+bypass, so this applies to admins too.
 
 ## UI tests
 
@@ -364,9 +364,9 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
 The device jobs run the rest of `commonTest` too, since `androidDeviceTest` and `iosTest` depend on
 all of it. Every job uploads its test reports when it fails.
 
-`:shared` joins the `desktop` and `android` jobs with the [end-to-end
-flows](testing/end-to-end-tests.md), and the script leaves it out of `ios`: the flows switch tabs,
-which on iOS are a native `UITabBar`.
+`:shared` joins the `desktop` and `android` jobs with the
+[end-to-end flows](testing/end-to-end-tests.md), and the script leaves it out of `ios`: the flows
+switch tabs, which on iOS are a native `UITabBar`.
 
 `:tools:baseline-profile` is in no workflow. Its tests sit in `src/main`, as a `com.android.test`
 module's do, so the script never finds it, and they are the macrobenchmarks: they run by hand on a
