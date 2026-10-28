@@ -16,11 +16,12 @@
 # pushed without it, and nothing is pushed. Git's hooks and fsmonitor are turned off: the working
 # tree is the pull request's, and the model edited it.
 #
-# Nothing is pushed, and the script exits 1, when no finding is marked fixed, when the working tree
-# has no change or an untracked file, when the checkout is no longer the reviewed head, or when the
-# push is refused (the branch moved during the review). Only the error lines of a failed push reach
-# the log, with any credentials in a url masked, since origin's url holds the token; the paths git
-# names are the repository's.
+# Nothing is pushed, and the script exits 1, when no finding is marked fixed, when the symlinks
+# removed before the review can't be restored, when the working tree has no change or an untracked
+# file, when the checkout is no longer the reviewed head, when a fix adds a token-shaped string, or
+# when the push is refused (the branch moved during the review). Only the error lines of a failed
+# push reach the log, with any credentials in a url masked, since origin's url holds the token; the
+# paths git names are the repository's.
 set -euo pipefail
 
 findings=$(cat)

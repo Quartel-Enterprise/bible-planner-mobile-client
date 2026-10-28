@@ -5,12 +5,11 @@
 # arrives on stdin with the last assistant message; the transcript it names is the fallback, though
 # it may not hold that message yet. A marker file tells a Stop that fires again the review is already
 # posted, though the action's posting step looks it up on GitHub instead; a log file tells that step
-# what the hook saw (counts and sizes only: the session's output
-# is hidden because the logs are public, and the log must not leak it). When the hook finds no
-# findings list, it posts nothing and leaves the posting to that step, which reads the reply from the
-# action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
-# from ending. With fix (action.yml), it first commits the fixes and pushes them through
-# commit-fixes.sh.
+# what the hook saw (counts and sizes only: the session's output is hidden because the logs are
+# public, and the log must not leak it). When the hook finds no findings list, it posts nothing and
+# leaves the posting to that step, which reads the reply from the action's execution file instead.
+# Whatever happens, the hook exits 0: it must never block the session from ending. With fix
+# (action.yml), it first commits the fixes and pushes them through commit-fixes.sh.
 #
 #   stop-hook.sh <state dir> <started> <fix: true|false>
 #
