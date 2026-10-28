@@ -65,11 +65,15 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: ./.github/actions/claude-review
+      - uses: Quartel-Enterprise/claude-review/review@1.0.1
         if: steps.in-progress.outputs.found == 'false'
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          memory-repository: PierreVieira/bible-planner-agent-memory
           memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
+          # The conventions only: the project_* memories and the index hold figures and ids a public
+          # comment must never repeat.
+          memory-files: feedback_*.md
           # The action itself hands the review what the earlier reviews found.
           instructions: |
             The ai-review label asked for another review of this pull request, after new pushes.
