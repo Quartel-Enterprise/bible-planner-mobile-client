@@ -127,8 +127,9 @@ it, with the token. Only branches of this repository get there, since forks are 
 
 Their findings never fail a check, but each one left for the author is an inline comment, and an
 unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
-runs on the head commit the pull request opened with, `merge-when-green` waits for it to finish
-there, and a run that failed (an expired token) holds the merge until it is rerun. A later push
+runs on the head commit the pull request opened with, or a draft was marked ready on,
+`merge-when-green` waits for it to finish there, and a run that failed (an expired token) holds the
+merge until it is rerun. A later push
 brings a head commit with no review check, so the merge no longer waits for it.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
@@ -287,13 +288,15 @@ time. Now the review fixes what it found, and the checks wait for it:
   every finding is an inline comment, as before.
 - **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
   `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
-  pull request opened with, and on the review's fix commit (a push by `claude[bot]`), it waits for
-  the `claude-review` run of the reviewed commit to end, checking once a minute: five workflows wait
-  on the same review with `GITHUB_TOKEN`'s 1,000 requests an hour. When the pull request's head moved
-  meanwhile (the fix commit), it skips the other jobs: that push started them again on the new
-  commit, and cancels this run anyway. Every other event (an author's push, a reopened pull request,
-  `main`) skips the gate job itself, so it starts no runner, and the other jobs run on a skipped
-  gate. A draft or a fork passes it right away, and so does a failed or cancelled review, GitHub's
+  pull request opened with, or a draft was marked ready for review on (those workflows add
+  `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
+  by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end, checking
+  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  hour. On a draft marked ready, only a review run the same event created counts, since the commit
+  may already have a skipped or completed one. When the pull request's head moved meanwhile (the
+  fix commit), it skips the other jobs: that push started them again on the new commit, and cancels
+  this run anyway. Every other event (an author's push, a reopened pull request, `main`) skips the
+  gate job itself, so it starts no runner, and the other jobs run on a skipped gate. A draft or a fork passes it right away, and so does a failed or cancelled review, GitHub's
   API failing three times in a row, or a review still running after 40 minutes. `translations`
   doesn't wait: `check-translations` is required and takes seconds.
 - **The checks are held for open threads.** Once the review ended and the head didn't move, the
@@ -467,7 +470,7 @@ compiling from linking. To measure the link again, run the task on its own with 
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a
   cancelled run saves no cache.
 - If it builds or tests the app on pull requests, start it with the `review-gate` job, with the
-  same `if` as the other callers, and make its other jobs need it (see
+  same `pull_request` types and `if` as the other callers, and make its other jobs need it (see
   [Fixes and the review gate](#fixes-and-the-review-gate)). Add it to the `GATED` list of
   `scripts/review_gate.sh` too, or neither `run-checks` nor `merge-when-green` re-runs it when the
   gate held it.

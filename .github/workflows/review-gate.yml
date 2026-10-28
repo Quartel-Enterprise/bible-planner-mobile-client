@@ -1,9 +1,10 @@
 name: review-gate
 
 # Called by the pull request workflows that build and test the app, as their first job: when the
-# pull request has just opened, it waits for claude-review to finish on the same commit before they
-# run. That review applies its findings and pushes them as a commit of its own (see docs/ci.md, "AI
-# review"), and running the checks on a commit about to be replaced would only have them run twice.
+# pull request has just opened, or a draft was just marked ready for review, it waits for
+# claude-review to finish on the same commit before they run. That review applies its findings and
+# pushes them as a commit of its own (see docs/ci.md, "AI review"), and running the checks on a
+# commit about to be replaced would only have them run twice.
 # When the review pushed, the pull request's head is no longer this commit: the checks are skipped
 # here and run on the new commit, whose push starts them again.
 #
@@ -14,7 +15,7 @@ name: review-gate
 # checks for green. Resolving the threads without a push starts no workflow: the run-checks label
 # re-runs the held runs (run-checks.yml), and so does merge-when-green once every thread is resolved.
 #
-# The callers run it only on those two events: every other one (an author's push, a reopened pull
+# The callers run it only on those events: every other one (an author's push, a reopened pull
 # request, a push to main) skips it, and their jobs run on a skipped gate, so it starts no runner
 # there. A draft or a fork's pull request, which claude-review skips, passes right away. Only a hold
 # fails the gate: a failed or cancelled review, one that outlasts the wait, or GitHub's API failing a
@@ -63,11 +64,22 @@ jobs:
           fi
 
           # Every workflow of the same event is created together, so the review's run shows up within
-          # seconds; a minute of retries covers a slow API.
+          # seconds; a minute of retries covers a slow API. A draft marked ready may already have
+          # claude-review runs on its commit: the one its opening as a draft skipped, or an earlier
+          # review when it was marked ready before. Either would let the checks through before the new
+          # review ends, so on that event only a run created with this one counts (a re-run keeps its
+          # run's creation time), and never a skipped one.
+          since=""
+          if [ "$EVENT_ACTION" = ready_for_review ]; then
+            created=$(gh api "repos/$GH_REPO/actions/runs/$GITHUB_RUN_ID" --jq .created_at 2> /dev/null) || created=""
+            if [ -n "$created" ]; then
+              since=$(date -u -d "@$(($(date -d "$created" +%s) - 10))" +%Y-%m-%dT%H:%M:%SZ)
+            fi
+          fi
           run=""
           for _ in $(seq 1 6); do
             run=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$REVIEWED_SHA&event=pull_request&per_page=100" \
-              --jq '[.workflow_runs[] | select(.path == ".github/workflows/claude-review.yml")] | first | .id // empty' \
+              --jq "[.workflow_runs[] | select(.path == \".github/workflows/claude-review.yml\" and .created_at >= \"$since\" and .conclusion != \"skipped\")] | first | .id // empty" \
               2> /dev/null) || run=""
             [ -n "$run" ] && break
             sleep 10
