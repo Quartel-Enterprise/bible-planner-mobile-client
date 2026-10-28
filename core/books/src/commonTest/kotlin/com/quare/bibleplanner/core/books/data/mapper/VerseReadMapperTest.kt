@@ -21,7 +21,10 @@ internal class VerseReadMapperTest {
         )
 
         // When
-        val dto = mapper.toDto(userId = "user-1", entity = pending)
+        val dto = mapper.toDto(
+            userId = "user-1",
+            entity = pending,
+        )
 
         // Then
         assertEquals("user-1", dto.userId)

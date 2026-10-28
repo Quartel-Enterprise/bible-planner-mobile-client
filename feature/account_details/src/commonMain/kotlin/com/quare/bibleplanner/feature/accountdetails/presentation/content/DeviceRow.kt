@@ -59,7 +59,10 @@ internal fun DeviceRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 10.dp),
+            .padding(
+                horizontal = 4.dp,
+                vertical = 10.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -77,7 +80,10 @@ internal fun DeviceRow(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(weight = 1f, fill = false),
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
                 )
                 if (device.isCurrentDevice) {
                     HorizontalSpacer(8.dp)
@@ -95,7 +101,10 @@ internal fun DeviceRow(
         if (device.isSigningOut) {
             DeviceSignOutSpinner()
         } else {
-            DeviceMenu(device = device, onEvent = onEvent)
+            DeviceMenu(
+                device = device,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -164,7 +173,10 @@ private fun CurrentDeviceBadge() {
     ) {
         Text(
             text = stringResource(Res.string.account_details_this_device),
-            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+            modifier = Modifier.padding(
+                horizontal = 7.dp,
+                vertical = 2.dp,
+            ),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onPrimaryContainer,

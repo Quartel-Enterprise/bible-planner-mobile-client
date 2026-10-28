@@ -41,7 +41,10 @@ internal fun ListeningBackToVerseChip(
             contentColor = MaterialTheme.colorScheme.inverseOnSurface,
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
-        contentPadding = PaddingValues(start = 12.dp, end = 16.dp),
+        contentPadding = PaddingValues(
+            start = 12.dp,
+            end = 16.dp,
+        ),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

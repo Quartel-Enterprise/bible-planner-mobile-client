@@ -109,8 +109,14 @@ private fun DrawScope.drawVerseNoteBar(
     val x = size.width - (verseNoteIndicatorWidth / 2).toPx()
     drawLine(
         color = color.copy(alpha = BAR_ALPHA),
-        start = Offset(x = x, y = top),
-        end = Offset(x = x, y = bottom),
+        start = Offset(
+            x = x,
+            y = top,
+        ),
+        end = Offset(
+            x = x,
+            y = bottom,
+        ),
         strokeWidth = barWidth.toPx(),
     )
 }

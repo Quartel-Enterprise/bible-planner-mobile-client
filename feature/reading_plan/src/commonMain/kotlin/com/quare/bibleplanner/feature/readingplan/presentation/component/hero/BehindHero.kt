@@ -37,8 +37,14 @@ internal fun BehindHero(
     modifier: Modifier = Modifier,
 ) {
     val next = planStatus.nextDay ?: return
-    val animatedDayIndex by animateIntAsState(targetValue = next.globalIndex, label = "behindHeroDayIndex")
-    val animatedDaysBehind by animateIntAsState(targetValue = planStatus.daysBehind, label = "behindHeroDaysBehind")
+    val animatedDayIndex by animateIntAsState(
+        targetValue = next.globalIndex,
+        label = "behindHeroDayIndex",
+    )
+    val animatedDaysBehind by animateIntAsState(
+        targetValue = planStatus.daysBehind,
+        label = "behindHeroDaysBehind",
+    )
     HeroSurface(modifier = modifier) {
         HeroKickerText(
             icon = AppIcon.History,

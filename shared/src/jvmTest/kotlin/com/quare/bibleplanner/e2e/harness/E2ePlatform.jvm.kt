@@ -72,6 +72,13 @@ private object JvmE2ePlatform : E2ePlatform {
 // Both fit in the 1024x768 window of the desktop test host, which is too small to show either whole.
 private val E2eWindow.size: DpSize
     get() = when (this) {
-        E2eWindow.PORTRAIT -> DpSize(width = 400.dp, height = 720.dp)
-        E2eWindow.WIDE -> DpSize(width = 1000.dp, height = 720.dp)
+        E2eWindow.PORTRAIT -> DpSize(
+            width = 400.dp,
+            height = 720.dp,
+        )
+
+        E2eWindow.WIDE -> DpSize(
+            width = 1000.dp,
+            height = 720.dp,
+        )
     }

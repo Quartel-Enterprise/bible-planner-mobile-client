@@ -36,7 +36,10 @@ internal fun DayScreenTopBarComponent(
             }
         },
         navigationIcon = {
-            BackIcon(platform = platform, onBackClick = { onEvent(DayUiEvent.OnBackClick) })
+            BackIcon(
+                platform = platform,
+                onBackClick = { onEvent(DayUiEvent.OnBackClick) },
+            )
         },
         scrollBehavior = scrollBehavior,
         windowInsets = TopAppBarDefaults.windowInsets.asStable(),

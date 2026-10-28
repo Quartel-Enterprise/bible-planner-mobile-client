@@ -17,7 +17,11 @@ internal class AndroidRequestInAppReview(
         reviewManager.launchReview(activity, reviewInfo)
         true
     }.getOrElse { throwable ->
-        Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to launch in-app review")
+        Logger.w(
+            tag = TAG,
+            throwable = throwable,
+            messageString = "Failed to launch in-app review",
+        )
         false
     }
 

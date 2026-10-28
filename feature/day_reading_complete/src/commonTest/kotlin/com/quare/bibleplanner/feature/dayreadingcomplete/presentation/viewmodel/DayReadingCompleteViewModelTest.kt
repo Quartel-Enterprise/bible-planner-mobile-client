@@ -71,7 +71,12 @@ internal class DayReadingCompleteViewModelTest {
         PassageModel(
             bookId = BookId.GEN,
             chapters = (1..3).map { number ->
-                ChapterModel(number = number, startVerse = null, endVerse = null, bookId = BookId.GEN)
+                ChapterModel(
+                    number = number,
+                    startVerse = null,
+                    endVerse = null,
+                    bookId = BookId.GEN,
+                )
             },
             isRead = true,
             chapterRanges = "1-3",
@@ -107,7 +112,11 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN a free user with quota WHEN loading THEN shows free with quota`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 1,
+        )
 
         // When
         runCurrent()
@@ -116,13 +125,23 @@ internal class DayReadingCompleteViewModelTest {
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
         assertEquals(DayTimingState.ON_TIME, state.timing)
-        assertEquals(StudyCtaState.FreeWithQuota(remaining = 2, limit = 3), state.ctaState.valueOrNull())
+        assertEquals(
+            StudyCtaState.FreeWithQuota(
+                remaining = 2,
+                limit = 3,
+            ),
+            state.ctaState.valueOrNull(),
+        )
     }
 
     @Test
     fun `GIVEN a free user with no quota left WHEN loading THEN shows free exhausted`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 3,
+        )
 
         // When
         runCurrent()
@@ -143,7 +162,11 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN a pro user with no quota left WHEN loading THEN shows pro`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = true, freeLimit = 3, usedCount = 3)
+        val viewModel = viewModel(
+            isPro = true,
+            freeLimit = 3,
+            usedCount = 3,
+        )
 
         // When
         runCurrent()
@@ -157,7 +180,12 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN a day that cannot be found WHEN loading THEN stays loading`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 0, day = null)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 0,
+            day = null,
+        )
 
         // When
         runCurrent()
@@ -171,7 +199,11 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN an exhausted quota WHEN tapping the cta THEN opens the paywall`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 3,
+        )
         runCurrent()
 
         // When
@@ -190,7 +222,11 @@ internal class DayReadingCompleteViewModelTest {
         runTest(testDispatcher) {
             // Given
             isRewardedUnlockOffered = true
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 3,
+            )
             runCurrent()
 
             // When
@@ -216,7 +252,11 @@ internal class DayReadingCompleteViewModelTest {
     fun `GIVEN the unlock sheet open WHEN a reward is earned THEN starts a rewarded generation and opens the study`() =
         runTest(testDispatcher) {
             // Given
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 3,
+            )
             runCurrent()
             viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
             runCurrent()
@@ -235,7 +275,11 @@ internal class DayReadingCompleteViewModelTest {
     fun `GIVEN an unserved reward WHEN tapping the cta THEN retries it without another video`() =
         runTest(testDispatcher) {
             // Given
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 3,
+            )
             runCurrent()
             coordinator.unservedRewardKeys += SHEET_GENERATION_KEY
 
@@ -250,7 +294,11 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN quota left WHEN tapping the cta THEN starts generation and opens the study`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 1,
+        )
         runCurrent()
 
         // When
@@ -275,7 +323,12 @@ internal class DayReadingCompleteViewModelTest {
     fun `GIVEN a logged out reader WHEN tapping the cta THEN asks the reader to sign in first`() =
         runTest(testDispatcher) {
             // Given
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, isLoggedIn = false)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+                isLoggedIn = false,
+            )
             runCurrent()
 
             // When
@@ -295,7 +348,12 @@ internal class DayReadingCompleteViewModelTest {
         runTest(testDispatcher) {
             // Given
             val quotaGate = CompletableDeferred<Unit>()
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+                quotaGate = quotaGate,
+            )
 
             // When
             runCurrent()
@@ -313,7 +371,12 @@ internal class DayReadingCompleteViewModelTest {
         runTest(testDispatcher) {
             // Given
             val quotaGate = CompletableDeferred<Unit>()
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+                quotaGate = quotaGate,
+            )
             runCurrent()
 
             // When
@@ -324,7 +387,10 @@ internal class DayReadingCompleteViewModelTest {
             val loadedState = viewModel.uiState.value
             assertIs<DayReadingCompleteUiState.Loaded>(loadedState)
             assertEquals(
-                expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+                expected = StudyCtaState.FreeWithQuota(
+                    remaining = 2,
+                    limit = 3,
+                ),
                 actual = loadedState.ctaState.valueOrNull(),
             )
         }
@@ -355,7 +421,10 @@ internal class DayReadingCompleteViewModelTest {
             val state = viewModel.uiState.value
             assertIs<DayReadingCompleteUiState.Loaded>(state)
             assertEquals(
-                expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+                expected = StudyCtaState.FreeWithQuota(
+                    remaining = 2,
+                    limit = 3,
+                ),
                 actual = state.ctaState.valueOrNull(),
             )
         }
@@ -401,7 +470,11 @@ internal class DayReadingCompleteViewModelTest {
     fun `GIVEN a free user on time WHEN loading THEN tracks the shown event with the day timing and account state`() =
         runTest(testDispatcher) {
             // Given
-            viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+            viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+            )
 
             // When
             runCurrent()
@@ -424,7 +497,11 @@ internal class DayReadingCompleteViewModelTest {
     fun `GIVEN the loaded sheet WHEN tapping never show again THEN disables the suggestion confirms and closes`() =
         runTest(testDispatcher) {
             // Given
-            val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+            )
             runCurrent()
 
             // When
@@ -446,7 +523,11 @@ internal class DayReadingCompleteViewModelTest {
     @Test
     fun `GIVEN the loaded sheet WHEN dismissing THEN navigates back`() = runTest(testDispatcher) {
         // Given
-        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 1,
+        )
         runCurrent()
 
         // When

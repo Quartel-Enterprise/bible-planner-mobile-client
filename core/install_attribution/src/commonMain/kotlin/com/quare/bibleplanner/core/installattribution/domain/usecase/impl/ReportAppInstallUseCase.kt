@@ -17,7 +17,11 @@ internal class ReportAppInstallUseCase(
     override suspend fun invoke() {
         suspendRunCatching { reportIfNeeded() }
             .onFailure { throwable ->
-                Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to report the app install")
+                Logger.w(
+                    tag = TAG,
+                    throwable = throwable,
+                    messageString = "Failed to report the app install",
+                )
             }
     }
 

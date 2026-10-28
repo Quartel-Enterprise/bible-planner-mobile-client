@@ -35,7 +35,14 @@ internal class DayStudyCacheKeyTest {
     fun `GIVEN a full verse range WHEN asStorageKey THEN it is rendered in brackets`() {
         // Given
         val key = cacheKey(
-            passage("SECOND_SAMUEL", chapter(number = 5, startVerse = 1, endVerse = 10)),
+            passage(
+                "SECOND_SAMUEL",
+                chapter(
+                    number = 5,
+                    startVerse = 1,
+                    endVerse = 10,
+                ),
+            ),
         )
 
         // When
@@ -48,7 +55,15 @@ internal class DayStudyCacheKeyTest {
     @Test
     fun `GIVEN only a start verse WHEN asStorageKey THEN the end side stays empty`() {
         // Given
-        val key = cacheKey(passage("PSALMS", chapter(number = 119, startVerse = 89)))
+        val key = cacheKey(
+            passage(
+                "PSALMS",
+                chapter(
+                    number = 119,
+                    startVerse = 89,
+                ),
+            ),
+        )
 
         // When
         val storageKey = key.asStorageKey()
@@ -60,7 +75,15 @@ internal class DayStudyCacheKeyTest {
     @Test
     fun `GIVEN only an end verse WHEN asStorageKey THEN the start side stays empty`() {
         // Given
-        val key = cacheKey(passage("PSALMS", chapter(number = 119, endVerse = 88)))
+        val key = cacheKey(
+            passage(
+                "PSALMS",
+                chapter(
+                    number = 119,
+                    endVerse = 88,
+                ),
+            ),
+        )
 
         // When
         val storageKey = key.asStorageKey()
@@ -108,10 +131,24 @@ internal class DayStudyCacheKeyTest {
     fun `GIVEN different verse ranges of the same chapter WHEN asStorageKey THEN keys differ`() {
         // Given
         val firstHalf = cacheKey(
-            passage("SECOND_SAMUEL", chapter(number = 5, startVerse = 1, endVerse = 10)),
+            passage(
+                "SECOND_SAMUEL",
+                chapter(
+                    number = 5,
+                    startVerse = 1,
+                    endVerse = 10,
+                ),
+            ),
         )
         val secondHalf = cacheKey(
-            passage("SECOND_SAMUEL", chapter(number = 5, startVerse = 11, endVerse = 25)),
+            passage(
+                "SECOND_SAMUEL",
+                chapter(
+                    number = 5,
+                    startVerse = 11,
+                    endVerse = 25,
+                ),
+            ),
         )
 
         // When

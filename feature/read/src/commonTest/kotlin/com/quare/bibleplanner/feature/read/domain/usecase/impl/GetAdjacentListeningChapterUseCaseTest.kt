@@ -10,7 +10,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 internal class GetAdjacentListeningChapterUseCaseTest {
-    private val chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
+    private val chapter = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
     private lateinit var useCase: GetAdjacentListeningChapterUseCase
     private lateinit var canonOrderRequests: MutableList<Boolean>
 
@@ -27,7 +30,13 @@ internal class GetAdjacentListeningChapterUseCaseTest {
         )
 
         // Then
-        assertEquals(ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3), next)
+        assertEquals(
+            ChapterLocationModel(
+                bookId = BookId.GEN,
+                chapterNumber = 3,
+            ),
+            next,
+        )
         assertEquals(listOf(true), canonOrderRequests)
     }
 

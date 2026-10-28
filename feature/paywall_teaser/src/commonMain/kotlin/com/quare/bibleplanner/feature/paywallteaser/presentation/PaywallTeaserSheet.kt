@@ -46,7 +46,10 @@ internal fun PaywallTeaserSheet(
 ) {
     val copy = reason.toCopy()
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(
+            horizontal = 24.dp,
+            vertical = 8.dp,
+        ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(

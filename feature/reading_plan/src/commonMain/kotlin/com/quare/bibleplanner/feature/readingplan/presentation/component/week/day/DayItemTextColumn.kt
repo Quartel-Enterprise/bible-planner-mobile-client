@@ -128,7 +128,10 @@ private fun StateChip(
         shape = RoundedCornerShape(50),
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
+            modifier = Modifier.padding(
+                horizontal = 10.dp,
+                vertical = 2.dp,
+            ),
             text = text,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium,

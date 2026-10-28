@@ -57,9 +57,18 @@ private val studyByLocale = mapOf(
                 "answers the origin stories around it, where the world is made out of a battle " +
                 "and people are made to do the gods' work.",
             facts = listOf(
-                FactModel(label = "Period", value = "Origins"),
-                FactModel(label = "Place", value = "Eden"),
-                FactModel(label = "Genre", value = "Narrative prologue"),
+                FactModel(
+                    label = "Period",
+                    value = "Origins",
+                ),
+                FactModel(
+                    label = "Place",
+                    value = "Eden",
+                ),
+                FactModel(
+                    label = "Genre",
+                    value = "Narrative prologue",
+                ),
             ),
         ),
         commonQuestions = listOf(
@@ -119,9 +128,18 @@ private val studyByLocale = mapOf(
                 "responde às histórias de origem ao redor, em que o mundo nasce de uma batalha e " +
                 "as pessoas são feitas para o trabalho dos deuses.",
             facts = listOf(
-                FactModel(label = "Período", value = "Origens"),
-                FactModel(label = "Lugar", value = "Éden"),
-                FactModel(label = "Gênero", value = "Prólogo narrativo"),
+                FactModel(
+                    label = "Período",
+                    value = "Origens",
+                ),
+                FactModel(
+                    label = "Lugar",
+                    value = "Éden",
+                ),
+                FactModel(
+                    label = "Gênero",
+                    value = "Prólogo narrativo",
+                ),
             ),
         ),
         commonQuestions = listOf(
@@ -181,9 +199,18 @@ private val studyByLocale = mapOf(
                 "responde a las historias de origen de alrededor, donde el mundo nace de una " +
                 "batalla y las personas se hacen para el trabajo de los dioses.",
             facts = listOf(
-                FactModel(label = "Período", value = "Orígenes"),
-                FactModel(label = "Lugar", value = "Edén"),
-                FactModel(label = "Género", value = "Prólogo narrativo"),
+                FactModel(
+                    label = "Período",
+                    value = "Orígenes",
+                ),
+                FactModel(
+                    label = "Lugar",
+                    value = "Edén",
+                ),
+                FactModel(
+                    label = "Género",
+                    value = "Prólogo narrativo",
+                ),
             ),
         ),
         commonQuestions = listOf(

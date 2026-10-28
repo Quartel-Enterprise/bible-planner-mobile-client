@@ -17,7 +17,12 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN today fully read WHEN resolving THEN returns Completed`() {
         // Given
         val days = listOf(
-            day(isToday = true, isRead = true, readVerses = 10, totalVerses = 10),
+            day(
+                isToday = true,
+                isRead = true,
+                readVerses = 10,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -31,7 +36,12 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN today partially read WHEN resolving THEN returns Started`() {
         // Given
         val days = listOf(
-            day(isToday = true, isRead = false, readVerses = 3, totalVerses = 10),
+            day(
+                isToday = true,
+                isRead = false,
+                readVerses = 3,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -45,7 +55,12 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN today not started and no overdue day WHEN resolving THEN returns NotStarted`() {
         // Given
         val days = listOf(
-            day(isToday = true, isRead = false, readVerses = 0, totalVerses = 10),
+            day(
+                isToday = true,
+                isRead = false,
+                readVerses = 0,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -79,8 +94,16 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN multiple overdue days WHEN resolving THEN returns MultipleOverdue`() {
         // Given
         val days = listOf(
-            day(number = 1, isRead = false, plannedReadDate = today.minus(2, DateTimeUnit.DAY)),
-            day(number = 2, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
+            day(
+                number = 1,
+                isRead = false,
+                plannedReadDate = today.minus(2, DateTimeUnit.DAY),
+            ),
+            day(
+                number = 2,
+                isRead = false,
+                plannedReadDate = today.minus(1, DateTimeUnit.DAY),
+            ),
         )
 
         // When
@@ -94,8 +117,18 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN today completed and an overdue day WHEN resolving THEN returns Completed`() {
         // Given
         val days = listOf(
-            day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
-            day(number = 2, isToday = true, isRead = true, readVerses = 10, totalVerses = 10),
+            day(
+                number = 1,
+                isRead = false,
+                plannedReadDate = today.minus(1, DateTimeUnit.DAY),
+            ),
+            day(
+                number = 2,
+                isToday = true,
+                isRead = true,
+                readVerses = 10,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -109,8 +142,18 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN today started and an overdue day WHEN resolving THEN returns Started`() {
         // Given
         val days = listOf(
-            day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
-            day(number = 2, isToday = true, isRead = false, readVerses = 4, totalVerses = 10),
+            day(
+                number = 1,
+                isRead = false,
+                plannedReadDate = today.minus(1, DateTimeUnit.DAY),
+            ),
+            day(
+                number = 2,
+                isToday = true,
+                isRead = false,
+                readVerses = 4,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -124,8 +167,18 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN an overdue day and today not started WHEN resolving THEN returns OneOverdue`() {
         // Given
         val days = listOf(
-            day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
-            day(number = 2, isToday = true, isRead = false, readVerses = 0, totalVerses = 10),
+            day(
+                number = 1,
+                isRead = false,
+                plannedReadDate = today.minus(1, DateTimeUnit.DAY),
+            ),
+            day(
+                number = 2,
+                isToday = true,
+                isRead = false,
+                readVerses = 0,
+                totalVerses = 10,
+            ),
         )
 
         // When
@@ -139,7 +192,12 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     fun `GIVEN an empty rest day today WHEN resolving THEN returns null`() {
         // Given
         val days = listOf(
-            day(isToday = true, isRead = false, readVerses = 0, totalVerses = 0),
+            day(
+                isToday = true,
+                isRead = false,
+                readVerses = 0,
+                totalVerses = 0,
+            ),
         )
 
         // When

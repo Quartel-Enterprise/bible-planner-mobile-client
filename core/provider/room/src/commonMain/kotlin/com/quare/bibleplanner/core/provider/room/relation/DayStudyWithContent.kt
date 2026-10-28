@@ -10,12 +10,24 @@ import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
 
 data class DayStudyWithContent(
     @Embedded val study: DayStudyEntity,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val chapterSummaries: List<DayStudyChapterSummaryEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val takeaways: List<DayStudyTakeawayEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val facts: List<DayStudyFactEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val questions: List<DayStudyQuestionEntity>,
 )

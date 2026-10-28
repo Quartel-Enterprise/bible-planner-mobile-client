@@ -101,7 +101,10 @@ internal fun SharedTransitionScope.DayItem(
             .drawWithContent {
                 drawContent()
                 if (flashAlpha.value > 0f) {
-                    drawRect(color = flashColor, alpha = flashAlpha.value)
+                    drawRect(
+                        color = flashColor,
+                        alpha = flashAlpha.value,
+                    )
                 }
             }.clickable {
                 onEvent(
@@ -122,7 +125,12 @@ internal fun SharedTransitionScope.DayItem(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 12.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
+                .padding(
+                    start = 12.dp,
+                    end = 8.dp,
+                    top = 10.dp,
+                    bottom = 10.dp,
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {

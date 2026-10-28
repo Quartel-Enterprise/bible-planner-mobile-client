@@ -103,7 +103,10 @@ fun ReadingProgressCard(
                             text = suffix,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(bottom = 2.dp, start = 4.dp),
+                            modifier = Modifier.padding(
+                                bottom = 2.dp,
+                                start = 4.dp,
+                            ),
                         )
                     }
                 }

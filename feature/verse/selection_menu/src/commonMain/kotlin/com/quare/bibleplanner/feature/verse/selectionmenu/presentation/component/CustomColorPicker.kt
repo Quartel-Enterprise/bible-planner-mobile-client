@@ -54,7 +54,10 @@ internal fun CustomColorPicker(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 14.dp,
+            ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(

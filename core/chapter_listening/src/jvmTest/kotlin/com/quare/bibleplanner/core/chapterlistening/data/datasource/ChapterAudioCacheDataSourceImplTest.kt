@@ -47,7 +47,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a saved chapter WHEN finding it THEN returns its audio file and manifest`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "A21_cast_GENESIS_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "A21_cast_GENESIS_1",
+            audioBytes = 100,
+        )
 
         // When
         val cached = dataSource.find(genesisOne)
@@ -75,7 +79,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a cached file the system deleted WHEN finding it THEN forgets the chapter`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         SystemFileSystem.delete(Path(directory, "GEN_1.mp3"))
 
         // When
@@ -90,7 +98,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a manifest the system purged WHEN finding its chapter THEN deletes the audio left behind`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         SystemFileSystem.delete(Path(directory, "GEN_1.json"))
 
         // When
@@ -107,15 +119,31 @@ internal class ChapterAudioCacheDataSourceImplTest {
             // Given
             val dataSource = createDataSource(maxBytes = 3 * (100L + manifest.length))
             now = 1
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
             now = 2
-            dataSource.save(genesisTwo, fileName = "GEN_2_v1", audioBytes = 100)
-            dataSource.save(genesisTwo, fileName = "GEN_2_v2", audioBytes = 100)
+            dataSource.save(
+                genesisTwo,
+                fileName = "GEN_2_v1",
+                audioBytes = 100,
+            )
+            dataSource.save(
+                genesisTwo,
+                fileName = "GEN_2_v2",
+                audioBytes = 100,
+            )
             dataSource.remove(Path(directory, "GEN_2_v1.mp3").toString())
 
             // When
             now = 3
-            dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 100)
+            dataSource.save(
+                genesisThree,
+                fileName = "GEN_3",
+                audioBytes = 100,
+            )
 
             // Then
             assertNotNull(dataSource.find(genesisOne))
@@ -125,10 +153,18 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a new revision of a chapter WHEN saving it THEN serves it and keeps the playing file`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1_v1",
+            audioBytes = 100,
+        )
 
         // When
-        dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1_v2",
+            audioBytes = 100,
+        )
 
         // Then
         assertTrue(SystemFileSystem.exists(Path(directory, "GEN_1_v1.mp3")))
@@ -140,14 +176,30 @@ internal class ChapterAudioCacheDataSourceImplTest {
         // Given
         val dataSource = createDataSource(maxBytes = 3 * (100L + manifest.length))
         now = 1
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         now = 2
-        dataSource.save(genesisTwo, fileName = "GEN_2_v1", audioBytes = 100)
-        dataSource.save(genesisTwo, fileName = "GEN_2_v2", audioBytes = 100)
+        dataSource.save(
+            genesisTwo,
+            fileName = "GEN_2_v1",
+            audioBytes = 100,
+        )
+        dataSource.save(
+            genesisTwo,
+            fileName = "GEN_2_v2",
+            audioBytes = 100,
+        )
 
         // When
         now = 3
-        dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 100)
+        dataSource.save(
+            genesisThree,
+            fileName = "GEN_3",
+            audioBytes = 100,
+        )
 
         // Then
         assertNull(dataSource.find(genesisOne))
@@ -159,8 +211,16 @@ internal class ChapterAudioCacheDataSourceImplTest {
         runTest {
             // Given
             val dataSource = createDataSource(maxBytes = MAX_BYTES)
-            dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
-            dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1_v1",
+                audioBytes = 100,
+            )
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1_v2",
+                audioBytes = 100,
+            )
             SystemFileSystem.sink(Path(directory, "GEN_2.mp3.part")).buffered().use { it.writeString("half") }
 
             // When
@@ -179,15 +239,27 @@ internal class ChapterAudioCacheDataSourceImplTest {
         // Given
         val dataSource = createDataSource(maxBytes = 2 * (100L + manifest.length))
         now = 1
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         now = 2
-        dataSource.save(genesisTwo, fileName = "GEN_2", audioBytes = 100)
+        dataSource.save(
+            genesisTwo,
+            fileName = "GEN_2",
+            audioBytes = 100,
+        )
         now = 3
         dataSource.find(genesisOne)
 
         // When
         now = 4
-        dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 100)
+        dataSource.save(
+            genesisThree,
+            fileName = "GEN_3",
+            audioBytes = 100,
+        )
 
         // Then
         assertNotNull(dataSource.find(genesisOne))
@@ -200,7 +272,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a chapter played within the hour WHEN finding it again THEN keeps the index file as it was`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         val index = readIndex()
 
         // When
@@ -215,7 +291,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a chapter played over an hour ago WHEN finding it again THEN saves when it was played`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
 
         // When
         now = 2.hours.inWholeMilliseconds
@@ -229,7 +309,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN an index that cannot be saved WHEN finding a chapter played long ago THEN still serves it`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         SystemFileSystem.createDirectories(Path(directory, "index.json.part"))
         now = 2.hours.inWholeMilliseconds
 
@@ -245,7 +329,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
         runTest {
             // Given
             val dataSource = createDataSource(maxBytes = MAX_BYTES)
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
             now = 30.minutes.inWholeMilliseconds
             dataSource.find(genesisOne)
 
@@ -280,7 +368,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
 
         // When
         assertFailsWith<ChapterAudioStorageException> {
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
         }
 
         // Then
@@ -291,7 +383,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a saved chapter WHEN removing it THEN deletes its files`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
 
         // When
         dataSource.remove(Path(directory, "GEN_1.mp3").toString())
@@ -305,8 +401,16 @@ internal class ChapterAudioCacheDataSourceImplTest {
     fun `GIVEN a replaced revision that fails WHEN removing it THEN keeps the new one`() = runTest {
         // Given
         val dataSource = createDataSource(maxBytes = MAX_BYTES)
-        dataSource.save(genesisOne, fileName = "GEN_1_v1", audioBytes = 100)
-        dataSource.save(genesisOne, fileName = "GEN_1_v2", audioBytes = 100)
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1_v1",
+            audioBytes = 100,
+        )
+        dataSource.save(
+            genesisOne,
+            fileName = "GEN_1_v2",
+            audioBytes = 100,
+        )
 
         // When
         dataSource.remove(Path(directory, "GEN_1_v1.mp3").toString())
@@ -322,13 +426,25 @@ internal class ChapterAudioCacheDataSourceImplTest {
             // Given
             val dataSource = createDataSource(maxBytes = 450L + 2 * manifest.length)
             now = 1
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
             now = 2
-            dataSource.save(genesisTwo, fileName = "GEN_2", audioBytes = 300)
+            dataSource.save(
+                genesisTwo,
+                fileName = "GEN_2",
+                audioBytes = 300,
+            )
 
             // When
             now = 3
-            dataSource.save(genesisThree, fileName = "GEN_3", audioBytes = 250)
+            dataSource.save(
+                genesisThree,
+                fileName = "GEN_3",
+                audioBytes = 250,
+            )
 
             // Then
             assertNotNull(dataSource.find(genesisOne))
@@ -340,7 +456,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
         runTest {
             // Given
             val dataSource = createDataSource(maxBytes = MAX_BYTES)
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
             val index = readIndex()
             now = 2.hours.inWholeMilliseconds
 
@@ -355,7 +475,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
     @Test
     fun `GIVEN an unreadable index WHEN finding a chapter THEN clears the cache`() = runTest {
         // Given
-        createDataSource(maxBytes = MAX_BYTES).save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+        createDataSource(maxBytes = MAX_BYTES).save(
+            genesisOne,
+            fileName = "GEN_1",
+            audioBytes = 100,
+        )
         SystemFileSystem.sink(Path(directory, "index.json")).buffered().use { it.writeString("not json") }
 
         // When
@@ -398,7 +522,11 @@ internal class ChapterAudioCacheDataSourceImplTest {
 
         // When
         assertFailsWith<ChapterAudioStorageException> {
-            dataSource.save(genesisOne, fileName = "GEN_1", audioBytes = 100)
+            dataSource.save(
+                genesisOne,
+                fileName = "GEN_1",
+                audioBytes = 100,
+            )
         }
 
         // Then

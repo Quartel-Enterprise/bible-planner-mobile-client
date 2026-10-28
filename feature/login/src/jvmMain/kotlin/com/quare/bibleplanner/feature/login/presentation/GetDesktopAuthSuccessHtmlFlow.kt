@@ -19,6 +19,9 @@ internal class GetDesktopAuthSuccessHtmlFlow(
         getThemeOptionFlow(),
         getAppLanguageFlow(),
     ) { theme, language ->
-        desktopAuthSuccessHtmlFactory.create(theme = theme, language = language)
+        desktopAuthSuccessHtmlFactory.create(
+            theme = theme,
+            language = language,
+        )
     }
 }

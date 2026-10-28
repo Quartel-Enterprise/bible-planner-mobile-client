@@ -10,12 +10,24 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyQuestionEnti
 
 data class ChapterStudyWithContent(
     @Embedded val study: ChapterStudyEntity,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val outlineSections: List<ChapterStudyOutlineSectionEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val names: List<ChapterStudyNameEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val crossReferences: List<ChapterStudyCrossReferenceEntity>,
-    @Relation(parentColumns = ["cacheKey"], entityColumns = ["cacheKey"])
+    @Relation(
+        parentColumns = ["cacheKey"],
+        entityColumns = ["cacheKey"],
+    )
     val questions: List<ChapterStudyQuestionEntity>,
 )

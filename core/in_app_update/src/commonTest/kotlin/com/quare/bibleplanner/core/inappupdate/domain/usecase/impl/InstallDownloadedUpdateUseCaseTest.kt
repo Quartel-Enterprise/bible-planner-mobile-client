@@ -18,7 +18,12 @@ internal class InstallDownloadedUpdateUseCaseTest {
     fun setUp() {
         useCase = InstallDownloadedUpdateUseCase(
             completeUpdateInstall = { steps += Step.Complete },
-            trackEvent = { name, params -> steps += Step.Track(name = name, params = params) },
+            trackEvent = { name, params ->
+                steps += Step.Track(
+                    name = name,
+                    params = params,
+                )
+            },
         )
     }
 

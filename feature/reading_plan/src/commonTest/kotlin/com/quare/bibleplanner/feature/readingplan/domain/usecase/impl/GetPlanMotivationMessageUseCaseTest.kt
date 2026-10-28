@@ -141,8 +141,14 @@ internal class GetPlanMotivationMessageUseCaseTest {
         // Given
         var capturedDays: List<DayModel>? = null
         var capturedNow: Long? = null
-        val d1 = day(number = 1, passages = listOf(passage(BookId.GEN)))
-        val d2 = day(number = 2, passages = listOf(passage(BookId.EXO)))
+        val d1 = day(
+            number = 1,
+            passages = listOf(passage(BookId.GEN)),
+        )
+        val d2 = day(
+            number = 2,
+            passages = listOf(passage(BookId.EXO)),
+        )
         val weeks = listOf(week(d1, d2))
         val getPlanMotivationMessage = useCase(
             milestone = Milestone.FirstBookCompleted,
@@ -214,5 +220,8 @@ internal class GetPlanMotivationMessageUseCaseTest {
     private fun week(
         vararg days: DayModel,
         number: Int = 1,
-    ): WeekPlanModel = WeekPlanModel(number = number, days = days.toList())
+    ): WeekPlanModel = WeekPlanModel(
+        number = number,
+        days = days.toList(),
+    )
 }

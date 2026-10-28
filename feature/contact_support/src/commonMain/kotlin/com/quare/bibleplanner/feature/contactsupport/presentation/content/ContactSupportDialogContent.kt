@@ -67,7 +67,10 @@ internal fun ContactSupportDialogContent(
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = CircleShape),
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -153,7 +156,10 @@ internal fun ContactSupportDialogContent(
                 shape = pillShape,
                 onClick = { onEvent(ContactSupportUiEvent.OnSendEmailClick) },
             ) {
-                Icon(imageVector = Icons.Default.Email, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                )
                 HorizontalSpacer(8.dp)
                 Text(text = stringResource(Res.string.open_email_button))
             }
@@ -176,7 +182,10 @@ private fun DiagnosticsCard(content: @Composable ColumnScope.() -> Unit) {
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(16.dp),
-            ).padding(horizontal = 16.dp, vertical = 4.dp),
+            ).padding(
+                horizontal = 16.dp,
+                vertical = 4.dp,
+            ),
         content = content,
     )
 }

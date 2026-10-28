@@ -33,7 +33,10 @@ internal fun availableListeningUiState(
 )
 
 internal fun listeningPlayer(
-    chapter: ChapterLocationModel = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1),
+    chapter: ChapterLocationModel = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    ),
     status: ListeningStatusModel = ListeningStatusModel.PLAYING,
     verseNumber: Int? = 2,
     lockedChapter: ChapterLocationModel? = null,
@@ -65,7 +68,10 @@ internal fun chapterListeningPlayerUiState(
 ): ChapterListeningPlayerUiState = ChapterListeningPlayerUiState(
     player = player,
     previousChapter = null,
-    nextChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2),
+    nextChapter = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    ),
     speed = 1f,
     sleepTimer = ListeningSleepTimerUiModel(
         selectedOption = ListeningSleepTimerOption.OFF,

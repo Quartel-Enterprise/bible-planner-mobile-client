@@ -30,7 +30,10 @@ class FlowUtilsTest {
             runCurrent()
 
             // Then
-            assertEquals(expected = listOf(1), actual = emissions)
+            assertEquals(
+                expected = listOf(1),
+                actual = emissions,
+            )
         }
 
     @Test
@@ -51,7 +54,10 @@ class FlowUtilsTest {
         runCurrent()
 
         // Then
-        assertEquals(expected = listOf(1, 4), actual = emissions)
+        assertEquals(
+            expected = listOf(1, 4),
+            actual = emissions,
+        )
     }
 
     @Test
@@ -69,7 +75,10 @@ class FlowUtilsTest {
         source.throttleLatest(window).toList(emissions)
 
         // Then
-        assertEquals(expected = listOf(0, 1, 2), actual = emissions)
+        assertEquals(
+            expected = listOf(0, 1, 2),
+            actual = emissions,
+        )
     }
 
     @Test
@@ -81,6 +90,9 @@ class FlowUtilsTest {
         state.updateValue(5)
 
         // Then
-        assertEquals(expected = 5, actual = state.value)
+        assertEquals(
+            expected = 5,
+            actual = state.value,
+        )
     }
 }

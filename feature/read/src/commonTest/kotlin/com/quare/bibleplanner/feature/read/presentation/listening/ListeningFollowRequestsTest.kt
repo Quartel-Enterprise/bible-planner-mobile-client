@@ -7,8 +7,14 @@ import kotlin.test.assertEquals
 
 internal class ListeningFollowRequestsTest {
     private val requests = ListeningFollowRequests()
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
-    private val genesisThree = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
+    private val genesisThree = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
 
     @Test
     fun `GIVEN a requested chapter WHEN consuming it twice THEN only the first one matches`() {

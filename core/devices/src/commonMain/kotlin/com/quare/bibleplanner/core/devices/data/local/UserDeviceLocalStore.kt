@@ -21,11 +21,18 @@ internal class UserDeviceLocalStore(
         name: String,
         now: Long,
     ) {
-        userDeviceDao.renameLocal(id = deviceRowId, name = name, now = now)
+        userDeviceDao.renameLocal(
+            id = deviceRowId,
+            name = name,
+            now = now,
+        )
     }
 
     suspend fun markNameSynced(entity: UserDeviceEntity) {
-        userDeviceDao.markNameSynced(id = entity.id, syncedUpdatedAt = entity.updatedAt)
+        userDeviceDao.markNameSynced(
+            id = entity.id,
+            syncedUpdatedAt = entity.updatedAt,
+        )
     }
 
     /*
@@ -46,7 +53,11 @@ internal class UserDeviceLocalStore(
                 locationCountry = entity.locationCountry,
                 lastActiveAt = entity.lastActiveAt,
             )
-            userDeviceDao.applyRemoteName(id = entity.id, name = entity.name, remoteUpdatedAt = entity.updatedAt)
+            userDeviceDao.applyRemoteName(
+                id = entity.id,
+                name = entity.name,
+                remoteUpdatedAt = entity.updatedAt,
+            )
         }
     }
 

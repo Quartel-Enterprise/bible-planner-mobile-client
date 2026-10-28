@@ -191,7 +191,10 @@ internal class BooksUiTest {
         onAllNodes(topBarActionButton)[SORT_BUTTON_INDEX].performClick()
 
         // Then
-        assertEquals(expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleSortMenu), actual = events)
+        assertEquals(
+            expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleSortMenu),
+            actual = events,
+        )
     }
 
     @Test
@@ -203,7 +206,10 @@ internal class BooksUiTest {
         onAllNodes(topBarActionButton)[FILTER_BUTTON_INDEX].performClick()
 
         // Then
-        assertEquals(expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleFilterMenu), actual = events)
+        assertEquals(
+            expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleFilterMenu),
+            actual = events,
+        )
     }
 
     @Test

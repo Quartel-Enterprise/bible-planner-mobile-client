@@ -49,7 +49,10 @@ internal class EditDaySelectableDatesTest {
             timeZone = westOfUtc,
             now = LocalDateTime(
                 date = today,
-                time = LocalTime(hour = 12, minute = 0),
+                time = LocalTime(
+                    hour = 12,
+                    minute = 0,
+                ),
             ),
         )
 
@@ -67,7 +70,10 @@ internal class EditDaySelectableDatesTest {
             timeZone = eastOfUtc,
             now = LocalDateTime(
                 date = today,
-                time = LocalTime(hour = 8, minute = 0),
+                time = LocalTime(
+                    hour = 8,
+                    minute = 0,
+                ),
             ),
         )
 
@@ -85,7 +91,10 @@ internal class EditDaySelectableDatesTest {
             timeZone = westOfUtc,
             now = LocalDateTime(
                 date = today,
-                time = LocalTime(hour = 22, minute = 0),
+                time = LocalTime(
+                    hour = 22,
+                    minute = 0,
+                ),
             ),
         )
 
@@ -103,7 +112,10 @@ internal class EditDaySelectableDatesTest {
             timeZone = eastOfUtc,
             now = LocalDateTime(
                 date = newYearsDay,
-                time = LocalTime(hour = 5, minute = 0),
+                time = LocalTime(
+                    hour = 5,
+                    minute = 0,
+                ),
             ),
         )
 
@@ -121,7 +133,10 @@ internal class EditDaySelectableDatesTest {
             timeZone = westOfUtc,
             now = LocalDateTime(
                 date = newYearsEve,
-                time = LocalTime(hour = 22, minute = 0),
+                time = LocalTime(
+                    hour = 22,
+                    minute = 0,
+                ),
             ),
         )
 

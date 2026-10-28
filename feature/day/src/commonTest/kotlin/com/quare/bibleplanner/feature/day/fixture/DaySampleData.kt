@@ -30,7 +30,11 @@ private val notesByLocale = mapOf(
         "era ese el orden que yo esperaba.",
 )
 private val chapters = listOf(1, 2, 3)
-private val readDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 20)
+private val readDate = LocalDate(
+    year = 2026,
+    monthNumber = 7,
+    dayOfMonth = 20,
+)
 
 private fun passage(): PassageModel = PassageModel(
     bookId = BookId.GEN,

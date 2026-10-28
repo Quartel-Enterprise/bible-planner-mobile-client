@@ -30,6 +30,7 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.UpdateDayReadSt
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.applyReadOverride
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.toReadNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
@@ -456,30 +457,10 @@ internal class ReadingPlanViewModel(
                 ReadingPlanType.BOOKS -> books = books.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
             }
         }
-        return copy(chronologicalOrder = chronological, booksOrder = books)
-    }
-
-    private fun List<WeekPlanModel>.applyReadOverride(
-        weekNumber: Int,
-        dayNumber: Int,
-        isRead: Boolean,
-    ): List<WeekPlanModel> = map { week ->
-        if (week.number != weekNumber) {
-            week
-        } else {
-            week.copy(
-                days = week.days.map { day ->
-                    if (day.number != dayNumber) {
-                        day
-                    } else {
-                        day.copy(
-                            isRead = isRead,
-                            passages = day.passages.map { it.copy(isRead = isRead) },
-                        )
-                    }
-                },
-            )
-        }
+        return copy(
+            chronologicalOrder = chronological,
+            booksOrder = books,
+        )
     }
 
     private fun reconcileReadOverrides(authoritative: PlansModel) {

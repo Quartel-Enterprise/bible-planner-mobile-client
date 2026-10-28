@@ -58,8 +58,14 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ReadListeningViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
     private val route = ReadNavRoute(
         bookId = BookId.GEN.name,
         chapterNumber = 1,

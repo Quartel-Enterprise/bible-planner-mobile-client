@@ -68,8 +68,20 @@ internal class Migration16To18SpecTest {
 
         // Then
         assertEquals(listOf(1, 2), verseNumbers(chapterId = 1))
-        assertEquals(2, countVerseTexts(chapterId = 1, versionId = "WEB"))
-        assertEquals(2, countVerseTexts(chapterId = 1, versionId = "ACF"))
+        assertEquals(
+            2,
+            countVerseTexts(
+                chapterId = 1,
+                versionId = "WEB",
+            ),
+        )
+        assertEquals(
+            2,
+            countVerseTexts(
+                chapterId = 1,
+                versionId = "ACF",
+            ),
+        )
     }
 
     @Test
@@ -95,7 +107,13 @@ internal class Migration16To18SpecTest {
             spec.onPostMigrate(connection)
 
             // Then
-            assertEquals(0, countVerseTexts(chapterId = 2, versionId = "WEB"))
+            assertEquals(
+                0,
+                countVerseTexts(
+                    chapterId = 2,
+                    versionId = "WEB",
+                ),
+            )
             assertEquals("IN_PROGRESS", versionStatus(id = "WEB"))
         }
 
@@ -110,7 +128,13 @@ internal class Migration16To18SpecTest {
         // Then
         assertEquals(DONE, versionStatus(id = "ACF"))
         assertEquals(DONE, versionStatus(id = "KJV"))
-        assertEquals(1, countVerseTexts(chapterId = 3, versionId = "ACF"))
+        assertEquals(
+            1,
+            countVerseTexts(
+                chapterId = 3,
+                versionId = "ACF",
+            ),
+        )
     }
 
     @Test
@@ -128,7 +152,13 @@ internal class Migration16To18SpecTest {
 
         // Then
         assertEquals(listOf(1, 2, 3, 4), verseNumbers(chapterId = 2))
-        assertEquals(4, countVerseTexts(chapterId = 2, versionId = "WEB"))
+        assertEquals(
+            4,
+            countVerseTexts(
+                chapterId = 2,
+                versionId = "WEB",
+            ),
+        )
         assertEquals(DONE, versionStatus(id = "WEB"))
     }
 
@@ -148,7 +178,10 @@ internal class Migration16To18SpecTest {
 
     private fun versionStatus(id: String): String {
         val statement = connection.prepare("SELECT status FROM bible_versions WHERE id = ?")
-        statement.bindText(index = 1, value = id)
+        statement.bindText(
+            index = 1,
+            value = id,
+        )
         statement.step()
         return statement.getText(0).also { statement.close() }
     }
@@ -163,8 +196,16 @@ internal class Migration16To18SpecTest {
     private fun prepareScenario() {
         spec = Migration16To18Spec(
             corrections = listOf(
-                VerseCountCorrection(bookId = BookId.GEN, chapter = SHRINKING_CHAPTER, verses = 2),
-                VerseCountCorrection(bookId = BookId.GEN, chapter = GROWING_CHAPTER, verses = 4),
+                VerseCountCorrection(
+                    bookId = BookId.GEN,
+                    chapter = SHRINKING_CHAPTER,
+                    verses = 2,
+                ),
+                VerseCountCorrection(
+                    bookId = BookId.GEN,
+                    chapter = GROWING_CHAPTER,
+                    verses = 4,
+                ),
             ),
         )
     }

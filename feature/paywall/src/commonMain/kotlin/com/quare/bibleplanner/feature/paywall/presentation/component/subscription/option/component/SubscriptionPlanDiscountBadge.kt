@@ -25,7 +25,10 @@ internal fun SubscriptionPlanDiscountBadge(
             .background(
                 color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(4.dp),
-            ).padding(horizontal = 8.dp, vertical = 3.dp),
+            ).padding(
+                horizontal = 8.dp,
+                vertical = 3.dp,
+            ),
     ) {
         Text(
             text = stringResource(Res.string.save_percent, savePercentage),

@@ -35,7 +35,10 @@ internal fun AccountDetailsSheet() {
         onCloseClick = navigator::navigateBack,
         title = stringResource(Res.string.account_details_title),
     ) {
-        AccountDetailsContent(uiState = uiState, onEvent = viewModel::onEvent)
+        AccountDetailsContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+        )
     }
 }
 

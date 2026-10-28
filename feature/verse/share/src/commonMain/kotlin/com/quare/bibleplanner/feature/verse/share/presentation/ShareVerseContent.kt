@@ -78,8 +78,10 @@ private fun ShareOption(
     ) {
         Row(
             modifier = Modifier
-                .clickable(enabled = isEnabled, onClick = onClick)
-                .padding(12.dp),
+                .clickable(
+                    enabled = isEnabled,
+                    onClick = onClick,
+                ).padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {

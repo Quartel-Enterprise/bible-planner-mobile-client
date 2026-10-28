@@ -32,10 +32,20 @@ internal class NavTabState(
         val currentStack = backStacks.getValue(selectedTab)
         if (currentStack.size > 1) {
             currentStack.removeLastOrNull()?.let { route ->
-                forwardStack.add(TabBackStep(tab = selectedTab, poppedRoute = route))
+                forwardStack.add(
+                    TabBackStep(
+                        tab = selectedTab,
+                        poppedRoute = route,
+                    ),
+                )
             }
         } else if (selectedTab != startTab) {
-            forwardStack.add(TabBackStep(tab = selectedTab, poppedRoute = null))
+            forwardStack.add(
+                TabBackStep(
+                    tab = selectedTab,
+                    poppedRoute = null,
+                ),
+            )
             selectedIndex = tabs.indexOf(startTab)
         }
     }

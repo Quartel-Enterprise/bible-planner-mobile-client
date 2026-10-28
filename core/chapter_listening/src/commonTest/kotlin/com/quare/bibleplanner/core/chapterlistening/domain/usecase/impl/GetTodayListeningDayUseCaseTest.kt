@@ -24,9 +24,18 @@ import kotlin.test.assertNull
 
 internal class GetTodayListeningDayUseCaseTest {
     private val today = LocalDate(2026, 10, 10)
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
-    private val obadiahOne = ChapterLocationModel(bookId = BookId.OBA, chapterNumber = 1)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
+    private val obadiahOne = ChapterLocationModel(
+        bookId = BookId.OBA,
+        chapterNumber = 1,
+    )
     private val scheduledDays = mutableListOf<Triple<Int, Int, ReadingPlanType>>()
     private lateinit var useCase: GetTodayListeningDayUseCase
 
@@ -36,7 +45,15 @@ internal class GetTodayListeningDayUseCaseTest {
         prepareScenario(
             startDate = LocalDate(2026, 10, 1),
             passages = listOf(
-                passage(BookId.GEN, chapter(1), chapter(2, startVerse = 1, endVerse = 9)),
+                passage(
+                    BookId.GEN,
+                    chapter(1),
+                    chapter(
+                        2,
+                        startVerse = 1,
+                        endVerse = 9,
+                    ),
+                ),
                 passage(BookId.OBA),
             ),
         )
@@ -53,9 +70,21 @@ internal class GetTodayListeningDayUseCaseTest {
                     readingPlanType = ReadingPlanType.CHRONOLOGICAL,
                 ),
                 segments = listOf(
-                    ListeningSegmentModel(chapter = genesisOne, startVerse = null, endVerse = null),
-                    ListeningSegmentModel(chapter = genesisTwo, startVerse = 1, endVerse = 9),
-                    ListeningSegmentModel(chapter = obadiahOne, startVerse = null, endVerse = null),
+                    ListeningSegmentModel(
+                        chapter = genesisOne,
+                        startVerse = null,
+                        endVerse = null,
+                    ),
+                    ListeningSegmentModel(
+                        chapter = genesisTwo,
+                        startVerse = 1,
+                        endVerse = 9,
+                    ),
+                    ListeningSegmentModel(
+                        chapter = obadiahOne,
+                        startVerse = null,
+                        endVerse = null,
+                    ),
                 ),
             ),
             day,

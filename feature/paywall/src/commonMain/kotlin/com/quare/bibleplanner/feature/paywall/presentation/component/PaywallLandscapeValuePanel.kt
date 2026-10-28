@@ -54,7 +54,10 @@ internal fun PaywallLandscapeValuePanel(
             val heroIcon = dimensions.heroIcon
             if (heroIcon == null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    BackIcon(platform = platform, onBackClick = onBackClick)
+                    BackIcon(
+                        platform = platform,
+                        onBackClick = onBackClick,
+                    )
                     Column {
                         BecomeProTitle(
                             sharedTransitionScope = sharedTransitionScope,
@@ -71,7 +74,10 @@ internal fun PaywallLandscapeValuePanel(
                     }
                 }
             } else {
-                BackIcon(platform = platform, onBackClick = onBackClick)
+                BackIcon(
+                    platform = platform,
+                    onBackClick = onBackClick,
+                )
                 VerticalSpacer(BACK_ICON_BOTTOM_SPACING)
                 PaywallHero(
                     modifier = Modifier.padding(start = dimensions.panelContentStartPadding),

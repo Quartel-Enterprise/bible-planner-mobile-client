@@ -24,7 +24,10 @@ internal fun LogoutRow(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 4.dp, vertical = 14.dp),
+            .padding(
+                horizontal = 4.dp,
+                vertical = 14.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

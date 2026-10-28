@@ -14,7 +14,12 @@ internal fun passage(
 ): PassageModel = PassageModel(
     bookId = bookId,
     chapters = listOf(
-        ChapterModel(number = 1, startVerse = null, endVerse = null, bookId = bookId),
+        ChapterModel(
+            number = 1,
+            startVerse = null,
+            endVerse = null,
+            bookId = bookId,
+        ),
     ),
     isRead = isRead,
     chapterRanges = null,

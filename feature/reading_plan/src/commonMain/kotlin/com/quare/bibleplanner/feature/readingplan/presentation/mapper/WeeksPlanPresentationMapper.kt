@@ -31,7 +31,12 @@ internal class WeeksPlanPresentationMapper(
             .asSequence()
             .flatMap { week -> week.days.asSequence().map { week.number to it } }
             .firstOrNull { (_, day) -> day.isToday }
-            ?.let { (weekNumber, day) -> getGlobalDayIndex(weekNumber = weekNumber, dayNumber = day.number) }
+            ?.let { (weekNumber, day) ->
+                getGlobalDayIndex(
+                    weekNumber = weekNumber,
+                    dayNumber = day.number,
+                )
+            }
 
         var currentAssigned = false
         return weeks.map { week ->
@@ -48,7 +53,10 @@ internal class WeeksPlanPresentationMapper(
             WeekPlanPresentationModel(
                 weekPlan = week,
                 dayPlans = week.days.map { day ->
-                    val globalDayIndex = getGlobalDayIndex(weekNumber = week.number, dayNumber = day.number)
+                    val globalDayIndex = getGlobalDayIndex(
+                        weekNumber = week.number,
+                        dayNumber = day.number,
+                    )
                     val isNextToRead = nextToReadKey == (week.number to day.number)
                     val isActive = day.isToday && !day.isRead
                     DayPlanPresentationModel(

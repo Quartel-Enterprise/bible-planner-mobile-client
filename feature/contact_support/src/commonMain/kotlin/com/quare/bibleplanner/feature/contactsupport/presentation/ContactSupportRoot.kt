@@ -33,7 +33,10 @@ fun EntryProviderScope<NavKey>.contactSupport() {
             onCloseClick = { onEvent(ContactSupportUiEvent.OnDismiss) },
         ) {
             Box {
-                ContactSupportDialogContent(state = uiState, onEvent = onEvent)
+                ContactSupportDialogContent(
+                    state = uiState,
+                    onEvent = onEvent,
+                )
                 SnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier.align(Alignment.BottomCenter),

@@ -50,5 +50,8 @@ private fun PlanMode.toFabConfig(): FabConfig? {
         PlanMode.New, PlanMode.OnTrack -> Res.string.fab_back_to_today to AppIcon.Today
         PlanMode.Done -> return null
     }
-    return FabConfig(labelResource = labelResource, icon = icon)
+    return FabConfig(
+        labelResource = labelResource,
+        icon = icon,
+    )
 }

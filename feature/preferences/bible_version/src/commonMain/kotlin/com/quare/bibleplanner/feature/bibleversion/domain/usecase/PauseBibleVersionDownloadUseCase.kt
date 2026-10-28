@@ -10,6 +10,9 @@ class PauseBibleVersionDownloadUseCase(
 ) {
     suspend operator fun invoke(versionId: String) {
         notifier.dismiss(versionId)
-        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.PAUSED,
+        )
     }
 }

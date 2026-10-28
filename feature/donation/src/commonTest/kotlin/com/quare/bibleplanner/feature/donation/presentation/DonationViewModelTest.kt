@@ -108,7 +108,13 @@ internal class DonationViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isBitcoinExpanded)
-        assertEquals(sectionToggled(section = "bitcoin", isExpanded = true), trackedEvents.single())
+        assertEquals(
+            sectionToggled(
+                section = "bitcoin",
+                isExpanded = true,
+            ),
+            trackedEvents.single(),
+        )
     }
 
     @Test
@@ -121,7 +127,13 @@ internal class DonationViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isUsdtExpanded)
-        assertEquals(sectionToggled(section = "usdt", isExpanded = true), trackedEvents.single())
+        assertEquals(
+            sectionToggled(
+                section = "usdt",
+                isExpanded = true,
+            ),
+            trackedEvents.single(),
+        )
     }
 
     @Test
@@ -135,7 +147,13 @@ internal class DonationViewModelTest {
 
         // Then
         assertEquals(false, viewModel.uiState.value.isPixExpanded)
-        assertEquals(sectionToggled(section = "pix", isExpanded = false), trackedEvents.last())
+        assertEquals(
+            sectionToggled(
+                section = "pix",
+                isExpanded = false,
+            ),
+            trackedEvents.last(),
+        )
     }
 
     @Test

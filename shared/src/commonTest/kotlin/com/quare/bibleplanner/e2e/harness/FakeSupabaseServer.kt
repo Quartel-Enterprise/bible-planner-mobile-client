@@ -53,7 +53,15 @@ private fun MockRequestHandleScope.serveBibleFile(bibleFilePath: String): HttpRe
         ?: return notFound()
     return when (segments.size) {
         2 -> json(version.metadata().toString())
-        3 -> json(chapter(version = version, bookDirectory = segments[1], chapterFile = segments[2]))
+
+        3 -> json(
+            chapter(
+                version = version,
+                bookDirectory = segments[1],
+                chapterFile = segments[2],
+            ),
+        )
+
         else -> notFound()
     }
 }

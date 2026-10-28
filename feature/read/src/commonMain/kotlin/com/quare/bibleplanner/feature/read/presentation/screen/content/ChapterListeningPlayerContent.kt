@@ -62,7 +62,12 @@ internal fun ChapterListeningPlayerContent(
                 }
             }
         }
-        player.dayProgress?.let { DayProgressCard(dayProgress = it, progress = player.progress) }
+        player.dayProgress?.let {
+            DayProgressCard(
+                dayProgress = it,
+                progress = player.progress,
+            )
+        }
         CurrentVerseCard(
             player = player,
             isWordHighlightEnabled = uiState.isWordHighlightEnabled,

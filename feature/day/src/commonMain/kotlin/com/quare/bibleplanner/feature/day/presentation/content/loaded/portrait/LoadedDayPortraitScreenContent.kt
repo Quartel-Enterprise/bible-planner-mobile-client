@@ -66,7 +66,11 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
         with(sharedTransitionScope) {
             responsiveItem {
                 PlannedReadDateComponent(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                    ),
                     plannedReadDate = plannedReadDate,
                     animatedContentScope = animatedContentScope,
                     weekNumber = uiState.weekNumber,

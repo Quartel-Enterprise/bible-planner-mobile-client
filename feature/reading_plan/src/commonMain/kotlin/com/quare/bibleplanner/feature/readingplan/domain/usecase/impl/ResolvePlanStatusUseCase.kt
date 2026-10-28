@@ -17,7 +17,10 @@ internal class ResolvePlanStatusUseCase : ResolvePlanStatus {
                 IndexedDay(
                     day = day,
                     weekNumber = week.number,
-                    globalIndex = getGlobalDayIndex(weekNumber = week.number, dayNumber = day.number),
+                    globalIndex = getGlobalDayIndex(
+                        weekNumber = week.number,
+                        dayNumber = day.number,
+                    ),
                 )
             }
         }

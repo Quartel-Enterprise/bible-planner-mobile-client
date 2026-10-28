@@ -129,7 +129,10 @@ internal class SubscriptionStatusMapperTest {
 
         // Then
         val pro = assertIs<SubscriptionStatus.Pro>(status)
-        assertEquals(expected = PurchaseStore.PLAY_STORE, actual = pro.store)
+        assertEquals(
+            expected = PurchaseStore.PLAY_STORE,
+            actual = pro.store,
+        )
     }
 
     @Test
@@ -139,7 +142,10 @@ internal class SubscriptionStatusMapperTest {
 
         // Then
         val pro = assertIs<SubscriptionStatus.Pro>(status)
-        assertEquals(expected = PurchaseStore.WEB, actual = pro.store)
+        assertEquals(
+            expected = PurchaseStore.WEB,
+            actual = pro.store,
+        )
     }
 
     @Test

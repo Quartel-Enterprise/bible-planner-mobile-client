@@ -107,7 +107,10 @@ internal fun ListeningMiniPlayerBar(
                 .widthIn(max = contentMaxWidth)
                 .fillMaxWidth()
                 .height(barHeight)
-                .padding(start = 12.dp, end = 4.dp),
+                .padding(
+                    start = 12.dp,
+                    end = 4.dp,
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
@@ -334,7 +337,10 @@ private fun RowScope.PlayerTitleColumn(
             .weight(1f)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onEvent(ReadListeningUiEvent.OnMiniPlayerClick) }
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(
+                horizontal = 6.dp,
+                vertical = 4.dp,
+            ),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

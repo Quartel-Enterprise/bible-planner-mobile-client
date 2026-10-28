@@ -26,7 +26,10 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChapterListeningGateTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
+    private val chapter = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val resultStore = StudyUnlockResultStore()
     private lateinit var gate: ChapterListeningGate
     private lateinit var commands: MutableList<NavigationCommand>
@@ -54,7 +57,12 @@ internal class ChapterListeningGateTest {
     @Test
     fun `GIVEN the daily unlock used WHEN requesting THEN opens the Pro teaser`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = true) })
+        prepareScenario(access = {
+            createLimitReached(
+                hasRewardedUnlocks = true,
+                hasFreeUnlocks = true,
+            )
+        })
 
         // When
         gate.request(
@@ -150,7 +158,12 @@ internal class ChapterListeningGateTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                access = { createLimitReached(hasRewardedUnlocks = true, hasFreeUnlocks = false) },
+                access = {
+                    createLimitReached(
+                        hasRewardedUnlocks = true,
+                        hasFreeUnlocks = false,
+                    )
+                },
                 isRewardedUnlockEnabled = false,
             )
 
@@ -175,7 +188,12 @@ internal class ChapterListeningGateTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                access = { createLimitReached(hasRewardedUnlocks = false, hasFreeUnlocks = false) },
+                access = {
+                    createLimitReached(
+                        hasRewardedUnlocks = false,
+                        hasFreeUnlocks = false,
+                    )
+                },
             )
 
             // When

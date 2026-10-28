@@ -178,7 +178,10 @@ internal fun SubDonationItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(
+                horizontal = 16.dp,
+                vertical = 4.dp,
+            ),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
             width = 2.dp,

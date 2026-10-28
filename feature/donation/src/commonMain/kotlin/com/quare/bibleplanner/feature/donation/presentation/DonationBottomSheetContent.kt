@@ -181,8 +181,10 @@ fun DonationBottomSheetContent(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .clickable { onEvent(DonationUiEvent.OpenPixQr) },
+                                .padding(
+                                    horizontal = 16.dp,
+                                    vertical = 4.dp,
+                                ).clickable { onEvent(DonationUiEvent.OpenPixQr) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         )
                     }

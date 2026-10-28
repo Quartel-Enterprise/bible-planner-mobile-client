@@ -45,13 +45,21 @@ class ObserveAuthenticatedUserIdUseCaseTest {
     @Test
     fun `GIVEN the same user re-emitted WHEN observing THEN emits it only once`() = runTest {
         // Given
-        prepareScenario(initialStatus = authenticated(userId = "user-1", accessToken = "token-a"))
+        prepareScenario(
+            initialStatus = authenticated(
+                userId = "user-1",
+                accessToken = "token-a",
+            ),
+        )
 
         // When
         val emissions = mutableListOf<String?>()
         backgroundScope.launch { useCase().collect { emissions += it } }
         runCurrent()
-        sessionStatus.value = authenticated(userId = "user-1", accessToken = "token-b")
+        sessionStatus.value = authenticated(
+            userId = "user-1",
+            accessToken = "token-b",
+        )
         runCurrent()
 
         // Then
@@ -67,7 +75,10 @@ class ObserveAuthenticatedUserIdUseCaseTest {
             refreshToken = "",
             expiresIn = 0,
             tokenType = "",
-            user = UserInfo(aud = "", id = userId),
+            user = UserInfo(
+                aud = "",
+                id = userId,
+            ),
         ),
     )
 

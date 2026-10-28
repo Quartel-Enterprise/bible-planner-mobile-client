@@ -12,7 +12,10 @@ class DeleteBibleVersionDownloadUseCase(
 ) {
     suspend operator fun invoke(versionId: String) {
         notifier.dismiss(versionId)
-        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.NOT_STARTED)
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.NOT_STARTED,
+        )
         verseDao.deleteVerseTextsByVersion(versionId)
     }
 }

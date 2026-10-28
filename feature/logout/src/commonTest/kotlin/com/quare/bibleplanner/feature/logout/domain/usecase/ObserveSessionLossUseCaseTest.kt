@@ -210,7 +210,10 @@ class ObserveSessionLossUseCaseTest {
             refreshToken = "refresh-token",
             expiresIn = sessionLifetime.inWholeSeconds,
             tokenType = "bearer",
-            user = UserInfo(aud = "", id = "user-1"),
+            user = UserInfo(
+                aud = "",
+                id = "user-1",
+            ),
             expiresAt = Instant.fromEpochMilliseconds(expiresAtMillis),
         ),
         source = SessionSource.SignIn(Google),

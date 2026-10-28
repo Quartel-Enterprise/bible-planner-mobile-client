@@ -19,7 +19,10 @@ class ObserveTesterUserPropertyUseCaseTest {
     @Test
     fun `GIVEN a user in the allowlist WHEN observing THEN marks it as tester`() = runTest {
         // Given
-        val useCase = createUseCase(allowlist = """["user-1","user-2"]""", userId = "user-1")
+        val useCase = createUseCase(
+            allowlist = """["user-1","user-2"]""",
+            userId = "user-1",
+        )
 
         // When
         backgroundScope.launch { useCase() }
@@ -32,7 +35,10 @@ class ObserveTesterUserPropertyUseCaseTest {
     @Test
     fun `GIVEN a user outside the allowlist WHEN observing THEN does not mark it as tester`() = runTest {
         // Given
-        val useCase = createUseCase(allowlist = """["user-1","user-2"]""", userId = "user-3")
+        val useCase = createUseCase(
+            allowlist = """["user-1","user-2"]""",
+            userId = "user-3",
+        )
 
         // When
         backgroundScope.launch { useCase() }
@@ -45,7 +51,10 @@ class ObserveTesterUserPropertyUseCaseTest {
     @Test
     fun `GIVEN no authenticated user WHEN observing THEN does not mark it as tester`() = runTest {
         // Given
-        val useCase = createUseCase(allowlist = """["user-1"]""", userId = null)
+        val useCase = createUseCase(
+            allowlist = """["user-1"]""",
+            userId = null,
+        )
 
         // When
         backgroundScope.launch { useCase() }

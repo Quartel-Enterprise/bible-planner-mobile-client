@@ -50,7 +50,10 @@ internal class BibleVersionDownloadWorker(
     override suspend fun doWork(): Result {
         val versionId = inputData.getString(KEY_VERSION_ID) ?: return Result.failure()
 
-        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.IN_PROGRESS,
+        )
         /*
          * Why: Android 12+ refuses foreground promotion when started in the background; keep downloading
          * in the background instead of crashing.
@@ -89,7 +92,10 @@ internal class BibleVersionDownloadWorker(
                     notifier.showComplete(versionId, versionName)
                 }.onFailure {
                     notifier.showError(versionId, versionName)
-                    bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+                    bibleVersionDao.updateStatus(
+                        id = versionId,
+                        status = DownloadStatus.PAUSED,
+                    )
                 }
 
             if (result.isSuccess) Result.success() else Result.failure()
@@ -117,7 +123,10 @@ internal class BibleVersionDownloadWorker(
             versionName = versionName,
             progress = progress,
         )
-        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+        bibleVersionDao.updateStatus(
+            id = versionId,
+            status = DownloadStatus.PAUSED,
+        )
     }
 
     companion object {

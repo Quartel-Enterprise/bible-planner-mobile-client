@@ -493,7 +493,10 @@ internal class ReadViewModelTest {
                 },
                 getCompletedDayForChapter = { _, _ -> error("unused") },
                 dayCompletionCandidates = mapOf(
-                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                    ChapterLocationModel(
+                        bookId = BookId.GEN,
+                        chapterNumber = 3,
+                    ) to completedDay,
                 ),
             )
 
@@ -520,7 +523,10 @@ internal class ReadViewModelTest {
                 },
                 getCompletedDayForChapter = { _, _ -> error("unused") },
                 dayCompletionCandidates = mapOf(
-                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                    ChapterLocationModel(
+                        bookId = BookId.GEN,
+                        chapterNumber = 3,
+                    ) to completedDay,
                 ),
             )
             viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
@@ -543,7 +549,10 @@ internal class ReadViewModelTest {
             // Given
             prepareScenario(
                 dayCompletionCandidates = mapOf(
-                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                    ChapterLocationModel(
+                        bookId = BookId.GEN,
+                        chapterNumber = 3,
+                    ) to completedDay,
                 ),
             )
 

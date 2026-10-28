@@ -125,7 +125,13 @@ class CommandExecutor(
     fun getScreen(): JsonElement = buildJsonObject {
         put("screen", session.topEntry.route?.let(routeCatalog::nameOf))
         put("viewModels", JsonArray(session.visibleViewModels.map { JsonPrimitive(it.name) }))
-        put("stack", session.stack.joinToString(separator = " > ", transform = routeCatalog::nameOf))
+        put(
+            "stack",
+            session.stack.joinToString(
+                separator = " > ",
+                transform = routeCatalog::nameOf,
+            ),
+        )
     }
 
     private fun getStack(): JsonElement = JsonArray(

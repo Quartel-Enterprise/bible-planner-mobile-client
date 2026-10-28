@@ -53,7 +53,10 @@ internal fun SharedTransitionScope.WeekRow(
     }
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
-        animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+        animationSpec = tween(
+            durationMillis = 400,
+            easing = LinearEasing,
+        ),
         label = "weekProgressAnimation",
     )
     val animatedReadDays by animateIntAsState(
@@ -72,7 +75,10 @@ internal fun SharedTransitionScope.WeekRow(
                 onClick = {
                     onEvent(ReadingPlanUiEvent.OnWeekExpandClick(weekNumber))
                 },
-            ).padding(horizontal = 16.dp, vertical = 12.dp),
+            ).padding(
+                horizontal = 16.dp,
+                vertical = 12.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {

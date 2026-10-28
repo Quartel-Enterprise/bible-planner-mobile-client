@@ -19,7 +19,11 @@ class UserDeviceLocalStoreTest {
     @Test
     fun `GIVEN an unknown row WHEN applying remote THEN inserts it`() = runTest {
         // Given
-        val remote = dto(id = "row-1", name = "iPhone", updatedAt = "2026-07-11T10:00:00Z")
+        val remote = dto(
+            id = "row-1",
+            name = "iPhone",
+            updatedAt = "2026-07-11T10:00:00Z",
+        )
 
         // When
         localStore.applyRemote(remote)
@@ -31,10 +35,21 @@ class UserDeviceLocalStoreTest {
     @Test
     fun `GIVEN a non-pending older row WHEN applying a newer remote THEN overwrites the name`() = runTest {
         // Given
-        dao.rows["row-1"] = entity(id = "row-1", name = "Old", updatedAt = 1_000L, pending = false)
+        dao.rows["row-1"] = entity(
+            id = "row-1",
+            name = "Old",
+            updatedAt = 1_000L,
+            pending = false,
+        )
 
         // When
-        localStore.applyRemote(dto(id = "row-1", name = "New", updatedAt = "2026-07-11T10:00:00Z"))
+        localStore.applyRemote(
+            dto(
+                id = "row-1",
+                name = "New",
+                updatedAt = "2026-07-11T10:00:00Z",
+            ),
+        )
 
         // Then
         assertEquals("New", dao.rows.getValue("row-1").name)
@@ -44,10 +59,21 @@ class UserDeviceLocalStoreTest {
     fun `GIVEN a pending row WHEN applying remote THEN keeps the local name`() = runTest {
         // Given
         // A pending rename that is newer than the remote
-        dao.rows["row-1"] = entity(id = "row-1", name = "Local", updatedAt = Long.MAX_VALUE, pending = true)
+        dao.rows["row-1"] = entity(
+            id = "row-1",
+            name = "Local",
+            updatedAt = Long.MAX_VALUE,
+            pending = true,
+        )
 
         // When
-        localStore.applyRemote(dto(id = "row-1", name = "Remote", updatedAt = "2026-07-11T10:00:00Z"))
+        localStore.applyRemote(
+            dto(
+                id = "row-1",
+                name = "Remote",
+                updatedAt = "2026-07-11T10:00:00Z",
+            ),
+        )
 
         // Then
         assertEquals("Local", dao.rows.getValue("row-1").name)
@@ -56,8 +82,18 @@ class UserDeviceLocalStoreTest {
     @Test
     fun `GIVEN extra local rows WHEN retaining only remote ids THEN deletes the absent ones`() = runTest {
         // Given
-        dao.rows["keep"] = entity(id = "keep", name = "A", updatedAt = 1L, pending = false)
-        dao.rows["drop"] = entity(id = "drop", name = "B", updatedAt = 1L, pending = false)
+        dao.rows["keep"] = entity(
+            id = "keep",
+            name = "A",
+            updatedAt = 1L,
+            pending = false,
+        )
+        dao.rows["drop"] = entity(
+            id = "drop",
+            name = "B",
+            updatedAt = 1L,
+            pending = false,
+        )
 
         // When
         localStore.retainOnly(listOf("keep"))
@@ -120,7 +156,13 @@ private class FakeUserDeviceDao : UserDeviceDao {
         name: String,
         now: Long,
     ) {
-        rows[id]?.let { rows[id] = it.copy(name = name, updatedAt = now, isNamePendingSync = true) }
+        rows[id]?.let {
+            rows[id] = it.copy(
+                name = name,
+                updatedAt = now,
+                isNamePendingSync = true,
+            )
+        }
     }
 
     override fun getPendingFlow(): Flow<List<UserDeviceEntity>> = flowOf(rows.values.filter { it.isNamePendingSync })
@@ -162,7 +204,10 @@ private class FakeUserDeviceDao : UserDeviceDao {
     ) {
         rows[id]?.let {
             if (!it.isNamePendingSync && it.updatedAt < remoteUpdatedAt) {
-                rows[id] = it.copy(name = name, updatedAt = remoteUpdatedAt)
+                rows[id] = it.copy(
+                    name = name,
+                    updatedAt = remoteUpdatedAt,
+                )
             }
         }
     }

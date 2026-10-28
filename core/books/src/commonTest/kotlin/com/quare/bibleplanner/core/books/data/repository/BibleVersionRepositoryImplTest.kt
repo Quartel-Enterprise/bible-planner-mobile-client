@@ -36,7 +36,10 @@ internal class BibleVersionRepositoryImplTest {
         val versions = repository.getVersions(forceRefresh = false)
 
         // Then
-        assertEquals(expected = 0, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 0,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(CACHED_CONTENT_VERSION),
             actual = versions.getOrThrow().map { it.version },
@@ -52,7 +55,10 @@ internal class BibleVersionRepositoryImplTest {
         val versions = repository.getVersions(forceRefresh = true)
 
         // Then
-        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 1,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(REMOTE_CONTENT_VERSION),
             actual = versions.getOrThrow().map { it.version },
@@ -68,7 +74,10 @@ internal class BibleVersionRepositoryImplTest {
         val versions = repository.getVersions(forceRefresh = false)
 
         // Then
-        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 1,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(REMOTE_CONTENT_VERSION),
             actual = versions.getOrThrow().map { it.version },
@@ -84,7 +93,10 @@ internal class BibleVersionRepositoryImplTest {
         val versions = repository.getVersions(forceRefresh = false)
 
         // Then
-        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 1,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(REMOTE_CONTENT_VERSION),
             actual = versions.getOrThrow().map { it.version },
@@ -101,7 +113,10 @@ internal class BibleVersionRepositoryImplTest {
             repository.getVersions(forceRefresh = true)
 
             // Then
-            assertEquals(expected = NOW, actual = localDataSource.savedTimestamp)
+            assertEquals(
+                expected = NOW,
+                actual = localDataSource.savedTimestamp,
+            )
             assertEquals(
                 expected = listOf(REMOTE_CONTENT_VERSION),
                 actual = localDataSource.savedVersions?.map { it.version },
@@ -140,7 +155,10 @@ internal class BibleVersionRepositoryImplTest {
         }
 
         // Then
-        assertEquals(expected = 0, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 0,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(listOf(CACHED_CONTENT_VERSION)),
             actual = emissions,
@@ -185,7 +203,10 @@ internal class BibleVersionRepositoryImplTest {
         }
 
         // Then
-        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = 1,
+            actual = remoteDataSource.callCount,
+        )
         assertEquals(
             expected = listOf(listOf(CACHED_CONTENT_VERSION), listOf(REMOTE_CONTENT_VERSION)),
             actual = emissions,

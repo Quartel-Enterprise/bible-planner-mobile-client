@@ -63,7 +63,10 @@ internal fun PaywallTopBar(
             }
         },
         navigationIcon = {
-            BackIcon(platform = platform, onBackClick = onBackClick)
+            BackIcon(
+                platform = platform,
+                onBackClick = onBackClick,
+            )
         },
         actions = {
             PaywallPremiumBadge(modifier = Modifier.padding(end = badgeEndPadding))

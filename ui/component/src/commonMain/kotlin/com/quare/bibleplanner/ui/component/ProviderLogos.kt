@@ -32,10 +32,22 @@ private const val APPLE_PATH = "M16.36 12.9c.02 2.6 2.28 3.46 2.3 3.47-.02.06-.3
 fun googleLogo(): ImageVector = remember {
     createLogoBuilder(name = "GoogleLogo")
         .apply {
-            addColoredPath(color = Color(0xFF4285F4), pathData = GOOGLE_BLUE_PATH)
-            addColoredPath(color = Color(0xFF34A853), pathData = GOOGLE_GREEN_PATH)
-            addColoredPath(color = Color(0xFFFBBC05), pathData = GOOGLE_YELLOW_PATH)
-            addColoredPath(color = Color(0xFFEA4335), pathData = GOOGLE_RED_PATH)
+            addColoredPath(
+                color = Color(0xFF4285F4),
+                pathData = GOOGLE_BLUE_PATH,
+            )
+            addColoredPath(
+                color = Color(0xFF34A853),
+                pathData = GOOGLE_GREEN_PATH,
+            )
+            addColoredPath(
+                color = Color(0xFFFBBC05),
+                pathData = GOOGLE_YELLOW_PATH,
+            )
+            addColoredPath(
+                color = Color(0xFFEA4335),
+                pathData = GOOGLE_RED_PATH,
+            )
         }.build()
 }
 
@@ -43,7 +55,10 @@ fun googleLogo(): ImageVector = remember {
 fun appleLogo(): ImageVector = remember {
     createLogoBuilder(name = "AppleLogo")
         .apply {
-            addColoredPath(color = Color.Black, pathData = APPLE_PATH)
+            addColoredPath(
+                color = Color.Black,
+                pathData = APPLE_PATH,
+            )
         }.build()
 }
 

@@ -252,7 +252,12 @@ internal class FakeReadingDatabase {
             )
             updateChapters(
                 predicate = { it.id == chapterId },
-                transform = { it.copy(isRead = isRead, readUpdatedAt = updatedAt) },
+                transform = {
+                    it.copy(
+                        isRead = isRead,
+                        readUpdatedAt = updatedAt,
+                    )
+                },
             )
         }
 
@@ -263,7 +268,12 @@ internal class FakeReadingDatabase {
         ) {
             updateChapters(
                 predicate = { it.bookId == bookId },
-                transform = { it.copy(isRead = isRead, readUpdatedAt = updatedAt) },
+                transform = {
+                    it.copy(
+                        isRead = isRead,
+                        readUpdatedAt = updatedAt,
+                    )
+                },
             )
         }
 
@@ -337,7 +347,12 @@ internal class FakeReadingDatabase {
             )
             updateVerses(
                 predicate = { it.chapterId == chapterId && it.number in startVerse..endVerse },
-                transform = { it.copy(isRead = isRead, readUpdatedAt = updatedAt) },
+                transform = {
+                    it.copy(
+                        isRead = isRead,
+                        readUpdatedAt = updatedAt,
+                    )
+                },
             )
         }
 

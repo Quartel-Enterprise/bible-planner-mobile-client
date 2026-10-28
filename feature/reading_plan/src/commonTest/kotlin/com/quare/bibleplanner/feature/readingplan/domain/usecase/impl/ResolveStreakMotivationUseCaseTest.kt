@@ -153,8 +153,14 @@ internal class ResolveStreakMotivationUseCaseTest {
     fun `GIVEN a gap between reads WHEN resolving THEN the gap breaks the streak`() {
         // Given
         val days = listOf(
-            day(number = 1, readTimestamp = today.toEpochMillisLocal()),
-            day(number = 2, readTimestamp = today.minus(2, DateTimeUnit.DAY).toEpochMillisLocal()),
+            day(
+                number = 1,
+                readTimestamp = today.toEpochMillisLocal(),
+            ),
+            day(
+                number = 2,
+                readTimestamp = today.minus(2, DateTimeUnit.DAY).toEpochMillisLocal(),
+            ),
         )
 
         // When

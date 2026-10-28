@@ -51,7 +51,10 @@ internal fun DayStudyScreen(
                         )
                     },
                     navigationIcon = {
-                        BackIcon(platform = uiState.platform, onBackClick = onNavigateBack)
+                        BackIcon(
+                            platform = uiState.platform,
+                            onBackClick = onNavigateBack,
+                        )
                     },
                     windowInsets = TopAppBarDefaults.windowInsets.asStable(),
                 )

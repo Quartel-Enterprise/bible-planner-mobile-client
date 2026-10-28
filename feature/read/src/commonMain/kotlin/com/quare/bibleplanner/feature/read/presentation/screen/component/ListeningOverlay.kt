@@ -23,7 +23,10 @@ internal fun ListeningOverlay(
     val finishOffer = listening.finishOffer
     val player = listening.player
     Box(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+        modifier = modifier.fillMaxWidth().padding(
+            horizontal = 14.dp,
+            vertical = 12.dp,
+        ),
         contentAlignment = Alignment.BottomCenter,
     ) {
         if (finishOffer != null) {

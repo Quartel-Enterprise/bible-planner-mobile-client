@@ -30,7 +30,12 @@ internal fun AppLanguageItem(
 ) {
     ListItem(
         headlineContent = { Text(name, fontWeight = if (isSelected) FontWeight.SemiBold else null) },
-        leadingContent = { LanguageCodeChip(code = code, isSelected = isSelected) },
+        leadingContent = {
+            LanguageCodeChip(
+                code = code,
+                isSelected = isSelected,
+            )
+        },
         trailingContent = {
             RadioButton(
                 selected = isSelected,

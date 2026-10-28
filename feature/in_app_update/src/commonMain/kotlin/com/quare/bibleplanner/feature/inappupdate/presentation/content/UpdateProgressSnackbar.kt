@@ -35,7 +35,12 @@ internal fun UpdateProgressSnackbar(
         contentColor = MaterialTheme.colorScheme.inverseOnSurface,
         tonalElevation = 6.dp,
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 14.dp,
+            ),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

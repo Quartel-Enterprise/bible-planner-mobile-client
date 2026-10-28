@@ -200,8 +200,14 @@ internal class ProfileViewModelTest {
         runCurrent()
 
         // Then
-        assertEquals(expected = 1, actual = adsConsentService.privacyOptionsShownCount)
-        assertEquals(expected = emptyList(), actual = actions)
+        assertEquals(
+            expected = 1,
+            actual = adsConsentService.privacyOptionsShownCount,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = actions,
+        )
     }
 
     @Test

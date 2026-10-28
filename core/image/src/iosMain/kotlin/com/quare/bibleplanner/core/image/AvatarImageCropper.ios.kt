@@ -84,7 +84,10 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
     }
 
     private fun ByteArray.toNsData(): NSData = usePinned { pinned ->
-        NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+        NSData.create(
+            bytes = pinned.addressOf(0),
+            length = size.toULong(),
+        )
     }
 
     private fun NSData.toByteArray(): ByteArray = ByteArray(length.toInt()).apply {

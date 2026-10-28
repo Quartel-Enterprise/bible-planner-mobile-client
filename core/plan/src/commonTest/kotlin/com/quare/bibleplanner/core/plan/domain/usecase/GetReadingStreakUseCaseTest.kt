@@ -54,14 +54,28 @@ internal class GetReadingStreakUseCaseTest {
     private val chronologicalWeeks = listOf(
         week(
             number = 1,
-            days = listOf(genesisDay(number = 1, chapter = 1)),
+            days = listOf(
+                genesisDay(
+                    number = 1,
+                    chapter = 1,
+                ),
+            ),
         ),
         week(
             number = 2,
             days = listOf(
-                genesisDay(number = 1, chapter = 2),
-                genesisDay(number = 2, chapter = 3),
-                genesisDay(number = 3, chapter = 4),
+                genesisDay(
+                    number = 1,
+                    chapter = 2,
+                ),
+                genesisDay(
+                    number = 2,
+                    chapter = 3,
+                ),
+                genesisDay(
+                    number = 3,
+                    chapter = 4,
+                ),
             ),
         ),
     )
@@ -71,9 +85,18 @@ internal class GetReadingStreakUseCaseTest {
         week(
             number = 1,
             days = listOf(
-                genesisDay(number = 1, chapter = 4),
-                genesisDay(number = 2, chapter = 3),
-                genesisDay(number = 3, chapter = 1),
+                genesisDay(
+                    number = 1,
+                    chapter = 4,
+                ),
+                genesisDay(
+                    number = 2,
+                    chapter = 3,
+                ),
+                genesisDay(
+                    number = 3,
+                    chapter = 1,
+                ),
             ),
         ),
     )
@@ -147,13 +170,24 @@ internal class GetReadingStreakUseCaseTest {
                         week(
                             number = 1,
                             days = listOf(
-                                genesisDay(number = 1, chapter = 1),
-                                genesisDay(number = 2, chapter = 2),
+                                genesisDay(
+                                    number = 1,
+                                    chapter = 1,
+                                ),
+                                genesisDay(
+                                    number = 2,
+                                    chapter = 2,
+                                ),
                             ),
                         ),
                         week(
                             number = 2,
-                            days = listOf(genesisDay(number = 1, chapter = 4)),
+                            days = listOf(
+                                genesisDay(
+                                    number = 1,
+                                    chapter = 4,
+                                ),
+                            ),
                         ),
                     ),
                     ReadingPlanType.BOOKS to booksOrderWeeks,
@@ -177,8 +211,14 @@ internal class GetReadingStreakUseCaseTest {
                     week(
                         number = 1,
                         days = listOf(
-                            genesisDay(number = 1, chapter = 3),
-                            genesisDay(number = 2, chapter = 1),
+                            genesisDay(
+                                number = 1,
+                                chapter = 3,
+                            ),
+                            genesisDay(
+                                number = 2,
+                                chapter = 1,
+                            ),
                         ),
                     ),
                 ),

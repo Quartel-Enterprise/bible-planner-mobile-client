@@ -48,7 +48,11 @@ class TrackDestinationUseCaseTest {
         // Given
         val useCase = createUseCase(
             mapper = NavRouteToDestinationMapper {
-                Destination(name = "logout", type = DestinationType.DIALOG, params = emptyMap())
+                Destination(
+                    name = "logout",
+                    type = DestinationType.DIALOG,
+                    params = emptyMap(),
+                )
             },
         )
 
@@ -76,7 +80,11 @@ class TrackDestinationUseCaseTest {
         // Given
         val useCase = createUseCase(
             mapper = NavRouteToDestinationMapper {
-                Destination(name = "should_not_be_called", type = DestinationType.SCREEN, params = emptyMap())
+                Destination(
+                    name = "should_not_be_called",
+                    type = DestinationType.SCREEN,
+                    params = emptyMap(),
+                )
             },
         )
 

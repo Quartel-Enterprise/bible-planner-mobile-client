@@ -30,7 +30,10 @@ internal fun DayProgressCard(
     progress: Float,
 ) {
     PlayerSection(verticalPadding = 12.dp) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(Res.string.listening_day_title),

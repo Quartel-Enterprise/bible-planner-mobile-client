@@ -52,8 +52,14 @@ internal fun StandardHero(
 ) {
     val next = planStatus.nextDay ?: return
     val mode = planStatus.mode
-    val animatedDayIndex by animateIntAsState(targetValue = next.globalIndex, label = "heroDayIndex")
-    val animatedDaysAhead by animateIntAsState(targetValue = planStatus.daysAhead, label = "heroDaysAhead")
+    val animatedDayIndex by animateIntAsState(
+        targetValue = next.globalIndex,
+        label = "heroDayIndex",
+    )
+    val animatedDaysAhead by animateIntAsState(
+        targetValue = planStatus.daysAhead,
+        label = "heroDaysAhead",
+    )
     HeroSurface(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -87,13 +93,17 @@ internal fun StandardHero(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
-        mode.standardNote(daysAhead = planStatus.daysAhead, animatedDaysAhead = animatedDaysAhead)?.let { note ->
-            Text(
-                text = note,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-        }
+        mode
+            .standardNote(
+                daysAhead = planStatus.daysAhead,
+                animatedDaysAhead = animatedDaysAhead,
+            )?.let { note ->
+                Text(
+                    text = note,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
         Row(
             modifier = Modifier
                 .fillMaxWidth()

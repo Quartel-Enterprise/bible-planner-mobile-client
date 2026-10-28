@@ -32,7 +32,11 @@ private const val CURRENT_WEEK = 16
 private const val DAYS_READ_THIS_WEEK = 3
 private const val TOTAL_DAYS = TOTAL_WEEKS * DAYS_PER_WEEK
 private const val READ_DAYS = (CURRENT_WEEK - 1) * DAYS_PER_WEEK + DAYS_READ_THIS_WEEK
-private val weekStartDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 20)
+private val weekStartDate = LocalDate(
+    year = 2026,
+    monthNumber = 7,
+    dayOfMonth = 20,
+)
 private val currentWeekChapters = listOf(
     1 to 3,
     4 to 6,
@@ -65,7 +69,10 @@ private fun currentWeekDays(): List<DayPlanPresentationModel> =
         val isRead = index < DAYS_READ_THIS_WEEK
         val isToday = index == DAYS_READ_THIS_WEEK
         val dayInWeek = index + 1
-        val globalDayIndex = getGlobalDayIndex(weekNumber = CURRENT_WEEK, dayNumber = dayInWeek)
+        val globalDayIndex = getGlobalDayIndex(
+            weekNumber = CURRENT_WEEK,
+            dayNumber = dayInWeek,
+        )
         DayPlanPresentationModel(
             day = DayModel(
                 number = dayInWeek,
@@ -97,7 +104,10 @@ private fun collapsedWeek(
     number: Int,
     group: WeekGroup,
 ): WeekPlanPresentationModel = WeekPlanPresentationModel(
-    weekPlan = WeekPlanModel(number = number, days = emptyList()),
+    weekPlan = WeekPlanModel(
+        number = number,
+        days = emptyList(),
+    ),
     dayPlans = emptyList(),
     group = group,
     isExpanded = false,
@@ -134,7 +144,10 @@ private fun planStatus(): PlanStatus {
     val nextDay = PlanDayRef(
         weekNumber = CURRENT_WEEK,
         dayNumber = nextDayInWeek,
-        globalIndex = getGlobalDayIndex(weekNumber = CURRENT_WEEK, dayNumber = nextDayInWeek),
+        globalIndex = getGlobalDayIndex(
+            weekNumber = CURRENT_WEEK,
+            dayNumber = nextDayInWeek,
+        ),
         passages = listOf(passage(firstChapter, lastChapter)),
         plannedReadDate = weekStartDate.plusDays(DAYS_READ_THIS_WEEK),
     )

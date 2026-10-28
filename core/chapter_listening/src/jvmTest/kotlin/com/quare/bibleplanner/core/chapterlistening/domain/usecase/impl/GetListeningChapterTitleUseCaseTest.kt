@@ -14,7 +14,10 @@ internal class GetListeningChapterTitleUseCaseTest {
     @Test
     fun `GIVEN a chapter WHEN getting its title THEN joins the book name and the chapter number`() = runTest {
         // Given
-        val chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
+        val chapter = ChapterLocationModel(
+            bookId = BookId.GEN,
+            chapterNumber = 3,
+        )
 
         // When
         val title = useCase(chapter)

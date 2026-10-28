@@ -23,10 +23,23 @@ internal class ChapterVersesUiModelMapperTest {
     fun `GIVEN text for every verse WHEN mapping THEN returns every verse in order`() {
         // Given
         prepareScenario()
-        val verses = listOf(verse(number = 1, versions = listOf(ESV)), verse(number = 2, versions = listOf(ESV)))
+        val verses = listOf(
+            verse(
+                number = 1,
+                versions = listOf(ESV),
+            ),
+            verse(
+                number = 2,
+                versions = listOf(ESV),
+            ),
+        )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = noAnnotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = noAnnotations,
+        )
 
         // Then
         assertEquals(listOf(1, 2), result.map { it.number })
@@ -38,13 +51,26 @@ internal class ChapterVersesUiModelMapperTest {
         // Given
         prepareScenario()
         val verses = listOf(
-            verse(number = 20, versions = listOf(ESV, KJV)),
-            verse(number = 21, versions = listOf(KJV)),
-            verse(number = 22, versions = listOf(ESV, KJV)),
+            verse(
+                number = 20,
+                versions = listOf(ESV, KJV),
+            ),
+            verse(
+                number = 21,
+                versions = listOf(KJV),
+            ),
+            verse(
+                number = 22,
+                versions = listOf(ESV, KJV),
+            ),
         )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = noAnnotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = noAnnotations,
+        )
 
         // Then
         assertEquals(listOf(20, 22), result.map { it.number })
@@ -54,10 +80,19 @@ internal class ChapterVersesUiModelMapperTest {
     fun `GIVEN only the texts of another version WHEN mapping THEN returns nothing`() {
         // Given
         prepareScenario()
-        val verses = listOf(verse(number = 1, versions = listOf(KJV)))
+        val verses = listOf(
+            verse(
+                number = 1,
+                versions = listOf(KJV),
+            ),
+        )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = noAnnotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = noAnnotations,
+        )
 
         // Then
         assertTrue(result.isEmpty())
@@ -67,7 +102,16 @@ internal class ChapterVersesUiModelMapperTest {
     fun `GIVEN annotations WHEN mapping THEN decorates the verse they belong to`() {
         // Given
         prepareScenario()
-        val verses = listOf(verse(number = 1, versions = listOf(ESV)), verse(number = 2, versions = listOf(ESV)))
+        val verses = listOf(
+            verse(
+                number = 1,
+                versions = listOf(ESV),
+            ),
+            verse(
+                number = 2,
+                versions = listOf(ESV),
+            ),
+        )
         val annotations = ChapterAnnotations(
             highlightColorByVerse = emptyMap(),
             savedVerseNumbers = setOf(2),
@@ -76,7 +120,11 @@ internal class ChapterVersesUiModelMapperTest {
         )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = annotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = annotations,
+        )
 
         // Then
         assertEquals(listOf(false, true), result.map { it.isSaved })
@@ -97,7 +145,12 @@ internal class ChapterVersesUiModelMapperTest {
     fun `GIVEN a note over several verses WHEN mapping THEN places each verse along the note`() {
         // Given
         prepareScenario()
-        val verses = (1..6).map { number -> verse(number = number, versions = listOf(ESV)) }
+        val verses = (1..6).map { number ->
+            verse(
+                number = number,
+                versions = listOf(ESV),
+            )
+        }
         val annotations = noAnnotations.copy(
             noteIdByVerse = mapOf(
                 2 to "long-note",
@@ -109,7 +162,11 @@ internal class ChapterVersesUiModelMapperTest {
         )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = annotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = annotations,
+        )
 
         // Then
         assertEquals(
@@ -133,7 +190,12 @@ internal class ChapterVersesUiModelMapperTest {
     fun `GIVEN two notes sharing a verse WHEN mapping THEN each mark keeps the whole passage of its note`() {
         // Given
         prepareScenario()
-        val verses = (1..2).map { number -> verse(number = number, versions = listOf(ESV)) }
+        val verses = (1..2).map { number ->
+            verse(
+                number = number,
+                versions = listOf(ESV),
+            )
+        }
         val annotations = noAnnotations.copy(
             noteIdByVerse = mapOf(
                 1 to "short-note",
@@ -146,7 +208,11 @@ internal class ChapterVersesUiModelMapperTest {
         )
 
         // When
-        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = annotations)
+        val result = mapper.map(
+            versesWithTexts = verses,
+            versionId = ESV,
+            annotations = annotations,
+        )
 
         // Then
         assertEquals(

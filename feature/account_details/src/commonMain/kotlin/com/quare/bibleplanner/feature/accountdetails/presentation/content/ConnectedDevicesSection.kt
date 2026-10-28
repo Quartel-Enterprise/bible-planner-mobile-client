@@ -51,7 +51,10 @@ internal fun ConnectedDevicesSection(
 
                 is Loadable.Loaded -> Column {
                     devices.value.forEach { device ->
-                        DeviceRow(device = device, onEvent = onEvent)
+                        DeviceRow(
+                            device = device,
+                            onEvent = onEvent,
+                        )
                     }
                 }
             }
@@ -69,7 +72,10 @@ private fun DevicesHeader(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 4.dp, vertical = 12.dp),
+            .padding(
+                horizontal = 4.dp,
+                vertical = 12.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -123,7 +129,10 @@ private fun DevicesShimmerList() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 10.dp),
+                    .padding(
+                        horizontal = 4.dp,
+                        vertical = 10.dp,
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ShimmerBox(modifier = Modifier.size(24.dp))

@@ -54,7 +54,11 @@ class CropGeometryTest {
     @Test
     fun `GIVEN a huge pan offset WHEN computing the crop rect THEN keeps the selection inside the image`() {
         // Given
-        val cropParams = params(zoom = 1.5f, offsetX = 100_000f, offsetY = -100_000f)
+        val cropParams = params(
+            zoom = 1.5f,
+            offsetX = 100_000f,
+            offsetY = -100_000f,
+        )
 
         // When
         val crop = computeCropRect(cropParams)
@@ -68,7 +72,10 @@ class CropGeometryTest {
     @Test
     fun `GIVEN a portrait photo turned sideways WHEN computing the crop rect THEN selects the full image height`() {
         // Given
-        val cropParams = params(zoom = 1f, orientation = quarterTurned())
+        val cropParams = params(
+            zoom = 1f,
+            orientation = quarterTurned(),
+        )
 
         // When
         val crop = computeCropRect(cropParams)

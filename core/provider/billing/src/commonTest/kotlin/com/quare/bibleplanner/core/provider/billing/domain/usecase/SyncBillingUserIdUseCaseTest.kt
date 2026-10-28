@@ -44,7 +44,10 @@ class SyncBillingUserIdUseCaseTest {
     @Test
     fun `GIVEN an app instance id WHEN syncing THEN attaches it after the identity change`() = runTest {
         // Given
-        val useCase = createUseCase(userId = "user-1", appInstanceId = "abc123")
+        val useCase = createUseCase(
+            userId = "user-1",
+            appInstanceId = "abc123",
+        )
 
         // When
         backgroundScope.launch { useCase() }
@@ -57,7 +60,10 @@ class SyncBillingUserIdUseCaseTest {
     @Test
     fun `GIVEN analytics has no app instance id WHEN syncing THEN clears the attribute`() = runTest {
         // Given
-        val useCase = createUseCase(userId = "user-1", appInstanceId = null)
+        val useCase = createUseCase(
+            userId = "user-1",
+            appInstanceId = null,
+        )
 
         // When
         backgroundScope.launch { useCase() }

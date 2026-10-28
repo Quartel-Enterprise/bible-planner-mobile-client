@@ -149,8 +149,22 @@ class AgentSession(
             kind = LogKind.NAVIGATION,
             source = "Navigator",
             payload = buildJsonObject {
-                put("command", encoder.encode(value = command, maxItems = 0))
-                put("stack", JsonPrimitive(backStack.joinToString(separator = " > ", transform = routeCatalog::nameOf)))
+                put(
+                    "command",
+                    encoder.encode(
+                        value = command,
+                        maxItems = 0,
+                    ),
+                )
+                put(
+                    "stack",
+                    JsonPrimitive(
+                        backStack.joinToString(
+                            separator = " > ",
+                            transform = routeCatalog::nameOf,
+                        ),
+                    ),
+                )
             },
         )
     }

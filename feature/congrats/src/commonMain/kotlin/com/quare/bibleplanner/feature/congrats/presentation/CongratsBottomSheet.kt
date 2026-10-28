@@ -52,8 +52,10 @@ internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
             modifier = Modifier
                 .blockPointerInput(isBlocked = sheetCloseGuard.isClosing)
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp, top = 16.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(
+                    bottom = 32.dp,
+                    top = 16.dp,
+                ).verticalScroll(rememberScrollState()),
         ) {
             Icon(
                 imageVector = Icons.Rounded.CheckCircle,

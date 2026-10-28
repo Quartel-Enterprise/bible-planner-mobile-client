@@ -53,9 +53,18 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChapterListeningControllerImplTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
-    private val genesisThree = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
+    private val genesisThree = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val versesByChapter = mapOf(
         genesisOne to mapOf(
             1 to "In the beginning God created the heaven and the earth.",
@@ -87,7 +96,12 @@ internal class ChapterListeningControllerImplTest {
             ),
         ),
         verses = listOf(
-            createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.5.seconds),
+            createAudioVerse(
+                number = 1,
+                headingStart = null,
+                start = 2.seconds,
+                end = 5.5.seconds,
+            ),
             createAudioVerse(
                 number = 2,
                 headingStart = 6.seconds,
@@ -123,7 +137,12 @@ internal class ChapterListeningControllerImplTest {
                     ),
                 ),
             ),
-            createAudioVerse(number = 3, headingStart = null, start = 10.5.seconds, end = 13.seconds),
+            createAudioVerse(
+                number = 3,
+                headingStart = null,
+                start = 10.5.seconds,
+                end = 13.seconds,
+            ),
         ),
         duration = 14.seconds,
     )
@@ -133,15 +152,32 @@ internal class ChapterListeningControllerImplTest {
             audioPath = "/cache/GEN_2.mp3",
             titleWords = emptyList(),
             verses = listOf(
-                createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 5.seconds),
-                createAudioVerse(number = 2, headingStart = null, start = 5.5.seconds, end = 9.seconds),
+                createAudioVerse(
+                    number = 1,
+                    headingStart = null,
+                    start = 2.seconds,
+                    end = 5.seconds,
+                ),
+                createAudioVerse(
+                    number = 2,
+                    headingStart = null,
+                    start = 5.5.seconds,
+                    end = 9.seconds,
+                ),
             ),
             duration = 10.seconds,
         ),
         genesisThree to ChapterAudioModel(
             audioPath = "/cache/GEN_3.mp3",
             titleWords = emptyList(),
-            verses = listOf(createAudioVerse(number = 1, headingStart = null, start = 2.seconds, end = 4.seconds)),
+            verses = listOf(
+                createAudioVerse(
+                    number = 1,
+                    headingStart = null,
+                    start = 2.seconds,
+                    end = 4.seconds,
+                ),
+            ),
             duration = 5.seconds,
         ),
     )

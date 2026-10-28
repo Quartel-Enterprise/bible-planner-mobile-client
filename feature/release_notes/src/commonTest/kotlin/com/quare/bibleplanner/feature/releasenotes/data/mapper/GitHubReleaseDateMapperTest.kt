@@ -99,8 +99,16 @@ internal class GitHubReleaseDateMapperTest {
             "2.2.0" to listOf("Faster sync"),
         )
         val dates = mapOf(
-            "2.4.0" to LocalDate(year = 2020, month = 2, day = 1),
-            "v2.3.0" to LocalDate(year = 2020, month = 1, day = 1),
+            "2.4.0" to LocalDate(
+                year = 2020,
+                month = 2,
+                day = 1,
+            ),
+            "v2.3.0" to LocalDate(
+                year = 2020,
+                month = 1,
+                day = 1,
+            ),
         )
 
         // When
@@ -115,12 +123,20 @@ internal class GitHubReleaseDateMapperTest {
                 ReleaseNoteModel(
                     version = "2.4.0",
                     changes = listOf("New reading plan"),
-                    dateRepresentation = LocalDate(year = 2020, month = 2, day = 1).toDateRepresentation(),
+                    dateRepresentation = LocalDate(
+                        year = 2020,
+                        month = 2,
+                        day = 1,
+                    ).toDateRepresentation(),
                 ),
                 ReleaseNoteModel(
                     version = "2.3.0",
                     changes = listOf("Bug fixes"),
-                    dateRepresentation = LocalDate(year = 2020, month = 1, day = 1).toDateRepresentation(),
+                    dateRepresentation = LocalDate(
+                        year = 2020,
+                        month = 1,
+                        day = 1,
+                    ).toDateRepresentation(),
                 ),
                 ReleaseNoteModel(
                     version = "2.2.0",

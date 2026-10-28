@@ -75,7 +75,10 @@ private fun LoginMethodRow(loginMethod: LoginMethod) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 12.dp),
+            .padding(
+                horizontal = 4.dp,
+                vertical = 12.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -133,7 +136,10 @@ private fun InfoRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 12.dp),
+            .padding(
+                horizontal = 4.dp,
+                vertical = 12.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -165,7 +171,10 @@ private fun AccountInfoSkeleton() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 12.dp),
+                    .padding(
+                        horizontal = 4.dp,
+                        vertical = 12.dp,
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ShimmerBox(modifier = Modifier.size(24.dp))
@@ -202,4 +211,7 @@ private fun Instant.toLastLoginLabel(): String {
 private fun Instant.toCreatedAtLabel(): String =
     DateRepresentation.Custom(toLocalDateTime(TimeZone.currentSystemDefault()).date).format()
 
-private fun Int.toPadded(): String = toString().padStart(length = 2, padChar = '0')
+private fun Int.toPadded(): String = toString().padStart(
+    length = 2,
+    padChar = '0',
+)

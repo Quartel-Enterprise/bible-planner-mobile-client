@@ -246,8 +246,14 @@ internal class ProfileUiStateFactoryTest {
             runCurrent()
 
             // Then
-            assertEquals(expected = false, actual = states.first().isPrivacyOptionsVisible)
-            assertEquals(expected = true, actual = states.last().isPrivacyOptionsVisible)
+            assertEquals(
+                expected = false,
+                actual = states.first().isPrivacyOptionsVisible,
+            )
+            assertEquals(
+                expected = true,
+                actual = states.last().isPrivacyOptionsVisible,
+            )
         }
 
     @Test

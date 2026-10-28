@@ -100,8 +100,12 @@ internal fun SelectionSheet(
                 .fillMaxWidth()
                 .heightIn(max = maxHeight * NARROW_SHEET_MAX_HEIGHT_FRACTION)
                 .onSizeChanged { size -> sheetHeightPx = size.height.toFloat() }
-                .offset { IntOffset(x = 0, y = dragOffset.value.roundToInt()) }
-                .draggable(
+                .offset {
+                    IntOffset(
+                        x = 0,
+                        y = dragOffset.value.roundToInt(),
+                    )
+                }.draggable(
                     state = rememberDraggableState { delta ->
                         coroutineScope.launch {
                             dragOffset.snapTo((dragOffset.value + delta).coerceAtLeast(0f))
@@ -156,7 +160,10 @@ private fun SelectionSurface(
 @Composable
 private fun DragHandle() {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 2.dp),
+        modifier = Modifier.fillMaxWidth().padding(
+            top = 12.dp,
+            bottom = 2.dp,
+        ),
         contentAlignment = Alignment.Center,
     ) {
         Box(

@@ -107,7 +107,12 @@ private fun AdaptiveOrderPicker(
         }
         val height = placeables.maxOfOrNull { it.height } ?: 0
         layout(width, height) {
-            placeables.forEach { placeable -> placeable.place(x = 0, y = 0) }
+            placeables.forEach { placeable ->
+                placeable.place(
+                    x = 0,
+                    y = 0,
+                )
+            }
         }
     }
 }

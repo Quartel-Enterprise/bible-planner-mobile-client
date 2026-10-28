@@ -38,7 +38,10 @@ internal fun RestorePurchaseComponent(
         ) {
             append("$question ")
         }
-        pushStringAnnotation(tag = "restore", annotation = "restore")
+        pushStringAnnotation(
+            tag = "restore",
+            annotation = "restore",
+        )
         withStyle(
             style = SpanStyle(
                 color = MaterialTheme.colorScheme.primary,
@@ -61,8 +64,11 @@ internal fun RestorePurchaseComponent(
                     layoutResult.value?.let { result ->
                         val position = result.getOffsetForPosition(offset)
                         annotatedString
-                            .getStringAnnotations(tag = "restore", start = position, end = position)
-                            .firstOrNull()
+                            .getStringAnnotations(
+                                tag = "restore",
+                                start = position,
+                                end = position,
+                            ).firstOrNull()
                             ?.let {
                                 onEvent(PaywallUiEvent.OnRestorePurchases)
                             }

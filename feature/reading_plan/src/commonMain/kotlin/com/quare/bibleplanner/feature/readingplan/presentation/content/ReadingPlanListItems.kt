@@ -74,6 +74,11 @@ private fun MutableList<ReadingPlanListItem>.addGroupSection(
     val visibleWeeks = if (isExpanded) weeks else weeks.take(COLLAPSED_WEEK_LIMIT)
     visibleWeeks.forEach { week -> add(ReadingPlanListItem.Week(week)) }
     if (weeks.size > COLLAPSED_WEEK_LIMIT) {
-        add(ReadingPlanListItem.ShowMore(group = group, totalWeeks = weeks.size))
+        add(
+            ReadingPlanListItem.ShowMore(
+                group = group,
+                totalWeeks = weeks.size,
+            ),
+        )
     }
 }

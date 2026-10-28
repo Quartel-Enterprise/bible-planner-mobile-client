@@ -167,7 +167,12 @@ private fun MultiJobHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 14.dp, top = 12.dp, end = 12.dp, bottom = 9.dp),
+            .padding(
+                start = 14.dp,
+                top = 12.dp,
+                end = 12.dp,
+                bottom = 9.dp,
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -192,7 +197,12 @@ private fun JobRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onOpen)
-            .padding(start = 14.dp, top = 11.dp, end = 12.dp, bottom = 11.dp),
+            .padding(
+                start = 14.dp,
+                top = 11.dp,
+                end = 12.dp,
+                bottom = 11.dp,
+            ),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -325,7 +335,10 @@ private fun OpenButton(onClick: () -> Unit) {
     ) {
         Text(
             text = stringResource(Res.string.ai_study_bg_open),
-            modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
+            modifier = Modifier.padding(
+                horizontal = 15.dp,
+                vertical = 8.dp,
+            ),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.SemiBold,
         )

@@ -10,9 +10,27 @@ import kotlin.time.Duration.Companion.seconds
 internal class GetListeningTimeUseCaseTest {
     private val useCase = GetListeningTimeUseCase()
     private val verses = listOf(
-        ListeningVerseModel(number = 1, text = "", start = Duration.ZERO, end = 6.seconds, words = emptyList()),
-        ListeningVerseModel(number = 2, text = "", start = 6.seconds, end = 10.seconds, words = emptyList()),
-        ListeningVerseModel(number = 3, text = "", start = 10.seconds, end = 12.seconds, words = emptyList()),
+        ListeningVerseModel(
+            number = 1,
+            text = "",
+            start = Duration.ZERO,
+            end = 6.seconds,
+            words = emptyList(),
+        ),
+        ListeningVerseModel(
+            number = 2,
+            text = "",
+            start = 6.seconds,
+            end = 10.seconds,
+            words = emptyList(),
+        ),
+        ListeningVerseModel(
+            number = 3,
+            text = "",
+            start = 10.seconds,
+            end = 12.seconds,
+            words = emptyList(),
+        ),
     )
 
     @Test

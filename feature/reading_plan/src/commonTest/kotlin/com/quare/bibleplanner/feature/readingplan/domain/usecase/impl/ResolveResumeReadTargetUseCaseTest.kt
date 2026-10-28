@@ -76,7 +76,10 @@ internal class ResolveResumeReadTargetUseCaseTest {
                 bookOf(
                     id = BookId.JOB,
                     chapters = listOf(
-                        bookChapter(number = 32, isRead = true),
+                        bookChapter(
+                            number = 32,
+                            isRead = true,
+                        ),
                         bookChapter(number = 33),
                         bookChapter(number = 34),
                     ),
@@ -112,7 +115,12 @@ internal class ResolveResumeReadTargetUseCaseTest {
                 books = listOf(
                     bookOf(
                         id = BookId.GEN,
-                        chapters = listOf(bookChapter(number = 1, isRead = true)),
+                        chapters = listOf(
+                            bookChapter(
+                                number = 1,
+                                isRead = true,
+                            ),
+                        ),
                     ),
                     bookOf(
                         id = BookId.EXO,
@@ -325,8 +333,14 @@ internal class ResolveResumeReadTargetUseCaseTest {
                     bookOf(
                         id = BookId.JOB,
                         chapters = listOf(
-                            bookChapter(number = 1, isRead = true),
-                            bookChapter(number = 2, isRead = true),
+                            bookChapter(
+                                number = 1,
+                                isRead = true,
+                            ),
+                            bookChapter(
+                                number = 2,
+                                isRead = true,
+                            ),
                             bookChapter(number = 3),
                             bookChapter(number = 4),
                         ),
@@ -366,8 +380,14 @@ internal class ResolveResumeReadTargetUseCaseTest {
                     bookOf(
                         id = BookId.JOB,
                         chapters = listOf(
-                            bookChapter(number = 1, isRead = true),
-                            bookChapter(number = 2, isRead = true),
+                            bookChapter(
+                                number = 1,
+                                isRead = true,
+                            ),
+                            bookChapter(
+                                number = 2,
+                                isRead = true,
+                            ),
                         ),
                     ),
                     bookOf(
@@ -466,7 +486,12 @@ internal class ResolveResumeReadTargetUseCaseTest {
                 books = listOf(
                     bookOf(
                         id = BookId.JOB,
-                        chapters = listOf(bookChapter(number = 1, isRead = true)),
+                        chapters = listOf(
+                            bookChapter(
+                                number = 1,
+                                isRead = true,
+                            ),
+                        ),
                     ),
                 ),
             )
@@ -525,20 +550,34 @@ internal class ResolveResumeReadTargetUseCaseTest {
                     chapterNumbers = listOf(32, 33),
                     isRead = true,
                 ),
-                passage(bookId = BookId.EXO, isRead = true),
+                passage(
+                    bookId = BookId.EXO,
+                    isRead = true,
+                ),
             )
             prepareScenario(
                 books = listOf(
                     bookOf(
                         id = BookId.JOB,
                         chapters = listOf(
-                            bookChapter(number = 32, isRead = true),
-                            bookChapter(number = 33, isRead = true),
+                            bookChapter(
+                                number = 32,
+                                isRead = true,
+                            ),
+                            bookChapter(
+                                number = 33,
+                                isRead = true,
+                            ),
                         ),
                     ),
                     bookOf(
                         id = BookId.EXO,
-                        chapters = listOf(bookChapter(number = 1, isRead = true)),
+                        chapters = listOf(
+                            bookChapter(
+                                number = 1,
+                                isRead = true,
+                            ),
+                        ),
                     ),
                 ),
             )
@@ -625,8 +664,14 @@ internal class ResolveResumeReadTargetUseCaseTest {
                 bookOf(
                     id = BookId.JOB,
                     chapters = listOf(
-                        bookChapter(number = 1, isRead = true),
-                        bookChapter(number = 2, isRead = true),
+                        bookChapter(
+                            number = 1,
+                            isRead = true,
+                        ),
+                        bookChapter(
+                            number = 2,
+                            isRead = true,
+                        ),
                     ),
                 ),
             ),
@@ -674,7 +719,10 @@ internal class ResolveResumeReadTargetUseCaseTest {
             val dayBook = bookOf(
                 id = BookId.JOB,
                 chapters = listOf(
-                    bookChapter(number = 32, isRead = true),
+                    bookChapter(
+                        number = 32,
+                        isRead = true,
+                    ),
                     bookChapter(number = 33),
                 ),
             )
@@ -706,7 +754,10 @@ internal class ResolveResumeReadTargetUseCaseTest {
         runTest {
             // Given
             val passages = listOf(
-                passage(bookId = BookId.EXO, isRead = true),
+                passage(
+                    bookId = BookId.EXO,
+                    isRead = true,
+                ),
                 passage(bookId = BookId.GEN),
             )
             val fake = FakeBooksRepository(

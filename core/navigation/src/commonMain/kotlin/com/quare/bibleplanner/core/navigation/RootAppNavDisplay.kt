@@ -97,7 +97,10 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             .mouseBackForwardNavigation(),
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
-        val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
+        val displayBackStack = rememberDisplayBackStack(
+            isWide = isWide,
+            backStack = backStack,
+        )
         val displayedEntryCount = displayBackStack.size
         /*
          * Why: NavDisplay calls back once per entry the scene leaves, and navigateBack already pops the

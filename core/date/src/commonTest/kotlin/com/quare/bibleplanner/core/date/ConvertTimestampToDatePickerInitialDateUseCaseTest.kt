@@ -25,7 +25,12 @@ class ConvertTimestampToDatePickerInitialDateUseCaseTest {
     fun `GIVEN a morning east of UTC WHEN converting THEN returns the UTC midnight of the local day`() {
         // Given
         prepareScenario(timeZone = eastOfUtc)
-        val timestamp = timestampAt(LocalTime(hour = 8, minute = 0))
+        val timestamp = timestampAt(
+            LocalTime(
+                hour = 8,
+                minute = 0,
+            ),
+        )
 
         // When
         val initialDate = useCase(timestamp)
@@ -38,7 +43,12 @@ class ConvertTimestampToDatePickerInitialDateUseCaseTest {
     fun `GIVEN a late night west of UTC WHEN converting THEN returns the UTC midnight of the local day`() {
         // Given
         prepareScenario(timeZone = westOfUtc)
-        val timestamp = timestampAt(LocalTime(hour = 22, minute = 0))
+        val timestamp = timestampAt(
+            LocalTime(
+                hour = 22,
+                minute = 0,
+            ),
+        )
 
         // When
         val initialDate = useCase(timestamp)
@@ -51,7 +61,12 @@ class ConvertTimestampToDatePickerInitialDateUseCaseTest {
     fun `GIVEN local midnight east of UTC WHEN read back as UTC THEN shows the same local day`() {
         // Given
         prepareScenario(timeZone = eastOfUtc)
-        val timestamp = timestampAt(LocalTime(hour = 0, minute = 0))
+        val timestamp = timestampAt(
+            LocalTime(
+                hour = 0,
+                minute = 0,
+            ),
+        )
 
         // When
         val initialDate = useCase(timestamp)

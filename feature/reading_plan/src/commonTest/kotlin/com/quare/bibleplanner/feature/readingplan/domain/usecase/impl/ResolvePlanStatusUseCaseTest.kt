@@ -14,7 +14,10 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN no reads and today as the first day WHEN resolving THEN returns New`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isToday = true),
+            day(
+                number = 1,
+                isToday = true,
+            ),
             day(number = 2),
             day(number = 3),
         )
@@ -32,10 +35,22 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN the next day equal to today WHEN resolving THEN returns OnTrack`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
-            day(number = 3, isRead = true),
-            day(number = 4, isToday = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
+            day(
+                number = 3,
+                isRead = true,
+            ),
+            day(
+                number = 4,
+                isToday = true,
+            ),
             day(number = 5),
         )
 
@@ -52,9 +67,19 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN reads through today and the next day tomorrow WHEN resolving THEN returns CaughtUp`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
-            day(number = 3, isToday = true, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
+            day(
+                number = 3,
+                isToday = true,
+                isRead = true,
+            ),
             day(number = 4),
         )
 
@@ -70,11 +95,27 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN reads past today WHEN resolving THEN returns Ahead with daysAhead`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
-            day(number = 3, isToday = true, isRead = true),
-            day(number = 4, isRead = true),
-            day(number = 5, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
+            day(
+                number = 3,
+                isToday = true,
+                isRead = true,
+            ),
+            day(
+                number = 4,
+                isRead = true,
+            ),
+            day(
+                number = 5,
+                isRead = true,
+            ),
             day(number = 6),
         )
 
@@ -91,11 +132,20 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN the next day before today WHEN resolving THEN returns Behind with daysBehind and lapse`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
             day(number = 3),
             day(number = 4),
-            day(number = 5, isToday = true),
+            day(
+                number = 5,
+                isToday = true,
+            ),
         )
 
         // When
@@ -113,9 +163,16 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN a behind plan read on or past today WHEN resolving THEN has a null lapse`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
             day(number = 2),
-            day(number = 3, isToday = true, isRead = true),
+            day(
+                number = 3,
+                isToday = true,
+                isRead = true,
+            ),
         )
 
         // When
@@ -131,8 +188,14 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN all days read WHEN resolving THEN returns Done`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
         )
 
         // When
@@ -147,8 +210,24 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN several weeks WHEN resolving THEN the global index spans the weeks`() {
         // Given
         val weeks = listOf(
-            WeekPlanModel(number = 1, days = (1..7).map { day(number = it, isRead = true) }),
-            WeekPlanModel(number = 2, days = listOf(day(number = 1, isToday = true))),
+            WeekPlanModel(
+                number = 1,
+                days = (1..7).map {
+                    day(
+                        number = it,
+                        isRead = true,
+                    )
+                },
+            ),
+            WeekPlanModel(
+                number = 2,
+                days = listOf(
+                    day(
+                        number = 1,
+                        isToday = true,
+                    ),
+                ),
+            ),
         )
 
         // When
@@ -165,9 +244,18 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN consecutive reads WHEN resolving THEN the streak counts them up to the first unread day`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
-            day(number = 3, isToday = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
+            day(
+                number = 3,
+                isToday = true,
+            ),
         )
 
         // When
@@ -181,10 +269,19 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN reads after a gap WHEN resolving THEN the streak ignores them`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
             day(number = 2),
-            day(number = 3, isRead = true),
-            day(number = 4, isRead = true),
+            day(
+                number = 3,
+                isRead = true,
+            ),
+            day(
+                number = 4,
+                isRead = true,
+            ),
         )
 
         // When
@@ -198,9 +295,18 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN reads up to today WHEN resolving THEN shows the streak`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
-            day(number = 2, isRead = true),
-            day(number = 3, isToday = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
+            day(
+                number = 2,
+                isRead = true,
+            ),
+            day(
+                number = 3,
+                isToday = true,
+            ),
         )
 
         // When
@@ -214,9 +320,15 @@ internal class ResolvePlanStatusUseCaseTest {
     fun `GIVEN the reader is behind today WHEN resolving THEN hides the streak but keeps counting it`() {
         // Given
         val weeks = singleWeek(
-            day(number = 1, isRead = true),
+            day(
+                number = 1,
+                isRead = true,
+            ),
             day(number = 2),
-            day(number = 3, isToday = true),
+            day(
+                number = 3,
+                isToday = true,
+            ),
         )
 
         // When
@@ -228,6 +340,10 @@ internal class ResolvePlanStatusUseCaseTest {
         assertEquals(1, status.streakDays)
     }
 
-    private fun singleWeek(vararg days: DayModel): List<WeekPlanModel> =
-        listOf(WeekPlanModel(number = 1, days = days.toList()))
+    private fun singleWeek(vararg days: DayModel): List<WeekPlanModel> = listOf(
+        WeekPlanModel(
+            number = 1,
+            days = days.toList(),
+        ),
+    )
 }

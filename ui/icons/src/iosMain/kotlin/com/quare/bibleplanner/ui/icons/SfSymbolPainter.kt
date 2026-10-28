@@ -33,7 +33,10 @@ internal class SfSymbolPainter(
             height = height,
         )
         if (layoutDirection == LayoutDirection.Rtl && symbol.flipsForRightToLeftLayoutDirection) {
-            scale(scaleX = -1f, scaleY = 1f) {
+            scale(
+                scaleX = -1f,
+                scaleY = 1f,
+            ) {
                 drawImage(
                     image = bitmap,
                     colorFilter = colorFilter,
