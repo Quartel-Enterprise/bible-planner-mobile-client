@@ -34,7 +34,7 @@ jobs:
           claude-only: 'true'
 
       - name: Say why nothing was re-run
-        if: steps.threads.outputs.count != '0'
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -47,13 +47,13 @@ jobs:
           gh pr comment "$PR_NUMBER" --body "$body"
 
       - id: rerun
-        if: steps.threads.outputs.count == '0'
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0'
         uses: Quartel-Enterprise/claude-review/threads@1.0.1
         with:
           command: rerun-held
           sha: ${{ github.event.pull_request.head.sha }}
 
-      - if: steps.rerun.outputs.count != ''
+      - if: steps.rerun.outcome == 'success'
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           RERUN: ${{ steps.rerun.outputs.count }}

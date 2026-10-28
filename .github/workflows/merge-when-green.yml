@@ -133,8 +133,10 @@ jobs:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
 
+      # Every step after the threads lookup checks that it ran: a skipped step's output is null, which
+      # an expression takes for 0, so a bare count == '0' would hold on a pull request still running.
       - name: Leave the label for the unresolved conversations
-        if: steps.threads.outputs.count != '' && steps.threads.outputs.count != '0'
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -159,7 +161,7 @@ jobs:
       # Every conversation is resolved now, so the gate lets the held checks through; their
       # completion starts this workflow again.
       - id: rerun
-        if: steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
         uses: Quartel-Enterprise/claude-review/threads@1.0.1
         with:
           command: rerun-held
@@ -168,7 +170,7 @@ jobs:
       # A review-gate check failed without a failed hold step to re-run (the gate itself broke), so
       # nothing would ever merge the pull request: the label goes, with a comment saying why.
       - name: Report what was re-run
-        if: steps.rerun.outputs.count != ''
+        if: steps.rerun.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -191,7 +193,7 @@ jobs:
       # with a token of its own instead: a fine-grained personal access token restricted to this
       # repository, with Contents and Pull requests set to Read and write.
       - name: Merge the pull request
-        if: steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
         env:
           GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
           GH_REPO: ${{ github.repository }}
