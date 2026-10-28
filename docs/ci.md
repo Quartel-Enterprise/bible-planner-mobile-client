@@ -146,8 +146,8 @@ The action hides Claude's output, since the logs of this repository are public. 
 was denied, or a Bash command its guard refused, still shows as a warning on the run; allowing one
 is a change to the shared repository (see its README, "Security"). Only someone who can push a
 branch to this repository can try a prompt injection, since forks are never reviewed. If a token
-ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token with `claude
-setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
+ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token with
+`claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
 
 The review on request is a workflow of its own because every label added to a pull request starts
 it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,
