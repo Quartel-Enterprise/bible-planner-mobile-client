@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -117,7 +116,18 @@ internal class PaywallUiStateFactoryTest {
 
             // Then
             val state = assertIs<PaywallUiState.Success>(result.uiState)
-            assertFalse(FixedPremiumFeature.CHAPTER_LISTENING in state.premiumFeatures)
+            assertEquals(
+                expected = listOf(
+                    FixedPremiumFeature.AI_DAY_STUDY,
+                    FixedPremiumFeature.AI_CHAPTER_STUDY,
+                    FixedPremiumFeature.AI_CHAT,
+                    FixedPremiumFeature.AD_FREE,
+                    UnlimitedNotesPremiumFeature(MAX_FREE_NOTES),
+                    FixedPremiumFeature.HIGHLIGHT_COLORS,
+                    FixedPremiumFeature.SHARE_IMAGE_STYLE,
+                ),
+                actual = state.premiumFeatures,
+            )
         }
 
     @Test
