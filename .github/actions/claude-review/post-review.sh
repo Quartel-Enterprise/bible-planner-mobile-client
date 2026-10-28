@@ -49,7 +49,7 @@ redact() {
     s/(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/[redacted]/g;
     s/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/[redacted]/g;
     s/eC1hY2Nlc3MtdG9rZW46[A-Za-z0-9+\/=]*/[redacted]/g;
-    s/\b(basic|bearer) (?=[A-Za-z0-9+\/=_-]*[0-9])[A-Za-z0-9+\/=_-]{20,}/$1 [redacted]/gi'
+    s/(?:(?<=\\n)|(?<=\\t)|\b)(basic|bearer) (?=[A-Za-z0-9+\/=_-]*[0-9])[A-Za-z0-9+\/=_-]{20,}/$1 [redacted]/gi'
 }
 
 mode=post

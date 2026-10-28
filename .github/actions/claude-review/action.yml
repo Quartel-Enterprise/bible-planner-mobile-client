@@ -166,15 +166,21 @@ runs:
             "$root"/*) continue ;;
           esac
           rm -f "$link"
-          echo "::notice::$link points outside the checkout or into .git, .github or .claude, so the review doesn't see it."
+          # The path is the pull request's to pick: escaped, a newline in it can't start a workflow
+          # command of its own.
+          shown=${link//'%'/%25}
+          shown=${shown//$'\r'/%0D}
+          shown=${shown//$'\n'/%0A}
+          echo "::notice::$shown points outside the checkout or into .git, .github or .claude, so the review doesn't see it."
         done < <(find . -path ./.git -prune -o -type l -print0)
         # With fix, the reviewed commit's version of each file the pull request changes, for the
         # suggestions: the working tree then holds the review's own changes, and git show, which would
         # read the commit, isn't allowed (see the claude step). Without fix, the checkout is that
         # commit. The copy is cleared first, since it lives outside $RUNNER_TEMP (which the session
         # can't read: checkout keeps its credentials there) and a reused runner would keep the last
-        # one. The files come from the API, which has no diff size limit; a file the pull request
-        # deletes has no version to copy, and without the list suggestions are only left out.
+        # one. The files come from the API, which lists up to 3,000 of them whatever the diff's size; a
+        # file the pull request deletes has no version to copy, and without the list suggestions are
+        # only left out.
         reviewed="$PWD"
         if [ "$FIX" = true ]; then
           reviewed="$(dirname "$RUNNER_TEMP")/reviewed-head"
@@ -182,6 +188,9 @@ runs:
           mkdir -p "$reviewed"
           if files=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/files?per_page=100" \
             --jq '.[] | select(.status != "removed") | .filename'); then
+            if [ "$(wc -l <<< "$files")" -ge 3000 ]; then
+              echo "::warning::The pull request changes 3,000 files or more, so the copy of the reviewed commit may miss some."
+            fi
             while IFS= read -r file; do
               [ -n "$file" ] || continue
               mkdir -p "$reviewed/$(dirname "$file")"
@@ -283,6 +292,10 @@ runs:
     # in the four places that list the commands together: --allowedTools, bash-guard.sh, the prompt
     # and docs/ci.md.
     #
+    # Claude Code's native Linux build has no Grep or Glob tool unless --tools names them, and its
+    # Bash grep and find are refused here, so --tools lists every tool the review uses: without it
+    # the review couldn't search the checkout at all.
+    #
     # Some of the skill's recipes start review agents in the background, and the action ends the
     # session at the first result Claude reports, before any agent has finished: the run ended green
     # without posting anything (anthropics/claude-code-action#1646). Background tasks are turned off
@@ -297,9 +310,9 @@ runs:
       shell: bash
       run: |
         # The package index is only refreshed when the image's own is too old to install them.
-        install() { sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null; }
+        install_sandbox() { sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq bubblewrap socat > /dev/null; }
         if ! command -v bwrap > /dev/null || ! command -v socat > /dev/null; then
-          install || { sudo apt-get update -qq && install; } || true
+          install_sandbox || { sudo apt-get update -qq && install_sandbox; } || true
         fi
         if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
           sudo sysctl -q -w kernel.apparmor_restrict_unprivileged_userns=0 || true
@@ -352,13 +365,16 @@ runs:
           read files with the Read, Grep and Glob tools. Bash only runs gh pr view/diff/list, gh issue
           view/list, gh search, git status and git branch --show-current, each as one plain line: no
           quotes, pipes, redirections or shell variables, and no --jq, --template, -q or -t.
-          A search runs without quotes.
+          A search runs without quotes. A symlink that leaves the checkout or enters .git, .github or
+          .claude was removed before the review, so git status shows it as deleted: that isn't part of
+          the change.
 
           ${{ steps.memory-instructions.outputs.text }}
           ${{ steps.earlier.outputs.text }}
           ${{ inputs.instructions }}
         claude_args: >-
           --model opus
+          --tools "Task,Bash,Read,Edit,Grep,Glob,Skill,ReportFindings"
           --allowedTools "Skill(code-review),Read(/${{ github.workspace }}/**),Read(/${{ steps.tools.outputs.reviewed }}/**),Read(~/.claude/projects/**),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Bash(git status:*),Bash(git branch --show-current)${{ steps.mode.outputs.allowed }}"
           --disallowedTools "${{ steps.mode.outputs.denied }}Read(//proc/**),Read(//sys/**),Read(//etc/**),Read(/${{ runner.temp }}/**),Read(//tmp/**),Read(/${{ github.workspace }}/.git/**),Read(~/.ssh/**),Read(~/.gnupg/**),Read(~/.config/**),Read(~/.docker/**),Read(~/.gradle/**),Read(~/.m2/**),Read(~/.git-credentials),Read(~/.gitconfig),Read(~/.netrc),Read(~/.npmrc),Read(~/.claude.json),Read(~/.claude/.credentials.json),Read(~/actions-runner/**),Read(~/runners/**),ScheduleWakeup,Monitor,SendMessage"
 
@@ -394,13 +410,19 @@ runs:
         else
           echo "The Stop hook left no log: it didn't run."
         fi
-        if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
-          echo "The review was posted from the session: $posted"
-          exit 0
-        elif [ $? -eq 2 ] && [ -f "$STATE/.posted" ]; then
-          echo "::warning::GitHub's reviews couldn't be read, so the hook's marker is trusted and nothing more is posted."
-          exit 0
-        fi
+        # GitHub's list of reviews can lag behind a review just posted, so with the hook's marker in
+        # place the lookup is tried a few more times before the findings are posted again.
+        for attempt in 1 2 3 4; do
+          if posted=$("$TOOLS/post-review.sh" --already "$PR_NUMBER"); then
+            echo "The review was posted from the session: $posted"
+            exit 0
+          elif [ $? -eq 2 ] && [ -f "$STATE/.posted" ]; then
+            echo "::warning::GitHub's reviews couldn't be read, so the hook's marker is trusted and nothing more is posted."
+            exit 0
+          fi
+          [ -f "$STATE/.posted" ] && [ "$attempt" -lt 4 ] || break
+          sleep 10
+        done
         echo "::warning::The session's Stop hook didn't post the review, so the findings were posted with the workflow's token."
         if [ -f "$STATE/.pushed" ]; then
           FIXED_IN=$(cat "$STATE/.pushed")
@@ -435,7 +457,7 @@ runs:
         if [ -f "$STATE/.guard-log" ]; then
           "$TOOLS/post-review.sh" --redact < "$STATE/.guard-log" | sort | uniq -c | while read -r count tool; do
             echo "::warning::The review's Bash guard refused $tool ($count time(s))."
-          done
+          done || echo "::warning::Couldn't read the commands the Bash guard refused."
         fi
         [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ] || exit 0
         if ! denied=$(jq -r '.[] | select(.type == "result") | .permission_denials[]?
