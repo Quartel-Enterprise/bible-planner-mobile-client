@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Only the shared review actions (Quartel-Enterprise/claude-review), whose releases are the one place
+  # their version is set: every other action is bumped by hand. Their refs have to move together
+  # (claude-review-refs.yml), so one pull request bumps all of them.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: Quartel-Enterprise/claude-review*
+    groups:
+      claude-review:
+        patterns:
+          - Quartel-Enterprise/claude-review*
+    commit-message:
+      prefix: chore

@@ -130,7 +130,9 @@ actions of [Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterpr
 shared with blitz-split-client. Every `uses:` of them (`claude-review.yml`,
 `claude-review-on-request.yml`, `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins
 the same exact release: a fix there ships as a release, then a bump of all of them here, which
-`claude-review-refs.yml` checks on every pull request that touches a workflow. What runs comes from
+`claude-review-refs.yml` checks on every pull request that touches a workflow. Dependabot opens
+that bump as one pull request the day after a release (`.github/dependabot.yml`), and the review
+skips it. What runs comes from
 that release, never from the pull request under review, so a pull request can't change the review
 that judges it. How the review works, which Bash commands it may run and how it keeps the tokens out
 of its comments are in that repository's README.
