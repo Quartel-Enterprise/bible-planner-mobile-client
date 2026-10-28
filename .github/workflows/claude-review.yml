@@ -8,9 +8,10 @@ name: claude-review
 # time is reviewed again, told what the earlier reviews found so it doesn't repeat them.
 #
 # The workflows that build and test the app wait for this review on the commit the pull request
-# opened with (review-gate.yml): when it pushes fixes, they run on the fix commit only; when it
-# pushes nothing, they run on the opening commit once it ends. Either way they are held while a
-# thread it opened is unresolved (run-checks.yml re-runs them once the threads are resolved).
+# opened with, or was marked ready for review on (review-gate.yml): when it pushes fixes, they run on
+# the fix commit only; when it pushes nothing, they run on the reviewed commit once it ends. Either
+# way they are held while a thread it opened is unresolved (run-checks.yml re-runs them once the
+# threads are resolved).
 #
 # The job fails only when the run itself does (an expired token, the timeout), never because of what
 # the review found. The fix commit, like every push after the pull request opens, isn't reviewed
