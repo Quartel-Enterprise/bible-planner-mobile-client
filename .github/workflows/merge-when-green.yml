@@ -128,7 +128,7 @@ jobs:
       # instead of a failed run nobody looks at.
       - id: threads
         if: steps.green.outputs.pr != ''
-        uses: Quartel-Enterprise/claude-review/threads@1.0.1
+        uses: Quartel-Enterprise/claude-review/threads@1.1.0
         with:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
@@ -162,7 +162,7 @@ jobs:
       # completion starts this workflow again.
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.0.1
+        uses: Quartel-Enterprise/claude-review/threads@1.1.0
         with:
           command: rerun-held
           sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}

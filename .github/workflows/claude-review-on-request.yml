@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.0.1
+      - uses: Quartel-Enterprise/claude-review/review@1.1.0
         if: steps.in-progress.outputs.found == 'false'
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
