@@ -1,0 +1,36 @@
+name: claude-review-refs
+
+# Fails when the workflows pin different releases of Quartel-Enterprise/claude-review. The gate and
+# the threads action have to agree on which threads hold the checks and which step marks a hold, so
+# a bump that misses one `uses:` would let the gate hold runs nothing re-runs.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check-refs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: .github/workflows
+      - name: Check that every claude-review ref is the same
+        run: |
+          refs=$(grep -rhoE 'Quartel-Enterprise/claude-review/[a-z-]+@[^[:space:]]+' .github/workflows | sed 's/.*@//' | sort -u)
+          if [ "$(grep -c . <<< "$refs")" -gt 1 ]; then
+            echo "::error::The workflows pin different releases of Quartel-Enterprise/claude-review: $(tr '\n' ' ' <<< "$refs")Bump every uses: to the same one."
+            grep -rnE 'Quartel-Enterprise/claude-review/[a-z-]+@' .github/workflows
+            exit 1
+          fi
+          echo "Every claude-review ref is ${refs:-absent}."

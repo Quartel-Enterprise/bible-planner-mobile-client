@@ -26,37 +26,49 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - id: threads
+        uses: Quartel-Enterprise/claude-review/threads@1.0.1
         with:
-          fetch-depth: 1
-          persist-credentials: false
-          sparse-checkout: scripts/review_gate.sh
-          sparse-checkout-cone-mode: false
+          command: open-threads
+          pull-request: ${{ github.event.pull_request.number }}
+          claude-only: 'true'
 
-      - name: Re-run the held checks
+      - name: Say why nothing was re-run
+        if: steps.threads.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          OPEN: ${{ steps.threads.outputs.count }}
         run: |
-          remove_label() {
-            gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/run-checks" > /dev/null || true
-          }
-          trap remove_label EXIT
+          body="$OPEN thread(s) of the Claude review are still unresolved, so the held checks weren't"
+          body+=" re-run. Fix each one, or reply with why it stays as it is, resolve them, then add the"
+          body+=" \`run-checks\` label again."
+          gh pr comment "$PR_NUMBER" --body "$body"
 
-          open=$(./scripts/review_gate.sh open-threads "$PR_NUMBER" --claude)
-          if [ "$open" -gt 0 ]; then
-            body="$open thread(s) of the Claude review are still unresolved, so the held checks weren't"
-            body+=" re-run. Fix each one, or reply with why it stays as it is, resolve them, then add the"
-            body+=" \`run-checks\` label again."
-            gh pr comment "$PR_NUMBER" --body "$body"
-            exit 0
-          fi
+      - id: rerun
+        if: steps.threads.outputs.count == '0'
+        uses: Quartel-Enterprise/claude-review/threads@1.0.1
+        with:
+          command: rerun-held
+          sha: ${{ github.event.pull_request.head.sha }}
 
-          rerun=$(./scripts/review_gate.sh rerun-held "$HEAD_SHA")
-          if [ "$rerun" -eq 0 ]; then
+      - if: steps.rerun.outputs.count != ''
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RERUN: ${{ steps.rerun.outputs.count }}
+        run: |
+          if [ "$RERUN" -eq 0 ]; then
             echo "::notice::No check of $HEAD_SHA was held, so nothing was re-run."
           else
-            echo "Re-ran $rerun held run(s) of $HEAD_SHA."
+            echo "Re-ran $RERUN held run(s) of $HEAD_SHA."
           fi
+
+      # The label goes either way, so it can be added again.
+      - name: Remove the run-checks label
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/run-checks" > /dev/null || true

@@ -67,7 +67,8 @@ label on; re-running the check and getting it green merges it.
 A job waiting on another has no check until it starts, so right after `review-gate` passes every
 check of a pull request can be green while its workflows still have jobs to start. A run of a
 workflow that calls `review-gate` therefore counts as unfinished until it completes, and its
-completion starts `merge-when-green` again; the list of those workflows is in the merge step.
+completion starts `merge-when-green` again; the list of those workflows is in its `Check whether
+every check passed` step.
 
 A green pull request with an unresolved review conversation is not merged: the workflow removes the
 label and comments on the pull request instead. See [Unresolved conversations](#unresolved-conversations).
@@ -82,7 +83,7 @@ error that names the secret.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
 `merge-when-green.yml` too, and, when it calls `review-gate`, the list of those workflows in its
-merge step. A workflow missing from it still blocks the merge while running, but its
+`Check whether every check passed` step. A workflow missing from it still blocks the merge while running, but its
 completion does not trigger one. When it is one of the workflows that write the Gradle cache on pull
 requests, update the `workflow_run` list and the `WRITERS` variable of `cleanup-pr-caches.yml` as
 well, or the pruning stops without an error.
@@ -121,9 +122,17 @@ what they found. They are skipped on pull requests from forks, which get
 no secrets, and the `ai-review` label then has to be removed by hand. The action also refuses to run
 when the pull request changes the workflow file that started it: the file has to match the one on
 `main`, so a change to either workflow can only be tried out after it merges. The run then ends
-green with a "workflow validation" warning and posts nothing. The review step they share, in
-`.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
-it, with the token. Only branches of this repository get there, since forks are skipped.
+green with a "workflow validation" warning and posts nothing.
+
+The review step they share, the gate and the threads lookups are the `review`, `gate` and `threads`
+actions of [Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review),
+shared with blitz-split-client. Every `uses:` of them (`claude-review.yml`,
+`claude-review-on-request.yml`, `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins the
+same exact release: a fix there ships as a release, then a bump of all of them here, which
+`claude-review-refs.yml` checks on every pull request that touches a workflow. What runs comes
+from that release, never from the pull request under review, so a pull request can't change the
+review that judges it. How the review works, which Bash commands it may run and how it keeps the
+tokens out of its comments are in that repository's README.
 
 Their findings never fail a check, but each one left for the author is an inline comment, and an
 unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
@@ -133,50 +142,11 @@ merge until it is rerun. A later push
 brings a head commit with no review check, so the merge no longer waits for it.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
-was denied, or a Bash command the guard refused, still shows as a warning on the run, with only
-its name, and for a Bash command its program and subcommand. Allow it only when it can neither
-read nor write a file it is given, nor print the environment, and then in the four places that
-list the commands together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this
-page.
-
-The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection
-in a diff could ask the review to quote one in a public comment. So the session reads files only
-through the Read, Grep and Glob tools (`--tools` names them, since Claude Code's native Linux
-build leaves Grep and Glob out otherwise), and only in the checkout (`.agent-memory` included) and
-in a copy of the files the pull request changes, as of the reviewed commit, for the suggestions'
-lines. Every other path is denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `/tmp`,
-`$RUNNER_TEMP` (where checkout keeps its credentials), the checkout's `.git` and the home's
-files that hold credentials (`~/.ssh`, `~/.config`, `~/.gitconfig`, `~/.claude.json`…). Claude
-Code's own session folder (`~/.claude/projects`) stays readable, since a Bash output too long to
-show, such as a large `gh pr diff`, is saved there. Neither review's checkout persists its
-credentials, and a symlink the pull request adds that leaves the checkout or enters its `.git`,
-`.github` or `.claude` is removed for the review and restored before the fix commit. The session's
-Bash commands are `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), plus
-`git status` and `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
-`git blame` are left out, since they read or write a file they are given (`--no-index`,
-`--contents`, `--output`). A PreToolUse hook (`bash-guard.sh`)
-decides before every Bash call, the read-only ones Claude Code approves on its own included: it
-lets through only one plain line of those commands, with no quoting, expansion, pipe or
-redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment,
-even with a value attached. A search therefore runs without quotes, and what the hook refuses
-shows as a warning on the run. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth
-token out of the environment of every Bash command and hook; the hook's log says whether it was
-there. The GitHub token `gh` needs stays. It runs every Bash command in Claude Code's sandbox, so
-the action installs bubblewrap and socat first, and warns when the sandbox can't start. On top of that, `post-review.sh` masks anything shaped
-like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…, a JWT, a Basic or Bearer
-value with a digit) before posting, and the hook's log goes through the same mask. So does
-`commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix adds such a
-string. Each review carries its workflow run in a hidden comment, so a run only takes its own
-review for posted, and only from `claude[bot]` or `github-actions[bot]`.
-
-**What is left.** The tokens are still in the session's own environment: `claude-code-action`
-hands the session the OAuth token, and `gh` needs a GitHub token in its commands'. Every way to
-print them that a review found is closed, but an allowlist can't prove a listed command has no
-other way, and the mask only knows a token's plain shapes: one the model is talked into encoding
-still gets through. Only someone who can push a branch to this repository can try, since forks
-are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a
-new OAuth token with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens
-expire with the job.
+was denied, or a Bash command its guard refused, still shows as a warning on the run; allowing one is
+a change to the shared repository (see its README, "Security"). Only someone who can push a branch to
+this repository can try a prompt injection, since forks are never reviewed. If a token ever shows up
+in a comment, a commit or a log, revoke it: create a new OAuth token with `claude setup-token` and
+update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
 
 The review on request is a workflow of its own because every label added to a pull request starts
 it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,
@@ -192,14 +162,15 @@ and update the secret. The action posts as the Claude GitHub App, which has to b
 repository.
 
 Both reviews also read the maintainer's agent memories. This repository is public, so they live in
-the private repository `PierreVieira/bible-planner-agent-memory`. The review step checks out only its
-`feedback_*` files, the conventions asked for in past sessions, into `.agent-memory` with the
-`AGENT_MEMORY_DEPLOY_KEY` secret, the private half of a read-only deploy key of that repository. The
-`project_*` memories and the index hold figures and ids, so they never reach the runner, and the
-review is told never to quote a convention in a comment. Without the secret, or when the checkout
-fails, the review runs without them and the run shows a warning. The skill's own agents judge
-findings against `CLAUDE.md`, so how much weight the memories get on GitHub is up to its
-orchestrator.
+the private repository `PierreVieira/bible-planner-agent-memory`, passed to the action as
+`memory-repository` by both review workflows, which have to change together. The review step checks
+out only its `feedback_*` files (`memory-files`, which has no default), the conventions asked for in
+past sessions, into `.agent-memory` with the `AGENT_MEMORY_DEPLOY_KEY` secret, the private half of a
+read-only deploy key of that repository. The `project_*` memories and the index hold figures and
+ids, so they never reach the runner, and the review is told never to quote a convention in a
+comment. Without the secret, or when the checkout fails, the review runs without them and the run
+shows a warning. The skill's own agents judge findings against `CLAUDE.md`, so how much weight the
+memories get on GitHub is up to its orchestrator.
 
 Locally, the `review-conventions` skill reads every memory from Claude Code's memory folder
 (`scripts/agent-memory-dir.sh`), and `create-pr` and `finish-task` push them to the private repository
@@ -215,7 +186,7 @@ on the same machine, so after `create-pr` a `/code-review` typed by hand reports
 until it is given `--max-findings default`. At high effort it looks for correctness bugs, `CLAUDE.md`
 violations and cleanups of the changed code (reuse, simplification, efficiency, a fix made at the
 wrong depth), as far as the variant of the recipe for the model covers them. The model is what
-differs: Opus on GitHub (`--model` in `.github/actions/claude-review`), the author's session model
+differs: Opus on GitHub (`--model` in the shared `review` action), the author's session model
 locally. On GitHub the model invokes the skill itself with the level, the pull request number and
 `--max-findings all` (plus `--fix` for the opening review), and ends its reply with the findings as
 JSON; the model posts nothing. The
@@ -233,7 +204,7 @@ written for. The model reads those lines from the reviewed commit, since with `-
 tree holds its own changes, and a finding it fixed gets no suggestion. A review body is kept under
 the 65,536 characters GitHub allows: past that, the findings it lists lose their suggestions, then
 the last ones are left out, with a link to the run. A Stop hook of the session
-(`.github/actions/claude-review/stop-hook.sh`) then hands that JSON to `post-review.sh`, which posts
+(`stop-hook.sh` of the shared `review` action) then hands that JSON to `post-review.sh`, which posts
 it as one review with an inline comment per finding, one notification, rather than through the
 skill's `--comment` flag, which posts one review per finding. The hook runs inside the session, so
 the review comes from `claude[bot]`, with the Claude GitHub App's token the action gives the session
@@ -247,7 +218,7 @@ thread; a finding in a file the diff doesn't touch goes in the review's body, wh
 and so doesn't hold the merge. With no findings the review says so, and a reply with no findings list
 (a skill that stopped early, a session that never ran) gets a review pointing at the run, so the pull
 request shows the review ran. The exception is the job's 30-minute timeout: GitHub cancels the job
-and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the checkout before the review,
+and nothing is posted, so the failed check is the only signal. The scripts the hook runs are copied out of the action's release before the review,
 into a directory made read-only, and the model's file tools are blocked (with `fix`, editing is
 allowed only inside the checkout, never under `.git`, `.github`, `.claude` or `.agent-memory`). The
 hook's markers live in a state directory of their own, outside the checkout, where the session
@@ -311,8 +282,11 @@ time. Now the review fixes what it found, and the checks wait for it:
   [Unresolved conversations](#unresolved-conversations). On the fix commit the review is seconds
   from ending, so the gate checks on it every 10 seconds instead of every minute.
 
-`scripts/review_gate.sh` holds what these workflows have to agree on: which threads count as the
-review's and which runs were held (a failed `Hold for the open threads` step).
+`review-gate.yml` is a thin wrapper of the shared `gate` action, which waits and counts the threads;
+the wrapper only fails the hold, in its `Hold for the open threads` step. The shared `threads`
+action holds what `run-checks` and `merge-when-green` have to agree on with the gate: which threads
+count as the review's, and which runs were held (any failed run of the commit whose `Hold for the
+open threads` step failed, so no list of the gated workflows has to be kept).
 
 So a pull request whose review found nothing runs its checks once, after the review; one whose
 review fixed everything it found runs them once, on the fix commit; one whose review left threads
@@ -471,8 +445,7 @@ compiling from linking. To measure the link again, run the task on its own with 
   cancelled run saves no cache.
 - If it builds or tests the app on pull requests, start it with the `review-gate` job, with the
   same `pull_request` types and `if` as the other callers, and make its other jobs need it (see
-  [Fixes and the review gate](#fixes-and-the-review-gate)). Add it to the `GATED` list of
-  `scripts/review_gate.sh` too, or neither `run-checks` nor `merge-when-green` re-runs it when the
-  gate held it.
+  [Fixes and the review gate](#fixes-and-the-review-gate)). Add it to both lists of
+  `merge-when-green.yml` too (see [Merge when green](#merge-when-green)).
 - Set up Gradle through `./.github/actions/gradle`, pass `secrets.GRADLE_ENCRYPTION_KEY`, and pick
   one of the two cache switches above if the job is not a default reader.
