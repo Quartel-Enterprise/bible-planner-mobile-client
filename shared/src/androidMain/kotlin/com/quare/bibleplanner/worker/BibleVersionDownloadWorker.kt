@@ -89,9 +89,15 @@ internal class BibleVersionDownloadWorker(
 
             result
                 .onSuccess {
-                    notifier.showComplete(versionId, versionName)
+                    notifier.showComplete(
+                        versionId = versionId,
+                        versionName = versionName,
+                    )
                 }.onFailure {
-                    notifier.showError(versionId, versionName)
+                    notifier.showError(
+                        versionId = versionId,
+                        versionName = versionName,
+                    )
                     bibleVersionDao.updateStatus(
                         id = versionId,
                         status = DownloadStatus.PAUSED,

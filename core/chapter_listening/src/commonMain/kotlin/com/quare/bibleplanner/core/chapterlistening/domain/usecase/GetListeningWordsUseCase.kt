@@ -52,11 +52,11 @@ class GetListeningWordsUseCase {
         val starts = words.map { word -> word.offset - shift }
         return words.mapIndexed { index, word ->
             val start = starts[index]
-            val range = if (isWordStart(
-                    text = text,
-                    index = start,
-                )
-            ) {
+            val isAtWordStart = isWordStart(
+                text = text,
+                index = start,
+            )
+            val range = if (isAtWordStart) {
                 val limit = starts.getOrNull(index + 1)?.coerceIn(start + 1, text.length) ?: text.length
                 start until findWordEnd(
                     text = text,

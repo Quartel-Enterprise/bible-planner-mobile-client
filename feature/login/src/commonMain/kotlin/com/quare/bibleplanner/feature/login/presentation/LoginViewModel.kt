@@ -69,7 +69,10 @@ internal class LoginViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    signInStarter(uiEvent.provider, uiEvent.nativeSignInState).onFailure { throwable ->
+                    signInStarter(
+                        provider = uiEvent.provider,
+                        nativeSignInState = uiEvent.nativeSignInState,
+                    ).onFailure { throwable ->
                         val error = throwableToLoginErrorMapper(throwable)
                         trackLoginFailed(
                             provider = uiEvent.provider,

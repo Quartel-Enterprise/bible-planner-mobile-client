@@ -298,13 +298,19 @@ internal class ReadViewModel(
     private fun getShownChapters(
         prepended: List<ReadNavigationSuggestionModel>,
         appended: List<ReadNavigationSuggestionModel>,
-    ): List<ChapterLocationModel> = listOf(
-        ChapterLocationModel(
+    ): List<ChapterLocationModel> {
+        val routeChapter = ChapterLocationModel(
             bookId = bookId,
             chapterNumber = route.chapterNumber,
-        ),
-    ) +
-        (prepended + appended).map { ChapterLocationModel(it.bookId, it.chapterNumber) }
+        )
+        val suggestedChapters = (prepended + appended).map { suggestion ->
+            ChapterLocationModel(
+                bookId = suggestion.bookId,
+                chapterNumber = suggestion.chapterNumber,
+            )
+        }
+        return listOf(routeChapter) + suggestedChapters
+    }
 
     private fun isShowingChapter(chapter: ChapterRef): Boolean = ChapterLocationModel(
         bookId = chapter.bookId,

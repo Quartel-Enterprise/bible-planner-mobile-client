@@ -452,9 +452,18 @@ internal class ReadingPlanViewModel(
         pendingReadOverrides.forEach { (key, isRead) ->
             when (key.plan) {
                 ReadingPlanType.CHRONOLOGICAL ->
-                    chronological = chronological.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
+                    chronological = chronological.applyReadOverride(
+                        weekNumber = key.weekNumber,
+                        dayNumber = key.dayNumber,
+                        isRead = isRead,
+                    )
 
-                ReadingPlanType.BOOKS -> books = books.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
+                ReadingPlanType.BOOKS ->
+                    books = books.applyReadOverride(
+                        weekNumber = key.weekNumber,
+                        dayNumber = key.dayNumber,
+                        isRead = isRead,
+                    )
             }
         }
         return copy(

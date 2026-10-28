@@ -81,12 +81,11 @@ internal class ReadUiStateMapper {
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
-        val override = overrides[
-            ChapterLocationModel(
-                bookId = bookId,
-                chapterNumber = chapterNumber,
-            ),
-        ] ?: return this
+        val key = ChapterLocationModel(
+            bookId = bookId,
+            chapterNumber = chapterNumber,
+        )
+        val override = overrides[key] ?: return this
         return copy(isChapterRead = override)
     }
 
