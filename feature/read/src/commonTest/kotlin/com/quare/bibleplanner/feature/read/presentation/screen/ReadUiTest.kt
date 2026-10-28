@@ -552,7 +552,10 @@ internal class ReadUiTest {
             assertEquals(
                 expected = listOf<ReadListeningUiEvent>(
                     ReadListeningUiEvent.OnListenClick(
-                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber = CHAPTER,
+                        ),
                         source = ListeningEntrySource.SHORTCUT,
                     ),
                 ),
@@ -577,7 +580,10 @@ internal class ReadUiTest {
             assertEquals(
                 expected = listOf<ReadListeningUiEvent>(
                     ReadListeningUiEvent.OnListenClick(
-                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber = CHAPTER,
+                        ),
                         source = ListeningEntrySource.BOTTOM_BAR,
                     ),
                 ),
@@ -610,7 +616,10 @@ internal class ReadUiTest {
             assertEquals(
                 expected = listOf<ReadListeningUiEvent>(
                     ReadListeningUiEvent.OnListenClick(
-                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber = CHAPTER,
+                        ),
                         source = ListeningEntrySource.BOTTOM_BAR,
                     ),
                 ),
@@ -644,7 +653,10 @@ internal class ReadUiTest {
             assertEquals(
                 expected = listOf<ReadListeningUiEvent>(
                     ReadListeningUiEvent.OnListenClick(
-                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        chapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber = CHAPTER,
+                        ),
                         source = ListeningEntrySource.HEADER,
                     ),
                 ),
@@ -710,7 +722,10 @@ internal class ReadUiTest {
             listening = availableListeningUiState(
                 player = listeningPlayer(
                     status = ListeningStatusModel.NEXT_LOCKED,
-                    lockedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER + 1),
+                    lockedChapter = ChapterLocationModel(
+                        bookId = BookId.GEN,
+                        chapterNumber = CHAPTER + 1,
+                    ),
                 ),
             ),
         )
@@ -781,7 +796,10 @@ internal class ReadUiTest {
     @Test
     fun `GIVEN a finished chapter offer WHEN marking it as read THEN marks the finished chapter`() = runComposeUiTest {
         // Given
-        val finishedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER)
+        val finishedChapter = ChapterLocationModel(
+            bookId = BookId.GEN,
+            chapterNumber = CHAPTER,
+        )
         prepareScenario(
             uiState = loadedUiState,
             listening = availableListeningUiState(

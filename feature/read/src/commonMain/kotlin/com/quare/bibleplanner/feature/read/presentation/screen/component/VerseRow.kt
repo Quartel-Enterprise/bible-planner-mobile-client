@@ -250,8 +250,14 @@ private fun DrawScope.drawSelectionUnderline(
         val y = layout.getLineBaseline(lineIndex) + offsetPx
         drawLine(
             color = color,
-            start = Offset(x = layout.getLineLeft(lineIndex), y = y),
-            end = Offset(x = layout.getLineRight(lineIndex), y = y),
+            start = Offset(
+                x = layout.getLineLeft(lineIndex),
+                y = y,
+            ),
+            end = Offset(
+                x = layout.getLineRight(lineIndex),
+                y = y,
+            ),
             strokeWidth = dotWidthPx,
             cap = StrokeCap.Round,
             pathEffect = pathEffect,

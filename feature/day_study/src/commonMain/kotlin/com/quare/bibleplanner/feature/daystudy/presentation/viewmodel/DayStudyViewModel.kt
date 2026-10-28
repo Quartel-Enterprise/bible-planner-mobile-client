@@ -111,7 +111,13 @@ internal class DayStudyViewModel(
         generationCoordinator.setActive(key)
         if (routeChanged) {
             loadStartMark = TimeSource.Monotonic.markNow()
-            uiState.update { it.copy(card = Loadable.Loading, generation = null, isOpeningStudy = false) }
+            uiState.update {
+                it.copy(
+                    card = Loadable.Loading,
+                    generation = null,
+                    isOpeningStudy = false,
+                )
+            }
         }
         observeCard()
         observeJob()

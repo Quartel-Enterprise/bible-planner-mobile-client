@@ -47,10 +47,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 0.75f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 0.75f,
+        )
     }
 
     @Test
@@ -60,10 +67,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 1.25f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 1.25f,
+        )
     }
 
     @Test
@@ -73,10 +87,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 1.5f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 1.5f,
+        )
     }
 
     @Test
@@ -86,10 +107,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 2f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 2f,
+        )
     }
 
     @Test
@@ -99,10 +127,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 0.4f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 0.4f,
+        )
     }
 
     @Test
@@ -112,10 +147,17 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
-        assertLengthMatchesSpeed(input = input, output = output, speed = 3f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 3f,
+        )
     }
 
     @Test
@@ -125,7 +167,10 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
         assertPitchKept(output)
@@ -138,7 +183,10 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
         assertPitchKept(output)
@@ -151,7 +199,10 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
         assertPitchKept(output)
@@ -164,7 +215,10 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
         assertPitchKept(output)
@@ -177,7 +231,10 @@ internal class SpeechTimeStretcherTest {
         val input = tone(channels = 1)
 
         // When
-        val output = stretch(input = input, channels = 1)
+        val output = stretch(
+            input = input,
+            channels = 1,
+        )
 
         // Then
         assertPitchKept(output)
@@ -186,7 +243,10 @@ internal class SpeechTimeStretcherTest {
     @Test
     fun `GIVEN stereo input WHEN stretching it THEN every chunk holds whole frames`() {
         // Given
-        prepareScenario(speed = 1.5f, channels = 2)
+        prepareScenario(
+            speed = 1.5f,
+            channels = 2,
+        )
         val chunks = tone(channels = 2).asList().chunked(SAMPLES_PER_CHUNK * 2).map(List<Short>::toShortArray)
 
         // When
@@ -199,17 +259,27 @@ internal class SpeechTimeStretcherTest {
     @Test
     fun `GIVEN stereo input with opposite channels WHEN stretching it THEN keeps each channel in its own slot`() {
         // Given
-        prepareScenario(speed = 1.5f, channels = 2)
+        prepareScenario(
+            speed = 1.5f,
+            channels = 2,
+        )
         val input = tone(channels = 2)
 
         // When
-        val output = stretch(input = input, channels = 2)
+        val output = stretch(
+            input = input,
+            channels = 2,
+        )
 
         // Then
         val left = output.filterIndexed { index, _ -> index % 2 == 0 }
         val right = output.filterIndexed { index, _ -> index % 2 == 1 }
         assertEquals(left.map { sample -> -sample }, right.map(Short::toInt))
-        assertLengthMatchesSpeed(input = input, output = output, speed = 1.5f)
+        assertLengthMatchesSpeed(
+            input = input,
+            output = output,
+            speed = 1.5f,
+        )
     }
 
     // Why: the right channel is the left one inverted, so a sample landing in the wrong slot shows up.

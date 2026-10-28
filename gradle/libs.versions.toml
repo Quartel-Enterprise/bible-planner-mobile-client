@@ -6,7 +6,7 @@ ksp = "2.3.12"
 buildkonfig = "0.23.0"
 # Read by scripts/ktlint.sh: the ruleset, its runner and the ktlint CLI all come from this release
 # (github.com/Quartel-Enterprise/ktlint-rules)
-quare-ktlint-rules = "1.0.2"
+quare-ktlint-rules = "1.1.0"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.8"
 store-screenshots = "1.6.1"

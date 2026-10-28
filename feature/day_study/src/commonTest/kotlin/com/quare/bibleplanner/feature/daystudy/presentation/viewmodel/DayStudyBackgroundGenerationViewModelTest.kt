@@ -160,5 +160,9 @@ internal class DayStudyBackgroundGenerationViewModelTest {
         status = DayStudyGenerationStatus.Generating,
     )
 
-    private val dayRoute = DayNavRoute(dayNumber = 1, weekNumber = 1, readingPlanType = "ONE_YEAR")
+    private val dayRoute = DayNavRoute(
+        dayNumber = 1,
+        weekNumber = 1,
+        readingPlanType = "ONE_YEAR",
+    )
 }

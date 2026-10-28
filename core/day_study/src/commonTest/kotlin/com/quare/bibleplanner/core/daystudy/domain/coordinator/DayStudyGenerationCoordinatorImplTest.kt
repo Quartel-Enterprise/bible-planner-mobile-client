@@ -115,7 +115,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a failing stream WHEN start THEN the job ends as failed`() = runTest {
         // Given
         val coordinator = coordinator(
-            dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
+            dayStudyRepository(
+                events = emptyList(),
+                eventsError = IllegalStateException("boom"),
+            ),
         )
 
         // When
@@ -157,7 +160,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
+                dayStudyRepository(
+                    events = emptyList(),
+                    eventsError = IllegalStateException("boom"),
+                ),
             )
 
             // When
@@ -172,7 +178,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a rewarded unlock WHEN the server refuses it THEN the reward is dropped`() = runTest {
         // Given
         val coordinator = coordinator(
-            dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
+            dayStudyRepository(
+                events = emptyList(),
+                eventsError = LimitReachedException(),
+            ),
         )
 
         // When
@@ -327,7 +336,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
+                dayStudyRepository(
+                    events = emptyList(),
+                    eventsError = LimitReachedException(),
+                ),
             )
 
             // When
@@ -345,7 +357,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
+                dayStudyRepository(
+                    events = emptyList(),
+                    eventsError = LimitReachedException(),
+                ),
             )
 
             // When
@@ -361,7 +376,10 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a generic failure WHEN start THEN tracks day_study_generation_failed with error reason`() = runTest {
         // Given
         val coordinator = coordinator(
-            dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
+            dayStudyRepository(
+                events = emptyList(),
+                eventsError = IllegalStateException("boom"),
+            ),
         )
 
         // When
@@ -411,19 +429,37 @@ internal class DayStudyGenerationCoordinatorImplTest {
     private val passages = listOf(
         PassageModel(
             bookId = BookId.GEN,
-            chapters = listOf(ChapterModel(number = 1, startVerse = null, endVerse = null, bookId = BookId.GEN)),
+            chapters = listOf(
+                ChapterModel(
+                    number = 1,
+                    startVerse = null,
+                    endVerse = null,
+                    bookId = BookId.GEN,
+                ),
+            ),
             isRead = false,
             chapterRanges = null,
         ),
     )
-    private val dayRoute = DayNavRoute(dayNumber = 1, weekNumber = 1, readingPlanType = "ONE_YEAR")
-    private val otherDayRoute = DayNavRoute(dayNumber = 2, weekNumber = 1, readingPlanType = "ONE_YEAR")
+    private val dayRoute = DayNavRoute(
+        dayNumber = 1,
+        weekNumber = 1,
+        readingPlanType = "ONE_YEAR",
+    )
+    private val otherDayRoute = DayNavRoute(
+        dayNumber = 2,
+        weekNumber = 1,
+        readingPlanType = "ONE_YEAR",
+    )
     private val study = DayStudyModel(
         passageLabel = "Gênesis 1",
         overview = "overview",
         chapterSummaries = emptyList(),
         takeaways = emptyList(),
-        context = HistoricalContextModel(body = "body", facts = emptyList()),
+        context = HistoricalContextModel(
+            body = "body",
+            facts = emptyList(),
+        ),
         commonQuestions = emptyList(),
     )
 

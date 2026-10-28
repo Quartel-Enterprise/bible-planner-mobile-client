@@ -31,7 +31,10 @@ internal class ReaderWidthLayoutUiTest {
             waitForIdle()
 
             // Then
-            assertEquals(expected = false, actual = isReaderWide)
+            assertEquals(
+                expected = false,
+                actual = isReaderWide,
+            )
         }
 
     @Test
@@ -46,7 +49,10 @@ internal class ReaderWidthLayoutUiTest {
         waitForIdle()
 
         // Then
-        assertEquals(expected = false, actual = isReaderWide)
+        assertEquals(
+            expected = false,
+            actual = isReaderWide,
+        )
     }
 
     private fun ComposeUiTest.prepareScenario(

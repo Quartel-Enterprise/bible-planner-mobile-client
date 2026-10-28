@@ -33,7 +33,10 @@ import java.util.Locale
 @OptIn(ExperimentalRoborazziApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [ScreenshotTest.ROBOLECTRIC_SDK], qualifiers = RobolectricDeviceQualifiers.Pixel7)
+@Config(
+    sdk = [ScreenshotTest.ROBOLECTRIC_SDK],
+    qualifiers = RobolectricDeviceQualifiers.Pixel7,
+)
 abstract class ScreenshotTest {
     private val roborazziOptions = RoborazziOptions(
         taskType = when (System.getProperty(MODE_PROPERTY)) {

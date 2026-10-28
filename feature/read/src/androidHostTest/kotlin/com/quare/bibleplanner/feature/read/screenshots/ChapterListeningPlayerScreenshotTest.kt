@@ -42,7 +42,10 @@ internal class ChapterListeningPlayerScreenshotTest : ScreenshotTest() {
                 uiState = chapterListeningPlayerUiState(
                     player = listeningPlayer(
                         status = ListeningStatusModel.NEXT_LOCKED,
-                        lockedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2),
+                        lockedChapter = ChapterLocationModel(
+                            bookId = BookId.GEN,
+                            chapterNumber = 2,
+                        ),
                     ),
                     isWordHighlightEnabled = true,
                 ),

@@ -67,7 +67,10 @@ internal class IsNewAccountUseCaseTest {
     @Test
     fun `GIVEN a user without a creation stamp WHEN invoking THEN reports an existing account`() = runTest {
         // Given
-        prepareScenario(createdAt = null, lastSignInAt = createdAt)
+        prepareScenario(
+            createdAt = null,
+            lastSignInAt = createdAt,
+        )
 
         // When
         val isNewAccount = useCase()

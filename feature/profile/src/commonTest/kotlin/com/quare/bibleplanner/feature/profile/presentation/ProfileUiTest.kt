@@ -189,7 +189,10 @@ internal class ProfileUiTest {
         onListNodeWithText(getString(Res.string.login_card_button)).performClick()
 
         // Then
-        assertEquals(expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnLoginClick), actual = events)
+        assertEquals(
+            expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnLoginClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -219,7 +222,10 @@ internal class ProfileUiTest {
         ).performClick()
 
         // Then
-        assertEquals(expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnEditProfileClick), actual = events)
+        assertEquals(
+            expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnEditProfileClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -231,7 +237,10 @@ internal class ProfileUiTest {
         onListNodeWithText(getString(Res.string.logout_button)).performClick()
 
         // Then
-        assertEquals(expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnLogoutClick), actual = events)
+        assertEquals(
+            expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnLogoutClick),
+            actual = events,
+        )
     }
 
     @Test

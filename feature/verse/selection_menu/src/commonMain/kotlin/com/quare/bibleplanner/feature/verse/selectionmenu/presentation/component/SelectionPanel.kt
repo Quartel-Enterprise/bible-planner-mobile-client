@@ -41,7 +41,10 @@ internal fun SelectionPanel(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         // Why: the label is centred on the sheet, not on the space left by the close button.

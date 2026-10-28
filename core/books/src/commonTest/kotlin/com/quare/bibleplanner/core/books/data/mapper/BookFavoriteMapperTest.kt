@@ -22,7 +22,10 @@ internal class BookFavoriteMapperTest {
         )
 
         // When
-        val dto = mapper.toDto(userId = "user-1", entity = entity)
+        val dto = mapper.toDto(
+            userId = "user-1",
+            entity = entity,
+        )
 
         // Then
         assertEquals("user-1", dto.userId)

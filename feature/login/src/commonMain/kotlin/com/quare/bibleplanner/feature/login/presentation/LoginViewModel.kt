@@ -62,9 +62,17 @@ internal class LoginViewModel(
             LoginUiEvent.DismissClick -> navigator.navigateBack()
 
             is LoginUiEvent.SocialLoginClick -> {
-                state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
+                state.update {
+                    it.copy(
+                        loadingProvider = uiEvent.provider,
+                        error = null,
+                    )
+                }
                 viewModelScope.launch {
-                    signInStarter(uiEvent.provider, uiEvent.nativeSignInState).onFailure { throwable ->
+                    signInStarter(
+                        provider = uiEvent.provider,
+                        nativeSignInState = uiEvent.nativeSignInState,
+                    ).onFailure { throwable ->
                         val error = throwableToLoginErrorMapper(throwable)
                         trackLoginFailed(
                             provider = uiEvent.provider,

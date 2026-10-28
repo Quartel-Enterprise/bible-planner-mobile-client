@@ -98,7 +98,10 @@ class InstallAttributionRepositoryImplTest {
                     dispatcher = Dispatchers.Unconfined
                     addHandler { httpRequest ->
                         requestedBodies += httpRequest.body.toByteArray().decodeToString()
-                        respond(content = """{"ok":true}""", status = HttpStatusCode.OK)
+                        respond(
+                            content = """{"ok":true}""",
+                            status = HttpStatusCode.OK,
+                        )
                     }
                 },
             )

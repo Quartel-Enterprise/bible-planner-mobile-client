@@ -51,7 +51,12 @@ internal suspend fun TestScope.createAgentCliFixture(
                 singleOf(::AppSnackbarController)
                 factoryOf(::HomeViewModel)
                 factoryOf(::SampleViewModel)
-                factory { parameters -> DayScreenViewModel(route = parameters.get(), navigator = get()) }
+                factory { parameters ->
+                    DayScreenViewModel(
+                        route = parameters.get(),
+                        navigator = get(),
+                    )
+                }
                 factoryOf(::AppLevelViewModel)
                 factory<BrokenViewModel> { error("BrokenViewModel can't be built") }
             },

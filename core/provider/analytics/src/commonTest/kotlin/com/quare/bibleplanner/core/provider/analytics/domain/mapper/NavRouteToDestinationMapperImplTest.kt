@@ -101,15 +101,26 @@ class NavRouteToDestinationMapperImplTest {
             ) to ("ai_chat" to DestinationType.SCREEN),
             CongratsNavRoute to ("congrats" to DestinationType.BOTTOM_SHEET),
             ContactSupportNavRoute to ("contact_support" to DestinationType.RESPONSIVE),
-            DayNavRoute(dayNumber = 1, weekNumber = 2, readingPlanType = "chronological") to
+            DayNavRoute(
+                dayNumber = 1,
+                weekNumber = 2,
+                readingPlanType = "chronological",
+            ) to
                 ("day" to DestinationType.SCREEN),
             DeleteAllProgressNavRoute to ("delete_all_progress" to DestinationType.DIALOG),
-            DeleteNotesRoute(readingPlanType = "books", week = 1, day = 2) to
+            DeleteNotesRoute(
+                readingPlanType = "books",
+                week = 1,
+                day = 2,
+            ) to
                 ("delete_notes" to DestinationType.DIALOG),
             DeleteVersionNavRoute(versionId = "kjv") to ("delete_version" to DestinationType.DIALOG),
             DonationNavRoute to ("donation" to DestinationType.BOTTOM_SHEET),
             EditPlanStartDateNavRoute to ("edit_plan_start_date" to DestinationType.DIALOG),
-            InAppUpdateNavRoute(versionName = "2.0.0", source = "startup") to
+            InAppUpdateNavRoute(
+                versionName = "2.0.0",
+                source = "startup",
+            ) to
                 ("in_app_update" to DestinationType.RESPONSIVE),
             LoginNavRoute(notifyResultViaSnackbar = true) to ("login" to DestinationType.BOTTOM_SHEET),
             LoginSyncNudgeNavRoute to ("login_sync_nudge" to DestinationType.DIALOG),

@@ -41,7 +41,11 @@ internal class AndroidInAppUpdater(
             else -> UpdateAvailability.NotAvailable
         }
     }.getOrElse { throwable ->
-        Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to check for in-app update")
+        Logger.w(
+            tag = TAG,
+            throwable = throwable,
+            messageString = "Failed to check for in-app update",
+        )
         UpdateAvailability.CheckFailed
     }
 
@@ -57,7 +61,11 @@ internal class AndroidInAppUpdater(
                 )
             }
         }.onFailure { throwable ->
-            Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to start in-app update")
+            Logger.w(
+                tag = TAG,
+                throwable = throwable,
+                messageString = "Failed to start in-app update",
+            )
         }
     }
 

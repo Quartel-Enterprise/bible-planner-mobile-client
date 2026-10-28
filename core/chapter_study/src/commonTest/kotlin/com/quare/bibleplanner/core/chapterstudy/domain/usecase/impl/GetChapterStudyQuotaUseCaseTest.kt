@@ -89,7 +89,10 @@ internal class GetChapterStudyQuotaUseCaseTest {
             ),
             actual = repository.statusRequests,
         )
-        assertEquals(expected = listOf(target), actual = coordinator.generatingCountExclusions)
+        assertEquals(
+            expected = listOf(target),
+            actual = coordinator.generatingCountExclusions,
+        )
     }
 
     @Test

@@ -104,10 +104,26 @@ class JvmAvatarImageCropperTest {
     private fun quadrantImage(): ByteArray {
         val image = BufferedImage(SOURCE_SIZE, SOURCE_SIZE, BufferedImage.TYPE_INT_RGB)
         image.createGraphics().run {
-            paint(Color.RED, left = 0, top = 0)
-            paint(Color.GREEN, left = SOURCE_SIZE / 2, top = 0)
-            paint(Color.BLUE, left = 0, top = SOURCE_SIZE / 2)
-            paint(Color.WHITE, left = SOURCE_SIZE / 2, top = SOURCE_SIZE / 2)
+            paint(
+                Color.RED,
+                left = 0,
+                top = 0,
+            )
+            paint(
+                Color.GREEN,
+                left = SOURCE_SIZE / 2,
+                top = 0,
+            )
+            paint(
+                Color.BLUE,
+                left = 0,
+                top = SOURCE_SIZE / 2,
+            )
+            paint(
+                Color.WHITE,
+                left = SOURCE_SIZE / 2,
+                top = SOURCE_SIZE / 2,
+            )
             dispose()
         }
         return ByteArrayOutputStream().use { stream ->
@@ -134,10 +150,22 @@ class JvmAvatarImageCropperTest {
     ) {
         val near = output.width / 4
         val far = output.width * 3 / 4
-        assertColor(expected = topLeft, actual = Color(output.getRGB(near, near)))
-        assertColor(expected = topRight, actual = Color(output.getRGB(far, near)))
-        assertColor(expected = bottomLeft, actual = Color(output.getRGB(near, far)))
-        assertColor(expected = bottomRight, actual = Color(output.getRGB(far, far)))
+        assertColor(
+            expected = topLeft,
+            actual = Color(output.getRGB(near, near)),
+        )
+        assertColor(
+            expected = topRight,
+            actual = Color(output.getRGB(far, near)),
+        )
+        assertColor(
+            expected = bottomLeft,
+            actual = Color(output.getRGB(near, far)),
+        )
+        assertColor(
+            expected = bottomRight,
+            actual = Color(output.getRGB(far, far)),
+        )
     }
 
     private fun assertColor(

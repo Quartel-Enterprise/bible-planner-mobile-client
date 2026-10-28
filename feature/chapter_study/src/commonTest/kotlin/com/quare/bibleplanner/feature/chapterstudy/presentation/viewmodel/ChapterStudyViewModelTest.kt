@@ -110,9 +110,18 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = listOf(listOf(15)), actual = keyVerseLookups)
-            assertEquals(expected = listOf(target), actual = refreshedTargets)
-            assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
+            assertEquals(
+                expected = listOf(listOf(15)),
+                actual = keyVerseLookups,
+            )
+            assertEquals(
+                expected = listOf(target),
+                actual = refreshedTargets,
+            )
+            assertEquals(
+                expected = emptyList(),
+                actual = coordinator.startedTargets,
+            )
             assertEquals(
                 expected = listOf("chapter_study_opened" to targetParams + ("is_cached" to true)),
                 actual = trackedEvents,
@@ -131,7 +140,10 @@ internal class ChapterStudyViewModelTest {
             // Then
             val content = viewModel.uiState.value.content as ChapterStudyContentUiState.Loaded
             assertNull(content.keyVerseText)
-            assertEquals(expected = emptyList(), actual = keyVerseLookups)
+            assertEquals(
+                expected = emptyList(),
+                actual = keyVerseLookups,
+            )
         }
 
     @Test
@@ -147,8 +159,14 @@ internal class ChapterStudyViewModelTest {
             expected = ChapterStudyContentUiState.Generating(currentPhaseIndex = 0),
             actual = viewModel.uiState.value.content,
         )
-        assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
-        assertEquals(expected = emptyList(), actual = refreshedTargets)
+        assertEquals(
+            expected = listOf(target),
+            actual = coordinator.startedTargets,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = refreshedTargets,
+        )
         assertEquals(
             expected = listOf(
                 "chapter_study_generation_started" to targetParams + ("is_pro" to false) + ("is_rewarded" to false),
@@ -171,7 +189,10 @@ internal class ChapterStudyViewModelTest {
                 expected = ChapterStudyContentUiState.Failed(isOffline = true),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
+            assertEquals(
+                expected = emptyList(),
+                actual = coordinator.startedTargets,
+            )
             assertEquals(
                 expected = listOf(
                     "chapter_study_generation_failed" to targetParams + mapOf(
@@ -203,8 +224,14 @@ internal class ChapterStudyViewModelTest {
                 expected = ChapterStudyContentUiState.Generating(currentPhaseIndex = 2),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
-            assertEquals(expected = emptyList(), actual = trackedEvents)
+            assertEquals(
+                expected = emptyList(),
+                actual = coordinator.startedTargets,
+            )
+            assertEquals(
+                expected = emptyList(),
+                actual = trackedEvents,
+            )
         }
 
     @Test
@@ -238,7 +265,10 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = listOf(target), actual = coordinator.acknowledgedTargets)
+            assertEquals(
+                expected = listOf(target),
+                actual = coordinator.acknowledgedTargets,
+            )
             assertEquals(
                 expected = listOf("chapter_study_opened" to targetParams + ("is_cached" to false)),
                 actual = trackedEvents,
@@ -269,8 +299,14 @@ internal class ChapterStudyViewModelTest {
                 expected = ChapterStudyContentUiState.Failed(isOffline = true),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = listOf(target), actual = coordinator.acknowledgedTargets)
-            assertEquals(expected = emptyList(), actual = commands)
+            assertEquals(
+                expected = listOf(target),
+                actual = coordinator.acknowledgedTargets,
+            )
+            assertEquals(
+                expected = emptyList(),
+                actual = commands,
+            )
         }
 
     @Test
@@ -301,7 +337,10 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = commands,
             )
-            assertEquals(expected = listOf(target), actual = coordinator.acknowledgedTargets)
+            assertEquals(
+                expected = listOf(target),
+                actual = coordinator.acknowledgedTargets,
+            )
         }
 
     @Test
@@ -328,7 +367,10 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = viewModel.uiState.value.content,
             )
-            assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
+            assertEquals(
+                expected = emptyList(),
+                actual = coordinator.startedTargets,
+            )
         }
 
     @Test
@@ -361,7 +403,10 @@ internal class ChapterStudyViewModelTest {
             settle()
 
             // Then
-            assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
+            assertEquals(
+                expected = listOf(target),
+                actual = coordinator.startedTargets,
+            )
             assertEquals(
                 expected = ChapterStudyContentUiState.Generating(currentPhaseIndex = 0),
                 actual = viewModel.uiState.value.content,
@@ -389,7 +434,10 @@ internal class ChapterStudyViewModelTest {
             actual = commands,
         )
         assertIs<ChapterStudyContentUiState.NotGenerated>(viewModel.uiState.value.content)
-        assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
+        assertEquals(
+            expected = emptyList(),
+            actual = coordinator.startedTargets,
+        )
     }
 
     @Test
@@ -413,7 +461,10 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = commands,
             )
-            assertEquals(expected = 0, actual = accessChecks)
+            assertEquals(
+                expected = 0,
+                actual = accessChecks,
+            )
         }
 
     @Test
@@ -463,8 +514,14 @@ internal class ChapterStudyViewModelTest {
             settle()
 
             // Then
-            assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
-            assertEquals(expected = listOf(true), actual = coordinator.startedRewardFlags)
+            assertEquals(
+                expected = listOf(target),
+                actual = coordinator.startedTargets,
+            )
+            assertEquals(
+                expected = listOf(true),
+                actual = coordinator.startedRewardFlags,
+            )
         }
 
     @Test
@@ -483,8 +540,14 @@ internal class ChapterStudyViewModelTest {
             settle()
 
             // Then
-            assertEquals(expected = listOf(true), actual = coordinator.startedRewardFlags)
-            assertEquals(expected = emptyList(), actual = commands)
+            assertEquals(
+                expected = listOf(true),
+                actual = coordinator.startedRewardFlags,
+            )
+            assertEquals(
+                expected = emptyList(),
+                actual = commands,
+            )
         }
 
     @Test
@@ -545,7 +608,10 @@ internal class ChapterStudyViewModelTest {
             ),
             actual = commands,
         )
-        assertEquals(expected = emptyList(), actual = coordinator.startedTargets)
+        assertEquals(
+            expected = emptyList(),
+            actual = coordinator.startedTargets,
+        )
     }
 
     @Test
@@ -575,7 +641,10 @@ internal class ChapterStudyViewModelTest {
             settle()
 
             // Then
-            assertEquals(expected = emptyList(), actual = commands)
+            assertEquals(
+                expected = emptyList(),
+                actual = commands,
+            )
             assertEquals(
                 expected = ChapterStudyContentUiState.NotGenerated(
                     hero = ChapterStudyHeroUiModel(
@@ -602,8 +671,14 @@ internal class ChapterStudyViewModelTest {
 
         // Then
         val content = assertIs<ChapterStudyContentUiState.NotGenerated>(viewModel.uiState.value.content)
-        assertEquals(expected = true, actual = content.hero.isPro)
-        assertEquals(expected = false, actual = content.hero.isLocked)
+        assertEquals(
+            expected = true,
+            actual = content.hero.isPro,
+        )
+        assertEquals(
+            expected = false,
+            actual = content.hero.isLocked,
+        )
     }
 
     @Test
@@ -619,7 +694,10 @@ internal class ChapterStudyViewModelTest {
         settle()
 
         // Then
-        assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
+        assertEquals(
+            expected = listOf(target),
+            actual = coordinator.startedTargets,
+        )
         assertEquals(
             expected = ChapterStudyContentUiState.Generating(currentPhaseIndex = 0),
             actual = viewModel.uiState.value.content,
@@ -654,8 +732,14 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = pendingVerseFocusStore.pending.value,
             )
-            assertEquals(expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack), actual = commands)
-            assertEquals(expected = listOf("chapter_study_outline_clicked" to targetParams), actual = trackedEvents)
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+            assertEquals(
+                expected = listOf("chapter_study_outline_clicked" to targetParams),
+                actual = trackedEvents,
+            )
         }
 
     @Test
@@ -680,8 +764,14 @@ internal class ChapterStudyViewModelTest {
                 ),
                 actual = pendingVerseFocusStore.pending.value,
             )
-            assertEquals(expected = emptyList(), actual = commands)
-            assertEquals(expected = listOf("chapter_study_outline_clicked" to targetParams), actual = trackedEvents)
+            assertEquals(
+                expected = emptyList(),
+                actual = commands,
+            )
+            assertEquals(
+                expected = listOf("chapter_study_outline_clicked" to targetParams),
+                actual = trackedEvents,
+            )
         }
 
     @Test
@@ -727,8 +817,14 @@ internal class ChapterStudyViewModelTest {
         settle()
 
         // Then
-        assertEquals(expected = emptyList(), actual = commands)
-        assertEquals(expected = emptyList(), actual = trackedEvents)
+        assertEquals(
+            expected = emptyList(),
+            actual = commands,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = trackedEvents,
+        )
     }
 
     @Test

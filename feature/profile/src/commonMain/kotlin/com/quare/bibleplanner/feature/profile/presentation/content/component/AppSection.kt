@@ -28,7 +28,10 @@ internal fun AppSection(
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         SectionHeaderText(title = stringResource(Res.string.app_section))
         SectionCard {
             if (state.isUpdateRowVisible) {

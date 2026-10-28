@@ -18,8 +18,14 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class ListeningPlayerUiModelMapperTest {
     private val mapper = ListeningPlayerUiModelMapper(GetListeningTimeUseCase())
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
 
     @Test
     fun `GIVEN a session halfway through its first verse WHEN mapping THEN shows the verse progress and time`() {

@@ -19,7 +19,10 @@ internal fun SocialSection(
     modifier: Modifier = Modifier,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         SectionHeaderText(title = stringResource(Res.string.social_section))
         SectionCard {
             ProfileMenuItem(

@@ -39,7 +39,10 @@ internal class IosBibleVersionDownloadNotifier(
         versionName: String,
         progress: Float,
     ) {
-        liveActivity.showPaused(versionId = versionId, onShown = {})
+        liveActivity.showPaused(
+            versionId = versionId,
+            onShown = {},
+        )
     }
 
     override suspend fun showComplete(

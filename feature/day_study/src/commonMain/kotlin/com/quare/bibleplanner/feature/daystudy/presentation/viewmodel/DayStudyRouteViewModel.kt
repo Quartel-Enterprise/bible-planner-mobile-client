@@ -244,7 +244,12 @@ internal class DayStudyRouteViewModel(
 
     private suspend fun onJobDone(study: DayStudyModel) {
         if (uiState.value.generation != null) completeGenerationPhases()
-        uiState.update { it.copy(generation = null, openStudy = study) }
+        uiState.update {
+            it.copy(
+                generation = null,
+                openStudy = study,
+            )
+        }
         trackStudyOpened(isCached = false)
         refreshCard(isPro)
         generationCoordinator.acknowledge(jobKey)
@@ -259,7 +264,12 @@ internal class DayStudyRouteViewModel(
             isOffline -> DayStudyGenerationError.OFFLINE
             else -> DayStudyGenerationError.GENERIC
         }
-        uiState.update { it.copy(generation = null, generationError = error) }
+        uiState.update {
+            it.copy(
+                generation = null,
+                generationError = error,
+            )
+        }
         if (isLimitReached) {
             lockCard()
             uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))

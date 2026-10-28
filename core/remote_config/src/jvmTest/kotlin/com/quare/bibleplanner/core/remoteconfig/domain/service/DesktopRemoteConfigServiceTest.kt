@@ -24,7 +24,10 @@ internal class DesktopRemoteConfigServiceTest {
         val value = service.getBoolean(SHOW_DONATE_KEY)
 
         // Then
-        assertEquals(expected = false, actual = value)
+        assertEquals(
+            expected = false,
+            actual = value,
+        )
     }
 
     @Test
@@ -36,7 +39,10 @@ internal class DesktopRemoteConfigServiceTest {
         val value = service.getBoolean(SHOW_DONATE_KEY)
 
         // Then
-        assertEquals(expected = true, actual = value)
+        assertEquals(
+            expected = true,
+            actual = value,
+        )
     }
 
     @Test
@@ -48,7 +54,10 @@ internal class DesktopRemoteConfigServiceTest {
         val value = service.getBoolean(SHOW_DONATE_KEY)
 
         // Then
-        assertEquals(expected = true, actual = value)
+        assertEquals(
+            expected = true,
+            actual = value,
+        )
     }
 
     @Test
@@ -60,7 +69,10 @@ internal class DesktopRemoteConfigServiceTest {
         val value = service.getBoolean(SHOW_DONATE_KEY)
 
         // Then
-        assertEquals(expected = false, actual = value)
+        assertEquals(
+            expected = false,
+            actual = value,
+        )
     }
 
     @Test
@@ -84,7 +96,10 @@ internal class DesktopRemoteConfigServiceTest {
         val value = service.getInt(MAX_FREE_NOTES_KEY)
 
         // Then
-        assertEquals(expected = 7, actual = value)
+        assertEquals(
+            expected = 7,
+            actual = value,
+        )
     }
 
     @Test
@@ -128,8 +143,14 @@ internal class DesktopRemoteConfigServiceTest {
         runCurrent()
 
         // Then
-        assertEquals(expected = 1, actual = updates)
-        assertEquals(expected = false, actual = service.getBoolean(SHOW_DONATE_KEY))
+        assertEquals(
+            expected = 1,
+            actual = updates,
+        )
+        assertEquals(
+            expected = false,
+            actual = service.getBoolean(SHOW_DONATE_KEY),
+        )
     }
 
     @Test
@@ -150,7 +171,10 @@ internal class DesktopRemoteConfigServiceTest {
         runCurrent()
 
         // Then
-        assertEquals(expected = 0, actual = updates)
+        assertEquals(
+            expected = 0,
+            actual = updates,
+        )
     }
 
     private fun TestScope.prepareScenario(vararg responses: Map<String, String>?) {

@@ -29,7 +29,13 @@ internal fun getHttpClient(): HttpClient = HttpClient {
         ignoreUnknownKeys = true
     }
     install(ContentNegotiation) {
-        json(json = json, contentType = ContentType.Application.Json)
-        json(json = json, contentType = ContentType.Text.JavaScript)
+        json(
+            json = json,
+            contentType = ContentType.Application.Json,
+        )
+        json(
+            json = json,
+            contentType = ContentType.Text.JavaScript,
+        )
     }
 }

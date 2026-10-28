@@ -84,7 +84,10 @@ internal class AccountDetailsViewModel(
             AccountDetailsUiEvent.OnToggleDevices -> toggleDevices()
 
             is AccountDetailsUiEvent.OnRenameDeviceClick -> navigator.navigate(
-                RenameDeviceNavRoute(deviceRowId = event.device.id, currentName = event.device.name),
+                RenameDeviceNavRoute(
+                    deviceRowId = event.device.id,
+                    currentName = event.device.name,
+                ),
             )
 
             is AccountDetailsUiEvent.OnSignOutDeviceClick -> signOutDeviceClick(event.device)

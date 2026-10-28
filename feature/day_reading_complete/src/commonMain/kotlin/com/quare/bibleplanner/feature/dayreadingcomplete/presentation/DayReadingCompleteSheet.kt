@@ -115,9 +115,15 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
             shape = CircleShape,
         )
         VerticalSpacer(12)
-        ShimmerLine(width = eyebrowShimmerWidth, height = eyebrowShimmerHeight)
+        ShimmerLine(
+            width = eyebrowShimmerWidth,
+            height = eyebrowShimmerHeight,
+        )
         VerticalSpacer(8)
-        ShimmerLine(width = titleShimmerWidth, height = titleShimmerHeight)
+        ShimmerLine(
+            width = titleShimmerWidth,
+            height = titleShimmerHeight,
+        )
         VerticalSpacer(12)
         bodyShimmerWidthFractions.forEachIndexed { index, fraction ->
             if (index > 0) VerticalSpacer(8)
@@ -143,7 +149,10 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
             shape = CircleShape,
         )
         VerticalSpacer(14)
-        ShimmerLine(width = hintShimmerWidth, height = hintShimmerHeight)
+        ShimmerLine(
+            width = hintShimmerWidth,
+            height = hintShimmerHeight,
+        )
     }
 }
 
@@ -169,7 +178,10 @@ private fun SheetColumn(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 22.dp)
-            .padding(top = 12.dp, bottom = 26.dp),
+            .padding(
+                top = 12.dp,
+                bottom = 26.dp,
+            ),
         content = content,
     )
 }
@@ -296,7 +308,10 @@ private fun StudyCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(cardCornerRadius))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(
+                horizontal = 14.dp,
+                vertical = 12.dp,
+            ),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

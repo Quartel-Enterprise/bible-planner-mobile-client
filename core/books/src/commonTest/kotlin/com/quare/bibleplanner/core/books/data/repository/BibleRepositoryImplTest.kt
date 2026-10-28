@@ -66,7 +66,10 @@ internal class BibleRepositoryImplTest {
             val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
             // Then
-            assertEquals(expected = "A21", actual = selectedVersionId)
+            assertEquals(
+                expected = "A21",
+                actual = selectedVersionId,
+            )
         }
 
     @Test
@@ -78,7 +81,10 @@ internal class BibleRepositoryImplTest {
         val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
         // Then
-        assertEquals(expected = "RVR1960", actual = selectedVersionId)
+        assertEquals(
+            expected = "RVR1960",
+            actual = selectedVersionId,
+        )
     }
 
     @Test
@@ -90,7 +96,10 @@ internal class BibleRepositoryImplTest {
         val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
         // Then
-        assertEquals(expected = "NIV", actual = selectedVersionId)
+        assertEquals(
+            expected = "NIV",
+            actual = selectedVersionId,
+        )
     }
 
     @Test
@@ -106,7 +115,10 @@ internal class BibleRepositoryImplTest {
             val selectedVersionId = repository.getSelectedVersionIdFlow().first()
 
             // Then
-            assertEquals(expected = "KJV", actual = selectedVersionId)
+            assertEquals(
+                expected = "KJV",
+                actual = selectedVersionId,
+            )
         }
 
     @Test
@@ -118,7 +130,10 @@ internal class BibleRepositoryImplTest {
         repository.setSelectedVersionId("NVI")
 
         // Then
-        assertEquals(expected = "NVI", actual = repository.getSelectedVersionIdFlow().first())
+        assertEquals(
+            expected = "NVI",
+            actual = repository.getSelectedVersionIdFlow().first(),
+        )
     }
 
     @Test

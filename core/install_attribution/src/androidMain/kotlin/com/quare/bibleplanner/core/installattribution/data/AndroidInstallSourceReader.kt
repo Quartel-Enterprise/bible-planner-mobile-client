@@ -41,7 +41,11 @@ internal class AndroidInstallSourceReader(
                     null
                 }
             }.onFailure { throwable ->
-                Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to read the install referrer")
+                Logger.w(
+                    tag = TAG,
+                    throwable = throwable,
+                    messageString = "Failed to read the install referrer",
+                )
             }.getOrNull()
         } finally {
             client.endConnection()
@@ -67,7 +71,11 @@ internal class AndroidInstallSourceReader(
         val info = AdvertisingIdClient.getAdvertisingIdInfo(context)
         info.id?.takeUnless { id -> info.isLimitAdTrackingEnabled || id.isBlank() || id == ZEROED_ADVERTISING_ID }
     }.onFailure { throwable ->
-        Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to read the advertising id")
+        Logger.w(
+            tag = TAG,
+            throwable = throwable,
+            messageString = "Failed to read the advertising id",
+        )
     }.getOrNull()
 
     private companion object {

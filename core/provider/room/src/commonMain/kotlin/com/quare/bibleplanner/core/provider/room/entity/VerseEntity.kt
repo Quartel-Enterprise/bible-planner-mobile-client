@@ -18,7 +18,10 @@ import androidx.room3.PrimaryKey
     ],
     indices = [
         Index(value = ["chapterId"]),
-        Index(value = ["chapterId", "number"], unique = true),
+        Index(
+            value = ["chapterId", "number"],
+            unique = true,
+        ),
     ],
 )
 data class VerseEntity(

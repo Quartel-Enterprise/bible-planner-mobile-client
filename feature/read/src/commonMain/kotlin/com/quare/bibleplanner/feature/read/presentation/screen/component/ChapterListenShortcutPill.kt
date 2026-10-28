@@ -123,7 +123,10 @@ internal fun ChapterListenShortcutPill(
                 },
                 contentColor = if (isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
             ),
-            contentPadding = PaddingValues(start = 12.dp, end = 16.dp),
+            contentPadding = PaddingValues(
+                start = 12.dp,
+                end = 16.dp,
+            ),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

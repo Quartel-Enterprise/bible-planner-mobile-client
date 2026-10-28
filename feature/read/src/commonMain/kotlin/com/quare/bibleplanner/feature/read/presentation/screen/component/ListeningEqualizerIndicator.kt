@@ -42,15 +42,26 @@ internal fun ListeningEqualizerIndicator(
         if (isAnimating) fraction else PAUSED_FRACTION
     }
     val color = MaterialTheme.colorScheme.primary
-    Canvas(modifier = modifier.size(width = indicatorWidth, height = indicatorHeight)) {
+    Canvas(
+        modifier = modifier.size(
+            width = indicatorWidth,
+            height = indicatorHeight,
+        ),
+    ) {
         val barWidthPx = barWidth.toPx()
         val gap = (size.width - barWidthPx * BAR_COUNT) / (BAR_COUNT - 1)
         fractions.forEachIndexed { index, fraction ->
             val barHeight = size.height * fraction
             drawRoundRect(
                 color = color,
-                topLeft = Offset(x = index * (barWidthPx + gap), y = size.height - barHeight),
-                size = Size(width = barWidthPx, height = barHeight),
+                topLeft = Offset(
+                    x = index * (barWidthPx + gap),
+                    y = size.height - barHeight,
+                ),
+                size = Size(
+                    width = barWidthPx,
+                    height = barHeight,
+                ),
                 cornerRadius = CornerRadius(barWidthPx / 2),
             )
         }

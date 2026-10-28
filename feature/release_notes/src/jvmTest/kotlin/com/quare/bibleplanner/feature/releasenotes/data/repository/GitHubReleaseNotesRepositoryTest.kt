@@ -32,7 +32,11 @@ internal class GitHubReleaseNotesRepositoryTest {
     private lateinit var repository: GitHubReleaseNotesRepository
     private lateinit var requests: List<HttpRequestData>
 
-    private val firstReleaseDate = LocalDate(year = 2024, month = 3, day = 10)
+    private val firstReleaseDate = LocalDate(
+        year = 2024,
+        month = 3,
+        day = 10,
+    )
 
     @Test
     fun `GIVEN published releases on GitHub WHEN getting the release notes THEN dates the versions GitHub knows`() =

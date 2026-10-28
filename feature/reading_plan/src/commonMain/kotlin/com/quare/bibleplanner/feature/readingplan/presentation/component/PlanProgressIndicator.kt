@@ -182,8 +182,14 @@ private fun PlanStatusChip(
     modifier: Modifier = Modifier,
 ) {
     val daysSinceLastRead = planStatus.daysSinceLastRead
-    val animatedStreak by animateIntAsState(targetValue = planStatus.shownStreakDays, label = "streakDaysAnimation")
-    val animatedLapse by animateIntAsState(targetValue = daysSinceLastRead ?: 0, label = "lapseDaysAnimation")
+    val animatedStreak by animateIntAsState(
+        targetValue = planStatus.shownStreakDays,
+        label = "streakDaysAnimation",
+    )
+    val animatedLapse by animateIntAsState(
+        targetValue = daysSinceLastRead ?: 0,
+        label = "lapseDaysAnimation",
+    )
     when {
         planStatus.mode == PlanMode.Behind && daysSinceLastRead != null -> StatusChip(
             modifier = modifier,
@@ -229,7 +235,10 @@ private fun StatusChip(
         shape = RoundedCornerShape(50),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 5.dp,
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {

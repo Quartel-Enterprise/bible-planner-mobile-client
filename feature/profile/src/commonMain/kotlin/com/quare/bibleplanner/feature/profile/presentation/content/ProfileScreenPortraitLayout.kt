@@ -53,7 +53,12 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
         becomeProTitleContent = becomeProTitleContent,
     )
     item { VerticalSpacer() }
-    responsiveItem { PreferencesSection(state = state, onEvent = onEvent) }
+    responsiveItem {
+        PreferencesSection(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
     item { VerticalSpacer() }
     responsiveItem { SupportSection(onEvent = onEvent) }
     item { VerticalSpacer() }
@@ -91,7 +96,10 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
         )
     }
     responsiveItem {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
             CurrentAppVersionText(appVersion = state.appVersion)
         }
     }

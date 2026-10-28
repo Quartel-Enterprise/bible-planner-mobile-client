@@ -88,7 +88,10 @@ internal fun HighlightPaletteRow(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
         FlowRow(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 10.dp,
+            ),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
@@ -152,8 +155,10 @@ internal fun HighlightPaletteRow(
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .offset(x = 2.dp, y = 2.dp)
-                            .size(lockBadgeSize)
+                            .offset(
+                                x = 2.dp,
+                                y = 2.dp,
+                            ).size(lockBadgeSize)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceContainerLow),
                         contentAlignment = Alignment.Center,

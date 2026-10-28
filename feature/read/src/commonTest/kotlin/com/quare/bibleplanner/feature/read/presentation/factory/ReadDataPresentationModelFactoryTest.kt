@@ -314,15 +314,47 @@ internal class ReadDataPresentationModelFactoryTest {
         val chapterIds = mapOf(1 to 1L, 2 to 2L, 3 to 3L)
         val versesByChapterId = mapOf(
             1L to listOf(
-                verse(chapterId = 1L, number = 1, isRead = true, text = "GEN 1:1"),
-                verse(chapterId = 1L, number = 2, isRead = false, text = "GEN 1:2"),
+                verse(
+                    chapterId = 1L,
+                    number = 1,
+                    isRead = true,
+                    text = "GEN 1:1",
+                ),
+                verse(
+                    chapterId = 1L,
+                    number = 2,
+                    isRead = false,
+                    text = "GEN 1:2",
+                ),
             ),
             2L to listOf(
-                verse(chapterId = 2L, number = 1, isRead = true, text = "GEN 2:1"),
-                verse(chapterId = 2L, number = 2, isRead = true, text = "GEN 2:2"),
-                verse(chapterId = 2L, number = 3, isRead = true, text = null),
+                verse(
+                    chapterId = 2L,
+                    number = 1,
+                    isRead = true,
+                    text = "GEN 2:1",
+                ),
+                verse(
+                    chapterId = 2L,
+                    number = 2,
+                    isRead = true,
+                    text = "GEN 2:2",
+                ),
+                verse(
+                    chapterId = 2L,
+                    number = 3,
+                    isRead = true,
+                    text = null,
+                ),
             ),
-            3L to listOf(verse(chapterId = 3L, number = 1, isRead = false, text = null)),
+            3L to listOf(
+                verse(
+                    chapterId = 3L,
+                    number = 1,
+                    isRead = false,
+                    text = null,
+                ),
+            ),
         )
         val planRepository = FakePlanRepository(
             plans = mapOf(

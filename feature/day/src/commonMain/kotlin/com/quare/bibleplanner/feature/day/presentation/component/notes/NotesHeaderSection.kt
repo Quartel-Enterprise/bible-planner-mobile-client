@@ -29,6 +29,9 @@ internal fun NotesHeaderSection(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        DeleteIconButton(onClick = onDeleteClick, contentDescription = stringResource(Res.string.clear_notes))
+        DeleteIconButton(
+            onClick = onDeleteClick,
+            contentDescription = stringResource(Res.string.clear_notes),
+        )
     }
 }

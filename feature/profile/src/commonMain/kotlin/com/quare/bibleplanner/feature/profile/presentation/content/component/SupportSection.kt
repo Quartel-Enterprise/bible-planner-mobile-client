@@ -20,7 +20,10 @@ internal fun SupportSection(
     modifier: Modifier = Modifier,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         SectionHeaderText(title = stringResource(Res.string.support_comments_section))
         SectionCard {
             ProfileMenuItem(
@@ -32,7 +35,10 @@ internal fun SupportSection(
                 itemModel = ProfileMenuOptionsFactory.rateApp,
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.RATE_APP)) },
                 trailingContent = {
-                    Icon(icon = AppIcon.OpenInNew, contentDescription = null)
+                    Icon(
+                        icon = AppIcon.OpenInNew,
+                        contentDescription = null,
+                    )
                 },
             )
         }

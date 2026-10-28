@@ -47,8 +47,10 @@ internal fun BooksTopBar(
                     .widthIn(max = 800.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(top = contentPadding.calculateTopPadding().coerceAtLeast(16.dp), bottom = 12.dp)
-                    .padding(horizontal = 16.dp),
+                    .padding(
+                        top = contentPadding.calculateTopPadding().coerceAtLeast(16.dp),
+                        bottom = 12.dp,
+                    ).padding(horizontal = 16.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

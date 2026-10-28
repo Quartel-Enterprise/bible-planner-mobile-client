@@ -141,7 +141,10 @@ internal class DayUiTest {
         onNodeWithText(getString(Res.string.mark_as_read)).performClick()
 
         // Then
-        assertEquals(expected = listOf<DayUiEvent>(DayUiEvent.OnDayReadToggle), actual = events)
+        assertEquals(
+            expected = listOf<DayUiEvent>(DayUiEvent.OnDayReadToggle),
+            actual = events,
+        )
     }
 
     @Test
@@ -155,7 +158,10 @@ internal class DayUiTest {
 
         // Then
         onNodeWithText(getString(Res.string.mark_as_unread)).assertExists()
-        assertEquals(expected = listOf<DayUiEvent>(DayUiEvent.OnEditDateClick), actual = events)
+        assertEquals(
+            expected = listOf<DayUiEvent>(DayUiEvent.OnEditDateClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -190,7 +196,10 @@ internal class DayUiTest {
         onNodeWithContentDescription(getString(Res.string.clear_notes)).performClick()
 
         // Then
-        assertEquals(expected = listOf<DayUiEvent>(DayUiEvent.OnNotesClear), actual = events)
+        assertEquals(
+            expected = listOf<DayUiEvent>(DayUiEvent.OnNotesClear),
+            actual = events,
+        )
     }
 
     @Test
@@ -202,7 +211,10 @@ internal class DayUiTest {
         onNodeWithContentDescription(getString(ComponentRes.string.back)).performClick()
 
         // Then
-        assertEquals(expected = listOf<DayUiEvent>(DayUiEvent.OnBackClick), actual = events)
+        assertEquals(
+            expected = listOf<DayUiEvent>(DayUiEvent.OnBackClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -214,7 +226,10 @@ internal class DayUiTest {
         onNodeWithText(getString(Res.string.day_ask_ai)).performClick()
 
         // Then
-        assertEquals(expected = listOf<DayUiEvent>(DayUiEvent.OnAskAiClick), actual = events)
+        assertEquals(
+            expected = listOf<DayUiEvent>(DayUiEvent.OnAskAiClick),
+            actual = events,
+        )
     }
 
     @Test

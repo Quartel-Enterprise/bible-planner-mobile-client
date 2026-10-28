@@ -56,7 +56,10 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChapterAudioRepositoryImplTest {
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
     private val json = Json { ignoreUnknownKeys = true }
     private lateinit var directory: Path
     private lateinit var repository: ChapterAudioRepositoryImpl
@@ -551,7 +554,10 @@ internal class ChapterAudioRepositoryImplTest {
         prepareScenario(
             respond = { request ->
                 if (request.url.encodedPath.endsWith(".mp3")) {
-                    respond(content = "", status = HttpStatusCode.InternalServerError)
+                    respond(
+                        content = "",
+                        status = HttpStatusCode.InternalServerError,
+                    )
                 } else {
                     respondOk()(request)
                 }
@@ -628,8 +634,13 @@ internal class ChapterAudioRepositoryImplTest {
         prepareScenario(
             respond = { request ->
                 when {
-                    request.url.host == AUDIO_HOST -> respond(content = "", status = HttpStatusCode.Unauthorized)
+                    request.url.host == AUDIO_HOST -> respond(
+                        content = "",
+                        status = HttpStatusCode.Unauthorized,
+                    )
+
                     request.url.encodedPath.endsWith("/token") -> respondJson(RENEWED_SESSION)
+
                     else -> respondOk()(request)
                 }
             },
@@ -810,7 +821,12 @@ internal class ChapterAudioRepositoryImplTest {
     ): suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = { request ->
         when {
             request.url.encodedPath.endsWith(".json") -> respondJson(MANIFEST)
-            request.url.encodedPath.endsWith(".mp3") -> respond(content = AUDIO, status = HttpStatusCode.OK)
+
+            request.url.encodedPath.endsWith(".mp3") -> respond(
+                content = AUDIO,
+                status = HttpStatusCode.OK,
+            )
+
             else -> respondJson(FUNCTION_RESPONSE.replace("1.0.0-1", revision))
         }
     }

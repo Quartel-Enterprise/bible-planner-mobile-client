@@ -119,7 +119,10 @@ private fun ResponsiveContentScope.sidePanelItems(
         ReadingPlanHeaderRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
             selectedReadingPlan = uiState.selectedReadingPlan,
             isShowingMenu = uiState.isShowingMenu,
             isShowingOrderMenu = uiState.isShowingOrderMenu,
@@ -220,7 +223,12 @@ private fun SectionHeaderRow(
     Text(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 4.dp),
+            .padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = 12.dp,
+                bottom = 4.dp,
+            ),
         text = stringResource(group.toSectionResource(isBehind = isBehind)),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,

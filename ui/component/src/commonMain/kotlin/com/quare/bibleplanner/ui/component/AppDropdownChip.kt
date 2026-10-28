@@ -37,10 +37,16 @@ fun AppDropdownChip(
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+            ),
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                modifier = Modifier.padding(
+                    horizontal = 14.dp,
+                    vertical = 8.dp,
+                ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {

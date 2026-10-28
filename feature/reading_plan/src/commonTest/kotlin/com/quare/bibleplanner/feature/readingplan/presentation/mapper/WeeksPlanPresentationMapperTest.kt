@@ -36,9 +36,18 @@ internal class WeeksPlanPresentationMapperTest {
     fun `GIVEN read and unread weeks WHEN mapping THEN groups them into completed current and upcoming`() {
         // Given
         val weeks = listOf(
-            week(number = 1, readDays = 2),
-            week(number = 2, readDays = 1),
-            week(number = 3, readDays = 0),
+            week(
+                number = 1,
+                readDays = 2,
+            ),
+            week(
+                number = 2,
+                readDays = 1,
+            ),
+            week(
+                number = 3,
+                readDays = 0,
+            ),
         )
 
         // When
@@ -69,7 +78,12 @@ internal class WeeksPlanPresentationMapperTest {
     @Test
     fun `GIVEN a partly read plan WHEN mapping THEN accents only the next day to read`() {
         // Given
-        val weeks = listOf(week(number = 1, readDays = 1))
+        val weeks = listOf(
+            week(
+                number = 1,
+                readDays = 1,
+            ),
+        )
 
         // When
         val result = mapper.map(
@@ -100,9 +114,15 @@ internal class WeeksPlanPresentationMapperTest {
             WeekPlanModel(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = true),
+                    day(
+                        number = 1,
+                        isRead = true,
+                    ),
                     day(number = 2),
-                    day(number = 3, isToday = true),
+                    day(
+                        number = 3,
+                        isToday = true,
+                    ),
                     day(number = 4),
                 ),
             ),
@@ -133,7 +153,13 @@ internal class WeeksPlanPresentationMapperTest {
         val weeks = listOf(
             WeekPlanModel(
                 number = 1,
-                days = listOf(day(number = 1, isRead = true, isToday = true)),
+                days = listOf(
+                    day(
+                        number = 1,
+                        isRead = true,
+                        isToday = true,
+                    ),
+                ),
             ),
         )
 
@@ -160,8 +186,22 @@ internal class WeeksPlanPresentationMapperTest {
             WeekPlanModel(
                 number = 1,
                 days = listOf(
-                    day(number = 1, plannedReadDate = LocalDate(year = 2026, month = 12, day = 31)),
-                    day(number = 2, plannedReadDate = LocalDate(year = 2027, month = 1, day = 1)),
+                    day(
+                        number = 1,
+                        plannedReadDate = LocalDate(
+                            year = 2026,
+                            month = 12,
+                            day = 31,
+                        ),
+                    ),
+                    day(
+                        number = 2,
+                        plannedReadDate = LocalDate(
+                            year = 2027,
+                            month = 1,
+                            day = 1,
+                        ),
+                    ),
                 ),
             ),
         )

@@ -32,7 +32,10 @@ internal fun WeekPlanItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         border = if (isCurrent) {
-            BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.primary)
+            BorderStroke(
+                width = 1.5.dp,
+                color = MaterialTheme.colorScheme.primary,
+            )
         } else {
             null
         },

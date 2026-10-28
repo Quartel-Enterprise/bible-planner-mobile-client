@@ -67,7 +67,10 @@ fun ReleaseNotesScreen(
                     )
                 },
                 navigationIcon = {
-                    BackIcon(platform = platform, onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) })
+                    BackIcon(
+                        platform = platform,
+                        onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) },
+                    )
                 },
                 actions = {
                     CommonIconButton(

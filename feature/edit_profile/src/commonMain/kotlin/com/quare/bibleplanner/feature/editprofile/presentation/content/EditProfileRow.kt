@@ -35,7 +35,10 @@ internal fun EditProfileRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(rowCornerRadius))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 14.dp),
+            .padding(
+                horizontal = 12.dp,
+                vertical = 14.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {

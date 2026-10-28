@@ -66,7 +66,11 @@ internal fun DayReadToggle(
                 role = Role.Checkbox,
                 onValueChange = { onClick() },
             ).background(background)
-            .border(width = borderWidth, color = borderColor, shape = CircleShape),
+            .border(
+                width = borderWidth,
+                color = borderColor,
+                shape = CircleShape,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         AnimatedVisibility(

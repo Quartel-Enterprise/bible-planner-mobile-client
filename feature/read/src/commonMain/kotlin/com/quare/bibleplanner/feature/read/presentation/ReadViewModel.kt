@@ -298,8 +298,19 @@ internal class ReadViewModel(
     private fun getShownChapters(
         prepended: List<ReadNavigationSuggestionModel>,
         appended: List<ReadNavigationSuggestionModel>,
-    ): List<ChapterLocationModel> = listOf(ChapterLocationModel(bookId = bookId, chapterNumber = route.chapterNumber)) +
-        (prepended + appended).map { ChapterLocationModel(it.bookId, it.chapterNumber) }
+    ): List<ChapterLocationModel> {
+        val routeChapter = ChapterLocationModel(
+            bookId = bookId,
+            chapterNumber = route.chapterNumber,
+        )
+        val suggestedChapters = (prepended + appended).map { suggestion ->
+            ChapterLocationModel(
+                bookId = suggestion.bookId,
+                chapterNumber = suggestion.chapterNumber,
+            )
+        }
+        return listOf(routeChapter) + suggestedChapters
+    }
 
     private fun isShowingChapter(chapter: ChapterRef): Boolean = ChapterLocationModel(
         bookId = chapter.bookId,
@@ -426,7 +437,10 @@ internal class ReadViewModel(
      * double tap, or an offer whose chapter was just read elsewhere, from toggling it back to unread.
      */
     private fun markListenedChapterRead(event: ReadUiEvent.OnListeningMarkReadClick) {
-        val key = ChapterLocationModel(bookId = event.bookId, chapterNumber = event.chapterNumber)
+        val key = ChapterLocationModel(
+            bookId = event.bookId,
+            chapterNumber = event.chapterNumber,
+        )
         if (!chaptersBeingMarked.add(key)) return
         viewModelScope.launch {
             try {
@@ -452,7 +466,10 @@ internal class ReadViewModel(
         chapterNumber: Int,
         source: String,
     ): Job {
-        val key = ChapterLocationModel(bookId = bookId, chapterNumber = chapterNumber)
+        val key = ChapterLocationModel(
+            bookId = bookId,
+            chapterNumber = chapterNumber,
+        )
         val willBeRead = !isCurrentlyRead(key)
         pendingReadOverrides.update { it + (key to willBeRead) }
         val completedDay = dayCompletionCandidates.value[key]?.takeIf { willBeRead }

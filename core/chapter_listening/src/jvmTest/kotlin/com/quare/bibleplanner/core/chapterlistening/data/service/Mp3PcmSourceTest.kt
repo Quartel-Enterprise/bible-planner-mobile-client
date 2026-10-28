@@ -40,7 +40,10 @@ internal class Mp3PcmSourceTest {
         val path = toneFile.path
 
         // When
-        val format = Mp3PcmSource(path = path, start = Duration.ZERO).use(Mp3PcmSource::format)
+        val format = Mp3PcmSource(
+            path = path,
+            start = Duration.ZERO,
+        ).use(Mp3PcmSource::format)
 
         // Then
         assertEquals(AudioFormat.Encoding.PCM_SIGNED, format.encoding)
@@ -56,7 +59,10 @@ internal class Mp3PcmSourceTest {
         val path = toneFile.path
 
         // When
-        val samples = readAll(path = path, start = Duration.ZERO)
+        val samples = readAll(
+            path = path,
+            start = Duration.ZERO,
+        )
 
         // Then
         assertEquals(toneSamples, samples.size)
@@ -69,7 +75,10 @@ internal class Mp3PcmSourceTest {
         val start = 1.seconds
 
         // When
-        val samples = readAll(path = toneFile.path, start = start)
+        val samples = readAll(
+            path = toneFile.path,
+            start = start,
+        )
 
         // Then
         assertEquals(toneSamples - toneSampleRate, samples.size)
@@ -78,10 +87,16 @@ internal class Mp3PcmSourceTest {
     @Test
     fun `GIVEN a start of one second WHEN reading to the end THEN matches a decode from zero`() {
         // Given
-        val fromZero = readAll(path = toneFile.path, start = Duration.ZERO)
+        val fromZero = readAll(
+            path = toneFile.path,
+            start = Duration.ZERO,
+        )
 
         // When
-        val fromOneSecond = readAll(path = toneFile.path, start = 1.seconds)
+        val fromOneSecond = readAll(
+            path = toneFile.path,
+            start = 1.seconds,
+        )
 
         // Then
         assertContentEquals(fromZero.copyOfRange(toneSampleRate, fromZero.size), fromOneSecond)
@@ -90,11 +105,17 @@ internal class Mp3PcmSourceTest {
     @Test
     fun `GIVEN a start on a frame boundary WHEN reading to the end THEN matches a decode from zero`() {
         // Given
-        val fromZero = readAll(path = toneFile.path, start = Duration.ZERO)
+        val fromZero = readAll(
+            path = toneFile.path,
+            start = Duration.ZERO,
+        )
         val startSample = 10 * SAMPLES_PER_FRAME
 
         // When
-        val fromBoundary = readAll(path = toneFile.path, start = 240.milliseconds)
+        val fromBoundary = readAll(
+            path = toneFile.path,
+            start = 240.milliseconds,
+        )
 
         // Then
         assertContentEquals(fromZero.copyOfRange(startSample, fromZero.size), fromBoundary)
@@ -103,11 +124,17 @@ internal class Mp3PcmSourceTest {
     @Test
     fun `GIVEN a start inside the first frames WHEN reading to the end THEN matches a decode from zero`() {
         // Given
-        val fromZero = readAll(path = toneFile.path, start = Duration.ZERO)
+        val fromZero = readAll(
+            path = toneFile.path,
+            start = Duration.ZERO,
+        )
         val startSample = toneSampleRate / 20
 
         // When
-        val fromStart = readAll(path = toneFile.path, start = 50.milliseconds)
+        val fromStart = readAll(
+            path = toneFile.path,
+            start = 50.milliseconds,
+        )
 
         // Then
         assertContentEquals(fromZero.copyOfRange(startSample, fromZero.size), fromStart)
@@ -119,7 +146,10 @@ internal class Mp3PcmSourceTest {
         val start = 5.seconds
 
         // When
-        val chunk = Mp3PcmSource(path = toneFile.path, start = start).use(Mp3PcmSource::read)
+        val chunk = Mp3PcmSource(
+            path = toneFile.path,
+            start = start,
+        ).use(Mp3PcmSource::read)
 
         // Then
         assertNull(chunk)
@@ -131,7 +161,12 @@ internal class Mp3PcmSourceTest {
         val path = File(directory, "missing.mp3").path
 
         // When
-        val result = runCatching { Mp3PcmSource(path = path, start = Duration.ZERO) }
+        val result = runCatching {
+            Mp3PcmSource(
+                path = path,
+                start = Duration.ZERO,
+            )
+        }
 
         // Then
         assertIs<ChapterAudioDecodeException>(result.exceptionOrNull())
@@ -143,7 +178,12 @@ internal class Mp3PcmSourceTest {
         val path = File(directory, "empty.mp3").apply { writeBytes(ByteArray(0)) }.path
 
         // When
-        val result = runCatching { Mp3PcmSource(path = path, start = Duration.ZERO) }
+        val result = runCatching {
+            Mp3PcmSource(
+                path = path,
+                start = Duration.ZERO,
+            )
+        }
 
         // Then
         assertIs<ChapterAudioDecodeException>(result.exceptionOrNull())
@@ -155,7 +195,12 @@ internal class Mp3PcmSourceTest {
         val path = File(directory, "page.mp3").apply { writeText("<html><body>Not found</body></html>") }.path
 
         // When
-        val result = runCatching { Mp3PcmSource(path = path, start = Duration.ZERO) }
+        val result = runCatching {
+            Mp3PcmSource(
+                path = path,
+                start = Duration.ZERO,
+            )
+        }
 
         // Then
         assertIs<ChapterAudioDecodeException>(result.exceptionOrNull())
@@ -164,7 +209,10 @@ internal class Mp3PcmSourceTest {
     private fun readAll(
         path: String,
         start: Duration,
-    ): ShortArray = Mp3PcmSource(path = path, start = start).use { source ->
+    ): ShortArray = Mp3PcmSource(
+        path = path,
+        start = start,
+    ).use { source ->
         generateSequence { source.read() }.fold(ShortArray(0)) { samples, chunk -> samples + chunk }
     }
 

@@ -63,7 +63,12 @@ class ReportAppInstallUseCaseTest {
     @Test
     fun `GIVEN an unavailable referrer service WHEN reporting THEN sends the install without a click id`() = runTest {
         // Given
-        prepareScenario(source = androidSource.copy(referrer = null, advertisingId = null))
+        prepareScenario(
+            source = androidSource.copy(
+                referrer = null,
+                advertisingId = null,
+            ),
+        )
 
         // When
         useCase()

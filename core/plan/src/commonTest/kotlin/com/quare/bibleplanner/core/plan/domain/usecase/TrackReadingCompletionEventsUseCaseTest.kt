@@ -26,12 +26,32 @@ internal class TrackReadingCompletionEventsUseCaseTest {
     fun `GIVEN a week with one unread day WHEN the update completes it THEN fires week_completed`() {
         // Given
         val before = plans(
-            chronological = listOf(week(number = 1, daysRead = listOf(true, false))),
-            books = listOf(week(number = 1, daysRead = listOf(false, false))),
+            chronological = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(true, false),
+                ),
+            ),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false, false),
+                ),
+            ),
         )
         val after = plans(
-            chronological = listOf(week(number = 1, daysRead = listOf(true, true))),
-            books = listOf(week(number = 1, daysRead = listOf(false, false))),
+            chronological = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(true, true),
+                ),
+            ),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false, false),
+                ),
+            ),
         )
 
         // When
@@ -60,10 +80,21 @@ internal class TrackReadingCompletionEventsUseCaseTest {
         // Given
         val complete = plans(
             chronological = listOf(
-                week(number = 1, daysRead = listOf(true, true)),
-                week(number = 2, daysRead = listOf(false)),
+                week(
+                    number = 1,
+                    daysRead = listOf(true, true),
+                ),
+                week(
+                    number = 2,
+                    daysRead = listOf(false),
+                ),
             ),
-            books = listOf(week(number = 1, daysRead = listOf(false))),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false),
+                ),
+            ),
         )
 
         // When
@@ -83,17 +114,39 @@ internal class TrackReadingCompletionEventsUseCaseTest {
         // Given
         val before = plans(
             chronological = listOf(
-                week(number = 1, daysRead = listOf(true, false)),
-                week(number = 2, daysRead = listOf(false)),
+                week(
+                    number = 1,
+                    daysRead = listOf(true, false),
+                ),
+                week(
+                    number = 2,
+                    daysRead = listOf(false),
+                ),
             ),
-            books = listOf(week(number = 1, daysRead = listOf(false))),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false),
+                ),
+            ),
         )
         val after = plans(
             chronological = listOf(
-                week(number = 1, daysRead = listOf(true, true)),
-                week(number = 2, daysRead = listOf(false)),
+                week(
+                    number = 1,
+                    daysRead = listOf(true, true),
+                ),
+                week(
+                    number = 2,
+                    daysRead = listOf(false),
+                ),
             ),
-            books = listOf(week(number = 1, daysRead = listOf(false))),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false),
+                ),
+            ),
         )
 
         // When
@@ -120,12 +173,32 @@ internal class TrackReadingCompletionEventsUseCaseTest {
     fun `GIVEN both plans complete together WHEN the update runs THEN fires plan_completed for each plan type`() {
         // Given
         val before = plans(
-            chronological = listOf(week(number = 1, daysRead = listOf(true, false))),
-            books = listOf(week(number = 1, daysRead = listOf(false))),
+            chronological = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(true, false),
+                ),
+            ),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(false),
+                ),
+            ),
         )
         val after = plans(
-            chronological = listOf(week(number = 1, daysRead = listOf(true, true))),
-            books = listOf(week(number = 1, daysRead = listOf(true))),
+            chronological = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(true, true),
+                ),
+            ),
+            books = listOf(
+                week(
+                    number = 1,
+                    daysRead = listOf(true),
+                ),
+            ),
         )
 
         // When

@@ -10,7 +10,10 @@ internal class AvatarRemoteStore(
         bytes: ByteArray,
     ): String {
         val path = pathOf(userId)
-        bucketApi.upload(path = path, data = bytes) { upsert = true }
+        bucketApi.upload(
+            path = path,
+            data = bytes,
+        ) { upsert = true }
         return bucketApi.publicUrl(path)
     }
 

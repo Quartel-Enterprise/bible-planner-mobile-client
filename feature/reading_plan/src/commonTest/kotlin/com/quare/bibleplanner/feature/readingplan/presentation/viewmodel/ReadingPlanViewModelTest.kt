@@ -373,7 +373,12 @@ internal class ReadingPlanViewModelTest {
             )
 
             // Then
-            assertTrue(isDayRead(weekNumber = 1, dayNumber = 1))
+            assertTrue(
+                isDayRead(
+                    weekNumber = 1,
+                    dayNumber = 1,
+                ),
+            )
             assertEquals(
                 expected = listOf(listOf<Any>(1, 1, true, ReadingPlanType.CHRONOLOGICAL)),
                 actual = dayReadUpdates,
@@ -412,7 +417,12 @@ internal class ReadingPlanViewModelTest {
             plans.emit(plans(readDays = 0))
 
             // Then
-            assertTrue(isDayRead(weekNumber = 1, dayNumber = 1))
+            assertTrue(
+                isDayRead(
+                    weekNumber = 1,
+                    dayNumber = 1,
+                ),
+            )
         }
 
     @Test
@@ -432,7 +442,12 @@ internal class ReadingPlanViewModelTest {
             plans.emit(plans(readDays = 0))
 
             // Then
-            assertFalse(isDayRead(weekNumber = 1, dayNumber = 1))
+            assertFalse(
+                isDayRead(
+                    weekNumber = 1,
+                    dayNumber = 1,
+                ),
+            )
         }
 
     @Test
@@ -449,7 +464,12 @@ internal class ReadingPlanViewModelTest {
         )
 
         // Then
-        assertFalse(isDayRead(weekNumber = 1, dayNumber = 3))
+        assertFalse(
+            isDayRead(
+                weekNumber = 1,
+                dayNumber = 3,
+            ),
+        )
         assertEquals(
             expected = listOf(listOf<Any>(1, 3, false, ReadingPlanType.CHRONOLOGICAL)),
             actual = dayReadUpdates,
@@ -513,7 +533,12 @@ internal class ReadingPlanViewModelTest {
         )
 
         // Then
-        assertTrue(isDayRead(weekNumber = 2, dayNumber = 2))
+        assertTrue(
+            isDayRead(
+                weekNumber = 2,
+                dayNumber = 2,
+            ),
+        )
         assertEquals(
             expected = listOf(listOf<Any>(2, 2, true, ReadingPlanType.BOOKS)),
             actual = dayReadUpdates,
@@ -922,7 +947,12 @@ internal class ReadingPlanViewModelTest {
     fun `GIVEN today in an upcoming week WHEN skipping to today THEN expands the upcoming group and that week`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(initialPlans = plans(readDays = 0, todayGlobalIndex = 15))
+            prepareScenario(
+                initialPlans = plans(
+                    readDays = 0,
+                    todayGlobalIndex = 15,
+                ),
+            )
 
             // When
             viewModel.onEvent(ReadingPlanUiEvent.OnSkipToTodayClick)
@@ -945,7 +975,12 @@ internal class ReadingPlanViewModelTest {
     fun `GIVEN today in a completed week WHEN skipping to today THEN expands the completed group`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(initialPlans = plans(readDays = 9, todayGlobalIndex = 3))
+            prepareScenario(
+                initialPlans = plans(
+                    readDays = 9,
+                    todayGlobalIndex = 3,
+                ),
+            )
 
             // When
             viewModel.onEvent(ReadingPlanUiEvent.OnSkipToTodayClick)

@@ -42,7 +42,12 @@ fun DatePickerDialogContent(
         tonalElevation = DatePickerDefaults.TonalElevation,
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
-            Box(Modifier.weight(weight = 1f, fill = false)) {
+            Box(
+                Modifier.weight(
+                    weight = 1f,
+                    fill = false,
+                ),
+            ) {
                 AdaptiveDatePicker(state)
             }
             Row(
@@ -73,7 +78,12 @@ fun DateRangePickerDialogContent(
         tonalElevation = DatePickerDefaults.TonalElevation,
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
-            Box(Modifier.weight(weight = 1f, fill = false)) {
+            Box(
+                Modifier.weight(
+                    weight = 1f,
+                    fill = false,
+                ),
+            ) {
                 AdaptiveDateRangePicker(state = state)
             }
             Row(

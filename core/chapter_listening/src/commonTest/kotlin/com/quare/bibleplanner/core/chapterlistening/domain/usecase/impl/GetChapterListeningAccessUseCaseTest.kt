@@ -18,8 +18,14 @@ import kotlin.test.assertEquals
 
 internal class GetChapterListeningAccessUseCaseTest {
     private val today = LocalDate(2026, 10, 4)
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
     private lateinit var useCase: GetChapterListeningAccessUseCase
     private lateinit var unlockRepository: ChapterListeningUnlockRepositoryImpl
     private lateinit var recordUnlock: RecordChapterListeningUnlockUseCase

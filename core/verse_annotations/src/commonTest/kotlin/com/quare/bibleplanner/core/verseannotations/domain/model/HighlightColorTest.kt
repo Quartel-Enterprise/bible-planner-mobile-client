@@ -48,7 +48,10 @@ internal class HighlightColorTest {
 
         // Then
         assertEquals(
-            expected = HighlightColor.Custom(hue = 120, lightness = 45),
+            expected = HighlightColor.Custom(
+                hue = 120,
+                lightness = 45,
+            ),
             actual = color,
         )
     }

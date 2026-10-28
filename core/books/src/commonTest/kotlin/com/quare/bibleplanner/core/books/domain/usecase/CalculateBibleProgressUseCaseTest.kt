@@ -58,5 +58,8 @@ internal class CalculateBibleProgressUseCaseTest {
     private fun verse(
         number: Int,
         isRead: Boolean,
-    ): VerseModel = VerseModel(number = number, isRead = isRead)
+    ): VerseModel = VerseModel(
+        number = number,
+        isRead = isRead,
+    )
 }

@@ -48,9 +48,18 @@ import kotlin.time.Duration.Companion.minutes
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChapterListeningPlayerViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val genesisTwo = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 2)
-    private val genesisThree = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val genesisTwo = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 2,
+    )
+    private val genesisThree = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
 
     private lateinit var viewModel: ChapterListeningPlayerViewModel
     private lateinit var controller: FakeChapterListeningController

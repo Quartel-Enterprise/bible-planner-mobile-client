@@ -142,7 +142,10 @@ class InstallAttributionRemoteDataSourceTest {
                         if (status == null) {
                             error("network down")
                         } else if (status.value >= HttpStatusCode.BadRequest.value) {
-                            respondError(status = status, content = """{"error":"nope"}""")
+                            respondError(
+                                status = status,
+                                content = """{"error":"nope"}""",
+                            )
                         } else {
                             respond(
                                 content = """{"ok":true}""",

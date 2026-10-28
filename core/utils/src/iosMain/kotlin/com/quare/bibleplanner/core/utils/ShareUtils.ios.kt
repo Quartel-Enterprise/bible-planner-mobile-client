@@ -35,5 +35,9 @@ actual fun shareContent(
     val window = UIApplication.sharedApplication.keyWindow
     val rootViewController = window?.rootViewController
 
-    rootViewController?.presentViewController(activityController, animated = true, completion = null)
+    rootViewController?.presentViewController(
+        activityController,
+        animated = true,
+        completion = null,
+    )
 }

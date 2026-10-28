@@ -82,7 +82,10 @@ internal class ShowUpdatePromptUseCaseTest {
             assertEquals(
                 listOf<NavigationCommand>(
                     NavigationCommand.Navigate(
-                        InAppUpdateNavRoute(versionName = "2.0.0", source = UpdatePromptSource.STARTUP),
+                        InAppUpdateNavRoute(
+                            versionName = "2.0.0",
+                            source = UpdatePromptSource.STARTUP,
+                        ),
                     ),
                 ),
                 commands,

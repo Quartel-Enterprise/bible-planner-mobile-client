@@ -22,7 +22,11 @@ internal class ResponsiveGridScopeImpl(
         span: (LazyGridItemSpanScope.() -> GridItemSpan)?,
         content: @Composable () -> Unit,
     ) {
-        lazyGridScope.item(key = key, span = span, contentType = contentType) {
+        lazyGridScope.item(
+            key = key,
+            span = span,
+            contentType = contentType,
+        ) {
             content()
         }
     }

@@ -16,8 +16,14 @@ import kotlin.test.assertTrue
 internal class ChapterListeningUnlockRepositoryImplTest {
     private val today = LocalDate(2026, 10, 4)
     private val tomorrow = LocalDate(2026, 10, 5)
-    private val genesisOne = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 1)
-    private val johnThree = ChapterLocationModel(bookId = BookId.JHN, chapterNumber = 3)
+    private val genesisOne = ChapterLocationModel(
+        bookId = BookId.GEN,
+        chapterNumber = 1,
+    )
+    private val johnThree = ChapterLocationModel(
+        bookId = BookId.JHN,
+        chapterNumber = 3,
+    )
     private lateinit var repository: ChapterListeningUnlockRepositoryImpl
 
     @Test

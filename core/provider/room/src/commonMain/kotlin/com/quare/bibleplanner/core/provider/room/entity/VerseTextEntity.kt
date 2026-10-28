@@ -25,7 +25,10 @@ import androidx.room3.PrimaryKey
     indices = [
         Index(value = ["verseId"]),
         Index(value = ["bibleVersionId"]),
-        Index(value = ["verseId", "bibleVersionId"], unique = true),
+        Index(
+            value = ["verseId", "bibleVersionId"],
+            unique = true,
+        ),
     ],
 )
 data class VerseTextEntity(

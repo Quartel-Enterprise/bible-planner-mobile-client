@@ -7,7 +7,12 @@ import androidx.room3.PrimaryKey
 
 @Entity(
     tableName = "days",
-    indices = [Index(value = ["weekNumber", "dayNumber", "readingPlanType"], unique = true)],
+    indices = [
+        Index(
+            value = ["weekNumber", "dayNumber", "readingPlanType"],
+            unique = true,
+        ),
+    ],
 )
 data class DayEntity(
     @PrimaryKey(autoGenerate = true)

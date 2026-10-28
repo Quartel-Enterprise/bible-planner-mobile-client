@@ -32,7 +32,12 @@ internal class AndroidBibleVersionDownloaderFacade(
 
     override fun downloadVersion(versionId: String) {
         withWorkManager(
-            onAvailable = { manager -> enqueueDownload(manager = manager, versionId = versionId) },
+            onAvailable = { manager ->
+                enqueueDownload(
+                    manager = manager,
+                    versionId = versionId,
+                )
+            },
             onUnavailable = { inProcessDownloader.startDownload(versionId) },
         )
     }

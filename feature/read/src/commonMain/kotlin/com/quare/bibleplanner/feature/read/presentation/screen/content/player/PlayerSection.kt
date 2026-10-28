@@ -28,7 +28,10 @@ internal fun PlayerSection(
             .fillMaxWidth()
             .clip(cardShape)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(horizontal = 14.dp, vertical = verticalPadding),
+            .padding(
+                horizontal = 14.dp,
+                vertical = verticalPadding,
+            ),
         content = content,
     )
 }

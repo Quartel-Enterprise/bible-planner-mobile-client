@@ -162,7 +162,12 @@ private fun TextSizeCard(
     onEvent: (ReaderAppearanceUiEvent) -> Unit,
 ) {
     SettingCard {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 14.dp,
+            ),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -321,7 +326,10 @@ private fun FontCard(
                     .fillMaxWidth()
                     .clickable {
                         onEvent(ReaderAppearanceUiEvent.OnFontMenuToggle(!uiState.isFontMenuExpanded))
-                    }.padding(horizontal = 16.dp, vertical = 13.dp),
+                    }.padding(
+                        horizontal = 16.dp,
+                        vertical = 13.dp,
+                    ),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -408,7 +416,10 @@ private fun SettingSwitchCard(
     SettingCard {
         Column {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),
+                modifier = Modifier.fillMaxWidth().padding(
+                    horizontal = 16.dp,
+                    vertical = 13.dp,
+                ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -440,7 +451,13 @@ private fun RulerHeightRow(
     lines: Int,
     onEvent: (ReaderAppearanceUiEvent) -> Unit,
 ) {
-    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 14.dp)) {
+    Column(
+        modifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 14.dp,
+        ),
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

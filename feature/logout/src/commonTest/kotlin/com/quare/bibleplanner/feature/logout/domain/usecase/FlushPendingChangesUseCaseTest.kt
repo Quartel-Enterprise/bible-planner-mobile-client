@@ -53,6 +53,9 @@ internal class FlushPendingChangesUseCaseTest {
     }
 
     private fun prepareScenario(push: PushAllPending) {
-        useCase = FlushPendingChangesUseCase(pushAllPending = push, flushTimeout = flushTimeout)
+        useCase = FlushPendingChangesUseCase(
+            pushAllPending = push,
+            flushTimeout = flushTimeout,
+        )
     }
 }

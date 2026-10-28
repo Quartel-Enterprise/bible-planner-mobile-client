@@ -84,7 +84,10 @@ internal class ReadingPlanUiTest {
         // Then
         assertEquals(
             expected = listOf<ReadingPlanUiEvent>(
-                ReadingPlanUiEvent.OnDayClick(dayNumber = TODAY_DAY_NUMBER, weekNumber = CURRENT_WEEK),
+                ReadingPlanUiEvent.OnDayClick(
+                    dayNumber = TODAY_DAY_NUMBER,
+                    weekNumber = CURRENT_WEEK,
+                ),
             ),
             actual = events,
         )
@@ -110,7 +113,10 @@ internal class ReadingPlanUiTest {
             // Then
             assertEquals(
                 expected = listOf<ReadingPlanUiEvent>(
-                    ReadingPlanUiEvent.OnResumeReadingClick(dayNumber = TODAY_DAY_NUMBER, weekNumber = CURRENT_WEEK),
+                    ReadingPlanUiEvent.OnResumeReadingClick(
+                        dayNumber = TODAY_DAY_NUMBER,
+                        weekNumber = CURRENT_WEEK,
+                    ),
                 ),
                 actual = events,
             )
@@ -128,7 +134,10 @@ internal class ReadingPlanUiTest {
             // Then
             assertEquals(
                 expected = listOf<ReadingPlanUiEvent>(
-                    ReadingPlanUiEvent.OnDayReadClick(dayNumber = TODAY_DAY_NUMBER, weekNumber = CURRENT_WEEK),
+                    ReadingPlanUiEvent.OnDayReadClick(
+                        dayNumber = TODAY_DAY_NUMBER,
+                        weekNumber = CURRENT_WEEK,
+                    ),
                 ),
                 actual = events,
             )
@@ -146,7 +155,10 @@ internal class ReadingPlanUiTest {
             // Then
             assertEquals(
                 expected = listOf<ReadingPlanUiEvent>(
-                    ReadingPlanUiEvent.OnDayClick(dayNumber = 1, weekNumber = CURRENT_WEEK),
+                    ReadingPlanUiEvent.OnDayClick(
+                        dayNumber = 1,
+                        weekNumber = CURRENT_WEEK,
+                    ),
                 ),
                 actual = events,
             )
@@ -176,7 +188,10 @@ internal class ReadingPlanUiTest {
         onNodeWithContentDescription(getString(Res.string.more_options)).performClick()
 
         // Then
-        assertEquals(expected = listOf<ReadingPlanUiEvent>(ReadingPlanUiEvent.OnOverflowClick), actual = events)
+        assertEquals(
+            expected = listOf<ReadingPlanUiEvent>(ReadingPlanUiEvent.OnOverflowClick),
+            actual = events,
+        )
     }
 
     @Test

@@ -52,7 +52,10 @@ internal class ResolveStudyCtaStateUseCaseTest {
 
         // Then
         assertEquals(
-            expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+            expected = StudyCtaState.FreeWithQuota(
+                remaining = 2,
+                limit = 3,
+            ),
             actual = ctaState,
         )
     }

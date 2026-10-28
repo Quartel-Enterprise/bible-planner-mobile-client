@@ -19,8 +19,18 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(1, 2)),
-                    day(number = 2, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3, 4)),
+                    day(
+                        number = 1,
+                        isRead = true,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(1, 2),
+                    ),
+                    day(
+                        number = 2,
+                        isRead = true,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3, 4),
+                    ),
                 ),
             ),
         )
@@ -50,7 +60,12 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = false, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                    day(
+                        number = 1,
+                        isRead = false,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3),
+                    ),
                 ),
             ),
         )
@@ -73,7 +88,12 @@ internal class PlanWeeksTest {
             week(
                 number = 4,
                 days = listOf(
-                    day(number = 2, isRead = true, bookId = BookId.OBA, chapterNumbers = emptyList()),
+                    day(
+                        number = 2,
+                        isRead = true,
+                        bookId = BookId.OBA,
+                        chapterNumbers = emptyList(),
+                    ),
                 ),
             ),
         )
@@ -103,7 +123,12 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = true, bookId = BookId.EXO, chapterNumbers = listOf(3)),
+                    day(
+                        number = 1,
+                        isRead = true,
+                        bookId = BookId.EXO,
+                        chapterNumbers = listOf(3),
+                    ),
                 ),
             ),
         )
@@ -126,9 +151,24 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = true, bookId = BookId.EXO, chapterNumbers = listOf(1)),
-                    day(number = 2, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3)),
-                    day(number = 3, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3, 4)),
+                    day(
+                        number = 1,
+                        isRead = true,
+                        bookId = BookId.EXO,
+                        chapterNumbers = listOf(1),
+                    ),
+                    day(
+                        number = 2,
+                        isRead = true,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3),
+                    ),
+                    day(
+                        number = 3,
+                        isRead = true,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3, 4),
+                    ),
                 ),
             ),
         )
@@ -158,13 +198,23 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 7, isRead = true, bookId = BookId.PSA, chapterNumbers = listOf(23)),
+                    day(
+                        number = 7,
+                        isRead = true,
+                        bookId = BookId.PSA,
+                        chapterNumbers = listOf(23),
+                    ),
                 ),
             ),
             week(
                 number = 2,
                 days = listOf(
-                    day(number = 1, isRead = true, bookId = BookId.PSA, chapterNumbers = listOf(23)),
+                    day(
+                        number = 1,
+                        isRead = true,
+                        bookId = BookId.PSA,
+                        chapterNumbers = listOf(23),
+                    ),
                 ),
             ),
         )
@@ -194,13 +244,23 @@ internal class PlanWeeksTest {
             week(
                 number = 1,
                 days = listOf(
-                    day(number = 1, isRead = false, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                    day(
+                        number = 1,
+                        isRead = false,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3),
+                    ),
                 ),
             ),
             week(
                 number = 2,
                 days = listOf(
-                    day(number = 1, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                    day(
+                        number = 1,
+                        isRead = true,
+                        bookId = BookId.GEN,
+                        chapterNumbers = listOf(3),
+                    ),
                 ),
             ),
         )

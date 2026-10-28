@@ -95,7 +95,10 @@ internal class ChapterStudyUiTest {
         onNodeWithText(getString(Res.string.chapter_study_section_reflection)).performScrollTo().assertIsDisplayed()
         onNodeWithText(study.reflectionQuestions.first()).performScrollTo().assertIsDisplayed()
         onNodeWithText(getString(ComponentRes.string.ai_disclaimer)).performScrollTo().assertIsDisplayed()
-        assertEquals(expected = emptyList<ChapterStudyUiEvent>(), actual = events)
+        assertEquals(
+            expected = emptyList<ChapterStudyUiEvent>(),
+            actual = events,
+        )
     }
 
     @Test
@@ -183,7 +186,10 @@ internal class ChapterStudyUiTest {
         onNodeWithContentDescription(getString(Res.string.chapter_study_chat)).performClick()
 
         // Then
-        assertEquals(expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnAskAiClick), actual = events)
+        assertEquals(
+            expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnAskAiClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -213,7 +219,10 @@ internal class ChapterStudyUiTest {
 
         // Then
         onNodeWithText(getString(ComponentRes.string.ai_study_error)).assertIsDisplayed()
-        assertEquals(expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnRetryClick), actual = events)
+        assertEquals(
+            expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnRetryClick),
+            actual = events,
+        )
     }
 
     @Test
@@ -260,7 +269,10 @@ internal class ChapterStudyUiTest {
             // Then
             onNodeWithText(getString(Res.string.chapter_study_quota_free, 2)).assertIsDisplayed()
             onNodeWithText(getString(Res.string.chapter_study_generate_hint)).assertIsDisplayed()
-            assertEquals(expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnGenerateClick), actual = events)
+            assertEquals(
+                expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnGenerateClick),
+                actual = events,
+            )
         }
 
     @Test
@@ -312,9 +324,15 @@ internal class ChapterStudyUiTest {
         onNodeWithContentDescription(getString(ComponentRes.string.back)).performClick()
 
         // Then
-        assertEquals(expected = listOf(Unit), actual = backClicks)
+        assertEquals(
+            expected = listOf(Unit),
+            actual = backClicks,
+        )
         onNodeWithText(study.summary).assertDoesNotExist()
-        assertEquals(expected = emptyList<ChapterStudyUiEvent>(), actual = events)
+        assertEquals(
+            expected = emptyList<ChapterStudyUiEvent>(),
+            actual = events,
+        )
     }
 
     private suspend fun chapterLabel(): String = getVerseReferenceLabel(

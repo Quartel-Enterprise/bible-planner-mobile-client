@@ -73,7 +73,10 @@ fun ChaptersGrid(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .clickable { onToggleAllClick() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(
+                        horizontal = 8.dp,
+                        vertical = 4.dp,
+                    ),
             )
         }
         VerticalSpacer(16)

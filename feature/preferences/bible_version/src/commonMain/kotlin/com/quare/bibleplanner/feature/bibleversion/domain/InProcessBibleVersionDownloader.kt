@@ -50,7 +50,12 @@ class InProcessBibleVersionDownloader(
             if (activeDownload === download) current + (versionId to download) else current
         }
         if (activeDownload === download) {
-            download.invokeOnCompletion { forget(versionId = versionId, download = download) }
+            download.invokeOnCompletion {
+                forget(
+                    versionId = versionId,
+                    download = download,
+                )
+            }
             download.start()
         } else {
             download.cancel()

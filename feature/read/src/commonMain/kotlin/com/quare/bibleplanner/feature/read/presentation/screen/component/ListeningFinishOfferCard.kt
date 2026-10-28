@@ -59,7 +59,12 @@ internal fun ListeningFinishOfferCard(
         shadowElevation = 8.dp,
     ) {
         Row(
-            modifier = Modifier.padding(start = 14.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
+            modifier = Modifier.padding(
+                start = 14.dp,
+                top = 12.dp,
+                bottom = 12.dp,
+                end = 4.dp,
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {

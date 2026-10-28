@@ -19,7 +19,10 @@ internal class ResponsiveContentScopeImpl(
         contentType: Any?,
         content: @Composable () -> Unit,
     ) {
-        lazyListScope.item(key = key, contentType = contentType) {
+        lazyListScope.item(
+            key = key,
+            contentType = contentType,
+        ) {
             content()
         }
     }

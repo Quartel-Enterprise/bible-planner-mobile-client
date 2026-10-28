@@ -83,14 +83,20 @@ internal class Migration8To9SpecTest {
                 "JOIN chapters c ON v.chapterId = c.id " +
                 "WHERE c.bookId = ?",
         )
-        statement.bindText(index = 1, value = bookId)
+        statement.bindText(
+            index = 1,
+            value = bookId,
+        )
         statement.step()
         return statement.getLong(0).toInt().also { statement.close() }
     }
 
     private fun versionStatus(id: String): String {
         val statement = connection.prepare("SELECT status FROM bible_versions WHERE id = ?")
-        statement.bindText(index = 1, value = id)
+        statement.bindText(
+            index = 1,
+            value = id,
+        )
         statement.step()
         return statement.getText(0).also { statement.close() }
     }

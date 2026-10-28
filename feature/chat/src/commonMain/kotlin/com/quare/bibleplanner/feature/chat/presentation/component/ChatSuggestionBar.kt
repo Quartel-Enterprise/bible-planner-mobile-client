@@ -64,7 +64,12 @@ internal fun ChatSuggestionBar(
         shape = barShape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 8.dp,
+            ),
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

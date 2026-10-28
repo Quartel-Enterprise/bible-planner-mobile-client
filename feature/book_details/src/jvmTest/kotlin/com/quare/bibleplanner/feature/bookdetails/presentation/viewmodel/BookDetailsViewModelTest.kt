@@ -59,7 +59,16 @@ internal class BookDetailsViewModelTest {
 
     private val genesis = BookDataModel(
         id = BookId.GEN,
-        chapters = listOf(chapter(number = 1, isRead = true), chapter(number = 2, isRead = false)),
+        chapters = listOf(
+            chapter(
+                number = 1,
+                isRead = true,
+            ),
+            chapter(
+                number = 2,
+                isRead = false,
+            ),
+        ),
         isRead = false,
         isFavorite = false,
     )

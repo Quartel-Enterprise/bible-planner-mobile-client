@@ -22,7 +22,13 @@ internal class ListeningWordHighlightTest {
 
         // Then
         assertEquals(
-            listOf(AnnotatedString.Range(item = style, start = 3, end = 6)),
+            listOf(
+                AnnotatedString.Range(
+                    item = style,
+                    start = 3,
+                    end = 6,
+                ),
+            ),
             highlighted.spanStyles,
         )
     }

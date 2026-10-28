@@ -237,7 +237,10 @@ private fun ReadWideHeader(
         val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
         val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(
+                horizontal = 12.dp,
+                vertical = 8.dp,
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {

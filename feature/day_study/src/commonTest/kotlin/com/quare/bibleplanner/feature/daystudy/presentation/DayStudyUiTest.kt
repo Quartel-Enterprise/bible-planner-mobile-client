@@ -76,7 +76,10 @@ internal class DayStudyUiTest {
             onNodeWithText(getString(Res.string.ai_summary_takeaways))
                 .performScrollTo()
                 .assertIsDisplayed()
-            assertEquals(expected = emptyList<DayStudyRouteUiEvent>(), actual = events)
+            assertEquals(
+                expected = emptyList<DayStudyRouteUiEvent>(),
+                actual = events,
+            )
         }
 
     @Test
@@ -155,7 +158,10 @@ internal class DayStudyUiTest {
         onNodeWithContentDescription(getString(ComponentRes.string.back)).performClick()
 
         // Then
-        assertEquals(expected = listOf(Unit), actual = backClicks)
+        assertEquals(
+            expected = listOf(Unit),
+            actual = backClicks,
+        )
     }
 
     @Test
@@ -283,7 +289,10 @@ internal class DayStudyUiTest {
         // Then
         onNodeWithText(getString(Res.string.ai_study_generate)).assertDoesNotExist()
         onNodeWithText(getString(Res.string.ai_tab_summary)).assertDoesNotExist()
-        assertEquals(expected = emptyList<DayStudyRouteUiEvent>(), actual = events)
+        assertEquals(
+            expected = emptyList<DayStudyRouteUiEvent>(),
+            actual = events,
+        )
     }
 
     private fun loadedCard(

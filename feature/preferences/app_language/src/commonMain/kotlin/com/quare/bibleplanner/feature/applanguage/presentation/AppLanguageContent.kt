@@ -69,7 +69,10 @@ internal fun AppLanguageContent(
             onBlockedClick = { onEvent(AppLanguageUiEvent.SyncToggleBlockedClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
         )
     }
 }

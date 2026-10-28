@@ -70,7 +70,12 @@ internal class AccountDetailsViewModelTest {
         runTest(testDispatcher) {
             // Given
             userFlow.value = user(provider = "apple")
-            devicesFlow.value = listOf(device(id = "row-1", isCurrent = true))
+            devicesFlow.value = listOf(
+                device(
+                    id = "row-1",
+                    isCurrent = true,
+                ),
+            )
 
             // When
             val states = collectStates()
@@ -101,7 +106,12 @@ internal class AccountDetailsViewModelTest {
     @Test
     fun `GIVEN a rename click WHEN handling THEN navigates to the rename destination`() = runTest(testDispatcher) {
         // Given
-        val device = mapper.map(device(id = "row-9", isCurrent = false))
+        val device = mapper.map(
+            device(
+                id = "row-9",
+                isCurrent = false,
+            ),
+        )
         val commands = collectCommands()
 
         // When
@@ -111,7 +121,10 @@ internal class AccountDetailsViewModelTest {
         // Then
         assertEquals(
             NavigationCommand.Navigate(
-                RenameDeviceNavRoute(deviceRowId = "row-9", currentName = device.name),
+                RenameDeviceNavRoute(
+                    deviceRowId = "row-9",
+                    currentName = device.name,
+                ),
             ),
             commands.last(),
         )
@@ -120,7 +133,12 @@ internal class AccountDetailsViewModelTest {
     @Test
     fun `GIVEN the current device WHEN signing out THEN routes to logout without revoking`() = runTest(testDispatcher) {
         // Given
-        val current = mapper.map(device(id = "row-1", isCurrent = true))
+        val current = mapper.map(
+            device(
+                id = "row-1",
+                isCurrent = true,
+            ),
+        )
         val commands = collectCommands()
 
         // When
@@ -135,7 +153,12 @@ internal class AccountDetailsViewModelTest {
     @Test
     fun `GIVEN another device WHEN signing out THEN revokes that device`() = runTest(testDispatcher) {
         // Given
-        val other = mapper.map(device(id = "row-7", isCurrent = false))
+        val other = mapper.map(
+            device(
+                id = "row-7",
+                isCurrent = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(AccountDetailsUiEvent.OnSignOutDeviceClick(other))
@@ -149,10 +172,20 @@ internal class AccountDetailsViewModelTest {
     @Test
     fun `GIVEN a device WHEN signing out is in progress THEN it is marked as signing out`() = runTest(testDispatcher) {
         // Given a device still present in the list
-        devicesFlow.value = listOf(device(id = "row-7", isCurrent = false))
+        devicesFlow.value = listOf(
+            device(
+                id = "row-7",
+                isCurrent = false,
+            ),
+        )
         val states = collectStates()
         runCurrent()
-        val other = mapper.map(device(id = "row-7", isCurrent = false))
+        val other = mapper.map(
+            device(
+                id = "row-7",
+                isCurrent = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(AccountDetailsUiEvent.OnSignOutDeviceClick(other))

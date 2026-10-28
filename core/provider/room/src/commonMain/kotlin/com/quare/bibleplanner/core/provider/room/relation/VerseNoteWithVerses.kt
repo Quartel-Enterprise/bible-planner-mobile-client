@@ -7,6 +7,9 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseNoteVerseEntity
 
 data class VerseNoteWithVerses(
     @Embedded val note: VerseNoteEntity,
-    @Relation(parentColumns = ["id"], entityColumns = ["noteId"])
+    @Relation(
+        parentColumns = ["id"],
+        entityColumns = ["noteId"],
+    )
     val verses: List<VerseNoteVerseEntity>,
 )

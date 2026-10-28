@@ -67,7 +67,10 @@ internal fun StudyUnlockSheet(
 ) {
     val isPlaying = uiState.videoState == StudyUnlockVideoState.PLAYING
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(
+            horizontal = 24.dp,
+            vertical = 8.dp,
+        ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
