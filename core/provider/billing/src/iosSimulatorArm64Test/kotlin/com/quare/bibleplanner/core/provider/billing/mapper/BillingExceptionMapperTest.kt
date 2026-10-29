@@ -58,6 +58,18 @@ class BillingExceptionMapperTest {
     }
 
     @Test
+    fun `GIVEN a purchase not allowed error WHEN mapping THEN returns Unknown`() {
+        // Given
+        val exception = purchasesException(PurchasesErrorCode.PurchaseNotAllowedError)
+
+        // When
+        val result = exception.toBillingException()
+
+        // Then
+        assertIs<BillingException.Unknown>(result)
+    }
+
+    @Test
     fun `GIVEN a non-purchases throwable WHEN mapping THEN returns Unknown with the message`() {
         // Given
         val exception = IllegalStateException("boom")
