@@ -1,7 +1,8 @@
 {
   "2.15.1": {
     "ios": [
-      "Corregimos un problema que, en raras ocasiones, podía cerrar la app sola justo al abrirla, cuando la conexión a internet cambiaba en ese momento (por ejemplo, al cambiar entre Wi-Fi y datos móviles)."
+      "Corregimos un problema que, en raras ocasiones, podía cerrar la app sola justo al abrirla, cuando la conexión a internet cambiaba en ese momento (por ejemplo, al cambiar entre Wi-Fi y datos móviles).",
+      "Al abrir la app sin internet, las pantallas que dependen de la configuración de la app ya no se quedan cargando sin parar."
     ]
   },
   "2.15.0": {
