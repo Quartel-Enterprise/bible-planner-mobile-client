@@ -6,7 +6,7 @@ import Shared
 class IosRemoteConfigService: RemoteConfigDataSource {
     private let remoteConfig: RemoteConfig
     private var initializationTask: Task<Void, Never>?
-    private let monitor = NWPathMonitor()
+    private let networkTimeout: Duration = .seconds(5)
 
     init(remoteConfig: RemoteConfig) {
         self.remoteConfig = remoteConfig
@@ -54,20 +54,42 @@ class IosRemoteConfigService: RemoteConfigDataSource {
 
     private func waitForNetworkAndFetch() async {
         print("RemoteConfig: Monitoring network status...")
-        
-        // Wait for network to be satisfied (liberated by system/user)
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            monitor.pathUpdateHandler = { path in
-                if path.status == .satisfied {
-                    print("RemoteConfig: Network is satisfied.")
-                    self.monitor.cancel()
-                    continuation.resume()
-                }
-            }
-            monitor.start(queue: DispatchQueue.global())
+
+        /*
+         * Why: offline, waiting for the network without a limit left every getter suspended
+         * forever. Like Android, give up and serve the cached or default values; the config
+         * update listener fetches once the connection comes back.
+         */
+        guard await waitForNetwork(timeout: networkTimeout) else {
+            print("RemoteConfig: No network after \(networkTimeout), using cached or default values.")
+            return
         }
-        
+        print("RemoteConfig: Network is satisfied.")
+
         await fetchAndActivateWithRetry()
+    }
+
+    /*
+     * Why: iterating the monitor instead of resuming a continuation from pathUpdateHandler,
+     * which crashed by resuming twice when two .satisfied updates arrived back to back
+     * (Crashlytics 689b6e8f). Leaving the loop, or the task being cancelled, stops the monitor.
+     */
+    private func waitForNetwork(timeout: Duration) async -> Bool {
+        await withTaskGroup(of: Bool.self) { group in
+            group.addTask {
+                for await path in NWPathMonitor() where path.status == .satisfied {
+                    return true
+                }
+                return false
+            }
+            group.addTask {
+                try? await Task.sleep(for: timeout)
+                return false
+            }
+            let isSatisfied = await group.next() ?? false
+            group.cancelAll()
+            return isSatisfied
+        }
     }
 
     private func fetchAndActivateWithRetry() async {
