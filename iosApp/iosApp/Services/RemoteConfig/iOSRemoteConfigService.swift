@@ -1,12 +1,15 @@
 import Foundation
 import FirebaseRemoteConfig
 import Network
+import os
 import Shared
 
 class IosRemoteConfigService: RemoteConfigDataSource {
     private let remoteConfig: RemoteConfig
     private var initializationTask: Task<Void, Never>?
-    private let monitor = NWPathMonitor()
+    private let isInitialized = OSAllocatedUnfairLock(initialState: false)
+    private let updateListeners = OSAllocatedUnfairLock(uncheckedState: [UUID: () -> Void]())
+    private let initializationTimeout: Duration = .seconds(5)
 
     init(remoteConfig: RemoteConfig) {
         self.remoteConfig = remoteConfig
@@ -18,55 +21,100 @@ class IosRemoteConfigService: RemoteConfigDataSource {
         
         initializationTask = Task {
             await waitForNetworkAndFetch()
+            isInitialized.withLock { $0 = true }
+            /*
+             * Why: a getter that gave up waiting returned cached or default values, and Firebase's
+             * config update listener only fires for server-side changes, not for this first fetch.
+             */
+            notifyUpdateListeners()
         }
     }
 
     func getBoolean(key: String) async throws -> KotlinBoolean? {
-        await initializationTask?.value
+        await awaitInitialization()
         let value = remoteConfig.configValue(forKey: key)
         guard value.source != .static else { return nil }
         return KotlinBoolean(bool: value.boolValue)
     }
 
     func getInt(key: String) async throws -> KotlinInt? {
-        await initializationTask?.value
+        await awaitInitialization()
         let value = remoteConfig.configValue(forKey: key)
         guard value.source != .static else { return nil }
         return KotlinInt(int: value.numberValue.int32Value)
     }
 
     func getString(key: String) async throws -> String? {
-        await initializationTask?.value
+        await awaitInitialization()
         let value = remoteConfig.configValue(forKey: key)
         guard value.source != .static else { return nil }
         return value.stringValue
     }
 
     func addConfigUpdateListener(onUpdate: @escaping () -> Void) -> Cancellable {
+        let id = UUID()
+        updateListeners.withLockUnchecked { $0[id] = onUpdate }
         let registration = remoteConfig.addOnConfigUpdateListener { [weak self] _, error in
             guard error == nil else { return }
             self?.remoteConfig.activate { _, _ in
                 onUpdate()
             }
         }
-        return ConfigUpdateCancellable(registration: registration)
+        return ConfigUpdateCancellable(registration: registration) { [updateListeners] in
+            updateListeners.withLockUnchecked { $0[id] = nil }
+        }
+    }
+
+    /*
+     * Why: the first fetch waits for the network without a limit (the first launch can sit on the
+     * "allow wireless data" prompt), and a fetch can hang on a captive portal, so getters stop
+     * waiting after a while and serve cached or default values instead of suspending forever.
+     * Awaiting the task's value ignores cancellation, hence the race through a single-shot
+     * continuation instead of a task group.
+     */
+    private func awaitInitialization() async {
+        guard let initializationTask, !isInitialized.withLock({ $0 }) else { return }
+        let timeout = initializationTimeout
+        let isResumed = OSAllocatedUnfairLock(initialState: false)
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            let resumeOnce: @Sendable () -> Void = {
+                let isFirst = isResumed.withLock { resumed in
+                    defer { resumed = true }
+                    return !resumed
+                }
+                if isFirst {
+                    continuation.resume()
+                }
+            }
+            Task {
+                await initializationTask.value
+                resumeOnce()
+            }
+            Task {
+                try? await Task.sleep(for: timeout)
+                resumeOnce()
+            }
+        }
+    }
+
+    private func notifyUpdateListeners() {
+        let listeners = updateListeners.withLockUnchecked { Array($0.values) }
+        listeners.forEach { $0() }
     }
 
     private func waitForNetworkAndFetch() async {
         print("RemoteConfig: Monitoring network status...")
-        
-        // Wait for network to be satisfied (liberated by system/user)
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            monitor.pathUpdateHandler = { path in
-                if path.status == .satisfied {
-                    print("RemoteConfig: Network is satisfied.")
-                    self.monitor.cancel()
-                    continuation.resume()
-                }
-            }
-            monitor.start(queue: DispatchQueue.global())
+
+        /*
+         * Why: iterating the monitor instead of resuming a continuation from pathUpdateHandler,
+         * which crashed by resuming twice when two .satisfied updates arrived back to back
+         * (Crashlytics 689b6e8f). Leaving the loop stops the monitor.
+         */
+        for await path in NWPathMonitor() where path.status == .satisfied {
+            break
         }
-        
+        print("RemoteConfig: Network is satisfied.")
+
         await fetchAndActivateWithRetry()
     }
 
@@ -103,12 +151,15 @@ class IosRemoteConfigService: RemoteConfigDataSource {
 
 private class ConfigUpdateCancellable: Cancellable {
     private let registration: ConfigUpdateListenerRegistration
+    private let onCancel: () -> Void
 
-    init(registration: ConfigUpdateListenerRegistration) {
+    init(registration: ConfigUpdateListenerRegistration, onCancel: @escaping () -> Void) {
         self.registration = registration
+        self.onCancel = onCancel
     }
 
     func cancel() {
         registration.remove()
+        onCancel()
     }
 }

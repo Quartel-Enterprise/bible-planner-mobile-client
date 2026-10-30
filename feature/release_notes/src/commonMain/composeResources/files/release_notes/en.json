@@ -1,4 +1,10 @@
 {
+  "2.15.1": {
+    "ios": [
+      "Fixed a problem that could rarely close the app on its own right after opening it, when the internet connection changed at that moment (for example, switching between Wi-Fi and mobile data).",
+      "When you open the app without internet, screens that depend on the app's settings no longer keep loading forever."
+    ]
+  },
   "2.15.0": {
     "common": [
       "When sharing a verse as an image, you can now add your reading plan streak to the card and save the image straight to your device.",

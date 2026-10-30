@@ -1,4 +1,10 @@
 {
+  "2.15.1": {
+    "ios": [
+      "Corrigimos um problema que, raramente, podia fechar o app sozinho logo ao abrir, quando a conexão com a internet mudava nesse momento (por exemplo, ao trocar entre Wi-Fi e dados móveis).",
+      "Ao abrir o app sem internet, as telas que dependem das configurações do app não ficam mais carregando sem parar."
+    ]
+  },
   "2.15.0": {
     "common": [
       "Ao compartilhar um versículo como imagem, agora você pode colocar no card a sua sequência de dias seguidos no plano e salvar a imagem direto no aparelho.",
