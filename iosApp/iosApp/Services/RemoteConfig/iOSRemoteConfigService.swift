@@ -70,14 +70,15 @@ class IosRemoteConfigService: RemoteConfigDataSource {
     }
 
     /*
-     * Why: iterating the monitor instead of resuming a continuation from pathUpdateHandler,
+     * Why: iterating path updates instead of resuming a continuation from pathUpdateHandler,
      * which crashed by resuming twice when two .satisfied updates arrived back to back
-     * (Crashlytics 689b6e8f). Leaving the loop, or the task being cancelled, stops the monitor.
+     * (Crashlytics 689b6e8f). withTaskGroup waits for every child, so the network child must
+     * end when the timeout cancels it: an AsyncStream iterator returns nil on cancellation.
      */
     private func waitForNetwork(timeout: Duration) async -> Bool {
         await withTaskGroup(of: Bool.self) { group in
             group.addTask {
-                for await path in NWPathMonitor() where path.status == .satisfied {
+                for await path in IosRemoteConfigService.networkPathUpdates() where path.status == .satisfied {
                     return true
                 }
                 return false
@@ -89,6 +90,19 @@ class IosRemoteConfigService: RemoteConfigDataSource {
             let isSatisfied = await group.next() ?? false
             group.cancelAll()
             return isSatisfied
+        }
+    }
+
+    private static func networkPathUpdates() -> AsyncStream<NWPath> {
+        AsyncStream { continuation in
+            let monitor = NWPathMonitor()
+            monitor.pathUpdateHandler = { path in
+                continuation.yield(path)
+            }
+            continuation.onTermination = { _ in
+                monitor.cancel()
+            }
+            monitor.start(queue: DispatchQueue.global())
         }
     }
 
