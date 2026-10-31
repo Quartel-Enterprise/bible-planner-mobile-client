@@ -24,18 +24,15 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.release_notes.generated.resources.Res
 import bibleplanner.feature.release_notes.generated.resources.release_notes_error_loading
 import bibleplanner.feature.release_notes.generated.resources.release_notes_screen_title
-import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_latest
-import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_past
-import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_upcoming
 import bibleplanner.feature.release_notes.generated.resources.release_notes_view_all_github
 import bibleplanner.ui.component.generated.resources.ic_github
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.component.ReleaseNoteCard
-import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
-import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTitleResource
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toVisibleNotes
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
@@ -138,67 +135,21 @@ fun ReleaseNotesScreen(
                                 },
                             ) {
                                 availableTabs.forEach { tab ->
-                                    val (textRes, tabEvent) = when (tab) {
-                                        ReleaseNotesTab.LATEST -> {
-                                            Res.string.release_notes_tab_latest to
-                                                ReleaseNotesTab.LATEST
-                                        }
-
-                                        ReleaseNotesTab.UPCOMING -> {
-                                            Res.string.release_notes_tab_upcoming to
-                                                ReleaseNotesTab.UPCOMING
-                                        }
-
-                                        ReleaseNotesTab.PAST_VERSIONS -> {
-                                            Res.string.release_notes_tab_past to
-                                                ReleaseNotesTab.PAST_VERSIONS
-                                        }
-                                    }
                                     Tab(
                                         selected = uiState.currentTab == tab,
-                                        onClick = { onEvent(ReleaseNotesUiEvent.OnTabSelected(tabEvent)) },
-                                        text = { Text(stringResource(textRes)) },
+                                        onClick = { onEvent(ReleaseNotesUiEvent.OnTabSelected(tab)) },
+                                        text = { Text(stringResource(tab.toTitleResource())) },
                                     )
                                 }
                             }
                         }
 
-                        when (uiState.currentTab) {
-                            ReleaseNotesTab.LATEST -> {
-                                uiState.latestRelease?.let { note ->
-                                    responsiveItem {
-                                        ReleaseNoteCard(
-                                            note = note,
-                                            type = ReleaseVersionType.LATEST,
-                                            onGithubClick = {
-                                                onEvent(
-                                                    ReleaseNotesUiEvent.OnGithubVersionClicked(it),
-                                                )
-                                            },
-                                        )
-                                    }
-                                }
-                            }
-
-                            ReleaseNotesTab.UPCOMING -> {
-                                responsiveItems(uiState.upcomingReleases) { note ->
-                                    ReleaseNoteCard(
-                                        note = note,
-                                        type = ReleaseVersionType.UPCOMING,
-                                        onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
-                                    )
-                                }
-                            }
-
-                            ReleaseNotesTab.PAST_VERSIONS -> {
-                                responsiveItems(uiState.pastReleases) { note ->
-                                    ReleaseNoteCard(
-                                        note = note,
-                                        type = ReleaseVersionType.PAST,
-                                        onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
-                                    )
-                                }
-                            }
+                        responsiveItems(uiState.toVisibleNotes()) { visibleNote ->
+                            ReleaseNoteCard(
+                                note = visibleNote.note,
+                                type = visibleNote.type,
+                                onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
+                            )
                         }
                     }
                 }
