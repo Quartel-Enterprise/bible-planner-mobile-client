@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.read.presentation.screen
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import com.quare.bibleplanner.feature.read.presentation.component.ReadListBindings
 import com.quare.bibleplanner.feature.read.presentation.component.rememberListeningFollow
 import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState

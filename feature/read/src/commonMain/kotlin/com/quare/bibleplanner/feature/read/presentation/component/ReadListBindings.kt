@@ -1,7 +1,5 @@
-package com.quare.bibleplanner.feature.read.presentation.screen
+package com.quare.bibleplanner.feature.read.presentation.component
 
-import com.quare.bibleplanner.feature.read.presentation.component.ListeningFollow
-import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 
 internal class ReadListBindings(
