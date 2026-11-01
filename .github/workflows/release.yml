@@ -811,10 +811,11 @@ jobs:
           git push -u origin "${{ needs.plan.outputs.branch }}"
 
       # A PR opened with GITHUB_TOKEN never triggers the translations workflow,
-      # so the required check-translations context would never be reported and
-      # the merge-back would stay blocked forever. Running the same script here
-      # and publishing the result keeps the guard real, and GITHUB_TOKEN reports
-      # it as the very GitHub Actions app the ruleset pins the context to.
+      # so the required check-translations context (and duplication, below)
+      # would never be reported and the merge-back would stay blocked forever.
+      # Running the same script here and publishing the result keeps the guard
+      # real, and GITHUB_TOKEN reports it as the very GitHub Actions app the
+      # ruleset pins the context to.
       - name: Report check-translations for the merge-back branch
         if: ${{ steps.published.outputs.done != 'true' }}
         env:
@@ -824,6 +825,26 @@ jobs:
           python3 scripts/check_release_notes.py
           gh api --method POST "repos/${{ github.repository }}/check-runs" \
             -f name=check-translations \
+            -f head_sha="$(git rev-parse HEAD)" \
+            -f status=completed \
+            -f conclusion=success
+
+      # The required duplication check has the same problem: its workflow never
+      # starts on a PR GITHUB_TOKEN opened, so the same script runs here.
+      - name: Set up Node for the duplication check
+        if: ${{ steps.published.outputs.done != 'true' }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Report duplication for the merge-back branch
+        if: ${{ steps.published.outputs.done != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ./scripts/cpd.sh
+          gh api --method POST "repos/${{ github.repository }}/check-runs" \
+            -f name=duplication \
             -f head_sha="$(git rev-parse HEAD)" \
             -f status=completed \
             -f conclusion=success

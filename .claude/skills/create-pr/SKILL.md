@@ -379,12 +379,12 @@ gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
 
-A ruleset on `main` requires the `check-translations` status check and every review conversation
-resolved, so `gh pr merge` refuses to merge until both hold ("the base branch policy prohibits the
-merge"). An unresolved `claude-review` finding has to be fixed or answered, then resolved, before
-the merge goes through. The check takes a few seconds. Right
-after the push, GitHub hasn't registered the check yet and `gh pr checks` fails with "no checks
-reported", so the loop first waits up to a minute for it to show up. If it never does, check the
+A ruleset on `main` requires the `check-translations` and `duplication` status checks and every
+review conversation resolved, so `gh pr merge` refuses to merge until all of them hold ("the base
+branch policy prohibits the merge"). An unresolved `claude-review` finding has to be fixed or
+answered, then resolved, before the merge goes through. The checks take a minute or two. Right
+after the push, GitHub hasn't registered them yet and `gh pr checks` fails with "no checks
+reported", so the loop first waits up to a minute for them to show up. If they never do, check the
 workflow runs with `gh run list --branch <branch>` and tell the user instead of merging. Never
 bypass it with `--admin`. If a required check fails, report it and stop. If the merge fails for
 another reason (e.g. a conflict with `main`), notify the user and stop.

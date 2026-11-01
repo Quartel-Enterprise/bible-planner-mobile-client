@@ -84,9 +84,10 @@ jobs:
           fi
           others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
 
-          # check-translations runs on every pull request, alongside the other workflows of the
-          # same push. Until it shows up, those workflows may not have registered their checks yet.
-          if ! jq -e 'any(.name == "check-translations")' <<< "$others" > /dev/null; then
+          # check-translations and duplication, the required checks, run on every pull request,
+          # alongside the other workflows of the same push. Until both show up, those workflows may
+          # not have registered their checks yet, and the ruleset would refuse the merge.
+          if ! jq -e 'any(.name == "check-translations") and any(.name == "duplication")' <<< "$others" > /dev/null; then
             echo "The checks of #$pr are not registered yet."
             exit 0
           fi

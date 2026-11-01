@@ -307,7 +307,9 @@ Once the store uploads and the desktop builds succeed, `finalize`:
 
 1. Creates the `release/X.Y.Z` branch with the version bump commit (Android, iOS and Desktop —
    see [`scripts/bump-version.sh`](../scripts/bump-version.sh)).
-2. Opens a `chore: merge back X.Y.Z into main` pull request and squash-merges it into `main`.
+2. Opens a `chore: merge back X.Y.Z into main` pull request and squash-merges it into `main`. A pull
+   request opened with `GITHUB_TOKEN` starts no workflow, so it runs the translation and copied-code
+   checks itself and reports `check-translations` and `duplication`, which `main`'s ruleset requires.
 3. Publishes a **GitHub Release** `X.Y.Z` with auto-generated notes and the `.dmg`, `.msi`,
    `.deb` and `.rpm` installers attached as assets.
 

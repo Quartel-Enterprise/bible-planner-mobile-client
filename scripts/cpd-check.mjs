@@ -96,10 +96,10 @@ const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < bas
 /*
  * Why: a moved file shows up as a new path with the name and copied lines of a listed path whose file is gone. The
  * count alone would let unrelated new copied code stand in for a deleted file. The name is the part before the first
- * dot, so moving Foo.android.kt to another source set as Foo.nonIos.kt is a move; a file renamed with its copied
- * code is new copied code under that rule, and takes --allow-new.
+ * dot plus the extension, so moving Foo.android.kt to another source set as Foo.nonIos.kt is a move, Foo.kt to
+ * Foo.swift isn't; a file renamed with its copied code is new copied code under that rule, and takes --allow-new.
  */
-const nameOf = (path) => basename(path).split(".")[0];
+const nameOf = (path) => `${basename(path).split(".")[0]}${extname(path)}`;
 const listings = new Map();
 const vanished = Object.keys(baseline).filter((path) => !(path in current) && !isOnDisk(path));
 const movedFrom = new Map();
@@ -127,7 +127,7 @@ if (options.update) {
     process.exit(0);
 }
 
-if (options.base) warnAboutGrowth(JSON.parse(readFileSync(options.base, "utf8")));
+if (options.base) warnAboutGrowth(readBaseline(options.base));
 
 reportGrown(copied);
 for (const [path, from] of movedFrom) {
