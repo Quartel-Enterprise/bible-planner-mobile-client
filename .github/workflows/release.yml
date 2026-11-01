@@ -811,10 +811,11 @@ jobs:
           git push -u origin "${{ needs.plan.outputs.branch }}"
 
       # A PR opened with GITHUB_TOKEN never triggers the translations workflow,
-      # so the required check-translations context would never be reported and
-      # the merge-back would stay blocked forever. Running the same script here
-      # and publishing the result keeps the guard real, and GITHUB_TOKEN reports
-      # it as the very GitHub Actions app the ruleset pins the context to.
+      # so the required check-translations context (and duplication, below)
+      # would never be reported and the merge-back would stay blocked forever.
+      # Running the same script here and publishing the result keeps the guard
+      # real, and GITHUB_TOKEN reports it as the very GitHub Actions app the
+      # ruleset pins the context to.
       - name: Report check-translations for the merge-back branch
         if: ${{ steps.published.outputs.done != 'true' }}
         env:
@@ -824,6 +825,27 @@ jobs:
           python3 scripts/check_release_notes.py
           gh api --method POST "repos/${{ github.repository }}/check-runs" \
             -f name=check-translations \
+            -f head_sha="$(git rev-parse HEAD)" \
+            -f status=completed \
+            -f conclusion=success
+
+      # The required duplication check has the same problem: its workflow never
+      # starts on a PR GITHUB_TOKEN opened. The merge-back adds only the bump
+      # commit, and duplication already passed on the main it branches from, so
+      # the script runs only when that commit touches what jscpd scans: npm and a
+      # full scan at the end of a release would be one more way to leave it
+      # half-finished after the branch is pushed.
+      - name: Report duplication for the merge-back branch
+        if: ${{ steps.published.outputs.done != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --name-only HEAD~1 HEAD \
+            | grep -qE '\.(kt|swift)$|^\.jscpd|^scripts/(cpd|jscpd)'; then
+            ./scripts/cpd.sh
+          fi
+          gh api --method POST "repos/${{ github.repository }}/check-runs" \
+            -f name=duplication \
             -f head_sha="$(git rev-parse HEAD)" \
             -f status=completed \
             -f conclusion=success

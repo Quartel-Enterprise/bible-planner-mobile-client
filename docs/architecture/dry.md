@@ -262,16 +262,16 @@ only compares files of the same language, so a screen drawn by Compose and by Sw
 runs the jscpd release `scripts/jscpd/package.json` pins, with every dependency its lockfile locks, so it needs
 Node.js 18 or later and nothing else.
 
-`.jscpd-baseline.json` holds how many lines of code of each file are copied today. Lines of a file, not clones: with
-the same code in three files, which pairs jscpd reports depends on the order it reads them, and an edit inside a long
-clone can split it in two. A file with more lines than the baseline lists fails the check: extract the copied code
-into one place the callers share, following the sections above (a use case or coordinator under the ViewModels, a
-mapper, a component of `:ui:component`). A file with fewer fails too, until `--update-baseline` writes the new
-numbers, so the baseline only shrinks and removed copies can't come back unnoticed. Without `--allow-new` it refuses
-any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved file: a
-new path with the name (the part before the first dot, so `Foo.android.kt` moved to `Foo.nonIos.kt` counts) and
-copied lines of a listed path that is gone. A file renamed with its copied code needs `--allow-new`, like any new
-copy.
+`.jscpd-baseline.json` holds how many lines of code of each file are copied today. Lines of a file, not clones: with the
+same code in three files, which pairs jscpd reports depends on the order it reads them, and an edit inside a long clone
+can split it in two. A file with more lines than the baseline lists fails the check: extract the copied code into one
+place the callers share, following the sections above (a use case or coordinator under the ViewModels, a mapper, a
+component of `:ui:component`). A file with fewer fails too, until `--update-baseline` writes the new numbers, so the
+baseline only shrinks and removed copies can't come back unnoticed. Without `--allow-new` it refuses any file whose
+copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved file: a new path with
+the name (the part before the first dot plus the extension, so `Foo.android.kt` moved to `Foo.nonIos.kt` counts and
+`Foo.kt` to `Foo.swift` doesn't) and copied lines of a listed path that is gone. A file renamed with its copied code
+needs `--allow-new`, like any new copy.
 
 `--allow-new` is for a copy on purpose, the last section's coincidental similarity, or an `actual` per platform that
 happens to match: say why in the pull request. The `duplication` workflow, a required check of `main`'s

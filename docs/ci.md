@@ -389,8 +389,8 @@ every label starts it: the skipped `record` check other labels leave never stand
 It renders the references on the pull request's branch, commits them and only then drops the label,
 so a failed run or a rejected push keeps it on for a retry. The push uses `MERGE_WHEN_GREEN_TOKEN`
 (see [Merge when green](#merge-when-green)), handed only to that step: a push made with
-`GITHUB_TOKEN` starts no workflow, and `main`'s ruleset waits for `check-translations` on the head
-commit. Pull requests from forks get no secrets, so they can't record.
+`GITHUB_TOKEN` starts no workflow, and `main`'s ruleset waits for `check-translations` and
+`duplication` on the head commit. Pull requests from forks get no secrets, so they can't record.
 
 `screenshot-tests` is not a required check; `merge-when-green` still waits for it.
 
