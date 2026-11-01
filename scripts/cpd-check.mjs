@@ -158,7 +158,7 @@ function reportGrown(paths) {
 }
 
 /*
- * Why: --allow-new and a renamed file are the author's call, so CI doesn't fail on them, but a reviewer must see them.
+ * Why: --allow-new and a moved file are the author's call, so CI doesn't fail on them, but a reviewer must see them.
  * One annotation, since GitHub shows only ten per step, and the whole list in the job summary.
  */
 function warnAboutGrowth(base) {

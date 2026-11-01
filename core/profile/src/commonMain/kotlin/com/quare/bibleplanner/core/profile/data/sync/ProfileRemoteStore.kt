@@ -43,7 +43,9 @@ internal class ProfileRemoteStore(
         table = TABLE,
         userId = userId,
         userIdColumn = COLUMN_ID,
-    ) { action -> action.decodeUpsert<ProfileRowDto>()?.let(profileMapper::toDto) }
+        upserted = { action -> action.decodeUpsert<ProfileRowDto>()?.let(profileMapper::toDto) },
+        deleted = null,
+    )
 
     private fun ProfileDto.toPayload(): JsonObject = JsonObject(
         buildMap {

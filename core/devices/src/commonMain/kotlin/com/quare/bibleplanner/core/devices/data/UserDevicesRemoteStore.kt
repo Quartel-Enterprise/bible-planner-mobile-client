@@ -10,7 +10,6 @@ import com.quare.bibleplanner.core.provider.supabase.observeUserRows
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -37,13 +36,9 @@ internal class UserDevicesRemoteStore(
         table = TABLE,
         userId = userId,
         userIdColumn = USER_ID_COLUMN,
-    ) { action ->
-        if (action is PostgresAction.Delete) {
-            action.oldRecord.getRowId()?.let(DeviceChange::Removed)
-        } else {
-            action.decodeUpsert<UserDeviceDto>()?.let(DeviceChange::Upserted)
-        }
-    }
+        upserted = { action -> action.decodeUpsert<UserDeviceDto>()?.let(DeviceChange::Upserted) },
+        deleted = { action -> action.oldRecord.getRowId()?.let(DeviceChange::Removed) },
+    )
 
     suspend fun rename(
         deviceRowId: String,

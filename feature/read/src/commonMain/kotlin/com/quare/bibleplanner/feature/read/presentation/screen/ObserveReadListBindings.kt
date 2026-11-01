@@ -11,7 +11,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
 
 @Composable
-internal fun rememberReadListBindings(
+internal fun observeReadListBindings(
     state: ReadUiState,
     listening: ReadListeningUiState,
     listState: LazyListState,

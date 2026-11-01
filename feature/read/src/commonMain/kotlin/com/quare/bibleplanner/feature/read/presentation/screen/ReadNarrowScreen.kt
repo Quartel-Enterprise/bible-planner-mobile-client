@@ -79,7 +79,7 @@ internal fun ReadNarrowScreen(
     val isTitleVisible by remember(listState) {
         derivedStateOf { listState.firstVisibleItemIndex >= TITLE_VISIBLE_ITEM_INDEX }
     }
-    val listBindings = rememberReadListBindings(
+    val listBindings = observeReadListBindings(
         state = state,
         listening = listening,
         listState = listState,

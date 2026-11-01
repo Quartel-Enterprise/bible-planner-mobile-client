@@ -72,7 +72,7 @@ internal fun ReadWideScreen(
     dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
-    val listBindings = rememberReadListBindings(
+    val listBindings = observeReadListBindings(
         state = state,
         listening = listening,
         listState = listState,
