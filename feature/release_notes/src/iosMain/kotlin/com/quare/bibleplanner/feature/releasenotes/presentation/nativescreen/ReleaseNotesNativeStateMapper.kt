@@ -8,13 +8,16 @@ import bibleplanner.feature.release_notes.generated.resources.release_notes_erro
 import bibleplanner.feature.release_notes.generated.resources.release_notes_screen_title
 import bibleplanner.feature.release_notes.generated.resources.release_notes_view_all_github
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
-import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.VisibleReleaseNote
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeColors
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeContent
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeNote
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeState
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeTab
+import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeTag
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.isUpcoming
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagBackgroundColor
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagContentColor
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTagResource
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTitleResource
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toVisibleNotes
@@ -58,8 +61,14 @@ private fun VisibleReleaseNote.toNativeNote(): ReleaseNotesNativeNote = ReleaseN
     version = note.version,
     dateText = note.dateRepresentation?.format(),
     changes = note.changes,
-    tagText = type.toTagResource()?.let { tagResource -> stringResource(tagResource) },
-    isUpcoming = type == ReleaseVersionType.UPCOMING,
+    tag = type.toTagResource()?.let { tagResource ->
+        ReleaseNotesNativeTag(
+            text = stringResource(tagResource),
+            backgroundArgb = type.tagBackgroundColor().toArgb(),
+            contentArgb = type.tagContentColor().toArgb(),
+        )
+    },
+    isUpcoming = type.isUpcoming(),
 )
 
 @Composable
@@ -73,9 +82,5 @@ private fun nativeColors(): ReleaseNotesNativeColors {
         onCardVariantArgb = colorScheme.onSurfaceVariant.toArgb(),
         primaryArgb = colorScheme.primary.toArgb(),
         errorArgb = colorScheme.error.toArgb(),
-        latestTagBackgroundArgb = colorScheme.primaryContainer.toArgb(),
-        latestTagContentArgb = colorScheme.onPrimaryContainer.toArgb(),
-        upcomingTagBackgroundArgb = colorScheme.tertiaryContainer.toArgb(),
-        upcomingTagContentArgb = colorScheme.onTertiaryContainer.toArgb(),
     )
 }

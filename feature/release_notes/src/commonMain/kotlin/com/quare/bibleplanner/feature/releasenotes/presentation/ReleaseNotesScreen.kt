@@ -137,7 +137,12 @@ fun ReleaseNotesScreen(
                                 availableTabs.forEach { tab ->
                                     Tab(
                                         selected = uiState.currentTab == tab,
-                                        onClick = { onEvent(ReleaseNotesUiEvent.OnTabSelected(tab)) },
+                                        onClick = {
+                                            // Why: match the iOS segmented picker, which only reports a tab change.
+                                            if (uiState.currentTab != tab) {
+                                                onEvent(ReleaseNotesUiEvent.OnTabSelected(tab))
+                                            }
+                                        },
                                         text = { Text(stringResource(tab.toTitleResource())) },
                                     )
                                 }

@@ -30,8 +30,8 @@ struct ReleaseNoteCard: View {
                     }
                 }
                 Spacer()
-                if let tagText = note.tagText {
-                    tag(text: tagText)
+                if let tag = note.tag {
+                    tagLabel(tag)
                 }
             }
             VStack(alignment: .leading, spacing: 8) {
@@ -52,14 +52,12 @@ struct ReleaseNoteCard: View {
         .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    private func tag(text: String) -> some View {
-        let background = note.isUpcoming ? colors.upcomingTagBackgroundArgb : colors.latestTagBackgroundArgb
-        let content = note.isUpcoming ? colors.upcomingTagContentArgb : colors.latestTagContentArgb
-        return Text(text)
+    private func tagLabel(_ tag: ReleaseNotesNativeTag) -> some View {
+        Text(tag.text)
             .font(.caption2.bold())
-            .foregroundStyle(Color(kotlinArgb: content))
+            .foregroundStyle(Color(kotlinArgb: tag.contentArgb))
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(Color(kotlinArgb: background), in: RoundedRectangle(cornerRadius: 4))
+            .background(Color(kotlinArgb: tag.backgroundArgb), in: RoundedRectangle(cornerRadius: 4))
     }
 }

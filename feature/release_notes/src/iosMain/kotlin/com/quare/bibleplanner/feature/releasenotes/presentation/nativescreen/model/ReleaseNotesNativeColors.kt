@@ -8,8 +8,4 @@ data class ReleaseNotesNativeColors(
     val onCardVariantArgb: Int,
     val primaryArgb: Int,
     val errorArgb: Int,
-    val latestTagBackgroundArgb: Int,
-    val latestTagContentArgb: Int,
-    val upcomingTagBackgroundArgb: Int,
-    val upcomingTagContentArgb: Int,
 )

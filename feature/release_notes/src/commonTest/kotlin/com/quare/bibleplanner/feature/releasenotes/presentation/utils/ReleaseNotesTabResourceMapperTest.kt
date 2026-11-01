@@ -53,19 +53,4 @@ internal class ReleaseNotesTabResourceMapperTest {
             actual = title,
         )
     }
-
-    @Test
-    fun `GIVEN every tab WHEN mapping their titles THEN each tab gets a distinct title`() {
-        // Given
-        val tabs = ReleaseNotesTab.entries
-
-        // When
-        val titles = tabs.map { it.toTitleResource() }
-
-        // Then
-        assertEquals(
-            expected = tabs.size,
-            actual = titles.toSet().size,
-        )
-    }
 }

@@ -11,6 +11,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagBackgroundColor
+import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagContentColor
 
 @Composable
 internal fun ReleaseNoteTagLabel(
@@ -22,25 +24,14 @@ internal fun ReleaseNoteTagLabel(
         text = text,
         style = MaterialTheme.typography.labelSmall.copy(
             fontWeight = FontWeight.Bold,
-            color = if (type.isUpcoming()) {
-                MaterialTheme.colorScheme.onTertiaryContainer
-            } else {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            },
+            color = type.tagContentColor(),
         ),
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(
-                if (type.isUpcoming()) {
-                    MaterialTheme.colorScheme.tertiaryContainer
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                },
-            ).padding(
+            .background(type.tagBackgroundColor())
+            .padding(
                 horizontal = 8.dp,
                 vertical = 4.dp,
             ),
     )
 }
-
-private fun ReleaseVersionType.isUpcoming(): Boolean = this == ReleaseVersionType.UPCOMING
