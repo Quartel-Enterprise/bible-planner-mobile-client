@@ -1,0 +1,18 @@
+{
+  "path": ["core", "feature", "shared", "ui", "androidApp", "desktopApp", "iosApp", "webApp/src"],
+  "format": ["kotlin", "swift"],
+  "minTokens": 70,
+  "ignore": [
+    "**/build/**",
+    "**/*.kts",
+    "**/src/*Test/**",
+    "**/*Test.kt",
+    "**/*Tests.swift",
+    "**/testing/**"
+  ],
+  "gitignore": true,
+  "absolute": true,
+  "reporters": ["json"],
+  "output": "build/jscpd",
+  "silent": true
+}
