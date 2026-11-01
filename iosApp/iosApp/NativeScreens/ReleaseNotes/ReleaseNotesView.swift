@@ -82,7 +82,8 @@ private struct ReleaseNotesContentView: View {
 
     @ViewBuilder
     private func tabPicker(tabs: [ReleaseNotesNativeTab]) -> some View {
-        if let selectedTab = tabs.first(where: { $0.isSelected })?.tab {
+        // Same fallback as the Compose tab row: with no selected tab, the first one is shown as selected.
+        if let selectedTab = (tabs.first(where: { $0.isSelected }) ?? tabs.first)?.tab {
             let selection = Binding<ReleaseNotesTab>(
                 get: { selectedTab },
                 set: { tab in onEvent(ReleaseNotesUiEventOnTabSelected(tab: tab)) }
