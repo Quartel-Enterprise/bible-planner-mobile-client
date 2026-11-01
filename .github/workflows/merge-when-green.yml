@@ -112,7 +112,7 @@ jobs:
           # behind the event.
           running=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
             --jq '.workflow_runs[] | select(.status != "completed" and .id != (env.TRIGGER_RUN_ID | tonumber))
-              | select(.path | test("^\\.github/workflows/(build-and-test|ui-tests|screenshot-tests|static-analysis|duplication|module-graph)\\.yml$"))
+              | select(.path | test("^\\.github/workflows/(build-and-test|ui-tests|screenshot-tests|static-analysis|module-graph)\\.yml$"))
               | .name')
           if [ -n "$running" ]; then
             echo "#$pr still has workflows running:"

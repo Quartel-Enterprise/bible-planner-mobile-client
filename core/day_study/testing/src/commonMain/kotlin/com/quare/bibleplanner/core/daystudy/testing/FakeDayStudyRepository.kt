@@ -21,6 +21,7 @@ class FakeDayStudyRepository(
     val studyRequests = mutableListOf<DayStudyRequest>()
     val studyRewardFlags = mutableListOf<Boolean>()
     val cacheLookups = mutableListOf<DayStudyRequest>()
+    val statusRequests = mutableListOf<List<PassageModel>>()
 
     override fun getDayStudy(
         passages: List<PassageModel>,
@@ -44,6 +45,7 @@ class FakeDayStudyRepository(
         version: String,
         languageCode: String,
     ): DayStudyStatusModel? {
+        statusRequests += passages
         statusGate?.await()
         statusError?.let { error -> throw error }
         return status

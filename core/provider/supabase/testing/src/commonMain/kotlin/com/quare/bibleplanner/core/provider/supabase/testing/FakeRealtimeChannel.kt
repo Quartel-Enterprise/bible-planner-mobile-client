@@ -16,6 +16,7 @@ import io.github.jan.supabase.realtime.broadcast.BroadcastPayload
 import io.github.jan.supabase.realtime.broadcast.RealtimeBroadcast
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KClass
@@ -59,7 +60,16 @@ internal class FakeRealtimeChannel(
         action: KClass<T>,
         schema: String,
         filter: PostgresChangeFilter.() -> Unit,
-    ): Flow<T> = actions.filterIsInstance(action)
+    ): Flow<T> {
+        // Like Realtime on an RLS table: a deleted row keeps only its primary key, so a filtered flow never sees it.
+        val isFiltered = PostgresChangeFilter(
+            event = "*",
+            schema = schema,
+        ).apply(filter).filter != null
+        return actions
+            .filterIsInstance(action)
+            .filter { change -> !(isFiltered && change is PostgresAction.Delete) }
+    }
 
     override fun broadcastFlow(event: String): Flow<RealtimeBroadcast> = error("unused")
 

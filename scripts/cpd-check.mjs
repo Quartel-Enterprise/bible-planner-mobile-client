@@ -6,8 +6,8 @@
 // edit inside a long clone can split it into two shorter ones. A file over its lines fails, and so does one under
 // them, until --update-baseline lowers them, so copied code removed can't come back unnoticed.
 
-import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { extname, join, relative } from "node:path";
+import { appendFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Why: shorter than this once imports and comments are gone, a clone is a shared header, not copied code.
@@ -27,11 +27,13 @@ for (let index = 0; index < flags.length; index++) {
         options.allowNew = true;
     } else if (flag === "--base") {
         options.base = flags[++index] ?? fail("--base needs the path of a baseline");
+        if (!existsSync(options.base)) fail(`No baseline at ${options.base}`);
     } else {
         fail(`Unknown argument: ${flag}\n${USAGE}`);
     }
 }
 if (options.allowNew && !options.update) fail(`--allow-new only goes with --update-baseline\n${USAGE}`);
+if (options.base && options.update) fail(`--base only goes with the check, not --update-baseline\n${USAGE}`);
 if (!existsSync(reportPath)) fail(`jscpd wrote no report at ${reportPath}: set "silent" to false in .jscpd.json to see why`);
 
 const report = JSON.parse(readFileSync(reportPath, "utf8"));
@@ -91,24 +93,31 @@ const current = Object.fromEntries([...copiedLines].map(([path, lines]) => [path
 const grown = Object.keys(current).filter((path) => current[path] > (baseline[path] ?? 0));
 const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < baseline[path]);
 
-// Why: a renamed or moved file shows up as a new path with the same copied lines as a listed path whose file is gone.
-const vanished = Object.keys(baseline)
-    .filter((path) => !(path in current) && !existsSync(join(ROOT, path)))
-    .map((path) => baseline[path]);
-const renamed = grown.filter((path) => {
-    if (path in baseline) return false;
-    const index = vanished.indexOf(current[path]);
-    if (index < 0) return false;
-    vanished.splice(index, 1);
-    return true;
-});
-const copied = grown.filter((path) => !renamed.includes(path));
+/*
+ * Why: a moved file shows up as a new path with the name and copied lines of a listed path whose file is gone. The
+ * count alone would let unrelated new copied code stand in for a deleted file. The name is the part before the first
+ * dot, so moving Foo.android.kt to another source set as Foo.nonIos.kt is a move; a file renamed with its copied
+ * code is new copied code under that rule, and takes --allow-new.
+ */
+const nameOf = (path) => basename(path).split(".")[0];
+const listings = new Map();
+const vanished = Object.keys(baseline).filter((path) => !(path in current) && !isOnDisk(path));
+const movedFrom = new Map();
+for (const path of grown.filter((path) => !(path in baseline))) {
+    const from = vanished.find((old) => baseline[old] === current[path] && nameOf(old) === nameOf(path));
+    if (from === undefined) continue;
+    vanished.splice(vanished.indexOf(from), 1);
+    movedFrom.set(path, from);
+}
+const moved = [...movedFrom.keys()];
+const copied = grown.filter((path) => !movedFrom.has(path));
+const removed = shrunk.filter((path) => ![...movedFrom.values()].includes(path));
 
 const total = (pairs) => Object.values(pairs).reduce((sum, lines) => sum + lines, 0);
 
 if (options.update) {
-    // Why: a renamed or moved file takes its copied lines along, which is no new copied code. Anything else that grew
-    // is, even when copies removed elsewhere keep the total down.
+    // Why: a moved file takes its copied lines along, which is no new copied code. Anything else that grew is, a
+    // renamed file included, even when copies removed elsewhere keep the total down.
     if (copied.length > 0 && !options.allowNew) {
         reportGrown(copied);
         fail("The baseline only takes more copied code in with --allow-new, when the copy is on purpose.");
@@ -118,23 +127,23 @@ if (options.update) {
     process.exit(0);
 }
 
-if (options.base) warnAboutGrowth(readBaseline(options.base));
+if (options.base) warnAboutGrowth(JSON.parse(readFileSync(options.base, "utf8")));
 
 reportGrown(copied);
-for (const path of renamed) {
-    console.log(`❌ Renamed or moved with its copied code (${current[path]} lines): ${path}`);
+for (const [path, from] of movedFrom) {
+    console.log(`❌ Moved with its copied code (${current[path]} lines): ${from} → ${path}`);
 }
-for (const path of shrunk) {
+for (const path of removed) {
     console.log(`❌ Less copied code than the baseline lists (${current[path] ?? 0} of ${baseline[path]} lines): ${path}`);
 }
 if (copied.length > 0) {
     console.log("Extract the copied code into one place the callers share. Only when the copy is on purpose,");
     console.log("run ./scripts/cpd.sh --update-baseline --allow-new and say why in the pull request.");
 }
-if (renamed.length > 0 || shrunk.length > 0) {
-    console.log("Run ./scripts/cpd.sh --update-baseline to write the renamed files and the removed copied code to the baseline.");
+if (copied.length === 0 && (moved.length > 0 || removed.length > 0)) {
+    console.log("Run ./scripts/cpd.sh --update-baseline to write the moved files and the removed copied code to the baseline.");
 }
-if (grown.length > 0 || shrunk.length > 0) process.exit(1);
+if (copied.length > 0 || moved.length > 0 || removed.length > 0) process.exit(1);
 
 console.log(`✅ No new copied code (${total(current)} copied lines in ${Object.keys(current).length} files, as the baseline lists)`);
 
@@ -149,19 +158,30 @@ function reportGrown(paths) {
 }
 
 /*
- * Why: --allow-new and a renamed file are the author's call, so CI doesn't fail on them, but a reviewer must see them.
+ * Why: --allow-new and a moved file are the author's call, so CI doesn't fail on them, but a reviewer must see them.
  * One annotation, since GitHub shows only ten per step, and the whole list in the job summary.
  */
 function warnAboutGrowth(base) {
     const taken = Object.keys(baseline).filter((path) => baseline[path] > (base[path] ?? 0));
     if (taken.length === 0) return;
-    const lines = taken.map((path) => `${path}: ${base[path] ?? 0} → ${baseline[path]} lines`);
-    console.log(`::warning file=.jscpd-baseline.json::The baseline takes in copied code in ${taken.length} files, listed in the job summary`);
-    lines.forEach((line) => console.log(`   ${line}`));
+    const change = (path) => `${base[path] ?? 0} → ${baseline[path]} lines`;
+    console.log(`::warning file=.jscpd-baseline.json::The baseline takes in copied code in ${taken.length} file${taken.length === 1 ? "" : "s"}, listed in the job summary`);
+    taken.forEach((path) => console.log(`   ${path}: ${change(path)}`));
     if (process.env.GITHUB_STEP_SUMMARY) {
-        const summary = ["### The baseline takes in copied code", "", ...lines.map((line) => `- \`${line.replace(": ", "`: ")}`), ""];
+        const summary = ["### The baseline takes in copied code", "", ...taken.map((path) => `- \`${path}\`: ${change(path)}`), ""];
         appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summary.join("\n")}\n`);
     }
+}
+
+// Why: existsSync ignores case on macOS, where renaming Foo/ to foo/ would leave Foo/X.kt "on disk" locally only.
+function isOnDisk(path) {
+    let directory = ROOT;
+    for (const part of path.split("/")) {
+        if (!listings.has(directory)) listings.set(directory, existsSync(directory) ? readdirSync(directory) : []);
+        if (!listings.get(directory).includes(part)) return false;
+        directory = join(directory, part);
+    }
+    return true;
 }
 
 function readBaseline(path) {

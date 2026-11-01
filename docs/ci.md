@@ -260,20 +260,21 @@ time. Now the review fixes what it found, and the checks wait for it:
   review: the push is never forced. The review then lists the fixed findings at the end of its body,
   under the fix commit, so they open no thread, and only the others as inline comments. Without a
   push, every finding is an inline comment, as before.
-- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis`,
-  `duplication` and `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
+- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
+  `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
   pull request opened with, or a draft was marked ready for review on (those workflows add
   `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
   by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end, checking
-  once a minute: six workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
   commit), it skips the other jobs: that push started them again on the new commit, and cancels this
   run anyway. Every other event (an author's push, a reopened pull request, `main`) skips the gate
   job itself, so it starts no runner, and the other jobs run on a skipped gate. A draft or a fork
   passes it right away, and so does a failed or cancelled review, GitHub's API failing three times
-  in a row, or a review still running after 40 minutes. `translations` doesn't wait:
-  `check-translations` is required and takes seconds.
+  in a row, or a review still running after 40 minutes. `translations` and `duplication`
+  don't wait: both are required checks of `main`'s ruleset, which a held gate would skip, and GitHub
+  counts a skipped required check as passed. They take a minute at most.
 - **The checks are held for open threads.** Once the review ended and the head didn't move, the gate
   counts the review's unresolved threads (`claude[bot]`'s, or `github-actions[bot]`'s when the
   fallback step posted). With one open, the other jobs are skipped and the gate fails, in its `Hold

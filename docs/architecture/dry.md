@@ -268,10 +268,12 @@ clone can split it in two. A file with more lines than the baseline lists fails 
 into one place the callers share, following the sections above (a use case or coordinator under the ViewModels, a
 mapper, a component of `:ui:component`). A file with fewer fails too, until `--update-baseline` writes the new
 numbers, so the baseline only shrinks and removed copies can't come back unnoticed. Without `--allow-new` it refuses
-any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a renamed or
-moved file: a new path with the same copied lines as a listed path that is gone.
+any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved file: a
+new path with the name (the part before the first dot, so `Foo.android.kt` moved to `Foo.nonIos.kt` counts) and
+copied lines of a listed path that is gone. A file renamed with its copied code needs `--allow-new`, like any new
+copy.
 
 `--allow-new` is for a copy on purpose, the last section's coincidental similarity, or an `actual` per platform that
-happens to match: say why in the pull request. The `duplication` workflow runs the same script on every pull request,
-and every push to `main`, that touches a `.kt` or `.swift` file or the check itself, and shows each file whose copied
+happens to match: say why in the pull request. The `duplication` workflow, a required check of `main`'s
+ruleset, runs the same script on every pull request and every push to `main`, and shows each file whose copied
 lines grew against `main` in the job summary, behind one warning, so the reviewer sees what the baseline took in.

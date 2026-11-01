@@ -33,33 +33,11 @@ fun DatePickerDialogContent(
     confirmButton: @Composable () -> Unit,
     dismissButton: @Composable () -> Unit,
 ) {
-    Surface(
-        modifier = Modifier
-            .requiredWidth(containerWidth)
-            .heightIn(max = containerMaxHeight),
-        shape = DatePickerDefaults.shape,
-        color = DatePickerDefaults.colors().containerColor,
-        tonalElevation = DatePickerDefaults.TonalElevation,
+    PickerDialogSurface(
+        confirmButton = confirmButton,
+        dismissButton = dismissButton,
     ) {
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
-            Box(
-                Modifier.weight(
-                    weight = 1f,
-                    fill = false,
-                ),
-            ) {
-                AdaptiveDatePicker(state)
-            }
-            Row(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(buttonsPadding),
-                horizontalArrangement = Arrangement.spacedBy(buttonsSpacing),
-            ) {
-                dismissButton()
-                confirmButton()
-            }
-        }
+        AdaptiveDatePicker(state)
     }
 }
 
@@ -68,6 +46,20 @@ fun DateRangePickerDialogContent(
     state: AdaptiveDateRangePickerState,
     confirmButton: @Composable () -> Unit,
     dismissButton: @Composable () -> Unit,
+) {
+    PickerDialogSurface(
+        confirmButton = confirmButton,
+        dismissButton = dismissButton,
+    ) {
+        AdaptiveDateRangePicker(state = state)
+    }
+}
+
+@Composable
+private fun PickerDialogSurface(
+    confirmButton: @Composable () -> Unit,
+    dismissButton: @Composable () -> Unit,
+    picker: @Composable () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -84,7 +76,7 @@ fun DateRangePickerDialogContent(
                     fill = false,
                 ),
             ) {
-                AdaptiveDateRangePicker(state = state)
+                picker()
             }
             Row(
                 modifier = Modifier

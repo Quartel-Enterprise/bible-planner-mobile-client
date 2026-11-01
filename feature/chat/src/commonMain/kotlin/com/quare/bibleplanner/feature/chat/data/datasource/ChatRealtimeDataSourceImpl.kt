@@ -1,24 +1,17 @@
 package com.quare.bibleplanner.feature.chat.data.datasource
 
+import com.quare.bibleplanner.core.provider.supabase.USER_ID_COLUMN
+import com.quare.bibleplanner.core.provider.supabase.decodeUpsert
+import com.quare.bibleplanner.core.provider.supabase.observeUserRows
 import com.quare.bibleplanner.feature.chat.data.dto.ChatConversationDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatDeletedRowDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatMessageDto
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeOldRecord
-import io.github.jan.supabase.realtime.decodeRecord
-import io.github.jan.supabase.realtime.postgresChangeFlow
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.withContext
 
 internal class ChatRealtimeDataSourceImpl(
     private val realtime: Realtime,
@@ -27,61 +20,26 @@ internal class ChatRealtimeDataSourceImpl(
         .filter { status -> status == Realtime.Status.CONNECTED }
         .map { }
 
-    override fun observeConversations(userId: String): Flow<ChatRemoteChange> = observeTable(
+    override fun observeConversations(userId: String): Flow<ChatRemoteChange> = realtime.observeUserRows(
         table = CONVERSATIONS_TABLE,
         userId = userId,
-        upserted = { record: ChatConversationDto -> ChatRemoteChange.ConversationUpserted(record) },
-        deleted = ChatRemoteChange::ConversationDeleted,
+        userIdColumn = USER_ID_COLUMN,
+        upserted = { action ->
+            action.decodeUpsert<ChatConversationDto>()?.let(ChatRemoteChange::ConversationUpserted)
+        },
+        deleted = { action -> ChatRemoteChange.ConversationDeleted(action.decodeOldRecord<ChatDeletedRowDto>().id) },
     )
 
-    override fun observeMessages(userId: String): Flow<ChatRemoteChange> = observeTable(
+    override fun observeMessages(userId: String): Flow<ChatRemoteChange> = realtime.observeUserRows(
         table = MESSAGES_TABLE,
         userId = userId,
-        upserted = { record: ChatMessageDto -> ChatRemoteChange.MessageUpserted(record) },
-        deleted = ChatRemoteChange::MessageDeleted,
+        userIdColumn = USER_ID_COLUMN,
+        upserted = { action -> action.decodeUpsert<ChatMessageDto>()?.let(ChatRemoteChange::MessageUpserted) },
+        deleted = { action -> ChatRemoteChange.MessageDeleted(action.decodeOldRecord<ChatDeletedRowDto>().id) },
     )
 
-    private inline fun <reified T : Any> observeTable(
-        table: String,
-        userId: String,
-        crossinline upserted: (T) -> ChatRemoteChange,
-        crossinline deleted: (String) -> ChatRemoteChange,
-    ): Flow<ChatRemoteChange> = flow {
-        val channel = realtime.channel("${table}_$userId")
-        val writes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {
-            this.table = table
-            filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
-        }
-        /*
-         * Why: unfiltered on purpose: Realtime strips an RLS table's deleted record to its primary key
-         * (Postgres cannot check a policy on a gone row), so a user_id filter would match nothing.
-         */
-        val deletions = channel.postgresChangeFlow<PostgresAction.Delete>(schema = SCHEMA) {
-            this.table = table
-        }
-        channel.subscribe()
-        try {
-            merge(
-                writes.mapNotNull { action ->
-                    when (action) {
-                        is PostgresAction.Insert -> upserted(action.decodeRecord())
-                        is PostgresAction.Update -> upserted(action.decodeRecord())
-                        else -> null
-                    }
-                },
-                deletions.map { action -> deleted(action.decodeOldRecord<ChatDeletedRowDto>().id) },
-            ).collect(::emit)
-        } finally {
-            withContext(NonCancellable) {
-                realtime.removeChannel(channel)
-            }
-        }
-    }
-
     private companion object {
-        const val SCHEMA = "public"
         const val CONVERSATIONS_TABLE = "ai_chat_conversations"
         const val MESSAGES_TABLE = "ai_chat_messages"
-        const val USER_ID_COLUMN = "user_id"
     }
 }

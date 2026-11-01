@@ -24,6 +24,7 @@ import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -31,6 +32,8 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingS
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.usecase.ClassifyDayTimingUseCase
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.usecase.ResolveStudyCtaStateUseCase
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteCtaResolver
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteStateLoader
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
@@ -453,53 +456,61 @@ internal class DayReadingCompleteBannerViewModelTest {
                 default: Int,
             ): Int = default
         }
+        val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         viewModel = DayReadingCompleteBannerViewModel(
             day = testLocation,
-            getScheduledDay = { _, _, _ -> day },
-            getDayStudyQuota = GetDayStudyQuotaUseCase(
-                repository = FakeDayStudyRepository(
-                    hasCached = false,
-                    status = DayStudyStatusModel(
-                        freeLimit = 3,
-                        usedCount = usedCount,
-                        isUnlocked = false,
-                        cacheToken = "token",
-                        rewardedRemainingToday = 2,
-                    ),
-                    statusError = null,
-                    events = emptyList(),
-                ).apply { statusGate = quotaGate },
-                bibleRepository = FakeBibleRepository(
-                    bibles = emptyList(),
-                    selectedVersionId = "ACF",
-                ),
-                getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
-                languageCodeMapper = LanguageCodeMapper(),
-                getIntRemoteConfig = getIntRemoteConfig,
-            ),
-            getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
-            observeIsProUser = { isProFlow },
             observeAuthenticatedUserId = { flowOf(if (isLoggedIn) "user-id" else null) },
             isConnected = { isConnected },
-            classifyDayTiming = ClassifyDayTimingUseCase(
-                currentTimestampProvider = { 0L },
-                localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
-            ),
-            resolveStudyCtaState = ResolveStudyCtaStateUseCase(
-                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
-            ),
-            quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
-                prefetchedQuota?.let { quota ->
-                    put(
-                        day = testLocation,
-                        quota = quota,
-                    )
-                }
-            },
             generationCoordinator = coordinator,
+            stateLoader = DayReadingCompleteStateLoader(
+                getScheduledDay = { _, _, _ -> day },
+                getDayStudyQuota = GetDayStudyQuotaUseCase(
+                    repository = FakeDayStudyRepository(
+                        hasCached = false,
+                        status = DayStudyStatusModel(
+                            freeLimit = 3,
+                            usedCount = usedCount,
+                            isUnlocked = false,
+                            cacheToken = "token",
+                            rewardedRemainingToday = 2,
+                        ),
+                        statusError = null,
+                        events = emptyList(),
+                    ).apply { statusGate = quotaGate },
+                    bibleRepository = FakeBibleRepository(
+                        bibles = emptyList(),
+                        selectedVersionId = "ACF",
+                    ),
+                    getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
+                    languageCodeMapper = LanguageCodeMapper(),
+                    getIntRemoteConfig = getIntRemoteConfig,
+                ),
+                getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
+                observeIsProUser = { isProFlow },
+                classifyDayTiming = ClassifyDayTimingUseCase(
+                    currentTimestampProvider = { 0L },
+                    localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
+                ),
+                resolveStudyCtaState = ResolveStudyCtaStateUseCase(
+                    prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                ),
+                quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
+                    prefetchedQuota?.let { quota ->
+                        put(
+                            day = testLocation,
+                            quota = quota,
+                        )
+                    }
+                },
+                trackEvent = trackEvent,
+            ),
+            ctaResolver = DayReadingCompleteCtaResolver(
+                generationCoordinator = coordinator,
+                trackEvent = trackEvent,
+            ),
             navigator = navigator,
             studyUnlockResultStore = studyUnlockResultStore,
-            trackEvent = { name, params -> trackedEvents += name to params },
+            trackEvent = trackEvent,
         )
         actions = mutableListOf<DayReadingCompleteBannerUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
