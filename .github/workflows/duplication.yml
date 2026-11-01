@@ -1,36 +1,12 @@
 name: duplication
 
-# Copied code can show up in the Kotlin or the Swift, so this runs on Swift changes too, which
-# static-analysis's ktlint has no reason to.
+# Runs on every pull request, with no paths filter: duplication is a required check of the main
+# ruleset, and a check a paths filter skips never reports, which would hold the merge forever.
 on:
   pull_request:
-    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
-    paths:
-      - '.github/workflows/duplication.yml'
-      - 'scripts/cpd.sh'
-      - 'scripts/cpd-check.mjs'
-      - 'scripts/jscpd/**'
-      - '.jscpd.json'
-      - '.jscpd-baseline.json'
-      - '**/*.kt'
-      - '**/*.swift'
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/duplication.yml'
-      - 'scripts/cpd.sh'
-      - 'scripts/cpd-check.mjs'
-      - 'scripts/jscpd/**'
-      - '.jscpd.json'
-      - '.jscpd-baseline.json'
-      - '**/*.kt'
-      - '**/*.swift'
 
 permissions:
   contents: read
@@ -41,22 +17,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
-  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
-  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
-  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
-  review-gate:
-    if: >-
-      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
-      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
-    uses: ./.github/workflows/review-gate.yml
-    permissions:
-      actions: read
-      pull-requests: read
-
+  # Why: no review-gate, unlike the other checks. A gate holding for open threads skips the jobs it guards, and a
+  # skipped required check counts as passed, so a merge after the threads are resolved would skip this check.
   duplication:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

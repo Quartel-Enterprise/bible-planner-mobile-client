@@ -1,19 +1,13 @@
 package com.quare.bibleplanner.core.verseannotations.data.sync
 
+import com.quare.bibleplanner.core.provider.supabase.USER_ID_COLUMN
+import com.quare.bibleplanner.core.provider.supabase.observeUserUpserts
 import com.quare.bibleplanner.core.sync.domain.SyncRemoteStore
 import com.quare.bibleplanner.core.verseannotations.data.dto.VerseHighlightDto
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.realtime.channel
-import io.github.jan.supabase.realtime.decodeRecord
-import io.github.jan.supabase.realtime.postgresChangeFlow
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
 internal class VerseHighlightRemoteStore(
     private val supabaseClient: SupabaseClient,
@@ -28,31 +22,13 @@ internal class VerseHighlightRemoteStore(
     override suspend fun fetch(userId: String): List<VerseHighlightDto> = supabaseClient
         .from(TABLE)
         .select {
-            filter { eq("user_id", userId) }
+            filter { eq(USER_ID_COLUMN, userId) }
         }.decodeList()
 
-    override fun observeRemote(userId: String): Flow<VerseHighlightDto> = flow {
-        val channel = realtime.channel("${TABLE}_$userId")
-        val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = TABLE
-            filter("user_id", FilterOperator.EQ, userId)
-        }
-        channel.subscribe()
-        try {
-            changes.collect { action ->
-                val dto = when (action) {
-                    is PostgresAction.Insert -> action.decodeRecord<VerseHighlightDto>()
-                    is PostgresAction.Update -> action.decodeRecord<VerseHighlightDto>()
-                    else -> null
-                }
-                if (dto != null) emit(dto)
-            }
-        } finally {
-            withContext(NonCancellable) {
-                realtime.removeChannel(channel)
-            }
-        }
-    }
+    override fun observeRemote(userId: String): Flow<VerseHighlightDto> = realtime.observeUserUpserts(
+        table = TABLE,
+        userId = userId,
+    )
 
     private companion object {
         const val TABLE = "verse_highlights"

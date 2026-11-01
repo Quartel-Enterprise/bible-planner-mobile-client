@@ -4,22 +4,18 @@ import com.quare.bibleplanner.core.devices.data.dto.RegisterDeviceRequest
 import com.quare.bibleplanner.core.devices.data.dto.RevokeDeviceRequest
 import com.quare.bibleplanner.core.devices.data.dto.UserDeviceDto
 import com.quare.bibleplanner.core.devices.data.model.DeviceChange
+import com.quare.bibleplanner.core.provider.supabase.USER_ID_COLUMN
+import com.quare.bibleplanner.core.provider.supabase.decodeUpsert
+import com.quare.bibleplanner.core.provider.supabase.observeUserRows
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.realtime.channel
-import io.github.jan.supabase.realtime.decodeRecord
-import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -34,30 +30,18 @@ internal class UserDevicesRemoteStore(
     suspend fun fetch(userId: String): List<UserDeviceDto> = supabaseClient
         .from(TABLE)
         .select {
-            filter { eq("user_id", userId) }
+            filter { eq(USER_ID_COLUMN, userId) }
         }.decodeList()
 
-    fun observeChanges(userId: String): Flow<DeviceChange> = flow {
-        val channel = realtime.channel("user_devices_$userId")
-        val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = TABLE
-            filter("user_id", FilterOperator.EQ, userId)
-        }
-        channel.subscribe()
-        try {
-            changes.collect { action ->
-                val change = when (action) {
-                    is PostgresAction.Insert -> DeviceChange.Upserted(action.decodeRecord<UserDeviceDto>())
-                    is PostgresAction.Update -> DeviceChange.Upserted(action.decodeRecord<UserDeviceDto>())
-                    is PostgresAction.Delete -> action.oldRecord.getRowId()?.let(DeviceChange::Removed)
-                    else -> null
-                }
-                if (change != null) emit(change)
-            }
-        } finally {
-            withContext(NonCancellable) {
-                realtime.removeChannel(channel)
-            }
+    fun observeChanges(userId: String): Flow<DeviceChange> = realtime.observeUserRows(
+        table = TABLE,
+        userId = userId,
+        userIdColumn = USER_ID_COLUMN,
+    ) { action ->
+        if (action is PostgresAction.Delete) {
+            action.oldRecord.getRowId()?.let(DeviceChange::Removed)
+        } else {
+            action.decodeUpsert<UserDeviceDto>()?.let(DeviceChange::Upserted)
         }
     }
 

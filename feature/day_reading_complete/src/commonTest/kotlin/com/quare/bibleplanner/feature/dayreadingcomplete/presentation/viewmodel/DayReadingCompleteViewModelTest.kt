@@ -24,6 +24,7 @@ import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -31,6 +32,8 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingS
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.usecase.ClassifyDayTimingUseCase
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.usecase.ResolveStudyCtaStateUseCase
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteCtaResolver
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteStateLoader
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
@@ -620,44 +623,52 @@ internal class DayReadingCompleteViewModelTest {
                 default: Int,
             ): Int = default
         }
+        val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         val viewModel = DayReadingCompleteViewModel(
             route = testRoute,
-            getScheduledDay = { _, _, _ -> day },
-            getDayStudyQuota = GetDayStudyQuotaUseCase(
-                repository = dayStudyRepository,
-                bibleRepository = bibleRepository,
-                getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
-                languageCodeMapper = LanguageCodeMapper(),
-                getIntRemoteConfig = getIntRemoteConfig,
-            ),
-            getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
-            observeIsProUser = { flowOf(isPro) },
             observeAuthenticatedUserId = { flowOf(if (isLoggedIn) "user-id" else null) },
             isConnected = { isConnected },
-            classifyDayTiming = ClassifyDayTimingUseCase(
-                currentTimestampProvider = { 0L },
-                localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
-            ),
-            resolveStudyCtaState = ResolveStudyCtaStateUseCase(
-                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
-            ),
-            quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
-                prefetchedQuota?.let {
-                    put(
-                        day = PlanDayLocationModel(
-                            weekNumber = testRoute.weekNumber,
-                            dayNumber = testRoute.dayNumber,
-                            readingPlanType = ReadingPlanType.valueOf(testRoute.readingPlanType),
-                        ),
-                        quota = it,
-                    )
-                }
-            },
             generationCoordinator = coordinator,
+            stateLoader = DayReadingCompleteStateLoader(
+                getScheduledDay = { _, _, _ -> day },
+                getDayStudyQuota = GetDayStudyQuotaUseCase(
+                    repository = dayStudyRepository,
+                    bibleRepository = bibleRepository,
+                    getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
+                    languageCodeMapper = LanguageCodeMapper(),
+                    getIntRemoteConfig = getIntRemoteConfig,
+                ),
+                getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
+                observeIsProUser = { flowOf(isPro) },
+                classifyDayTiming = ClassifyDayTimingUseCase(
+                    currentTimestampProvider = { 0L },
+                    localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
+                ),
+                resolveStudyCtaState = ResolveStudyCtaStateUseCase(
+                    prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                ),
+                quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
+                    prefetchedQuota?.let {
+                        put(
+                            day = PlanDayLocationModel(
+                                weekNumber = testRoute.weekNumber,
+                                dayNumber = testRoute.dayNumber,
+                                readingPlanType = ReadingPlanType.valueOf(testRoute.readingPlanType),
+                            ),
+                            quota = it,
+                        )
+                    }
+                },
+                trackEvent = trackEvent,
+            ),
+            ctaResolver = DayReadingCompleteCtaResolver(
+                generationCoordinator = coordinator,
+                trackEvent = trackEvent,
+            ),
             setStudySuggestionEnabled = { isEnabled -> disabledSuggestions += isEnabled },
             navigator = navigator,
             studyUnlockResultStore = studyUnlockResultStore,
-            trackEvent = { name, params -> trackedEvents += name to params },
+            trackEvent = trackEvent,
         )
         actions = mutableListOf<DayReadingCompleteUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }

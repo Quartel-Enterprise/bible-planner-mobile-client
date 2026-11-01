@@ -223,9 +223,10 @@ When the branch changes a `.kt` or `.swift` file, `.jscpd.json`, `.jscpd-baselin
 It fails on copied code `.jscpd-baseline.json` doesn't list, and lists both copies with their
 lines: extract the copied code into one place the callers share (see "Enforcement" in
 [docs/architecture/dry.md](../../../docs/architecture/dry.md#enforcement)). When it fails because the
-branch removed copied code, or renamed or moved a file that has some, run
-`./scripts/cpd.sh --update-baseline` and commit the baseline. Never pass `--allow-new` to get past
-the check without asking the user.
+branch removed copied code, or moved a file that has some, run `./scripts/cpd.sh --update-baseline`
+and commit the baseline. A file renamed with its copied code counts as new copied code: extract it
+before renaming, or ask the user. Never pass `--allow-new` to get past the check without asking the
+user.
 
 ### 11. Commit all uncommitted changes
 

@@ -9,17 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AccountDataSection
-import com.quare.bibleplanner.feature.profile.presentation.content.component.AnnotationsCard
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LegalSection
-import com.quare.bibleplanner.feature.profile.presentation.content.component.LoginCard
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LogoutButton
 import com.quare.bibleplanner.feature.profile.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.SocialSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.SupportSection
-import com.quare.bibleplanner.feature.profile.presentation.content.component.headerSection
-import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
@@ -33,26 +29,11 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    responsiveItem {
-        LoginCard(
-            accountStatusModel = state.accountStatusModel,
-            onEvent = onEvent,
-        )
-    }
-    item { VerticalSpacer() }
-    responsiveItem {
-        AnnotationsCard(
-            summary = state.annotationsSummary,
-            onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.ANNOTATIONS)) },
-        )
-    }
-    item { VerticalSpacer() }
-    headerSection(
+    profileTopSection(
         state = state,
         onEvent = onEvent,
         becomeProTitleContent = becomeProTitleContent,
     )
-    item { VerticalSpacer() }
     responsiveItem {
         PreferencesSection(
             state = state,

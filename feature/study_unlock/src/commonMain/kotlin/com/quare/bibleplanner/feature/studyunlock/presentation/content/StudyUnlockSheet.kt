@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.studyunlock.presentation.content
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.LockOpen
@@ -26,7 +23,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,14 +43,12 @@ import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockUiEvent
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockUiState
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockVideoState
+import com.quare.bibleplanner.ui.component.icon.SheetIconTile
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-private val iconBoxSize = 56.dp
-private val iconBoxCornerRadius = 16.dp
-private val iconSize = 28.dp
 private val bodyMaxWidth = 300.dp
 private val progressSize = 18.dp
 private val progressStrokeWidth = 2.dp
@@ -73,20 +67,7 @@ internal fun StudyUnlockSheet(
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier
-                .size(iconBoxSize)
-                .clip(RoundedCornerShape(iconBoxCornerRadius))
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                modifier = Modifier.size(iconSize),
-                imageVector = Icons.Rounded.LockOpen,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-        }
+        SheetIconTile(imageVector = Icons.Rounded.LockOpen)
         VerticalSpacer(12)
         Text(
             text = stringResource(uiState.surface.toTitle()),

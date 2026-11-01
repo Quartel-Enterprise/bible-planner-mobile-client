@@ -3,20 +3,14 @@ package com.quare.bibleplanner.core.profile.data.sync
 import com.quare.bibleplanner.core.profile.data.dto.ProfileDto
 import com.quare.bibleplanner.core.profile.data.dto.ProfileRowDto
 import com.quare.bibleplanner.core.profile.data.mapper.ProfileMapper
+import com.quare.bibleplanner.core.provider.supabase.decodeUpsert
+import com.quare.bibleplanner.core.provider.supabase.observeUserRows
 import com.quare.bibleplanner.core.sync.domain.SyncRemoteStore
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.realtime.channel
-import io.github.jan.supabase.realtime.decodeRecord
-import io.github.jan.supabase.realtime.postgresChangeFlow
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -45,28 +39,11 @@ internal class ProfileRemoteStore(
         }.decodeList<ProfileRowDto>()
         .map(profileMapper::toDto)
 
-    override fun observeRemote(userId: String): Flow<ProfileDto> = flow {
-        val channel = realtime.channel("${TABLE}_$userId")
-        val changes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {
-            table = TABLE
-            filter(COLUMN_ID, FilterOperator.EQ, userId)
-        }
-        channel.subscribe()
-        try {
-            changes.collect { action ->
-                val row = when (action) {
-                    is PostgresAction.Insert -> action.decodeRecord<ProfileRowDto>()
-                    is PostgresAction.Update -> action.decodeRecord<ProfileRowDto>()
-                    else -> null
-                }
-                if (row != null) emit(profileMapper.toDto(row))
-            }
-        } finally {
-            withContext(NonCancellable) {
-                realtime.removeChannel(channel)
-            }
-        }
-    }
+    override fun observeRemote(userId: String): Flow<ProfileDto> = realtime.observeUserRows(
+        table = TABLE,
+        userId = userId,
+        userIdColumn = COLUMN_ID,
+    ) { action -> action.decodeUpsert<ProfileRowDto>()?.let(profileMapper::toDto) }
 
     private fun ProfileDto.toPayload(): JsonObject = JsonObject(
         buildMap {
@@ -82,7 +59,6 @@ internal class ProfileRemoteStore(
     )
 
     private companion object {
-        const val SCHEMA = "public"
         const val TABLE = "user_data"
         const val COLUMN_ID = "id"
         const val COLUMN_DISPLAY_NAME = "display_name"

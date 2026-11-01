@@ -28,11 +28,14 @@ import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
 import com.quare.bibleplanner.feature.daystudy.fake.dayStudyModel
+import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardLoader
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
@@ -753,35 +756,43 @@ internal class DayStudyViewModelTest {
         )
         val languageCodeMapper = LanguageCodeMapper()
         val getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) }
+        val getDayStudyQuota = GetDayStudyQuotaUseCase(
+            repository = repository,
+            bibleRepository = bibleRepository,
+            getAppLanguageFlow = getAppLanguageFlow,
+            languageCodeMapper = languageCodeMapper,
+            getIntRemoteConfig = DefaultIntRemoteConfig(),
+        )
+        val observeAuthenticatedUserId = ObserveAuthenticatedUserId { flowOf(userId) }
+        val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         viewModelStore = ViewModelStore()
         viewModel = ViewModelProvider.create(
             store = viewModelStore,
             factory = viewModelFactory {
                 initializer {
                     DayStudyViewModel(
-                        getDayStudyQuota = GetDayStudyQuotaUseCase(
-                            repository = repository,
-                            bibleRepository = bibleRepository,
-                            getAppLanguageFlow = getAppLanguageFlow,
-                            languageCodeMapper = languageCodeMapper,
-                            getIntRemoteConfig = DefaultIntRemoteConfig(),
-                        ),
-                        hasCachedStudy = HasCachedStudyUseCase(
-                            repository = repository,
-                            bibleRepository = bibleRepository,
-                            getAppLanguageFlow = getAppLanguageFlow,
-                            languageCodeMapper = languageCodeMapper,
-                        ),
+                        getDayStudyQuota = getDayStudyQuota,
                         isConnected = { isConnected },
                         generationCoordinator = coordinator,
-                        observeIsProUser = observeIsProUser,
-                        observeAuthenticatedUserId = { flowOf(userId) },
-                        cardUiModelFactory = DayStudyCardUiModelFactory(
-                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                        observeAuthenticatedUserId = observeAuthenticatedUserId,
+                        cardLoader = DayStudyCardLoader(
+                            getDayStudyQuota = getDayStudyQuota,
+                            hasCachedStudy = HasCachedStudyUseCase(
+                                repository = repository,
+                                bibleRepository = bibleRepository,
+                                getAppLanguageFlow = getAppLanguageFlow,
+                                languageCodeMapper = languageCodeMapper,
+                            ),
+                            observeIsProUser = observeIsProUser,
+                            observeAuthenticatedUserId = observeAuthenticatedUserId,
+                            cardUiModelFactory = DayStudyCardUiModelFactory(
+                                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                            ),
+                            trackEvent = trackEvent,
                         ),
                         navigator = navigator,
                         studyUnlockResultStore = studyUnlockResultStore,
-                        trackEvent = { name, params -> trackedEvents += name to params },
+                        trackEvent = trackEvent,
                     )
                 }
             },

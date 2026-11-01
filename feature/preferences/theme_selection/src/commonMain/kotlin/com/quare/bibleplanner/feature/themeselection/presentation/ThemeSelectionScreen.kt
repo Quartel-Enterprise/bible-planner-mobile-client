@@ -5,10 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +17,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,13 +28,13 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.dyna
 import bibleplanner.feature.preferences.theme_selection.generated.resources.information
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_description
-import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastPicker
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ThemeOptionCard
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
 import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.component.sync.SyncAcrossDevicesOption
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -103,7 +98,8 @@ fun ThemeSelectionContent(
                 }
             }
             HorizontalDivider()
-            SyncOption(
+            SyncAcrossDevicesOption(
+                description = stringResource(Res.string.sync_across_devices_description),
                 isChecked = uiState.isSyncEnabled,
                 isLoggedIn = uiState.isLoggedIn,
                 onToggle = { onEvent(ThemeSelectionUiEvent.SyncToggleClicked(it)) },
@@ -161,65 +157,5 @@ private fun DynamicColorOption(
             checked = isChecked,
             onCheckedChange = onToggle,
         )
-    }
-}
-
-@Composable
-private fun SyncOption(
-    isChecked: Boolean,
-    isLoggedIn: Boolean,
-    onToggle: (Boolean) -> Unit,
-    onBlockedClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.alpha(if (isLoggedIn) 1f else 0.55f),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.sync_across_devices_title),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = stringResource(Res.string.sync_across_devices_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        SyncSwitch(
-            isChecked = isChecked,
-            isLoggedIn = isLoggedIn,
-            onToggle = onToggle,
-            onBlockedClick = onBlockedClick,
-        )
-    }
-}
-
-@Composable
-private fun SyncSwitch(
-    isChecked: Boolean,
-    isLoggedIn: Boolean,
-    onToggle: (Boolean) -> Unit,
-    onBlockedClick: () -> Unit,
-) {
-    Box {
-        AppSwitch(
-            checked = isChecked && isLoggedIn,
-            onCheckedChange = onToggle.takeIf { isLoggedIn },
-            enabled = isLoggedIn,
-        )
-        if (!isLoggedIn) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onBlockedClick,
-                    ),
-            )
-        }
     }
 }

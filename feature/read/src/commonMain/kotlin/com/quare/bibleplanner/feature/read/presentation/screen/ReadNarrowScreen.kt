@@ -34,8 +34,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
-import com.quare.bibleplanner.feature.read.presentation.component.rememberListeningFollow
-import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
@@ -46,7 +44,6 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.Listeni
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadingRulerOverlay
-import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
@@ -82,43 +79,11 @@ internal fun ReadNarrowScreen(
     val isTitleVisible by remember(listState) {
         derivedStateOf { listState.firstVisibleItemIndex >= TITLE_VISIBLE_ITEM_INDEX }
     }
-    val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
-    val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
-    val verseFlash = rememberVerseFlash(
-        focus = state.verseFocus,
-        chapters = chapters,
+    val listBindings = rememberReadListBindings(
+        state = state,
+        listening = listening,
         listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
-        onShown = { onEvent(ReadUiEvent.OnVerseFocusShown) },
-    )
-    val visibleChapter = rememberVisibleChapter(
-        chapters = chapters,
-        listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
-    )
-    VisibleChapterEffect(
-        visibleChapter = visibleChapter,
-        header = state.header,
         onEvent = onEvent,
-    )
-    ReachedEndEffect(
-        listState = listState,
-        chapters = chapters,
-        onReachedEnd = { onEvent(ReadUiEvent.OnReachedEnd) },
-    )
-    ReachedStartEffect(
-        listState = listState,
-        chapters = chapters,
-        onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
-    )
-    val listeningFollow = rememberListeningFollow(
-        player = listening.player,
-        chapters = chapters,
-        listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
     )
     ReserveBottomOverlayHeightEffect {
         val bottomBarHeight = (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
@@ -135,7 +100,7 @@ internal fun ReadNarrowScreen(
                 ReadTopBar(
                     platform = platform,
                     header = state.header,
-                    visibleChapter = visibleChapter,
+                    visibleChapter = listBindings.visibleChapter,
                     isTitleVisible = isTitleVisible,
                     isOpeningChapterStudy = state.isOpeningChapterStudy,
                     isChapterStudyBeside = state.isChapterStudyBeside,
@@ -232,7 +197,7 @@ internal fun ReadNarrowScreen(
                                     // Why: paged reading already has the bottom bar's listen button.
                                     isListenShortcutShown = state.settings.isVerticalReadingEnabled,
                                     focusedVerseNumber = null,
-                                    verseFlash = verseFlash,
+                                    verseFlash = listBindings.verseFlash,
                                     listening = listening,
                                     onEvent = onEvent,
                                     onListeningEvent = onListeningEvent,
@@ -247,7 +212,7 @@ internal fun ReadNarrowScreen(
                 ListeningOverlay(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     listening = listening,
-                    follow = listeningFollow,
+                    follow = listBindings.listeningFollow,
                     onEvent = onEvent,
                     onListeningEvent = onListeningEvent,
                 )

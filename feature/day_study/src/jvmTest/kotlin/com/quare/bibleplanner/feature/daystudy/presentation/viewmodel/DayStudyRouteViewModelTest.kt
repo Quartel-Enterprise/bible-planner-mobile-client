@@ -44,10 +44,13 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
+import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardLoader
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
@@ -783,6 +786,21 @@ internal class DayStudyRouteViewModelTest {
         )
         val getAppLanguageFlow = { flowOf(Language.ENGLISH) }
         val languageCodeMapper = LanguageCodeMapper()
+        val getDayStudyQuota = GetDayStudyQuotaUseCase(
+            repository = repository,
+            bibleRepository = bibleRepository,
+            getAppLanguageFlow = getAppLanguageFlow,
+            languageCodeMapper = languageCodeMapper,
+            getIntRemoteConfig = DefaultIntRemoteConfig(),
+        )
+        val hasCachedStudy = HasCachedStudyUseCase(
+            repository = repository,
+            bibleRepository = bibleRepository,
+            getAppLanguageFlow = getAppLanguageFlow,
+            languageCodeMapper = languageCodeMapper,
+        )
+        val observeAuthenticatedUserId = ObserveAuthenticatedUserId { flowOf(userId) }
+        val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         viewModel = viewModelStore.create(DayStudyRouteViewModel::class) {
             DayStudyRouteViewModel(
                 getDayPassages = GetDayPassagesForDayStudyUseCase(
@@ -824,31 +842,26 @@ internal class DayStudyRouteViewModelTest {
                     getAppLanguageFlow = getAppLanguageFlow,
                     languageCodeMapper = languageCodeMapper,
                 ),
-                getDayStudyQuota = GetDayStudyQuotaUseCase(
-                    repository = repository,
-                    bibleRepository = bibleRepository,
-                    getAppLanguageFlow = getAppLanguageFlow,
-                    languageCodeMapper = languageCodeMapper,
-                    getIntRemoteConfig = DefaultIntRemoteConfig(),
-                ),
-                hasCachedStudy = HasCachedStudyUseCase(
-                    repository = repository,
-                    bibleRepository = bibleRepository,
-                    getAppLanguageFlow = getAppLanguageFlow,
-                    languageCodeMapper = languageCodeMapper,
-                ),
+                getDayStudyQuota = getDayStudyQuota,
+                hasCachedStudy = hasCachedStudy,
                 isConnected = { isConnected.value },
                 generationCoordinator = coordinator,
-                observeIsProUser = { flowOf(isPro) },
-                observeAuthenticatedUserId = { flowOf(userId) },
-                cardUiModelFactory = DayStudyCardUiModelFactory(
-                    prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                observeAuthenticatedUserId = observeAuthenticatedUserId,
+                cardLoader = DayStudyCardLoader(
+                    getDayStudyQuota = getDayStudyQuota,
+                    hasCachedStudy = hasCachedStudy,
+                    observeIsProUser = { flowOf(isPro) },
+                    observeAuthenticatedUserId = observeAuthenticatedUserId,
+                    cardUiModelFactory = DayStudyCardUiModelFactory(
+                        prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                    ),
+                    trackEvent = trackEvent,
                 ),
                 navigator = navigator,
                 studyUnlockResultStore = studyUnlockResultStore,
                 route = route,
                 platform = Platform.Android,
-                trackEvent = { name, params -> trackedEvents += name to params },
+                trackEvent = trackEvent,
             )
         }
         backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
