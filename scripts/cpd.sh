@@ -15,7 +15,7 @@ set -e
 ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
 cd "$ROOT"
 
-if ! command -v npm > /dev/null; then
+if ! command -v npm > /dev/null || ! command -v node > /dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 18 ]; then
     echo "❌ jscpd needs Node.js 18 or later (brew install node)"
     exit 1
 fi

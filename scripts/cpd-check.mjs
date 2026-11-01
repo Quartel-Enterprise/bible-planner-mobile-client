@@ -7,7 +7,7 @@
 // them, until --update-baseline lowers them, so copied code removed can't come back unnoticed.
 
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { extname, relative } from "node:path";
+import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Why: shorter than this once imports and comments are gone, a clone is a shared header, not copied code.
@@ -41,6 +41,8 @@ const KOTLIN_HEADER = /^((package|import)\s|@file:)/;
 const SWIFT_IMPORT = /^(@\w+\s+)*import\s/;
 
 // The numbers of the lines of a file that are code: no blank lines, comments, package or imports.
+// Why: a block comment is only seen when `/*` starts the line, which is how both codebases write them; a tokenizer
+// for comments after code or nested ones would cost more than the few lines they could miscount.
 const codeLinesCache = new Map();
 function codeLinesOf(path) {
     if (codeLinesCache.has(path)) return codeLinesCache.get(path);
@@ -68,7 +70,6 @@ function codeLinesIn(file) {
     return lines;
 }
 
-const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const pathOf = (file) => relative(ROOT, file.name);
 
 // Why: jscpd matches tokens, not lines, so the two copies of a clone can span different line counts; the shorter one
@@ -90,16 +91,26 @@ const current = Object.fromEntries([...copiedLines].map(([path, lines]) => [path
 const grown = Object.keys(current).filter((path) => current[path] > (baseline[path] ?? 0));
 const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < baseline[path]);
 
-const unmatchedVanished = Object.keys(baseline).filter((path) => !(path in current)).map((path) => baseline[path]);
+// Why: a renamed or moved file shows up as a new path with the same copied lines as a listed path whose file is gone.
+const vanished = Object.keys(baseline)
+    .filter((path) => !(path in current) && !existsSync(join(ROOT, path)))
+    .map((path) => baseline[path]);
+const renamed = grown.filter((path) => {
+    if (path in baseline) return false;
+    const index = vanished.indexOf(current[path]);
+    if (index < 0) return false;
+    vanished.splice(index, 1);
+    return true;
+});
+const copied = grown.filter((path) => !renamed.includes(path));
 
 const total = (pairs) => Object.values(pairs).reduce((sum, lines) => sum + lines, 0);
 
 if (options.update) {
     // Why: a renamed or moved file takes its copied lines along, which is no new copied code. Anything else that grew
     // is, even when copies removed elsewhere keep the total down.
-    const taken = grown.filter((path) => !isRename(path));
-    if (taken.length > 0 && !options.allowNew) {
-        reportGrown(taken);
+    if (copied.length > 0 && !options.allowNew) {
+        reportGrown(copied);
         fail("The baseline only takes more copied code in with --allow-new, when the copy is on purpose.");
     }
     writeBaseline(current);
@@ -109,29 +120,23 @@ if (options.update) {
 
 if (options.base) warnAboutGrowth(readBaseline(options.base));
 
-reportGrown(grown);
+reportGrown(copied);
+for (const path of renamed) {
+    console.log(`❌ Renamed or moved with its copied code (${current[path]} lines): ${path}`);
+}
 for (const path of shrunk) {
     console.log(`❌ Less copied code than the baseline lists (${current[path] ?? 0} of ${baseline[path]} lines): ${path}`);
 }
-if (grown.length > 0) {
+if (copied.length > 0) {
     console.log("Extract the copied code into one place the callers share. Only when the copy is on purpose,");
     console.log("run ./scripts/cpd.sh --update-baseline --allow-new and say why in the pull request.");
 }
-if (shrunk.length > 0) {
-    console.log("Run ./scripts/cpd.sh --update-baseline to take the removed copied code out of the baseline.");
+if (renamed.length > 0 || shrunk.length > 0) {
+    console.log("Run ./scripts/cpd.sh --update-baseline to write the renamed files and the removed copied code to the baseline.");
 }
 if (grown.length > 0 || shrunk.length > 0) process.exit(1);
 
 console.log(`✅ No new copied code (${total(current)} copied lines in ${Object.keys(current).length} files, as the baseline lists)`);
-
-// Why: a renamed file shows up as a new path with the same copied lines as a path the baseline lists and that is gone.
-function isRename(path) {
-    if (path in baseline) return false;
-    const vanished = unmatchedVanished.indexOf(current[path]);
-    if (vanished < 0) return false;
-    unmatchedVanished.splice(vanished, 1);
-    return true;
-}
 
 function reportGrown(paths) {
     for (const path of paths) {
@@ -164,7 +169,7 @@ function readBaseline(path) {
 }
 
 function writeBaseline(files) {
-    const sorted = Object.fromEntries(Object.keys(files).sort(byCodePoint).map((path) => [path, files[path]]));
+    const sorted = Object.fromEntries(Object.keys(files).sort().map((path) => [path, files[path]]));
     writeFileSync(baselinePath, `${JSON.stringify(sorted, null, 2)}\n`);
 }
 
