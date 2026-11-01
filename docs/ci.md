@@ -260,12 +260,12 @@ time. Now the review fixes what it found, and the checks wait for it:
   review: the push is never forced. The review then lists the fixed findings at the end of its body,
   under the fix commit, so they open no thread, and only the others as inline comments. Without a
   push, every finding is an inline comment, as before.
-- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
-  `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
+- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis`,
+  `duplication` and `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
   pull request opened with, or a draft was marked ready for review on (those workflows add
   `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
   by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end, checking
-  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  once a minute: six workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
   commit), it skips the other jobs: that push started them again on the new commit, and cancels this

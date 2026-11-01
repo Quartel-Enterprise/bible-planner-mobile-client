@@ -6,6 +6,7 @@
 - Android Studio or IntelliJ IDEA
 - Android SDK, for Android development
 - Xcode (macOS only), for iOS development
+- Node.js 18 or higher, for the copied-code check (`./scripts/cpd.sh`)
 
 ## Local configuration
 
@@ -108,7 +109,7 @@ from there.
 
 - [Architecture guide](ai_agents.md) — the conventions every module follows, and the checklist a new
   feature goes through.
-- [Code quality](code-quality.md) — the ktlint setup, and how to run exactly what CI runs.
+- [Code quality](code-quality.md) — the ktlint setup, the copied-code check, and how to run exactly what CI runs.
 - [Testing](testing/README.md) — what is tested, and how the suites are organised.
 - [Performance](performance.md) — the Baseline Profile the Android app ships, and the macrobenchmarks
   that measure the critical journeys on a device.
