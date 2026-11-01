@@ -21,6 +21,7 @@ import com.quare.bibleplanner.feature.applanguage.di.iosAppLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.login.di.iosLoginModule
+import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.ReleaseNotesNativeScreenFactory
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
 import com.quare.bibleplanner.notification.IosDownloadLiveActivity
 import com.quare.bibleplanner.review.IosReviewRequester
@@ -51,6 +52,7 @@ fun initializeKoinForIos(
     reviewRequester: IosReviewRequester,
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
+    releaseNotesScreenFactory: ReleaseNotesNativeScreenFactory,
 ) {
     if (isInitialized) return
     try {
@@ -68,6 +70,7 @@ fun initializeKoinForIos(
                     single { rewardedAdDataSource }
                     single { adsConsentDataSource }
                     single { downloadLiveActivity }
+                    single { releaseNotesScreenFactory }
                     factory<RequestInAppReview> {
                         RequestInAppReview {
                             withContext(Dispatchers.Main) { reviewRequester.requestReview() }
@@ -98,6 +101,7 @@ fun MainViewController(
     reviewRequester: IosReviewRequester,
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
+    releaseNotesScreenFactory: ReleaseNotesNativeScreenFactory,
 ): UIViewController = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
@@ -108,6 +112,7 @@ fun MainViewController(
             reviewRequester = reviewRequester,
             rewardedAdDataSource = rewardedAdDataSource,
             adsConsentDataSource = adsConsentDataSource,
+            releaseNotesScreenFactory = releaseNotesScreenFactory,
         )
     },
 ) {

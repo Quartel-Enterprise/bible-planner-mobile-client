@@ -31,6 +31,7 @@ kotlin {
             export(projects.core.provider.analytics)
             export(projects.core.provider.crashlytics)
             export(projects.core.provider.ads)
+            export(projects.feature.releaseNotes)
         }
     }
 
@@ -62,6 +63,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
+            api(projects.feature.releaseNotes)
         }
 
         jvmMain.dependencies {

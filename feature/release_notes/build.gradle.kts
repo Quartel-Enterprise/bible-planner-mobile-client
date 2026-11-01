@@ -17,6 +17,32 @@ kotlin {
     jvm()
 
     sourceSets {
+        val nonIosMain = create("nonIosMain") {
+            dependsOn(commonMain.get())
+        }
+
+        androidMain {
+            dependsOn(nonIosMain)
+        }
+
+        jvmMain {
+            dependsOn(nonIosMain)
+        }
+
+        wasmJsMain {
+            dependsOn(nonIosMain)
+        }
+
+        iosMain {
+            dependsOn(commonMain.get())
+        }
+        iosArm64Main {
+            dependsOn(iosMain.get())
+        }
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
+        }
+
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
