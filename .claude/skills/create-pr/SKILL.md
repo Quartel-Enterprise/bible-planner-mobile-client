@@ -374,7 +374,10 @@ for _ in $(seq 20); do
   sleep 3
 done
 [ -z "$run" ] || gh run watch "$run" --interval 30 > /dev/null || true
-for _ in $(seq 20); do gh pr checks --required 2>/dev/null | grep -q . && break; sleep 3; done
+for _ in $(seq 40); do
+  [ "$(gh pr checks --required --json name -q '[.[].name | select(. == "check-translations" or . == "duplication")] | unique | length' 2>/dev/null)" = 2 ] && break
+  sleep 3
+done
 gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
@@ -384,7 +387,7 @@ review conversation resolved, so `gh pr merge` refuses to merge until all of the
 branch policy prohibits the merge"). An unresolved `claude-review` finding has to be fixed or
 answered, then resolved, before the merge goes through. The checks take a minute or two. Right
 after the push, GitHub hasn't registered them yet and `gh pr checks` fails with "no checks
-reported", so the loop first waits up to a minute for them to show up. If they never do, check the
+reported", so the loop first waits up to two minutes for both to show up. If they never do, check the
 workflow runs with `gh run list --branch <branch>` and tell the user instead of merging. Never
 bypass it with `--admin`. If a required check fails, report it and stop. If the merge fails for
 another reason (e.g. a conflict with `main`), notify the user and stop.
