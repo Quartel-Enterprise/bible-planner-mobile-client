@@ -27,20 +27,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: scripts/jscpd/package-lock.json
-
-      # The baseline of main, so a pull request that takes copied code in shows it as a warning.
-      - name: Fetch the baseline of main
-        run: |
-          git fetch --depth=1 origin main
-          git show FETCH_HEAD:.jscpd-baseline.json > "$RUNNER_TEMP/jscpd-baseline-main.json" 2> /dev/null \
-            || echo '{}' > "$RUNNER_TEMP/jscpd-baseline-main.json"
-
-      # The same script as locally, with the jscpd release and dependencies scripts/jscpd locks.
+      # The same check as ./scripts/cpd.sh locally, which reads its release from this line. It warns when the
+      # baseline takes in copied code against the pull request's base branch.
       - name: Look for copied code
-        run: ./scripts/cpd.sh --base "$RUNNER_TEMP/jscpd-baseline-main.json"
+        uses: Quartel-Enterprise/copied-code-check@1.0.1

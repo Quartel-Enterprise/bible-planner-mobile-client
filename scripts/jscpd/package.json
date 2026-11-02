@@ -1,8 +1,0 @@
-{
-  "name": "bibleplanner-jscpd",
-  "private": true,
-  "description": "The jscpd that scripts/cpd.sh runs, with its whole dependency tree locked",
-  "dependencies": {
-    "jscpd": "5.4.2"
-  }
-}

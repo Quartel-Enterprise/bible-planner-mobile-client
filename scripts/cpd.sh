@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Looks for copied code in the Kotlin and Swift of the apps with jscpd (github.com/kucherenko/jscpd):
+# Looks for copied code with jscpd (github.com/Quartel-Enterprise/copied-code-check):
 #   ./scripts/cpd.sh                                check: fails on copied code .jscpd-baseline.json doesn't list,
 #                                                   and on copied code it still lists after it was removed
 #   ./scripts/cpd.sh --update-baseline              write the copied code found now to .jscpd-baseline.json, when no
@@ -8,45 +8,51 @@
 #   ./scripts/cpd.sh --update-baseline --allow-new  also take more copied code in, only when the copy is on purpose
 #   ./scripts/cpd.sh --base <baseline of main>      check, and warn about copied code the baseline takes in (CI)
 #
-# What it scans is in .jscpd.json. jscpd only compares files of the same language, so a screen drawn by Compose
-# and by SwiftUI is never a clone: what it finds is logic or UI copied within one of them.
+# What it scans is in .jscpd.json. This file never changes: the release that the workflows under .github/workflows
+# use (Quartel-Enterprise/copied-code-check@X.Y.Z) picks the check and the jscpd it runs, so a local run and CI
+# always agree. The release comes from its tag on GitHub, trusted like a GitHub Action pinned to a tag.
+#
+# Environment:
+#   CPD_RUNNER_DIR  a checkout of copied-code-check to run instead of the pinned release (CI, or to try a change)
+#   CPD_CACHE_DIR   where releases are cached (default ~/.cache/copied-code-check)
+#   CPD_DOWNLOAD_URL  where release tarballs are downloaded from, as <url>/<version> (tests)
 
-set -e
+set -eo pipefail
 
 ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
+RUNNER_DIR="$CPD_RUNNER_DIR"
 
-# Why: the check runs from the repo root, so a relative --base path is made absolute against where the script ran.
-args=()
-while [ $# -gt 0 ]; do
-    if [ "$1" = "--base" ] && [ $# -gt 1 ] && [ "${2#/}" = "$2" ]; then
-        args+=("$1" "$PWD/$2")
-        shift 2
-    else
-        args+=("$1")
-        shift
+if [ -z "$RUNNER_DIR" ]; then
+    # Why: only uses: lines, so a comment or a commented-out step that names the action pins nothing.
+    VERSIONS="$( (grep -rhE '^[[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*["'\'']?Quartel-Enterprise/copied-code-check@' \
+        "$ROOT/.github/workflows" 2> /dev/null || true) | sed -E 's/.*copied-code-check@([^[:space:]"'\'']*).*/\1/' | sort -u)"
+
+    # A release version, never a branch: its files are cached for good, and release tags never move
+    if ! [[ "$VERSIONS" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        echo "❌ The workflows under .github/workflows have to use one release of the check, as"
+        echo "   uses: Quartel-Enterprise/copied-code-check@X.Y.Z. Found: '$(echo "$VERSIONS" | xargs)'"
+        exit 1
     fi
-done
-set -- "${args[@]}"
 
-cd "$ROOT"
-
-if ! command -v npm > /dev/null || ! command -v node > /dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 18 ]; then
-    echo "❌ jscpd needs Node.js 18 or later (brew install node)"
-    exit 1
+    CACHE="${CPD_CACHE_DIR:-$HOME/.cache/copied-code-check}"
+    RUNNER_DIR="$CACHE/$VERSIONS"
+    if [ ! -f "$RUNNER_DIR/scripts/cpd.sh" ]; then
+        # A cached release missing its runner was left broken by hand: download it again
+        rm -rf "$RUNNER_DIR"
+        mkdir -p "$CACHE"
+        TMP="$(mktemp -d "$CACHE/.$VERSIONS.XXXXXX")"
+        trap 'rm -rf "$TMP"' EXIT
+        if ! curl -fsSL "${CPD_DOWNLOAD_URL:-https://codeload.github.com/Quartel-Enterprise/copied-code-check/tar.gz/refs/tags}/$VERSIONS" \
+            | tar -xz --strip-components=1 -C "$TMP"; then
+            echo "❌ Failed to download the copied-code check $VERSIONS"
+            exit 1
+        fi
+        # Why: a symlink is created only when nothing is at its path, so of two runs caching one release at once,
+        # exactly one publishes its download, whole, and the other drops its own.
+        # Why: exec below skips the EXIT trap, so the copy that lost is dropped here.
+        ln -sn "$TMP" "$RUNNER_DIR" 2> /dev/null || rm -rf "$TMP"
+        trap - EXIT
+    fi
 fi
 
-# The release scripts/jscpd/package.json pins, with every dependency its lockfile locks. Installed again only when
-# the lockfile changed since the last install.
-TOOL="scripts/jscpd"
-if ! cmp -s "$TOOL/package-lock.json" "$TOOL/node_modules/.installed-lock.json"; then
-    npm ci --prefix "$TOOL" --no-audit --no-fund --loglevel=error
-    cp "$TOOL/package-lock.json" "$TOOL/node_modules/.installed-lock.json"
-fi
-
-rm -rf build/jscpd
-if ! "$TOOL/node_modules/.bin/jscpd" --config .jscpd.json; then
-    echo "❌ jscpd failed: set \"silent\" to false in .jscpd.json to see why"
-    exit 1
-fi
-
-exec node scripts/cpd-check.mjs build/jscpd/jscpd-report.json .jscpd-baseline.json "$@"
+CPD_PROJECT_ROOT="$ROOT" exec bash "$RUNNER_DIR/scripts/cpd.sh" "$@"

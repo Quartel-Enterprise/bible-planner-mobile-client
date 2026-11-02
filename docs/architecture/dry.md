@@ -258,9 +258,12 @@ clones of 70 tokens or more with at least 5 lines of code once the package, impo
 ```
 
 `.jscpd.json` says what it scans: no test source sets, `:testing` modules, Gradle scripts nor build outputs. jscpd
-only compares files of the same language, so a screen drawn by Compose and by SwiftUI is never a clone. The script
-runs the jscpd release `scripts/jscpd/package.json` pins, with every dependency its lockfile locks, so it needs
-Node.js 18 or later and nothing else.
+only compares files of the same language, so a screen drawn by Compose and by SwiftUI is never a clone. The check
+itself is shared with the other Quare apps in [copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check):
+`scripts/cpd.sh` is its wrapper, which never changes, and runs the release that the
+`Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml` pins, with the jscpd release it locks. It needs
+Node.js 18 or later, plus `curl`, `tar` and access to github.com the first time it runs a release. A change to how the check counts goes to that repository, then a bump of the
+line here (Dependabot proposes it).
 
 `.jscpd-baseline.json` holds how many lines of code of each file are copied today. Lines of a file, not clones: with the
 same code in three files, which pairs jscpd reports depends on the order it reads them, and an edit inside a long clone
@@ -276,4 +279,4 @@ needs `--allow-new`, like any new copy.
 `--allow-new` is for a copy on purpose, the last section's coincidental similarity, or an `actual` per platform that
 happens to match: say why in the pull request. The `duplication` workflow, a required check of `main`'s
 ruleset, runs the same script on every pull request and every push to `main`, and shows each file whose copied
-lines grew against `main` in the job summary, behind one warning, so the reviewer sees what the baseline took in.
+lines grew against the base branch (`main`, for most pull requests) in the job summary, behind one warning, so the reviewer sees what the baseline took in.
