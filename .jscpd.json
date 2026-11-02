@@ -11,8 +11,5 @@
     "**/testing/**"
   ],
   "gitignore": true,
-  "absolute": true,
-  "reporters": ["json"],
-  "output": "build/jscpd",
   "silent": true
 }

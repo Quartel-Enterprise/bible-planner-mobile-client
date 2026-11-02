@@ -832,8 +832,8 @@ jobs:
       # The required duplication check has the same problem: its workflow never
       # starts on a PR GITHUB_TOKEN opened. The merge-back adds only the bump
       # commit, and duplication already passed on the main it branches from, so
-      # the script runs only when that commit touches what jscpd scans: npm and a
-      # full scan at the end of a release would be one more way to leave it
+      # the script runs only when that commit touches what jscpd scans: a download
+      # and a full scan at the end of a release would be one more way to leave it
       # half-finished after the branch is pushed.
       - name: Report duplication for the merge-back branch
         if: ${{ steps.published.outputs.done != 'true' }}
@@ -841,7 +841,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --name-only HEAD~1 HEAD \
-            | grep -qE '\.(kt|swift)$|^\.jscpd|^scripts/(cpd|jscpd)'; then
+            | grep -qE '\.(kt|swift)$|^\.jscpd|^scripts/cpd\.sh|^\.github/workflows/'; then
             ./scripts/cpd.sh
           fi
           gh api --method POST "repos/${{ github.repository }}/check-runs" \

@@ -214,7 +214,7 @@ the `write-tests` skill when the "Who writes the unit tests" table of
 [docs/ai_agents.md](../../../docs/ai_agents.md#who-writes-the-unit-tests) says so.
 
 When the branch changes a `.kt` or `.swift` file, `.jscpd.json`, `.jscpd-baseline.json`,
-`scripts/cpd*` or `scripts/jscpd/`, also run the check of the `duplication` workflow:
+`scripts/cpd.sh` or a workflow that uses `Quartel-Enterprise/copied-code-check`, also run the check of the `duplication` workflow:
 
 ```bash
 ./scripts/cpd.sh
