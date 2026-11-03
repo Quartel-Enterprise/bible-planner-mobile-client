@@ -30,4 +30,4 @@ jobs:
       # The same check as ./scripts/cpd.sh locally, which reads its release from this line. It warns when the
       # baseline takes in copied code against the pull request's base branch.
       - name: Look for copied code
-        uses: Quartel-Enterprise/copied-code-check@1.0.2
+        uses: Quartel-Enterprise/copied-code-check@1.0.3
