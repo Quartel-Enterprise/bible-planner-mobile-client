@@ -14,16 +14,27 @@ name: claude-review
 # threads are resolved).
 #
 # The job fails only when the run itself does (an expired token, the timeout), never because of what
-# the review found. The fix commit, like every push after the pull request opens, isn't reviewed
-# again: adding the ai-review label does (claude-review-on-request), and that review only comments.
+# the review found. The fix commit, like every push after the pull request opens (but the one below),
+# isn't reviewed again: adding the ai-review label does (claude-review-on-request), and that review
+# only comments.
+#
+# GitHub starts no pull_request workflow while the pull request conflicts with its base, so one opened
+# (or marked ready) with a conflict gets no review on that event. That is why pushes run this
+# workflow too: the action reviews the push that solves the conflict, when this workflow has no run
+# between the pull request's opening (or a draft's last marking as ready) and this one, and every
+# other push ends in seconds without reviewing.
 on:
   pull_request:
     types:
       - opened
       - ready_for_review
+      - synchronize
 
+# A push runs in a group of its own, so it neither cancels the opening review nor waits behind it.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: >-
+    ${{ github.workflow }}-${{ github.event.pull_request.number
+    }}${{ github.event.action == 'synchronize' && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
 
 jobs:
@@ -38,6 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      # On a push, the action reads this workflow's earlier runs.
+      actions: read
       contents: read
       pull-requests: write
       issues: read
@@ -53,7 +66,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.2.0
+      - uses: Quartel-Enterprise/claude-review/review@1.2.2
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           memory-repository: PierreVieira/bible-planner-agent-memory

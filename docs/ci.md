@@ -107,12 +107,20 @@ Claude reviews pull requests at three points:
   severity and, when the fix fits the commented lines, a suggestion to commit. The workflows that
   build and test the app wait for it (see [Fixes and the review gate](#fixes-and-the-review-gate)).
   A draft is reviewed when it is marked ready for review instead. Pushes after the pull request
-  opens, its own fix commit included, and reopening it, don't review it again.
+  opens, its own fix commit included, and reopening it, don't review it again, with one exception:
+  GitHub starts no pull request workflow while the pull request conflicts with its base, so one
+  opened (or marked ready) with a conflict gets no review on that event. `claude-review` also runs
+  on pushes for that case: on a push, the shared `review` action looks for a `claude-review` run
+  between the pull request's opening (or a draft's last marking as ready) and this one, and with
+  none the push that solved the conflict is reviewed. Every other push ends the run in seconds
+  without reviewing. Each push runs in a concurrency group of its own, so it neither cancels the
+  opening review nor waits behind it.
 - **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
   reviews the pull request again the same way, only commenting, then removes the label. Use it
   after new pushes.
   When another review of the pull request is still running, it starts nothing and only removes the
-  label.
+  label. Since every push starts a short `claude-review` run, it first waits up to two minutes for
+  unfinished `claude-review` runs to end, so a label added right after a push isn't dropped for it.
 
 The review can't read the earlier reviews on the pull request, so the action hands it the findings
 they left, inline comments and review bodies alike (a draft marked ready a second time, a review on
@@ -139,10 +147,11 @@ of its comments are in that repository's README.
 
 Their findings never fail a check, but each one left for the author is an inline comment, and an
 unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)).
-Since `claude-review` runs on the head commit the pull request opened with, or a draft was marked
-ready on, `merge-when-green` waits for it to finish there, and a run that failed (an expired token)
-holds the merge until it is rerun. A later push brings a head commit with no review check, so the
-merge no longer waits for it.
+Since `claude-review` reviews the head commit the pull request opened with, or a draft was marked
+ready on, or the push that solves a conflict it opened with, `merge-when-green` waits for it to
+finish there, and a run that failed (an expired token) holds the merge until it is rerun. On every
+other push the `claude-review` run ends in seconds without reviewing, so the merge no longer waits
+for the review.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
 was denied, or a Bash command its guard refused, still shows as a warning on the run; allowing one
@@ -269,12 +278,13 @@ time. Now the review fixes what it found, and the checks wait for it:
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
   commit), it skips the other jobs: that push started them again on the new commit, and cancels this
-  run anyway. Every other event (an author's push, a reopened pull request, `main`) skips the gate
-  job itself, so it starts no runner, and the other jobs run on a skipped gate. A draft or a fork
-  passes it right away, and so does a failed or cancelled review, GitHub's API failing three times
-  in a row, or a review still running after 40 minutes. `translations` and `duplication`
-  don't wait: both are required checks of `main`'s ruleset, which a held gate would skip, and GitHub
-  counts a skipped required check as passed. They take a minute at most.
+  run anyway. Every other event (an author's push, the one that solves a conflict and is reviewed
+  included, a reopened pull request, `main`) skips the gate job itself, so it starts no runner, and
+  the other jobs run on a skipped gate: on that reviewed push they run right away, and again on the
+  review's fix commit, if any. A draft or a fork passes it right away, and so does a failed or
+  cancelled review, GitHub's API failing three times in a row, or a review still running after 40
+  minutes. `translations` and `duplication` don't wait: both are required checks of `main`'s
+  ruleset, which a held gate would skip, and GitHub counts a skipped required check as passed. They take a minute at most.
 - **The checks are held for open threads.** Once the review ended and the head didn't move, the gate
   counts the review's unresolved threads (`claude[bot]`'s, or `github-actions[bot]`'s when the
   fallback step posted). With one open, the other jobs are skipped and the gate fails, in its `Hold
@@ -296,7 +306,9 @@ open threads` step failed, so no list of the gated workflows has to be kept).
 So a pull request whose review found nothing runs its checks once, after the review; one whose
 review fixed everything it found runs them once, on the fix commit; one whose review left threads
 runs them once, on the author's next push or on `run-checks`. Either way the checks finish later
-than when they ran next to the review, but they never run twice.
+than when they ran next to the review, but they never run twice, except on the push that solves a
+conflict the pull request opened with: that push isn't gated, so its checks run right away and again
+on the review's fix commit, if any.
 
 The review's checkout doesn't persist `GITHUB_TOKEN` (`persist-credentials: false`): checkout keeps
 its header in a file of its own, which `claude-code-action` doesn't find when it swaps in the App's
