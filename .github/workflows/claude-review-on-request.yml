@@ -1,7 +1,8 @@
 name: claude-review-on-request
 
 # Reviews a pull request again when it gets the ai-review label, usually after new pushes, since
-# claude-review only runs when the pull request opens. Nothing starts while another review of the
+# claude-review only reviews when the pull request opens, or on the push that solves a conflict it
+# opened with. Nothing starts while another review of the
 # same pull request is still running: the label is removed and that review's comments stand.
 #
 # It is a workflow of its own because every label added to a pull request starts it. Its job, named
@@ -28,9 +29,12 @@ jobs:
       issues: read
       id-token: write
     steps:
-      # claude-review only runs for a review, so any of its runs not completed yet counts, even before
-      # its job is created. Every label starts a run of this workflow too, so one of its runs only
-      # counts while a job of it is unfinished: the job of another label is skipped right away.
+      # Any claude-review run not completed yet counts, even before its job is created. Every push
+      # starts one too, which ends in seconds without reviewing (only the push that solves a conflict
+      # the pull request opened with is reviewed), so a run still unfinished after two minutes is the
+      # one that counts: a label added right after a push isn't dropped for it. Every label starts a
+      # run of this workflow too, so one of its runs only counts while a job of it is unfinished: the
+      # job of another label is skipped right away.
       - name: Look for a review in progress
         id: in-progress
         env:
@@ -39,11 +43,19 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          runs=$(gh api "repos/$GH_REPO/actions/runs?branch=$HEAD_REF&event=pull_request&per_page=100" \
-            --jq ".workflow_runs[]
-              | select(.id != $RUN_ID and .status != \"completed\")
-              | select(.name == \"claude-review\" or .name == \"claude-review-on-request\")
-              | \"\\(.id) \\(.name)\"")
+          unfinished() {
+            gh api "repos/$GH_REPO/actions/runs?branch=$HEAD_REF&event=pull_request&per_page=100" \
+              --jq ".workflow_runs[]
+                | select(.id != $RUN_ID and .status != \"completed\")
+                | select(.name == \"claude-review\" or .name == \"claude-review-on-request\")
+                | \"\\(.id) \\(.name)\""
+          }
+          runs=$(unfinished)
+          for _ in $(seq 12); do
+            grep -q ' claude-review$' <<< "$runs" || break
+            sleep 10
+            runs=$(unfinished)
+          done
           while read -r run name; do
             [ -n "$run" ] || continue
             if [ "$name" = claude-review ] || gh api "repos/$GH_REPO/actions/runs/$run/jobs" \
@@ -65,7 +77,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.2.0
+      - uses: Quartel-Enterprise/claude-review/review@1.2.2
         if: steps.in-progress.outputs.found == 'false'
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
