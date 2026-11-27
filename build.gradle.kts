@@ -68,6 +68,11 @@ moduleGraphAssert {
         ":ui:.* -X> :feature:.*",
         // The :testing modules hold fakes for tests, so production code never depends on them.
         ":(?!\\S*:testing ).* -X> :.*:testing",
+        // Native Android screens (step 2 of docs/architecture/native-ui-migration.md) sit on top of
+        // the shared modules: nothing shared sees them, and they never see each other or :shared.
+        ":android:feature:.* -X> :android:feature:.*",
+        ":(?!(android:|androidApp )).* -X> :android:.*",
+        ":android:.* -X> :shared",
     )
 }
 

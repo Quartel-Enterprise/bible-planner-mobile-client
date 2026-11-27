@@ -55,6 +55,11 @@ compose-material3 = "1.9.0"
 compose-materialIconsExtended = "1.7.3"
 compose-shimmer = "1.5.0"
 
+# Native Android UI (android/ modules): Material 3 Expressive APIs are only public in the androidx artifact
+# Deliberately the whole app: JetBrains material3 1.12.0-alpha03 (via calf) already runs on androidx 1.5.0-alpha22,
+# so this only moves it from that alpha to the stable release of the same line
+androidx-compose-material3 = "1.5.0"
+
 # Third party
 # calf-ui transitively upgrades compose-material3 to 1.12.0-alpha03
 calf = "0.14.0"
@@ -149,7 +154,9 @@ compose-materialIconsExtended = { module = "org.jetbrains.compose.material:mater
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose-multiplatform" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 compose-ui-toolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
 
 # Koin
@@ -264,3 +271,4 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 bibleplanner-kotlin-multiplatform = { id = "bibleplanner.kotlin.multiplatform" }
 bibleplanner-kotlin-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }
+bibleplanner-android-compose = { id = "bibleplanner.android.compose" }

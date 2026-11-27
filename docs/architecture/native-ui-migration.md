@@ -33,7 +33,22 @@ platform after each one.
    to wire `jsMain` and `wasmJsMain` to `webMain`. The js target builds ES modules, so `import.meta.url` (the Room
    worker) keeps working once the React app bundles the library.
 2. **Android native.** The composables move out of the shared feature modules into Android modules with a design
-   system on Material 3 Expressive.
+   system on Material 3 Expressive, laid out like Blitz Split's `android/`:
+   - `android/designsystem` holds the theme (`ExpressiveTheme`, Material 3 Expressive over the app's color scheme)
+     and the components every screen shares.
+   - `android/feature/<name>` holds one feature's screen: a `<Name>Content` composable that takes the shared
+     ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
+     `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
+   - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose, Koin, Navigation 3
+     and the design system. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
+     public; Compose Multiplatform's Android build already depends on it, so both resolve to one library.
+   - `:androidApp` binds a `NativeEntryProvider` (`:core:navigation`) that maps each migrated route to its native
+     entry; `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request
+     at a time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
+     becomes `public` with an `internal` constructor so the Android module can name it.
+   - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never
+     depends on another one, and none depends on `:shared`. jscpd doesn't scan `android/` while its screens
+     still duplicate the Compose Multiplatform ones they replace.
 3. **SwiftUI and React**, one feature at a time, starting with the reading flow (main, reading plan, day, read,
    books). Until a screen is migrated, iOS shows its Compose version. The web switches over once every screen is
    native.
