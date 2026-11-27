@@ -75,10 +75,10 @@ class ReadingPlanViewModel internal constructor(
     val uiAction: SharedFlow<ReadingPlanUiAction>
         field = MutableSharedFlow<ReadingPlanUiAction>()
 
-    // Why: SwiftUI and React can't collect a Flow; they observe the screen through these instead.
-    val stateWatcher: FlowWatcher<ReadingPlanUiState> = FlowWatcher(uiState, viewModelScope)
+    // Why: SwiftUI can't collect a Flow; it observes the screen through these, built only when it asks for them.
+    val stateWatcher: FlowWatcher<ReadingPlanUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
 
-    val actionWatcher: FlowWatcher<ReadingPlanUiAction> = FlowWatcher(uiAction, viewModelScope)
+    val actionWatcher: FlowWatcher<ReadingPlanUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
 
     private var currentPlansModel: PlansModel? = null
     private var currentBibleProgress: Float = 0f

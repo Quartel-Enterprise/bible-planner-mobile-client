@@ -31,6 +31,7 @@ kotlin {
             export(projects.core.provider.analytics)
             export(projects.core.provider.crashlytics)
             export(projects.core.provider.ads)
+            export(projects.core.model)
             export(projects.core.presentation)
             export(projects.feature.readingPlan)
         }
