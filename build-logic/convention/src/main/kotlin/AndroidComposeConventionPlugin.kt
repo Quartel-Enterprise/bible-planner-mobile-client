@@ -34,17 +34,19 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", platform(libs.findLibrary("koin-bom").get()))
                 listOf(
                     "compose-runtime",
                     "compose-foundation",
                     "androidx-compose-material3",
                     "compose-ui",
                     "compose-ui-toolingPreview",
-                    "koin-compose-viewmodel",
-                    "navigation3-ui",
                 ).forEach { alias -> add("implementation", libs.findLibrary(alias).get()) }
-                if (path != DESIGN_SYSTEM_PATH) {
+                add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
+                // Why: a feature screen builds its Navigation 3 entry with the shared ViewModel from Koin.
+                if (path.startsWith(FEATURE_PATH_PREFIX)) {
+                    add("implementation", platform(libs.findLibrary("koin-bom").get()))
+                    add("implementation", libs.findLibrary("koin-compose-viewmodel").get())
+                    add("implementation", libs.findLibrary("navigation3-ui").get())
                     add("implementation", project(DESIGN_SYSTEM_PATH))
                 }
             }
@@ -64,5 +66,6 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
     private companion object {
         const val DESIGN_SYSTEM_PATH = ":android:designsystem"
+        const val FEATURE_PATH_PREFIX = ":android:feature:"
     }
 }
