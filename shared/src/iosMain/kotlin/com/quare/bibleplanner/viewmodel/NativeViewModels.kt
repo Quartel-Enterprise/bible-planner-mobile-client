@@ -3,6 +3,7 @@ package com.quare.bibleplanner.viewmodel
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.presentation.bridge.ViewModelHolder
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
+import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.feature.read.presentation.ReadViewModel
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import org.koin.core.parameter.parametersOf
@@ -27,5 +28,10 @@ object NativeViewModels {
     @Throws(Exception::class)
     fun createRead(route: ReadNavRoute): ViewModelHolder<ReadViewModel> = ViewModelHolder(ReadViewModel::class) {
         KoinPlatform.getKoin().get { parametersOf(route) }
+    }
+
+    @Throws(Exception::class)
+    fun createMain(): ViewModelHolder<MainScreenViewModel> = ViewModelHolder(MainScreenViewModel::class) {
+        KoinPlatform.getKoin().get()
     }
 }

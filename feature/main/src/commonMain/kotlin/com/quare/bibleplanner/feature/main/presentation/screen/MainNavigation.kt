@@ -102,7 +102,7 @@ internal fun MainNavigationBar(
 
 @Composable
 private fun MainNavigationItemModel<NavKey>.toUIKitUITabBarItem(): UIKitUITabBarItem = UIKitUITabBarItem(
-    title = stringResource(presentationModel.title),
+    title = stringResource(route.toTabTitle()),
     image = UIKitImage.SystemName(presentationModel.iosIcon.symbolName),
     selectedImage = UIKitImage.SystemName(presentationModel.iosIcon.selectedSymbolName),
 )
@@ -157,12 +157,13 @@ private fun MainNavigationItemsComponent(
             {
                 MainNavigationItemIcon(
                     icon = presentationItem.icon,
-                    contentDescription = stringResource(presentationItem.title),
+                    route = bottomNavigationItemModel.route,
+                    contentDescription = stringResource(bottomNavigationItemModel.route.toTabTitle()),
                 )
             },
             {
                 Text(
-                    stringResource(presentationItem.title),
+                    stringResource(bottomNavigationItemModel.route.toTabTitle()),
                     textAlign = TextAlign.Center,
                 )
             },
@@ -173,12 +174,13 @@ private fun MainNavigationItemsComponent(
 @Composable
 private fun MainNavigationItemIcon(
     icon: MainNavigationIcon,
+    route: NavKey,
     contentDescription: String,
 ) {
     when (icon) {
-        is MainNavigationIcon.Vector -> {
+        MainNavigationIcon.Default -> {
             Icon(
-                imageVector = icon.imageVector,
+                imageVector = route.toTabIcon(),
                 contentDescription = contentDescription,
             )
         }

@@ -42,6 +42,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            api(projects.core.presentation)
             implementation(projects.core.profile)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)

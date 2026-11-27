@@ -25,7 +25,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class MainScreenViewModelTest {
@@ -104,7 +103,7 @@ internal class MainScreenViewModelTest {
         }
 
     @Test
-    fun `GIVEN a signed out user WHEN collecting the navigation items THEN plans and books use vector icons`() =
+    fun `GIVEN a signed out user WHEN collecting the navigation items THEN plans and books use default icons`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(profile = null)
@@ -113,8 +112,8 @@ internal class MainScreenViewModelTest {
             val items = navigationItems.last()
 
             // Then
-            assertIs<MainNavigationIcon.Vector>(items[0].presentationModel.icon)
-            assertIs<MainNavigationIcon.Vector>(items[1].presentationModel.icon)
+            assertEquals(MainNavigationIcon.Default, items[0].presentationModel.icon)
+            assertEquals(MainNavigationIcon.Default, items[1].presentationModel.icon)
             assertEquals("book", items[1].presentationModel.iosIcon.symbolName)
             assertEquals("book.fill", items[1].presentationModel.iosIcon.selectedSymbolName)
         }
@@ -199,6 +198,48 @@ internal class MainScreenViewModelTest {
         assertEquals("unknown", trackedEvents.single().second.getValue(AnalyticsParams.TAB))
         assertEquals(listOf(MainScreenUiAction.NavigateToBottomRoute(ThemeNavRoute)), actions)
     }
+
+    @Test
+    fun `GIVEN a signed in user WHEN a native UI watches the tabs THEN receives the avatar of the profile tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = null)
+            val watchedItems = mutableListOf<List<MainNavigationItemModel<NavKey>>>()
+            viewModel.navigationItemsWatcher.observe { watchedItems += it }
+
+            // When
+            profileFlow.value = profile
+
+            // Then
+            assertEquals(
+                MainNavigationIcon.Profile(
+                    avatar = profile.avatar,
+                    displayName = "Pierre",
+                ),
+                watchedItems
+                    .last()
+                    .last()
+                    .presentationModel.icon,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the actions WHEN clicking a tab THEN receives the navigation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val watchedActions = mutableListOf<MainScreenUiAction>()
+            viewModel.actionWatcher.observe { watchedActions += it }
+
+            // When
+            viewModel.onEvent(MainScreenUiEvent.BottomNavItemClicked(MainNavRouteDestination.Books))
+
+            // Then
+            assertEquals(
+                listOf<MainScreenUiAction>(MainScreenUiAction.NavigateToBottomRoute(MainNavRouteDestination.Books)),
+                watchedActions,
+            )
+        }
 
     private fun TestScope.prepareScenario(
         language: Language = Language.ENGLISH,
