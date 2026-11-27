@@ -36,6 +36,7 @@ kotlin {
             export(projects.feature.readingPlan)
             export(projects.feature.books)
             export(projects.feature.read)
+            export(projects.core.verseAnnotations)
             export(projects.core.books)
         }
     }
@@ -83,6 +84,7 @@ kotlin {
             api(projects.feature.readingPlan)
             api(projects.feature.books)
             api(projects.feature.read)
+            api(projects.core.verseAnnotations)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
             api(projects.feature.deleteAccount)
