@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -96,7 +95,6 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             .mouseBackForwardNavigation(),
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
-        SideEffect { appBackStack.isWide = isWide }
         val displayBackStack = rememberDisplayBackStack(
             isWide = isWide,
             backStack = backStack,
@@ -177,19 +175,18 @@ private fun NavigationCommandCollector(appBackStack: AppBackStack) {
 }
 
 /*
- * Why: the shared back stack outlives configuration changes on its own, but not a process restart,
- * so the routes are mirrored into the saved stack and read back when the process starts fresh.
+ * Why: the shared back stack is a process-wide single, so each new composition starts from its own saved
+ * routes: a recreated activity gets its screens back, and a fresh one (even in a process that is still
+ * alive, such as one kept by the audio service) starts from MainNavRoute.
  */
 @Composable
 private fun SavedBackStackEffect(
     appBackStack: AppBackStack,
     savedBackStack: MutableList<NavKey>,
 ) {
-    // Why: restored during composition so the first frame already draws the saved screen, not MainNavRoute.
+    // Why: restored during composition so the first frame already draws the saved screen.
     remember(appBackStack, savedBackStack) {
-        if (appBackStack.entries.value.size == 1 && savedBackStack.size > 1) {
-            appBackStack.restore(savedBackStack.toList())
-        }
+        appBackStack.restore(savedBackStack.toList())
     }
     LaunchedEffect(appBackStack, savedBackStack) {
         appBackStack.entries.collect { routes ->

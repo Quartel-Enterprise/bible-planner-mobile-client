@@ -124,19 +124,6 @@ internal class AppBackStackTest {
     }
 
     @Test
-    fun `GIVEN a deep stack WHEN resetting THEN goes back to the initial route`() {
-        // Given
-        val appBackStack = AppBackStack()
-        appBackStack.execute(NavigationCommand.Navigate(themeRoute))
-
-        // When
-        appBackStack.reset()
-
-        // Then
-        assertEquals(listOf(mainRoute), appBackStack.entries.value)
-    }
-
-    @Test
     fun `GIVEN a wide layout WHEN updating the layout THEN stores the width`() {
         // Given
         val appBackStack = AppBackStack()

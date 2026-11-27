@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
  * entries; each UI only reports its width and the back or forward gestures it receives.
  */
 class AppBackStack(
-    private val initialRoute: NavKey = MainNavRoute,
+    initialRoute: NavKey = MainNavRoute,
 ) {
     private val backStack: MutableList<NavKey> = mutableListOf(initialRoute)
     private val forwardStack: MutableList<List<NavKey>> = mutableListOf()
@@ -28,10 +28,17 @@ class AppBackStack(
         field = MutableStateFlow(false)
 
     var isWide: Boolean = false
+        private set
 
     val hasStudyCompanionOnTop: Boolean
         get() = backStack.hasStudyCompanionOnTop()
 
+    /*
+     * Why: the host UI follows the commands from its composition, on the main thread, after it restored
+     * the saved routes; a command sent before the first frame (a notification tap in onCreate) then
+     * lands on the restored stack instead of being wiped by the restore. Only one host per process
+     * follows them, since every UI draws this same stack.
+     */
     suspend fun follow(commands: Flow<NavigationCommand>) {
         commands.collect(::execute)
     }
@@ -78,8 +85,9 @@ class AppBackStack(
     }
 
     /*
-     * Why: a process restart rebuilds the stack from the routes the UI saved; the forward history
-     * is not saved, so it starts empty.
+     * Why: each new host starts from the routes it saved (or the initial route), so a new activity in a
+     * process that is still alive doesn't reopen the previous session; the forward history is not saved,
+     * so it starts empty.
      */
     fun restore(routes: List<NavKey>) {
         update {
@@ -88,10 +96,6 @@ class AppBackStack(
             backStack.addAll(routes)
             forwardStack.clear()
         }
-    }
-
-    fun reset() {
-        restore(listOf(initialRoute))
     }
 
     private inline fun update(block: () -> Unit) {

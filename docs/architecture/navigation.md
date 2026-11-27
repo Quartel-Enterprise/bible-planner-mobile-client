@@ -4,7 +4,8 @@ The app uses Navigation 3 (`org.jetbrains.androidx.navigation3:navigation3-ui`).
 outside any UI toolkit in `AppBackStack` (`core/model/.../navigation/`), a Koin single that follows the
 `Navigator` commands through `BackStackController` and publishes its `entries` as a `StateFlow`. Compose's
 `RootAppNavDisplay` draws those entries, reports its width with `updateLayout`, and mirrors them into a
-saved `NavBackStack` only to restore them after a process restart. Because it lives outside Compose,
+saved `NavBackStack`; each new composition starts from that saved stack (`MainNavRoute` on a fresh start),
+so a new activity in a process that is still alive doesn't reopen the previous session. Because it lives outside Compose,
 a SwiftUI or React UI can read the same `AppBackStack`. There is no `NavController`.
 
 ### 1. Define a type-safe route in `core/model/src/.../route/`
