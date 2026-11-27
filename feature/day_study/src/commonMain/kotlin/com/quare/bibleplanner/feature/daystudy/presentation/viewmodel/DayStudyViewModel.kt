@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
@@ -177,7 +174,7 @@ internal class DayStudyViewModel(
         if (isLimitReached) {
             lockCard()
         }
-        if (isOffline) uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+        if (isOffline) uiAction.emit(DayStudyUiAction.ShowOffline)
     }
 
     private fun onCardClick() {
@@ -258,7 +255,7 @@ internal class DayStudyViewModel(
                     AnalyticsParams.IS_PRO to cardLoader.isPro,
                 ),
             )
-            uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+            uiAction.emit(DayStudyUiAction.ShowOffline)
             return
         }
         val quota = getDayStudyQuota(passages)
@@ -286,10 +283,7 @@ internal class DayStudyViewModel(
         val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
         uiAction.emit(
-            DayStudyUiAction.ShowSnackBarPlural(
-                resource = Res.plurals.ai_study_wait_for_generations,
-                count = inFlight,
-            ),
+            DayStudyUiAction.ShowWaitForGenerations(count = inFlight),
         )
         return false
     }

@@ -47,6 +47,7 @@ import bibleplanner.feature.delete_account.generated.resources.delete_account_su
 import bibleplanner.feature.delete_account.generated.resources.delete_account_title
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountPhase
+import com.quare.bibleplanner.feature.deleteaccount.presentation.mapper.toStoreNameResource
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiState
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiStatus
@@ -173,8 +174,8 @@ private fun DeleteAccountConfirmationContent(
             type = DialogConsequenceType.REMOVED,
             text = stringResource(Res.string.delete_account_removes_preferences),
         )
-        uiState.storeNameRes?.let { storeNameRes ->
-            SubscriptionWarningSurface(storeNameRes = storeNameRes)
+        uiState.subscriptionStore?.let { store ->
+            SubscriptionWarningSurface(storeNameRes = store.toStoreNameResource())
         }
         Text(
             text = stringResource(Res.string.delete_account_servers_note),

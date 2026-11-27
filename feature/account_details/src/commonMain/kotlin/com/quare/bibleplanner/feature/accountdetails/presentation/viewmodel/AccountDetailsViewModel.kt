@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.account_details.generated.resources.Res
-import bibleplanner.feature.account_details.generated.resources.account_details_action_error
-import bibleplanner.feature.account_details.generated.resources.account_details_device_signed_out
 import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDevices
 import com.quare.bibleplanner.core.devices.domain.usecase.SignOutDevice
@@ -16,6 +13,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.model.UserModel
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveCurrentUser
 import com.quare.bibleplanner.feature.accountdetails.presentation.mapper.DeviceUiModelMapper
+import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsMessage
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiAction
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiEvent
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiState
@@ -116,11 +114,11 @@ internal class AccountDetailsViewModel(
         viewModelScope.launch {
             signOutDevice(device.id).fold(
                 onSuccess = {
-                    emitAction(AccountDetailsUiAction.ShowSnackbar(Res.string.account_details_device_signed_out))
+                    emitAction(AccountDetailsUiAction.ShowSnackbar(AccountDetailsMessage.DEVICE_SIGNED_OUT))
                 },
                 onFailure = {
                     signingOutDeviceIds.update { ids -> ids - device.id }
-                    emitAction(AccountDetailsUiAction.ShowSnackbar(Res.string.account_details_action_error))
+                    emitAction(AccountDetailsUiAction.ShowSnackbar(AccountDetailsMessage.ACTION_ERROR))
                 },
             )
         }

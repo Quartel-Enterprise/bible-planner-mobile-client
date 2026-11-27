@@ -1,15 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.factory
 
-import bibleplanner.feature.profile.generated.resources.Res
-import bibleplanner.feature.profile.generated.resources.contrast_high
-import bibleplanner.feature.profile.generated.resources.contrast_medium
-import bibleplanner.feature.profile.generated.resources.contrast_standard
-import bibleplanner.feature.profile.generated.resources.dynamic_colors
-import bibleplanner.feature.profile.generated.resources.pro_and_support
-import bibleplanner.feature.profile.generated.resources.pro_section
-import bibleplanner.feature.profile.generated.resources.theme_dark
-import bibleplanner.feature.profile.generated.resources.theme_light
-import bibleplanner.feature.profile.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
@@ -44,6 +34,7 @@ import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfi
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.RefreshFailureCause
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -129,7 +120,7 @@ internal class ProfileUiStateFactoryTest {
             )
             assertEquals(
                 expected = Loadable.Loading,
-                actual = state.themeRes,
+                actual = state.theme,
             )
             assertEquals(
                 expected = Loadable.Loaded(true),
@@ -312,10 +303,6 @@ internal class ProfileUiStateFactoryTest {
             expected = Loadable.Loaded(true),
             actual = states.last().shouldShowDonateOption,
         )
-        assertEquals(
-            expected = Loadable.Loaded(Res.string.pro_and_support),
-            actual = states.last().headerRes,
-        )
     }
 
     @Test
@@ -328,8 +315,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.pro_section),
-            actual = states.last().headerRes,
+            expected = Loadable.Loaded(false),
+            actual = states.last().shouldShowDonateOption,
         )
     }
 
@@ -343,8 +330,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.theme_light),
-            actual = states.last().themeRes,
+            expected = Loadable.Loaded(Theme.LIGHT),
+            actual = states.last().theme,
         )
     }
 
@@ -358,8 +345,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.theme_dark),
-            actual = states.last().themeRes,
+            expected = Loadable.Loaded(Theme.DARK),
+            actual = states.last().theme,
         )
     }
 
@@ -373,8 +360,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.theme_system),
-            actual = states.last().themeRes,
+            expected = Loadable.Loaded(Theme.SYSTEM),
+            actual = states.last().theme,
         )
     }
 
@@ -389,8 +376,8 @@ internal class ProfileUiStateFactoryTest {
 
             // Then
             assertEquals(
-                expected = Loadable.Loaded(Res.string.contrast_standard),
-                actual = states.last().contrastRes,
+                expected = Loadable.Loaded(ProfileColorScheme.STANDARD_CONTRAST),
+                actual = states.last().colorScheme,
             )
         }
 
@@ -404,8 +391,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.contrast_medium),
-            actual = states.last().contrastRes,
+            expected = Loadable.Loaded(ProfileColorScheme.MEDIUM_CONTRAST),
+            actual = states.last().colorScheme,
         )
     }
 
@@ -419,8 +406,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.contrast_high),
-            actual = states.last().contrastRes,
+            expected = Loadable.Loaded(ProfileColorScheme.HIGH_CONTRAST),
+            actual = states.last().colorScheme,
         )
     }
 
@@ -437,8 +424,8 @@ internal class ProfileUiStateFactoryTest {
 
         // Then
         assertEquals(
-            expected = Loadable.Loaded(Res.string.dynamic_colors),
-            actual = states.last().contrastRes,
+            expected = Loadable.Loaded(ProfileColorScheme.DYNAMIC_COLORS),
+            actual = states.last().colorScheme,
         )
     }
 
@@ -457,8 +444,8 @@ internal class ProfileUiStateFactoryTest {
 
             // Then
             assertEquals(
-                expected = Loadable.Loaded(Res.string.contrast_high),
-                actual = states.last().contrastRes,
+                expected = Loadable.Loaded(ProfileColorScheme.HIGH_CONTRAST),
+                actual = states.last().colorScheme,
             )
         }
 

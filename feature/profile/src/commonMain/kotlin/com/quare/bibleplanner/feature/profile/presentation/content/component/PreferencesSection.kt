@@ -7,14 +7,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.contrast_high
+import bibleplanner.feature.profile.generated.resources.contrast_medium
+import bibleplanner.feature.profile.generated.resources.contrast_standard
+import bibleplanner.feature.profile.generated.resources.dynamic_colors
 import bibleplanner.feature.profile.generated.resources.preferences
 import bibleplanner.feature.profile.generated.resources.study_suggestion_disabled
 import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_banner
 import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_dialog
+import bibleplanner.feature.profile.generated.resources.theme_dark
+import bibleplanner.feature.profile.generated.resources.theme_light
+import bibleplanner.feature.profile.generated.resources.theme_system
 import bibleplanner.feature.profile.generated.resources.today
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOptionsFactory
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
@@ -41,7 +50,7 @@ internal fun PreferencesSection(
             ProfileMenuItem(
                 itemModel = ProfileMenuOptionsFactory.theme,
                 subtitle = themeSubtitle(state),
-                isSubtitleLoading = state.themeRes.isLoading(),
+                isSubtitleLoading = state.theme.isLoading(),
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.THEME)) },
             )
             HorizontalDivider()
@@ -87,13 +96,27 @@ private fun StudySuggestionSettingsModel.toSubtitleResource(): StringResource = 
 }
 
 @Composable
-private fun themeSubtitle(state: ProfileUiState): String? = state.themeRes.valueOrNull()?.let { themeRes ->
-    val contrastRes = state.contrastRes.valueOrNull()
-    if (contrastRes != null) {
-        "${stringResource(themeRes)} • ${stringResource(contrastRes)}"
+private fun themeSubtitle(state: ProfileUiState): String? = state.theme.valueOrNull()?.let { theme ->
+    val themeName = stringResource(theme.toStringResource())
+    val colorScheme = state.colorScheme.valueOrNull()
+    if (colorScheme != null) {
+        "$themeName • ${stringResource(colorScheme.toStringResource())}"
     } else {
-        stringResource(themeRes)
+        themeName
     }
+}
+
+private fun Theme.toStringResource(): StringResource = when (this) {
+    Theme.LIGHT -> Res.string.theme_light
+    Theme.DARK -> Res.string.theme_dark
+    Theme.SYSTEM -> Res.string.theme_system
+}
+
+private fun ProfileColorScheme.toStringResource(): StringResource = when (this) {
+    ProfileColorScheme.DYNAMIC_COLORS -> Res.string.dynamic_colors
+    ProfileColorScheme.STANDARD_CONTRAST -> Res.string.contrast_standard
+    ProfileColorScheme.MEDIUM_CONTRAST -> Res.string.contrast_medium
+    ProfileColorScheme.HIGH_CONTRAST -> Res.string.contrast_high
 }
 
 @Composable

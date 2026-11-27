@@ -5,6 +5,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
+import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -43,10 +46,11 @@ fun DayStudySection(
 
             DayStudyUiAction.NavigateToLoginWarning -> onOpenLoginWarning()
 
-            is DayStudyUiAction.ShowSnackBar -> onShowSnackBar(getString(action.message))
+            DayStudyUiAction.ShowOffline -> onShowSnackBar(getString(Res.string.ai_study_offline_message))
 
-            is DayStudyUiAction.ShowSnackBarPlural ->
-                onShowSnackBar(getPluralString(action.resource, action.count, action.count))
+            is DayStudyUiAction.ShowWaitForGenerations -> onShowSnackBar(
+                getPluralString(Res.plurals.ai_study_wait_for_generations, action.count, action.count),
+            )
         }
     }
 

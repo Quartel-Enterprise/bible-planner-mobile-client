@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.titleRes
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -20,7 +19,6 @@ import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
-import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,8 +65,6 @@ class BookDetailsViewModel(
                 val isSynopsisExpanded = (currentState as? BookDetailsUiState.Success)?.isSynopsisExpanded ?: false
                 BookDetailsUiState.Success(
                     id = book.id,
-                    nameStringResource = book.id.toBookNameResource(),
-                    synopsisStringResource = book.id.toSynopsisResource(),
                     chapters = book.chapters,
                     progress = progress,
                     readChaptersCount = readChapters,

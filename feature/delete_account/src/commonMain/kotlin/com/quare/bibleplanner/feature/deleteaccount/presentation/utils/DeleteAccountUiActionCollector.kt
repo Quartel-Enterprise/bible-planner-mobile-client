@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.deleteaccount.presentation.utils
 
 import androidx.compose.runtime.Composable
+import bibleplanner.feature.delete_account.generated.resources.Res
+import bibleplanner.feature.delete_account.generated.resources.delete_account_error_message
+import bibleplanner.feature.delete_account.generated.resources.delete_account_success_message
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -16,14 +19,14 @@ internal fun DeleteAccountUiActionCollector(uiActionFlow: Flow<DeleteAccountUiAc
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            is DeleteAccountUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
-                getString(action.message),
+            DeleteAccountUiAction.ShowError -> snackbarHostState.showSnackbar(
+                getString(Res.string.delete_account_error_message),
                 withDismissAction = true,
             )
 
-            is DeleteAccountUiAction.NotifySuccess -> appSnackbarController.show(
+            DeleteAccountUiAction.NotifySuccess -> appSnackbarController.show(
                 AppSnackbarMessage(
-                    stringResource = action.message,
+                    stringResource = Res.string.delete_account_success_message,
                     isDismissible = false,
                 ),
             )

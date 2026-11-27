@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.model
 
-import org.jetbrains.compose.resources.StringResource
-
 internal sealed interface ProfileUiAction {
     data class OpenLink(
         val url: String,
@@ -10,7 +8,7 @@ internal sealed interface ProfileUiAction {
     data object ShowNoProgressToDelete : ProfileUiAction
 
     data class ShowSnackbar(
-        val message: StringResource,
+        val message: ProfileMessage,
     ) : ProfileUiAction
 
     data class Copy(

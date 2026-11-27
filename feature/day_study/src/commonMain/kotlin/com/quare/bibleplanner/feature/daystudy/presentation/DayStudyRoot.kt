@@ -7,6 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
+import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.getDayStudyDetailPane
@@ -37,10 +40,12 @@ private fun DayStudyRootContent(route: DayStudyNavRoute) {
 
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
-            is DayStudyRouteUiAction.ShowSnackBar -> snackbarHostState.showSnackbar(getString(action.message))
+            DayStudyRouteUiAction.ShowLimitReached ->
+                snackbarHostState.showSnackbar(getString(Res.string.ai_study_limit_reached_message))
 
-            is DayStudyRouteUiAction.ShowSnackBarPlural ->
-                snackbarHostState.showSnackbar(getPluralString(action.resource, action.count, action.count))
+            is DayStudyRouteUiAction.ShowWaitForGenerations -> snackbarHostState.showSnackbar(
+                getPluralString(Res.plurals.ai_study_wait_for_generations, action.count, action.count),
+            )
         }
     }
 
