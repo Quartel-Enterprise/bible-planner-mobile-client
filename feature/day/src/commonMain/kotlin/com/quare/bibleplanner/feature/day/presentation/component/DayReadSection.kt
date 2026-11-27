@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.component.completeddate.CompletedDateSection
+import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
-import com.quare.bibleplanner.ui.component.date.DatePresentationModel
 
 @Composable
 internal fun DayReadSection(

@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
-import bibleplanner.feature.day.generated.resources.Res
-import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.date.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.core.date.ConvertUtcDateToLocalDateUseCase
@@ -44,7 +41,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
-import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
@@ -61,12 +58,12 @@ import com.quare.bibleplanner.feature.day.fake.InMemoryBibleDatabase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
+import com.quare.bibleplanner.feature.day.presentation.model.DayMessage
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.testing.viewmodel.ViewModelTestStore
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -291,7 +288,7 @@ internal class DayViewModelTest {
 
             // Then
             assertEquals(
-                listOf(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message)),
+                listOf(DayUiAction.ShowSnackBar(DayMessage.FAILED_TO_TOGGLE_CHAPTER)),
                 actions.first(List<DayUiAction>::isNotEmpty),
             )
             assertTrue(dayRepository.readStatusUpdates.isEmpty())
@@ -575,7 +572,7 @@ internal class DayViewModelTest {
         runCurrent()
 
         // Then
-        assertEquals(listOf(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message)), actions.value)
+        assertEquals(listOf(DayUiAction.ShowSnackBar(DayMessage.NOTHING_TO_DELETE)), actions.value)
         assertTrue(commands.value.isEmpty())
     }
 
@@ -1058,10 +1055,9 @@ internal class DayViewModelTest {
             getBooks = getBooks,
             readDateFormatter = ReadDateFormatter(
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
-                monthPresentationMapper = MonthPresentationMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(
+            getLatestSelectableDate = GetLatestSelectableDateUseCase(
                 currentTimestampProvider = { now },
                 localDateTimeProvider = localDateTimeProvider,
             ),

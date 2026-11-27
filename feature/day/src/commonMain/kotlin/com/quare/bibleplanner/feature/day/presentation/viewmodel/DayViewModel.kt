@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day.generated.resources.Res
-import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
@@ -32,6 +29,7 @@ import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassage
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
+import com.quare.bibleplanner.feature.day.presentation.model.DayMessage
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -297,7 +295,7 @@ internal class DayViewModel(
                         isRead = isRead,
                     )
                 }.onFailure {
-                    uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
+                    uiAction.emit(DayUiAction.ShowSnackBar(DayMessage.FAILED_TO_TOGGLE_CHAPTER))
                 }
         }
     }
@@ -386,7 +384,7 @@ internal class DayViewModel(
             return
         }
         viewModelScope.launch {
-            uiAction.emit(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message))
+            uiAction.emit(DayUiAction.ShowSnackBar(DayMessage.NOTHING_TO_DELETE))
         }
     }
 

@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.mapper
 
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
-import com.quare.bibleplanner.ui.component.date.DatePresentationModel
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
-import com.quare.bibleplanner.ui.utils.toStringResource
+import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 import kotlin.test.Test
@@ -32,7 +30,7 @@ internal class ReadDateFormatterTest {
         assertEquals(
             DatePresentationModel(
                 day = 7,
-                month = Month.MARCH.toStringResource(),
+                month = Month.MARCH,
                 year = 2026,
                 minute = "05",
                 hour = "08",
@@ -60,13 +58,12 @@ internal class ReadDateFormatterTest {
         // Then
         assertEquals("23", formatted.hour)
         assertEquals("59", formatted.minute)
-        assertEquals(Month.DECEMBER.toStringResource(), formatted.month)
+        assertEquals(Month.DECEMBER, formatted.month)
     }
 
     private fun prepareScenario(localDateTime: LocalDateTime) {
         formatter = ReadDateFormatter(
             localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
-            monthPresentationMapper = MonthPresentationMapper(),
             localDateTimeProvider = { localDateTime },
         )
     }

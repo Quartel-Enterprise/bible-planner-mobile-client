@@ -18,13 +18,13 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -166,7 +166,10 @@ internal class DayUiStateFlowFactoryTest {
         assertNull(state.datePickerUiState.visiblePicker)
         assertNull(state.datePickerUiState.selectedDateMillis)
         assertNull(state.datePickerUiState.selectedLocalDate)
-        assertIs<EditDaySelectableDates>(state.datePickerUiState.selectableDates)
+        assertEquals(
+            EditDaySelectableDates(latestSelectableDate = LocalDate(1970, 1, 1)),
+            state.datePickerUiState.selectableDates,
+        )
     }
 
     @Test
@@ -395,10 +398,9 @@ internal class DayUiStateFlowFactoryTest {
             getBooks = GetBooksFlowUseCase(booksRepository),
             readDateFormatter = ReadDateFormatter(
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
-                monthPresentationMapper = MonthPresentationMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(
+            getLatestSelectableDate = GetLatestSelectableDateUseCase(
                 currentTimestampProvider = { 0L },
                 localDateTimeProvider = localDateTimeProvider,
             ),

@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
@@ -22,7 +23,7 @@ internal class DayUiStateFlowFactory(
     private val getDayDetails: GetDayDetailsUseCase,
     private val getBooks: GetBooksFlowUseCase,
     private val readDateFormatter: ReadDateFormatter,
-    private val editDaySelectableDates: EditDaySelectableDates,
+    private val getLatestSelectableDate: GetLatestSelectableDateUseCase,
     private val convertTimestampToDatePickerInitialDate: ConvertTimestampToDatePickerInitialDateUseCase,
     private val calculateAllChaptersReadStatus: CalculateAllChaptersReadStatusUseCase,
     private val localDateTimeProvider: LocalDateTimeProvider,
@@ -53,30 +54,23 @@ internal class DayUiStateFlowFactory(
             val initialTimestamp = convertTimestampToDatePickerInitialDate(savedTimestamp)
             val initialDate = localDateTimeProvider.getLocalDateTime(savedTimestamp)
 
-            val datePickerUiState = if (existingDatePickerUiState?.selectableDates != null) {
-                existingDatePickerUiState.copy(
+            val selectableDates = EditDaySelectableDates(latestSelectableDate = getLatestSelectableDate())
+            val datePickerUiState = (
+                existingDatePickerUiState ?: DatePickerUiState(
+                    visiblePicker = null,
+                    selectedDateMillis = null,
+                    selectedLocalDate = null,
+                    selectableDates = selectableDates,
                     initialTimestamp = initialTimestamp,
                     initialHour = initialDate.hour,
                     initialMinute = initialDate.minute,
                 )
-            } else {
-                (
-                    existingDatePickerUiState ?: DatePickerUiState(
-                        visiblePicker = null,
-                        selectedDateMillis = null,
-                        selectedLocalDate = null,
-                        selectableDates = editDaySelectableDates,
-                        initialTimestamp = initialTimestamp,
-                        initialHour = initialDate.hour,
-                        initialMinute = initialDate.minute,
-                    )
-                ).copy(
-                    selectableDates = editDaySelectableDates,
-                    initialTimestamp = initialTimestamp,
-                    initialHour = initialDate.hour,
-                    initialMinute = initialDate.minute,
-                )
-            }
+            ).copy(
+                selectableDates = selectableDates,
+                initialTimestamp = initialTimestamp,
+                initialHour = initialDate.hour,
+                initialMinute = initialDate.minute,
+            )
 
             val (completedCount, totalCount) = calculatePassageCounts(
                 passages = day.passages,

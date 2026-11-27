@@ -16,10 +16,6 @@ import bibleplanner.ui.utils.generated.resources.september
 import kotlinx.datetime.Month
 import org.jetbrains.compose.resources.StringResource
 
-class MonthPresentationMapper {
-    fun map(month: Month): StringResource = month.toStringResource()
-}
-
 fun Month.toStringResource(): StringResource = when (this) {
     Month.JANUARY -> Res.string.january
     Month.FEBRUARY -> Res.string.february
