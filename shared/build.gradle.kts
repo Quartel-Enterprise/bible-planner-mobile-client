@@ -31,6 +31,9 @@ kotlin {
             export(projects.core.provider.analytics)
             export(projects.core.provider.crashlytics)
             export(projects.core.provider.ads)
+            export(projects.core.model)
+            export(projects.core.presentation)
+            export(projects.feature.readingPlan)
         }
     }
 
@@ -104,6 +107,7 @@ kotlin {
             api(projects.core.provider.analytics)
             api(projects.core.provider.crashlytics)
             api(projects.core.provider.ads)
+            api(projects.core.presentation)
             implementation(projects.core.studyUnlock)
             api(projects.core.utils)
             implementation(projects.core.devices)

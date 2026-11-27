@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
 
-internal sealed interface ReadingPlanUiState {
+sealed interface ReadingPlanUiState {
     val selectedReadingPlan: ReadingPlanType
     val isShowingMenu: Boolean
     val isShowingOrderMenu: Boolean

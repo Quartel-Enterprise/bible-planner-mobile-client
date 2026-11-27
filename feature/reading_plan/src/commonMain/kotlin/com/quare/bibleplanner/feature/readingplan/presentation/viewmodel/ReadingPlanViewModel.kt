@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
@@ -48,7 +49,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ReadingPlanViewModel(
+class ReadingPlanViewModel internal constructor(
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val getPlanMotivationMessage: GetPlanMotivationMessage,
     private val resolvePlanStatus: ResolvePlanStatus,
@@ -73,6 +74,11 @@ internal class ReadingPlanViewModel(
 
     val uiAction: SharedFlow<ReadingPlanUiAction>
         field = MutableSharedFlow<ReadingPlanUiAction>()
+
+    // Why: SwiftUI can't collect a Flow; it observes the screen through these, built only when it asks for them.
+    val stateWatcher: FlowWatcher<ReadingPlanUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
+
+    val actionWatcher: FlowWatcher<ReadingPlanUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
 
     private var currentPlansModel: PlansModel? = null
     private var currentBibleProgress: Float = 0f

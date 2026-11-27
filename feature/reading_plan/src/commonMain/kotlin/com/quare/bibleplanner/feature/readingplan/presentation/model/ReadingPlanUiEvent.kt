@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface ReadingPlanUiEvent : UiEvent {
+sealed interface ReadingPlanUiEvent : UiEvent {
     data class OnPlanClick(
         val type: ReadingPlanType,
     ) : ReadingPlanUiEvent {

@@ -36,3 +36,18 @@ platform after each one.
    favor of the macOS target.
 
 Shared repositories for what Bible Planner and Blitz Split have in common come after step 4.
+
+### Making a screen reachable from Swift
+
+A screen is ready for its SwiftUI version once Swift can create its ViewModel and watch it:
+
+1. The ViewModel is `public` with an `internal constructor`, so Koin keeps building it while its dependencies stay
+   `internal`. Its `UiState`, `UiEvent`, `UiAction` and every type they reference become `public` too.
+2. The ViewModel exposes `stateWatcher` and `actionWatcher`, `FlowWatcher`s over `uiState` and `uiAction` built with
+   `viewModelScope`. The feature module takes `:core:presentation` as an `api` dependency.
+3. `:shared` exports the feature module in the `Shared` framework (with every module whose types its `UiState`,
+   `UiEvent` or `UiAction` use, such as `:core:model`, so Swift sees them without a module prefix), and `NativeViewModels` (in `iosMain`) gains a
+   `create<Screen>()` function returning the screen's `ViewModelHolder`.
+
+Swift then keeps the holder for the screen's lifetime, calls `onEvent` on its ViewModel, and calls `clear()` when the
+screen goes away.

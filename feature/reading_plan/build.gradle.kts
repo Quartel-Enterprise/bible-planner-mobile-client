@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.plan)
             implementation(projects.core.model)
+            api(projects.core.presentation)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
