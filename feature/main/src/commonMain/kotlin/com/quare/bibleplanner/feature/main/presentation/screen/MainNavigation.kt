@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
@@ -191,7 +189,7 @@ private fun MainNavigationItemIcon(
                 photoBytes = icon.avatar.photoBytes,
                 displayName = icon.displayName,
                 size = profileIconSize,
-                fallbackIcon = Icons.Default.Person,
+                fallbackIcon = route.toTabIcon(),
             )
         }
     }
