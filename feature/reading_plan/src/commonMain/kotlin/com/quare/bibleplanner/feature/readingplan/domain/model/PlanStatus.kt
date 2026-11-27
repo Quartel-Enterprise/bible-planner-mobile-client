@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.domain.model
 
-internal data class PlanStatus(
+data class PlanStatus(
     val mode: PlanMode,
     val nextDay: PlanDayRef?,
     val todayDay: PlanDayRef?,
