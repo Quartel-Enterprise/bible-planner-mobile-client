@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.model
 
 import androidx.navigation3.runtime.NavKey
-import org.jetbrains.compose.resources.StringResource
 
 internal sealed interface ProfilePhotoUiAction {
     data class OpenCrop(
@@ -15,6 +14,6 @@ internal sealed interface ProfilePhotoUiAction {
     data object LaunchCameraPicker : ProfilePhotoUiAction
 
     data class ShowSnackbar(
-        val message: StringResource,
+        val message: EditProfileMessage,
     ) : ProfilePhotoUiAction
 }

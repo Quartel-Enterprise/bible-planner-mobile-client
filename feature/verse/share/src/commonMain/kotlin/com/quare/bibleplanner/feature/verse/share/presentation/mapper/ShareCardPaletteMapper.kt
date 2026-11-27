@@ -22,10 +22,10 @@ private val photoScrimBottom = Color(0xA6000000)
 
 internal fun ShareCardBackgroundUiModel.toPalette(): ShareCardPalette = when (this) {
     is ShareCardBackgroundUiModel.Preset -> ShareCardPalette(
-        startColor = background.startColor,
-        endColor = background.endColor,
-        textColor = background.textColor,
-        subtitleColor = background.subtitleColor,
+        startColor = Color(background.startArgb),
+        endColor = Color(background.endArgb),
+        textColor = Color(background.textArgb),
+        subtitleColor = Color(background.subtitleArgb),
     )
 
     is ShareCardBackgroundUiModel.Custom -> color.toPalette()

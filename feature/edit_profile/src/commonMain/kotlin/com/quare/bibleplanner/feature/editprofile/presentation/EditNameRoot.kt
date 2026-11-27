@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.EditNameNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.EditNameDialog
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiAction
+import com.quare.bibleplanner.feature.editprofile.presentation.utils.toStringResource
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.EditNameViewModel
 import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -28,7 +29,7 @@ fun EntryProviderScope<NavKey>.editName() {
         ActionCollector(viewModel.uiAction) { action ->
             when (action) {
                 is EditNameUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
-                    getString(action.message),
+                    getString(action.message.toStringResource()),
                     withDismissAction = true,
                 )
             }

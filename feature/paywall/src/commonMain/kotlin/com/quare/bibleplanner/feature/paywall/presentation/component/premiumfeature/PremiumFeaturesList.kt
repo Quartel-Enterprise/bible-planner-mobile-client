@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import bibleplanner.feature.paywall.generated.resources.Res
+import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes_subtext
 import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.PremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
@@ -27,10 +29,12 @@ internal fun PremiumFeaturesList(
     ) {
         premiumFeatures.forEach { feature ->
             PremiumFeatureItem(
-                text = stringResource(feature.title),
+                text = stringResource(feature.toTitleResource()),
                 subtext = when (feature) {
-                    is FixedPremiumFeature -> stringResource(feature.subtext)
-                    is UnlimitedNotesPremiumFeature -> stringResource(feature.subtext, feature.maxFreeNotes)
+                    is FixedPremiumFeature -> stringResource(feature.toSubtextResource())
+
+                    is UnlimitedNotesPremiumFeature ->
+                        stringResource(Res.string.feature_unlimited_notes_subtext, feature.maxFreeNotes)
                 },
                 titleColor = titleColor,
                 subtitleColor = subtitleColor,

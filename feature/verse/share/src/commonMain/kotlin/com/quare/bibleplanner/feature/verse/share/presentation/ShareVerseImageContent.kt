@@ -329,7 +329,7 @@ private fun BackgroundSection(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Brush.linearGradient(listOf(entry.startColor, entry.endColor))),
+                            .background(Brush.linearGradient(listOf(Color(entry.startArgb), Color(entry.endArgb)))),
                     )
                 }
             }

@@ -1,11 +1,10 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
-import bibleplanner.feature.edit_profile.generated.resources.Res
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_too_large
 import com.quare.bibleplanner.core.image.MAX_AVATAR_SOURCE_BYTES
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
@@ -76,7 +75,7 @@ internal class ProfilePhotoViewModelImagePickedTest {
 
         // Then
         assertEquals(
-            listOf<ProfilePhotoUiAction>(ProfilePhotoUiAction.ShowSnackbar(Res.string.edit_profile_photo_too_large)),
+            listOf<ProfilePhotoUiAction>(ProfilePhotoUiAction.ShowSnackbar(EditProfileMessage.PHOTO_TOO_LARGE)),
             actions,
         )
     }

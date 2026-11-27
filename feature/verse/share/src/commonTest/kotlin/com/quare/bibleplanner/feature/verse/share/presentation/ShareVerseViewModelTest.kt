@@ -3,8 +3,6 @@ package com.quare.bibleplanner.feature.verse.share.presentation
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.colorspace.ColorSpace
-import bibleplanner.feature.verse.share.generated.resources.Res
-import bibleplanner.feature.verse.share.generated.resources.share_photo_load_failed
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -615,7 +613,7 @@ internal class ShareVerseViewModelTest {
             // Then
             assertEquals(
                 expected = listOf<ShareVerseUiAction>(
-                    ShareVerseUiAction.ShowMessage(Res.string.share_photo_load_failed),
+                    ShareVerseUiAction.NotifyPhotoLoadFailed,
                 ),
                 actual = actions,
             )
