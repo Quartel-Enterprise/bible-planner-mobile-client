@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.read.presentation
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
@@ -20,6 +19,7 @@ import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
+import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -66,7 +66,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ReadViewModel(
+class ReadViewModel internal constructor(
     private val route: ReadNavRoute,
     private val chapterUseCases: ReadChapterUseCases,
     private val studyUseCases: ReadStudyUseCases,
@@ -90,7 +90,6 @@ internal class ReadViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
-    private val bookStringResource = bookId.toBookNameResource()
     private val retryCount = MutableStateFlow(0)
 
     private val verticalChapters = verticalChaptersFactory.create(
@@ -151,7 +150,6 @@ internal class ReadViewModel(
             observeReadData(
                 bookId = bookId,
                 chapterNumber = route.chapterNumber,
-                bookStringResource = bookStringResource,
                 isInitiallyRead = route.isChapterRead,
                 isFromBookDetails = route.isFromBookDetails,
                 prependedChapters = prepended,
@@ -163,6 +161,9 @@ internal class ReadViewModel(
                 ) to data
             }
         }
+
+    // Why: SwiftUI can't collect a Flow; it observes the screen through this, built only when it asks for it.
+    val stateWatcher: FlowWatcher<ReadUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
 
     val uiState: StateFlow<ReadUiState> = combine(
         combine(
@@ -204,7 +205,6 @@ internal class ReadViewModel(
         started = SharingStarted.Eagerly,
         initialValue = uiStateMapper.createLoadingState(
             bookId = bookId,
-            bookStringResource = bookStringResource,
             chapterNumber = route.chapterNumber,
             isChapterRead = route.isChapterRead,
         ),

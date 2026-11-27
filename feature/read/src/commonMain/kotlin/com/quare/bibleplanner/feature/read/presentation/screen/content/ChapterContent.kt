@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
@@ -55,7 +56,7 @@ internal fun LazyListScope.chapterContent(
     item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         Column {
             ChapterHeader(
-                bookName = stringResource(chapter.bookStringResource),
+                bookName = stringResource(chapter.chapter.bookId.toBookNameResource()),
                 chapterNumber = chapter.chapter.chapterNumber,
                 isBookNameSpoken = spokenWord == ListeningWordTargetModel.ChapterBook,
                 isChapterNumberSpoken = spokenWord == ListeningWordTargetModel.ChapterNumber,
@@ -114,7 +115,7 @@ internal fun LazyListScope.chapterContent(
     }
     if (shouldListChapterStudyCard(isChapterStudyBeside)) {
         item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-            val bookName = stringResource(chapter.bookStringResource)
+            val bookName = stringResource(chapter.chapter.bookId.toBookNameResource())
             ChapterStudyEntryCard(
                 chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf {
                     settings.isVerticalReadingEnabled

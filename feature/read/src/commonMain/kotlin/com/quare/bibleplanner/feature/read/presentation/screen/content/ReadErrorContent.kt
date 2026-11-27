@@ -30,6 +30,7 @@ import bibleplanner.feature.read.generated.resources.retry
 import bibleplanner.feature.read.generated.resources.size_progress
 import bibleplanner.feature.read.generated.resources.status_with_size
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -83,7 +84,7 @@ private fun ChapterNotFoundContent(
     ErrorMessage(
         text = stringResource(
             resource = Res.string.chapter_not_downloaded_error,
-            stringResource(header.bookStringResource),
+            stringResource(header.bookId.toBookNameResource()),
             header.chapterNumber,
             content.selectedBibleVersionName,
         ),

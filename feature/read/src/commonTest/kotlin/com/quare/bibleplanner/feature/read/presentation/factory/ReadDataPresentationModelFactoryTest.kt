@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.read.presentation.factory
 
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
@@ -268,7 +266,6 @@ internal class ReadDataPresentationModelFactoryTest {
     ): Flow<ReadDataUiModel> = factory(
         bookId = BookId.GEN,
         chapterNumber = chapterNumber,
-        bookStringResource = Res.string.mark_as_read,
         isInitiallyRead = isInitiallyRead,
         isFromBookDetails = false,
         prependedChapters = prependedChapters,
