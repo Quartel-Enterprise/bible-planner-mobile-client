@@ -17,6 +17,7 @@ import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
+import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
@@ -50,7 +51,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-internal class DayViewModel(
+class DayViewModel internal constructor(
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
@@ -58,7 +59,7 @@ internal class DayViewModel(
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val navigator: Navigator,
-    val platform: Platform,
+    internal val platform: Platform,
     route: DayNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -68,6 +69,11 @@ internal class DayViewModel(
 
     val uiAction: SharedFlow<DayUiAction>
         field = MutableSharedFlow<DayUiAction>()
+
+    // Why: SwiftUI can't collect a Flow; it observes the state and actions through these, built only when it asks.
+    val stateWatcher: FlowWatcher<DayUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
+
+    val actionWatcher: FlowWatcher<DayUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
