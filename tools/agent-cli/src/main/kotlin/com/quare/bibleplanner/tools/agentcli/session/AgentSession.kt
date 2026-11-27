@@ -4,9 +4,9 @@ import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.AppViewModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.navigation.BackStackController
-import com.quare.bibleplanner.core.navigation.utils.hasStudyCompanionOnTop
-import com.quare.bibleplanner.core.navigation.utils.syncStudyPanelCompanion
+import com.quare.bibleplanner.core.model.navigation.BackStackController
+import com.quare.bibleplanner.core.model.navigation.hasStudyCompanionOnTop
+import com.quare.bibleplanner.core.model.navigation.syncStudyPanelCompanion
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.tools.agentcli.catalog.RouteCatalog
 import com.quare.bibleplanner.tools.agentcli.catalog.ScreenCatalog

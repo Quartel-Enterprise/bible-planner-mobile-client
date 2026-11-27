@@ -1,8 +1,11 @@
 ## Navigation
 
-The app uses Navigation 3 (`org.jetbrains.androidx.navigation3:navigation3-ui`). The back stack is a
-`NavBackStack<NavKey>` owned by `RootAppNavDisplay` and driven by `BackStackController`; there is no
-`NavController`.
+The app uses Navigation 3 (`org.jetbrains.androidx.navigation3:navigation3-ui`). The back stack lives
+outside any UI toolkit in `AppBackStack` (`core/model/.../navigation/`), a Koin single that follows the
+`Navigator` commands through `BackStackController` and publishes its `entries` as a `StateFlow`. Compose's
+`RootAppNavDisplay` draws those entries, reports its width with `updateLayout`, and mirrors them into a
+saved `NavBackStack` only to restore them after a process restart. SwiftUI and React read the same
+`AppBackStack`. There is no `NavController`.
 
 ### 1. Define a type-safe route in `core/model/src/.../route/`
 

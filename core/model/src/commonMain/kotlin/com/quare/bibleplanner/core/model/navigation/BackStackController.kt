@@ -1,13 +1,10 @@
-package com.quare.bibleplanner.core.navigation
+package com.quare.bibleplanner.core.model.navigation
 
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.model.route.toChapterStudyCompanion
-import com.quare.bibleplanner.core.navigation.utils.hasStudyCompanionOnTop
-import com.quare.bibleplanner.core.navigation.utils.popBackEntries
-import com.quare.bibleplanner.core.navigation.utils.removeTopScreen
 
 class BackStackController(
     private val backStack: MutableList<NavKey>,
