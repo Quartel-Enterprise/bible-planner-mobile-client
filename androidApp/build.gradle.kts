@@ -118,6 +118,9 @@ dependencies {
 
     // Native Android UI
     implementation(projects.android.feature.deleteNotes)
+    implementation(projects.android.feature.loginWarning)
+    implementation(projects.android.feature.addNotesFreeWarning)
+    implementation(projects.android.feature.loginSyncNudge)
 
     // Features
     implementation(projects.feature.materialYou)

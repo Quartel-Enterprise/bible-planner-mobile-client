@@ -9,7 +9,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.AddNotesFreeWarningUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
-internal class AddNotesFreeWarningViewModel(
+class AddNotesFreeWarningViewModel internal constructor(
     private val navigator: Navigator,
     route: AddNotesFreeWarningNavRoute,
     trackEvent: TrackEvent,

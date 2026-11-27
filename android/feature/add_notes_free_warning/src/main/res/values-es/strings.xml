@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_notes_free_warning_title">Actualizar a Pro</string>
+    <string name="add_notes_free_warning_day_message">Los usuarios gratuitos pueden agregar notas hasta %1$d días. Suscríbete a Pro para agregar notas ilimitadas.</string>
+    <string name="add_notes_free_warning_verse_message">Los usuarios gratuitos pueden agregar hasta %1$d notas en versículos. Suscríbete a Pro para agregar notas ilimitadas.</string>
+    <string name="add_notes_free_warning_see_plans">Ver Planes</string>
+    <string name="add_notes_free_warning_cancel">Cancelar</string>
+</resources>
