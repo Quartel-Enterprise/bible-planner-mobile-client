@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.verse.selection_menu.generated.resources.Res
-import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
@@ -314,7 +312,7 @@ internal class VerseSelectionViewModel(
             uiAction.emit(
                 VerseSelectionUiAction.CopyToClipboard(shareContent.shareText),
             )
-            uiAction.emit(VerseSelectionUiAction.ShowMessage(Res.string.copied_to_clipboard))
+            uiAction.emit(VerseSelectionUiAction.NotifyCopied)
         }
     }
 

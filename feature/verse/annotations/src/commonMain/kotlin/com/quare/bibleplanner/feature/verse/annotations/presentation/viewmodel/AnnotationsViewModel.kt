@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.verse.annotations.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.verse.annotations.generated.resources.Res
-import bibleplanner.feature.verse.annotations.generated.resources.annotation_removed
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.model.Navigator
@@ -352,7 +350,7 @@ internal class AnnotationsViewModel(
         overlay.update { it.copy(pendingRemoval = null) }
         viewModelScope.launch {
             removePassageAnnotations(item.passage)
-            uiAction.emit(AnnotationsUiAction.ShowMessage(Res.string.annotation_removed))
+            uiAction.emit(AnnotationsUiAction.NotifyAnnotationRemoved)
         }
     }
 

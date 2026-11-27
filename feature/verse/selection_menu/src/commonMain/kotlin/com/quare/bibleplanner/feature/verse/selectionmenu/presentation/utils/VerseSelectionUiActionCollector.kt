@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboard
+import bibleplanner.feature.verse.selection_menu.generated.resources.Res
+import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -18,10 +20,10 @@ internal fun VerseSelectionUiActionCollector(uiActionFlow: Flow<VerseSelectionUi
         when (uiAction) {
             is VerseSelectionUiAction.CopyToClipboard -> clipboard.setClipEntry(uiAction.text.toClipEntry())
 
-            is VerseSelectionUiAction.ShowMessage -> {
+            VerseSelectionUiAction.NotifyCopied -> {
                 appSnackbarController.show(
                     AppSnackbarMessage(
-                        stringResource = uiAction.stringResource,
+                        stringResource = Res.string.copied_to_clipboard,
                         isDismissible = true,
                     ),
                 )

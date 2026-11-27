@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.books.util.getReadingLabel
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
@@ -248,7 +245,7 @@ internal class DayStudyRouteViewModel(
         }
         if (isLimitReached) {
             lockCard()
-            uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
+            uiAction.emit(DayStudyRouteUiAction.ShowLimitReached)
         }
         generationCoordinator.acknowledge(jobKey)
     }
@@ -356,10 +353,7 @@ internal class DayStudyRouteViewModel(
         val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
         uiAction.emit(
-            DayStudyRouteUiAction.ShowSnackBarPlural(
-                resource = Res.plurals.ai_study_wait_for_generations,
-                count = inFlight,
-            ),
+            DayStudyRouteUiAction.ShowWaitForGenerations(count = inFlight),
         )
         return false
     }

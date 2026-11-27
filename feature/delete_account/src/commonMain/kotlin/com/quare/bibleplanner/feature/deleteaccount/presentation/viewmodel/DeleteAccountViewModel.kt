@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.deleteaccount.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.delete_account.generated.resources.Res
-import bibleplanner.feature.delete_account.generated.resources.delete_account_error_message
-import bibleplanner.feature.delete_account.generated.resources.delete_account_success_message
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -14,7 +11,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscripti
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccount
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountPhase
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountProgress
-import com.quare.bibleplanner.feature.deleteaccount.presentation.mapper.StoreNameMapper
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiAction
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiState
@@ -35,7 +31,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class DeleteAccountViewModel(
     private val deleteAccount: DeleteAccount,
-    private val storeNameMapper: StoreNameMapper,
     private val navigator: Navigator,
     getConfirmationKeyword: GetConfirmationKeyword,
     getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase,
@@ -54,7 +49,7 @@ internal class DeleteAccountViewModel(
                 confirmationText = "",
                 isConfirmEnabled = false,
                 isProUser = false,
-                storeNameRes = null,
+                subscriptionStore = null,
             ),
         )
 
@@ -84,7 +79,7 @@ internal class DeleteAccountViewModel(
         val pro = status as? SubscriptionStatus.Pro
         return copy(
             isProUser = pro != null,
-            storeNameRes = pro?.let { storeNameMapper.map(it.store) },
+            subscriptionStore = pro?.store,
         )
     }
 
@@ -122,7 +117,7 @@ internal class DeleteAccountViewModel(
         onSuccess {
             uiState.update { it.copy(status = DeleteAccountUiStatus.Deleted) }
             delay(successFeedbackDuration)
-            uiAction.emit(DeleteAccountUiAction.NotifySuccess(Res.string.delete_account_success_message))
+            uiAction.emit(DeleteAccountUiAction.NotifySuccess)
             navigator.navigateBack()
         }.onFailure { throwable ->
             val reason = getFailureReason()
@@ -132,7 +127,7 @@ internal class DeleteAccountViewModel(
                 params = mapOf(AnalyticsParams.REASON to reason),
             )
             uiState.update { it.copy(status = DeleteAccountUiStatus.Idle) }
-            uiAction.emit(DeleteAccountUiAction.ShowSnackbar(Res.string.delete_account_error_message))
+            uiAction.emit(DeleteAccountUiAction.ShowError)
         }
     }
 

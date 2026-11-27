@@ -2,12 +2,6 @@ package com.quare.bibleplanner.feature.profile.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
-import bibleplanner.feature.profile.generated.resources.Res
-import bibleplanner.feature.profile.generated.resources.delete_account_requires_internet
-import bibleplanner.feature.profile.generated.resources.login_requires_internet
-import bibleplanner.feature.profile.generated.resources.logout_requires_internet
-import bibleplanner.feature.profile.generated.resources.up_to_date_message
-import bibleplanner.feature.profile.generated.resources.update_check_failed_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
@@ -39,6 +33,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileMessage
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction.OpenLink
@@ -56,7 +51,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
 import software.quare.connectivity.IsConnected
 
 internal class ProfileViewModel(
@@ -118,7 +112,7 @@ internal class ProfileViewModel(
                     ProfileOptionItemType.DELETE_ACCOUNT -> {
                         navigateIfOnline(
                             route = DeleteAccountNavRoute,
-                            offlineMessage = Res.string.delete_account_requires_internet,
+                            offlineMessage = ProfileMessage.DELETE_ACCOUNT_REQUIRES_INTERNET,
                         )
                     }
 
@@ -149,14 +143,14 @@ internal class ProfileViewModel(
             ProfileUiEvent.OnLoginClick -> {
                 navigateIfOnline(
                     route = LoginNavRoute(notifyResultViaSnackbar = false),
-                    offlineMessage = Res.string.login_requires_internet,
+                    offlineMessage = ProfileMessage.LOGIN_REQUIRES_INTERNET,
                 )
             }
 
             ProfileUiEvent.OnLogoutClick -> {
                 navigateIfOnline(
                     route = LogoutNavRoute,
-                    offlineMessage = Res.string.logout_requires_internet,
+                    offlineMessage = ProfileMessage.LOGOUT_REQUIRES_INTERNET,
                 )
             }
         }
@@ -181,10 +175,10 @@ internal class ProfileViewModel(
                 )
 
                 UpdateAvailability.NotAvailable ->
-                    uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message))
+                    uiAction.emit(ProfileUiAction.ShowSnackbar(ProfileMessage.UP_TO_DATE))
 
                 UpdateAvailability.CheckFailed ->
-                    uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.update_check_failed_message))
+                    uiAction.emit(ProfileUiAction.ShowSnackbar(ProfileMessage.UPDATE_CHECK_FAILED))
             }
         }
     }
@@ -202,7 +196,7 @@ internal class ProfileViewModel(
 
     private fun navigateIfOnline(
         route: NavKey,
-        offlineMessage: StringResource,
+        offlineMessage: ProfileMessage,
     ) {
         viewModelScope.launch {
             if (isConnected()) {

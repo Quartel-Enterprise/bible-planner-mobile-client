@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.fixture
 
-import bibleplanner.feature.profile.generated.resources.Res
-import bibleplanner.feature.profile.generated.resources.theme_system
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
@@ -10,6 +9,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import kotlinx.datetime.LocalDate
 import software.quare.loadable.Loadable
@@ -38,10 +38,9 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
     subscriptionStatus = Loadable.Loaded(SubscriptionStatus.Free),
     isProCardVisible = Loadable.Loaded(false),
     shouldShowDonateOption = Loadable.Loaded(false),
-    headerRes = Loadable.Loaded(null),
     isInstagramLinkVisible = Loadable.Loaded(false),
-    themeRes = Loadable.Loaded(Res.string.theme_system),
-    contrastRes = Loadable.Loaded(null),
+    theme = Loadable.Loaded(Theme.SYSTEM),
+    colorScheme = Loadable.Loaded(ProfileColorScheme.STANDARD_CONTRAST),
     selectedLanguage = Loadable.Loaded(Language.ENGLISH),
     bibleVersionName = Loadable.Loaded(SAMPLE_BIBLE_VERSION_NAME),
     bibleDownloadProgress = Loadable.Loaded(null),

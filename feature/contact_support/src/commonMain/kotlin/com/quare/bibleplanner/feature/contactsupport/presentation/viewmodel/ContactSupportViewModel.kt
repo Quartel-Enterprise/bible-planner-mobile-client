@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.contact_support.generated.resources.Res
-import bibleplanner.feature.contact_support.generated.resources.support_email_copied_message
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -51,7 +49,7 @@ internal class ContactSupportViewModel(
             ContactSupportUiEvent.OnCopyEmailClick -> {
                 viewModelScope.launch {
                     uiAction.emit(ContactSupportUiAction.Copy(SupportContact.EMAIL))
-                    uiAction.emit(ContactSupportUiAction.ShowSnackbar(Res.string.support_email_copied_message))
+                    uiAction.emit(ContactSupportUiAction.NotifyEmailCopied)
                 }
             }
         }

@@ -5,18 +5,17 @@ import bibleplanner.feature.delete_account.generated.resources.delete_account_st
 import bibleplanner.feature.delete_account.generated.resources.delete_account_store_google_play
 import bibleplanner.feature.delete_account.generated.resources.delete_account_store_web
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
-internal class StoreNameMapperTest {
-    private lateinit var mapper: StoreNameMapper
-
+internal class StoreNameResourceTest {
     @Test
     fun `GIVEN each purchase store WHEN mapping it THEN names the store the user subscribed on`() {
+        // Given
+        val stores = PurchaseStore.entries
+
         // When
-        val names = PurchaseStore.entries.associateWith(mapper::map)
+        val names = stores.associateWith(PurchaseStore::toStoreNameResource)
 
         // Then
         assertEquals(
@@ -27,19 +26,5 @@ internal class StoreNameMapperTest {
             ),
             names,
         )
-    }
-
-    @Test
-    fun `GIVEN no purchase store WHEN mapping it THEN names no store`() {
-        // When
-        val name = mapper.map(null)
-
-        // Then
-        assertNull(name)
-    }
-
-    @BeforeTest
-    fun setUp() {
-        mapper = StoreNameMapper()
     }
 }

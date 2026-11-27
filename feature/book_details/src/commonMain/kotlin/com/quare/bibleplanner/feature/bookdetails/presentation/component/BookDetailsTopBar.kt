@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
@@ -37,7 +38,7 @@ fun BookDetailsTopBar(
         CenterAlignedTopAppBar(
             title = {
                 if (state is BookDetailsUiState.Success) {
-                    val bookName = stringResource(state.nameStringResource)
+                    val bookName = stringResource(state.id.toBookNameResource())
                     Text(
                         text = bookName,
                         style = MaterialTheme.typography.titleLarge,

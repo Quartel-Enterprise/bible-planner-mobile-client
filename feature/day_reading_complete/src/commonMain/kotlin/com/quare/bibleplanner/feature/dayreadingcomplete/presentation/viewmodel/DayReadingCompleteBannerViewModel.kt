@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day_reading_complete.generated.resources.Res
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_offline_message
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -22,6 +20,7 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.Da
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteCtaDecision
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteMessage
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -120,7 +119,7 @@ internal class DayReadingCompleteBannerViewModel(
         viewModelScope.launch {
             if (!isConnected()) {
                 emitAction(
-                    DayReadingCompleteBannerUiAction.ShowSnackBar(Res.string.day_reading_complete_offline_message),
+                    DayReadingCompleteBannerUiAction.ShowSnackBar(DayReadingCompleteMessage.OFFLINE),
                 )
                 return@launch
             }

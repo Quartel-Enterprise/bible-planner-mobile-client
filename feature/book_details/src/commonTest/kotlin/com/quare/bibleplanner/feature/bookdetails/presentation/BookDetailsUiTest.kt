@@ -42,7 +42,7 @@ internal class BookDetailsUiTest {
     @Test
     fun `GIVEN a loaded book WHEN rendered THEN shows its name progress and synopsis`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = bookDetailsUiState(bookCategoryName = getString(BookGroup.WisdomBooks.titleRes)))
+        prepareScenario(uiState = bookDetailsUiState())
 
         // When
         waitForIdle()
@@ -60,7 +60,7 @@ internal class BookDetailsUiTest {
     @Test
     fun `GIVEN a loaded book WHEN clicking a chapter THEN emits OnChapterClick for it`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = bookDetailsUiState(bookCategoryName = getString(BookGroup.WisdomBooks.titleRes)))
+        prepareScenario(uiState = bookDetailsUiState())
         val chapterMatcher = hasText(CLICKED_CHAPTER.toString()) and hasClickAction()
 
         // When
@@ -77,7 +77,7 @@ internal class BookDetailsUiTest {
     @Test
     fun `GIVEN a partly read book WHEN clicking mark all as read THEN emits OnToggleAllChapters`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = bookDetailsUiState(bookCategoryName = getString(BookGroup.WisdomBooks.titleRes)))
+        prepareScenario(uiState = bookDetailsUiState())
         val markAllMatcher = hasText(getString(Res.string.mark_all_as_read))
 
         // When
@@ -95,9 +95,7 @@ internal class BookDetailsUiTest {
     fun `GIVEN a fully read book WHEN rendered THEN offers to mark all as unread`() = runComposeUiTest {
         // Given
         prepareScenario(
-            uiState = bookDetailsUiState(
-                bookCategoryName = getString(BookGroup.WisdomBooks.titleRes),
-            ).copy(areAllChaptersRead = true),
+            uiState = bookDetailsUiState().copy(areAllChaptersRead = true),
         )
         val markAllUnreadMatcher = hasText(getString(Res.string.mark_all_as_unread))
 
@@ -112,7 +110,7 @@ internal class BookDetailsUiTest {
     @Test
     fun `GIVEN a loaded book WHEN clicking favorite THEN emits OnToggleFavorite`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = bookDetailsUiState(bookCategoryName = getString(BookGroup.WisdomBooks.titleRes)))
+        prepareScenario(uiState = bookDetailsUiState())
 
         // When
         onNodeWithContentDescription(getString(ComponentRes.string.favorite)).performClick()
@@ -127,7 +125,7 @@ internal class BookDetailsUiTest {
     @Test
     fun `GIVEN a loaded book WHEN clicking back THEN emits OnBackClick`() = runComposeUiTest {
         // Given
-        prepareScenario(uiState = bookDetailsUiState(bookCategoryName = getString(BookGroup.WisdomBooks.titleRes)))
+        prepareScenario(uiState = bookDetailsUiState())
 
         // When
         onNodeWithContentDescription(getString(ComponentRes.string.back)).performClick()

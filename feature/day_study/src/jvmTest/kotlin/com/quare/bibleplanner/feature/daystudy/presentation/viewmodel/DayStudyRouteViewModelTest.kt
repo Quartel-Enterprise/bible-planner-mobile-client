@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
-import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.books.util.getReadingLabel
@@ -425,10 +422,7 @@ internal class DayStudyRouteViewModelTest {
             // Then
             assertEquals(
                 listOf<DayStudyRouteUiAction>(
-                    DayStudyRouteUiAction.ShowSnackBarPlural(
-                        resource = Res.plurals.ai_study_wait_for_generations,
-                        count = 2,
-                    ),
+                    DayStudyRouteUiAction.ShowWaitForGenerations(count = 2),
                 ),
                 actions,
             )
@@ -651,7 +645,7 @@ internal class DayStudyRouteViewModelTest {
         assertNull(viewModel.uiState.value.generationError)
         assertEquals(
             listOf<DayStudyRouteUiAction>(
-                DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message),
+                DayStudyRouteUiAction.ShowLimitReached,
             ),
             actions,
         )

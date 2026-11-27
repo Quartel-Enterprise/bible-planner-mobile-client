@@ -4,9 +4,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
@@ -322,7 +319,7 @@ internal class DayStudyViewModelTest {
 
         // Then
         assertEquals(
-            listOf<DayStudyUiAction>(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message)),
+            listOf<DayStudyUiAction>(DayStudyUiAction.ShowOffline),
             actions,
         )
         assertEquals(
@@ -349,10 +346,7 @@ internal class DayStudyViewModelTest {
             // Then
             assertEquals(
                 listOf<DayStudyUiAction>(
-                    DayStudyUiAction.ShowSnackBarPlural(
-                        resource = Res.plurals.ai_study_wait_for_generations,
-                        count = 1,
-                    ),
+                    DayStudyUiAction.ShowWaitForGenerations(count = 1),
                 ),
                 actions,
             )
@@ -628,7 +622,7 @@ internal class DayStudyViewModelTest {
 
         // Then
         assertEquals(
-            listOf<DayStudyUiAction>(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message)),
+            listOf<DayStudyUiAction>(DayStudyUiAction.ShowOffline),
             actions,
         )
         assertEquals(DayStudyCardMode.GENERATE, card().mode)

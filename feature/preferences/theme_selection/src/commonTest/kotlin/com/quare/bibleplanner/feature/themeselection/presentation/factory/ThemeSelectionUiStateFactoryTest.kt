@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.factory
 
-import bibleplanner.feature.preferences.theme_selection.generated.resources.Res
-import bibleplanner.feature.preferences.theme_selection.generated.resources.dark_title
-import bibleplanner.feature.preferences.theme_selection.generated.resources.light_title
-import bibleplanner.feature.preferences.theme_selection.generated.resources.system_title
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.themeselection.testing.FakeThemeSelectionRepository
@@ -30,11 +26,11 @@ internal class ThemeSelectionUiStateFactoryTest {
         // Then
         assertEquals(
             listOf(
-                Res.string.light_title to false,
-                Res.string.dark_title to true,
-                Res.string.system_title to false,
+                Theme.LIGHT to false,
+                Theme.DARK to true,
+                Theme.SYSTEM to false,
             ),
-            state.options.map { it.title to it.isActive },
+            state.options.map { it.preference to it.isActive },
         )
     }
 

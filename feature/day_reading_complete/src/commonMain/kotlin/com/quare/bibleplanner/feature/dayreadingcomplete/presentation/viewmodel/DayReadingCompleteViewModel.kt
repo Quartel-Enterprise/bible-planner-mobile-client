@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day_reading_complete.generated.resources.Res
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_never_show_confirmation
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_offline_message
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -24,6 +21,7 @@ import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserI
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteCtaResolver
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.factory.DayReadingCompleteStateLoader
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteCtaDecision
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteMessage
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
@@ -92,7 +90,7 @@ internal class DayReadingCompleteViewModel(
         viewModelScope.launch {
             setStudySuggestionEnabled(false)
             uiAction.emit(
-                DayReadingCompleteUiAction.ShowSnackBar(Res.string.day_reading_complete_never_show_confirmation),
+                DayReadingCompleteUiAction.ShowSnackBar(DayReadingCompleteMessage.NEVER_SHOW_CONFIRMATION),
             )
             navigator.navigateBack()
         }
@@ -141,7 +139,7 @@ internal class DayReadingCompleteViewModel(
         viewModelScope.launch {
             if (!isConnected()) {
                 emitAction(
-                    DayReadingCompleteUiAction.ShowSnackBar(Res.string.day_reading_complete_offline_message),
+                    DayReadingCompleteUiAction.ShowSnackBar(DayReadingCompleteMessage.OFFLINE),
                 )
                 return@launch
             }
