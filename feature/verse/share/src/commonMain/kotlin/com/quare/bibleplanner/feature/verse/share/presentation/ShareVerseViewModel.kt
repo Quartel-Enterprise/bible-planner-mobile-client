@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.verse.share.presentation
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.verse.share.generated.resources.Res
-import bibleplanner.feature.verse.share.generated.resources.share_photo_load_failed
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.image.DecodeImageBitmap
@@ -265,7 +263,7 @@ internal class ShareVerseViewModel(
             if (!isProUserFlow.first()) return@launch
             decodeImageBitmap(file)
                 .onSuccess { image -> changeBackground(ShareCardBackgroundUiModel.Photo(image)) }
-                .onFailure { uiAction.emit(ShareVerseUiAction.ShowMessage(Res.string.share_photo_load_failed)) }
+                .onFailure { uiAction.emit(ShareVerseUiAction.NotifyPhotoLoadFailed) }
         }
     }
 

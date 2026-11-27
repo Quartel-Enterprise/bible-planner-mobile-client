@@ -17,6 +17,9 @@ import com.quare.bibleplanner.feature.paywall.presentation.component.subscriptio
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component.SubscriptionPlanDiscountBadge
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toDescriptionResource
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toPeriodUnitResource
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toTitleResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -40,10 +43,10 @@ internal fun SubscriptionPlansRow(
             ) {
                 SubscriptionPlanColumnCard(
                     modifier = Modifier.fillMaxHeight(),
-                    title = stringResource(plan.title),
-                    description = stringResource(plan.description),
+                    title = stringResource(plan.type.toTitleResource()),
+                    description = stringResource(plan.type.toDescriptionResource()),
                     price = plan.priceDescription,
-                    periodUnit = stringResource(plan.periodUnit),
+                    periodUnit = stringResource(plan.type.toPeriodUnitResource()),
                     priceFontSize = priceFontSize,
                     priceUnitFontSize = priceUnitFontSize,
                     isSelected = plan.isSelected,

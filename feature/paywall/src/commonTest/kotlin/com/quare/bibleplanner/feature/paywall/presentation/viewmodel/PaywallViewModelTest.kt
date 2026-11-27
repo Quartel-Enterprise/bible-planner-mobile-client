@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
-import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.error_purchase_cancelled
-import bibleplanner.feature.paywall.generated.resources.error_restore_purchase
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -22,6 +19,7 @@ import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallAnalyticsReasonMapper
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExceptionMapper
+import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallError
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
@@ -292,7 +290,7 @@ internal class PaywallViewModelTest {
                 trackedEvents.last(),
             )
             assertEquals(
-                listOf(PaywallUiAction.ShowSnackbar(Res.string.error_purchase_cancelled, args = emptyList())),
+                listOf(PaywallUiAction.ShowError(PaywallError.PURCHASE_CANCELLED, storeName = "App Store")),
                 actions,
             )
             assertFalse(assertIs<PaywallUiState.Success>(viewModel.uiState.value).isPurchasing)
@@ -399,9 +397,9 @@ internal class PaywallViewModelTest {
             )
             assertEquals(
                 listOf(
-                    PaywallUiAction.ShowSnackbar(
-                        message = Res.string.error_restore_purchase,
-                        args = listOf("Google Play Store"),
+                    PaywallUiAction.ShowError(
+                        error = PaywallError.RESTORE_PURCHASE_FAILED,
+                        storeName = "Google Play Store",
                     ),
                 ),
                 actions,

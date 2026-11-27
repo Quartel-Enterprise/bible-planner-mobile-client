@@ -59,10 +59,17 @@ sealed interface DayUiEvent {
 
 ```kotlin
 sealed interface DayUiAction {
-    data class ShowSnackBar(val message: StringResource) : DayUiAction
+    data class ShowSnackBar(val message: DayMessage) : DayUiAction
     data object ScrollToTop : DayUiAction
 }
+
+enum class DayMessage { FAILED_TO_TOGGLE_CHAPTER, NOTHING_TO_DELETE }
 ```
+
+State and actions hold no Compose types (`StringResource`, `ImageVector`, `Color`...), so SwiftUI and React can
+read them too. A screen with several messages carries a message enum in one action, and the composable maps it to
+a resource. A screen with a single message gets a data object named after what happened (`NotifyCopied`,
+`NotifyRenameFailed`), and an action carries data only when the text needs it (`ShowWaitForGenerations(count)`).
 
 Navigation is **not** a `UiAction` — inject `Navigator` and call it from the ViewModel. See
 [navigation.md](navigation.md).

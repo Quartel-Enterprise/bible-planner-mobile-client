@@ -28,7 +28,7 @@ internal fun ProfilePhotoUiActionCollector(
             ProfilePhotoUiAction.LaunchCameraPicker -> onLaunchCameraPicker()
 
             is ProfilePhotoUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
-                getString(action.message),
+                getString(action.message.toStringResource()),
                 withDismissAction = true,
             )
         }

@@ -7,6 +7,7 @@ import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.CropPhotoScreen
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
+import com.quare.bibleplanner.feature.editprofile.presentation.utils.toStringResource
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.CropPhotoViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
@@ -22,7 +23,7 @@ fun EntryProviderScope<NavKey>.cropPhoto() {
         ActionCollector(viewModel.uiAction) { action ->
             when (action) {
                 is CropPhotoUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
-                    getString(action.message),
+                    getString(action.message.toStringResource()),
                     withDismissAction = true,
                 )
             }

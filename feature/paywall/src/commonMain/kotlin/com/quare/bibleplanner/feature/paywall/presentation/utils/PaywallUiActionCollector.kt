@@ -14,10 +14,9 @@ internal fun PaywallUiActionCollector(
 ) {
     ActionCollector(actionsFlow) { uiAction ->
         when (uiAction) {
-            is PaywallUiAction.ShowSnackbar -> {
-                val message = getString(uiAction.message, *uiAction.args.toTypedArray())
-                snackbarHostState.showSnackbar(message)
-            }
+            is PaywallUiAction.ShowError -> snackbarHostState.showSnackbar(
+                getString(uiAction.error.toStringResource(), uiAction.storeName),
+            )
         }
     }
 }

@@ -163,8 +163,12 @@ internal class PaywallViewModel(
                                         ),
                                     )
                                     uiState.update { currentState.copy(isPurchasing = false) }
-                                    val messageRes = exceptionMapper.map(error)
-                                    uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes, args = emptyList()))
+                                    uiAction.emit(
+                                        PaywallUiAction.ShowError(
+                                            error = exceptionMapper.map(error),
+                                            storeName = storeName,
+                                        ),
+                                    )
                                 }
                         }
                     }
@@ -221,11 +225,10 @@ internal class PaywallViewModel(
                             if (currentState is PaywallUiState.Success) {
                                 uiState.update { currentState.copy(isPurchasing = false) }
                             }
-                            val messageRes = exceptionMapper.map(error)
                             uiAction.emit(
-                                PaywallUiAction.ShowSnackbar(
-                                    message = messageRes,
-                                    args = listOf(storeName),
+                                PaywallUiAction.ShowError(
+                                    error = exceptionMapper.map(error),
+                                    storeName = storeName,
                                 ),
                             )
                         }

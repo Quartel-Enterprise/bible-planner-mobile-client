@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
-import bibleplanner.feature.edit_profile.generated.resources.Res
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_unreadable
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_updated
 import com.quare.bibleplanner.core.image.AvatarImageCropper
 import com.quare.bibleplanner.core.image.CropParams
 import com.quare.bibleplanner.core.model.NavigationCommand
@@ -11,6 +8,7 @@ import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.feature.editprofile.fake.FakeImageBitmap
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
+import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.CropPhotoViewModel
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +69,7 @@ internal class CropPhotoViewModelConfirmTest {
             val action = awaitAction()
 
             // Then
-            assertEquals(CropPhotoUiAction.ShowSnackbar(Res.string.edit_profile_photo_updated), action)
+            assertEquals(CropPhotoUiAction.ShowSnackbar(EditProfileMessage.PHOTO_UPDATED), action)
             val (source, params) = cropCalls.single()
             assertContentEquals(photoBytes, source)
             assertEquals(200, params.imageWidth)
@@ -92,7 +90,7 @@ internal class CropPhotoViewModelConfirmTest {
             // Then
             assertContentEquals(byteArrayOf(9), savedPhotos.single())
             assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-            assertEquals(CropPhotoUiAction.ShowSnackbar(Res.string.edit_profile_photo_updated), action)
+            assertEquals(CropPhotoUiAction.ShowSnackbar(EditProfileMessage.PHOTO_UPDATED), action)
         }
 
     @Test
@@ -107,7 +105,7 @@ internal class CropPhotoViewModelConfirmTest {
         // Then
         assertTrue(savedPhotos.isEmpty())
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-        assertEquals(CropPhotoUiAction.ShowSnackbar(Res.string.edit_profile_photo_unreadable), action)
+        assertEquals(CropPhotoUiAction.ShowSnackbar(EditProfileMessage.PHOTO_UNREADABLE), action)
     }
 
     private suspend fun awaitAction(): CropPhotoUiAction = withContext(Dispatchers.Default) {
