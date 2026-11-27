@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.cancel
 import bibleplanner.feature.day.generated.resources.next
@@ -11,6 +13,7 @@ import bibleplanner.feature.day.generated.resources.ok
 import bibleplanner.feature.day.generated.resources.select_time
 import com.mohamedrejeb.calf.ui.datepicker.rememberAdaptiveDatePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
+import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
@@ -29,7 +32,7 @@ internal fun TimeEditionDialog(
 ) {
     val datePickerState = rememberAdaptiveDatePickerState(
         initialSelectedDateMillis = datePickerUiState.initialTimestamp,
-        selectableDates = datePickerUiState.selectableDates,
+        selectableDates = datePickerUiState.selectableDates.toComposeSelectableDates(),
     )
     val timePickerState = rememberAdaptiveTimePickerState(
         initialHour = datePickerUiState.initialHour,
@@ -91,5 +94,16 @@ internal fun TimeEditionDialog(
                 )
             }
         }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun EditDaySelectableDates.toComposeSelectableDates(): SelectableDates = remember(this) {
+    object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+            this@toComposeSelectableDates.isSelectableDate(utcTimeMillis)
+
+        override fun isSelectableYear(year: Int): Boolean = this@toComposeSelectableDates.isSelectableYear(year)
     }
 }

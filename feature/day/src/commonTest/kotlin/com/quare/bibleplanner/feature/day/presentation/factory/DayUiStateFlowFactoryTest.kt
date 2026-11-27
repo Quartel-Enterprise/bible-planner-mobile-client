@@ -24,7 +24,6 @@ import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -395,7 +394,6 @@ internal class DayUiStateFlowFactoryTest {
             getBooks = GetBooksFlowUseCase(booksRepository),
             readDateFormatter = ReadDateFormatter(
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
-                monthPresentationMapper = MonthPresentationMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
             editDaySelectableDates = EditDaySelectableDates(

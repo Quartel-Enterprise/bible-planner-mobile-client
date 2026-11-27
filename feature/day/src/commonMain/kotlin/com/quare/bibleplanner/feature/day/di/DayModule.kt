@@ -21,7 +21,6 @@ import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFac
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -50,7 +49,6 @@ val dayModule = module {
 
     factoryOf(::DayUiStateFlowFactory)
     factoryOf(::ReadDateFormatter)
-    factoryOf(::MonthPresentationMapper)
     factoryOf(::DeleteRouteNotesMapper)
 
     viewModelOf(::DayViewModel)
