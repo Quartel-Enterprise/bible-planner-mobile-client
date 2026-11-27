@@ -89,7 +89,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.inappupdate.generated"
     objectName = "InAppUpdateBuildKonfig"
-    exposeObjectWithName = "InAppUpdateBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())

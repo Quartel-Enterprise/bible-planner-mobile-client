@@ -79,7 +79,6 @@ tasks.withType<Test>().configureEach {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.provider.analytics.generated"
     objectName = "AnalyticsBuildKonfig"
-    exposeObjectWithName = "AnalyticsBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()

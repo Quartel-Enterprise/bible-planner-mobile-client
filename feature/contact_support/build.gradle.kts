@@ -69,7 +69,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.feature.contactsupport.generated"
     objectName = "ContactSupportBuildKonfig"
-    exposeObjectWithName = "ContactSupportBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())

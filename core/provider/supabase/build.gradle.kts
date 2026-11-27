@@ -76,7 +76,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.provider.supabase.generated"
     objectName = "SupabaseBuildKonfig"
-    exposeObjectWithName = "SupabaseBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()
