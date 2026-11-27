@@ -38,6 +38,12 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     }
                 }
 
+                // Why: Kotlin/Wasm can't export generic classes, fun interfaces or lambdas, so the React web
+                // app reaches the ViewModels through the js target; wasmJs keeps the Compose web app running.
+                js {
+                    browser()
+                }
+
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
                     browser()

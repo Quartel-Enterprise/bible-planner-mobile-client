@@ -93,6 +93,17 @@ kotlin {
             dependsOn(iosMain.get())
         }
 
+        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
+        webMain {
+            dependsOn(commonMain.get())
+        }
+        jsMain {
+            dependsOn(webMain.get())
+        }
+        wasmJsMain {
+            dependsOn(webMain.get())
+        }
+
         androidMain.dependencies {
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.session)

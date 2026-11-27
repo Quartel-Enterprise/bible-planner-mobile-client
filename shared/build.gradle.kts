@@ -46,6 +46,14 @@ kotlin {
 
     jvm()
 
+    // Why: the React web app imports the ViewModels from this library, see docs/architecture/native-ui-migration.md.
+    js {
+        outputModuleName = "shared"
+        browser()
+        binaries.library()
+        generateTypeScriptDefinitions()
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()

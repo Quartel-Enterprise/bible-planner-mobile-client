@@ -129,12 +129,20 @@ kotlin {
             }
         }
 
-        wasmJsMain {
+        webMain {
             dependsOn(nonMobileMain)
             dependencies {
                 implementation(libs.ktor.client.js)
                 implementation(libs.kotlinx.browser)
             }
+        }
+
+        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
+        jsMain {
+            dependsOn(webMain.get())
+        }
+        wasmJsMain {
+            dependsOn(webMain.get())
         }
     }
 }

@@ -26,7 +26,10 @@ platform after each one.
    Navigation becomes a shared back stack the ViewModels drive, which each UI draws. `:shared` becomes the
    composition root that builds the Apple framework and the JS library. The web needs a `js` target with
    `@JsExport` for that: Kotlin/Wasm can't export generic classes, `fun interface`s or lambdas, so the modules the
-   web reaches gain a `js` target next to (and later instead of) `wasmJs`.
+   web reaches gain a `js` target next to (and later instead of) `wasmJs`. Every multiplatform module now has both
+   targets: web code goes in `webMain`, which both share, and `:shared` builds the `shared` JS library with
+   TypeScript definitions (`./gradlew :shared:jsBrowserProductionLibraryDistribution`). A module whose build adds its
+   own `dependsOn` edges turns off the default hierarchy, so it wires `jsMain` and `wasmJsMain` to `webMain` itself.
 2. **Android native.** The composables move out of the shared feature modules into Android modules with a design
    system on Material 3 Expressive.
 3. **SwiftUI and React**, one feature at a time, starting with the reading flow (main, reading plan, day, read,
