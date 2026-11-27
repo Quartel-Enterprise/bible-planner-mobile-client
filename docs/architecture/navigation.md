@@ -4,8 +4,8 @@ The app uses Navigation 3 (`org.jetbrains.androidx.navigation3:navigation3-ui`).
 outside any UI toolkit in `AppBackStack` (`core/model/.../navigation/`), a Koin single that follows the
 `Navigator` commands through `BackStackController` and publishes its `entries` as a `StateFlow`. Compose's
 `RootAppNavDisplay` draws those entries, reports its width with `updateLayout`, and mirrors them into a
-saved `NavBackStack` only to restore them after a process restart. SwiftUI and React read the same
-`AppBackStack`. There is no `NavController`.
+saved `NavBackStack` only to restore them after a process restart. Because it lives outside Compose,
+a SwiftUI or React UI can read the same `AppBackStack`. There is no `NavController`.
 
 ### 1. Define a type-safe route in `core/model/src/.../route/`
 
@@ -62,9 +62,8 @@ internal class SomeFeatureViewModel(
 }
 ```
 
-Each call sends a `NavigationCommand` over a buffered channel; `RootAppNavDisplay` collects the
-commands and applies them to the back stack, so the back stack is only ever mutated from inside the
-composition.
+Each call sends a `NavigationCommand` over a buffered channel; `RootAppNavDisplay` has `AppBackStack`
+follow the commands from a `LaunchedEffect`, so the back stack is only ever mutated on the main thread.
 
 **Navigation never belongs in a `UiAction`.** `UiAction` is for effects the UI layer has to perform
 itself — snackbars, clipboard, share sheets, scrolling, focus. The exceptions are effects that are

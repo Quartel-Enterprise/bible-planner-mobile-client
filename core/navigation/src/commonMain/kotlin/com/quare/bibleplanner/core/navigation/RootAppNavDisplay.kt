@@ -99,15 +99,17 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         SideEffect { appBackStack.isWide = isWide }
         val displayBackStack = rememberDisplayBackStack(
             isWide = isWide,
+            backStack = backStack,
             appBackStack = appBackStack,
         )
         val displayedEntryCount = displayBackStack.size
         /*
          * Why: NavDisplay calls back once per entry the scene leaves, and navigateBack already pops the
-         * study with the entry beside it, so the later calls must pop nothing.
+         * study with the entry beside it, so the later calls must pop nothing. The size is read from the
+         * StateFlow because the collected state only catches up after these synchronous calls.
          */
         val onNavigateBack: () -> Unit = {
-            if (backStack.size >= displayedEntryCount) {
+            if (appBackStack.entries.value.size >= displayedEntryCount) {
                 appBackStack.navigateBack()
             }
         }
@@ -183,12 +185,15 @@ private fun SavedBackStackEffect(
     appBackStack: AppBackStack,
     savedBackStack: MutableList<NavKey>,
 ) {
-    LaunchedEffect(appBackStack, savedBackStack) {
+    // Why: restored during composition so the first frame already draws the saved screen, not MainNavRoute.
+    remember(appBackStack, savedBackStack) {
         if (appBackStack.entries.value.size == 1 && savedBackStack.size > 1) {
             appBackStack.restore(savedBackStack.toList())
         }
+    }
+    LaunchedEffect(appBackStack, savedBackStack) {
         appBackStack.entries.collect { routes ->
-            if (savedBackStack != routes) {
+            if (savedBackStack.toList() != routes) {
                 savedBackStack.clear()
                 savedBackStack.addAll(routes)
             }

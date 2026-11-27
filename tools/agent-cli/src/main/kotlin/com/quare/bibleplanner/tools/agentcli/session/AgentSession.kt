@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 /*
- * Why: everything here runs on Dispatchers.Main, like the composition that owns the back stack in
+ * Why: everything here runs on Dispatchers.Main, like the composition that drives AppBackStack in
  * the app, so the ViewModels see the same threading they see on a device.
  */
 class AgentSession(

@@ -2,7 +2,6 @@ package com.quare.bibleplanner.core.navigation.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -14,9 +13,9 @@ import com.quare.bibleplanner.core.model.navigation.hasStudyCompanionOnTop
 @Composable
 internal fun rememberDisplayBackStack(
     isWide: Boolean,
+    backStack: List<NavKey>,
     appBackStack: AppBackStack,
 ): List<NavKey> {
-    val backStack by appBackStack.entries.collectAsState()
     // Why: saved because rotation recreates the activity and the new one must know it was wide.
     var wasWide by rememberSaveable { mutableStateOf(isWide) }
     val isCollapsingCompanion = !isWide && wasWide && backStack.hasStudyCompanionOnTop()
