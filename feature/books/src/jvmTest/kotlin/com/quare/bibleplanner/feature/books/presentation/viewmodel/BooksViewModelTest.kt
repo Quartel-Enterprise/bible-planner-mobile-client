@@ -818,6 +818,24 @@ internal class BooksViewModelTest {
         }
 
     @Test
+    fun `GIVEN a native UI watches the state WHEN selecting a testament THEN receives the updated state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val states = mutableListOf<BooksUiState>()
+            viewModel.stateWatcher.observe { states += it }
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.NewTestament))
+
+            // Then
+            assertEquals(
+                BookTestamentFilter.NewTestament,
+                assertIs<BooksUiState.Success>(states.last()).selectedTestamentFilter,
+            )
+        }
+
+    @Test
     fun `GIVEN a native UI watches the actions WHEN selecting a testament THEN receives the scroll to top`() =
         runTest(testDispatcher) {
             // Given
