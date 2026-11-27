@@ -13,6 +13,7 @@ core/
 ├── navigation/      # RootAppNavDisplay
 ├── plan/            # Plan data (JSON) domain + data
 │   └── testing/     # In-memory fakes of plan's interfaces, for other modules' tests
+├── presentation/    # Bridge that lets SwiftUI and React use the shared ViewModels (FlowWatcher, Watch, ViewModelHolder)
 ├── utils/           # Kotlin extension utilities
 └── provider/
     ├── koin/        # Koin initialization — register new modules here
