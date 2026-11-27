@@ -26,7 +26,6 @@ internal class NotificationPermissionViewModel(
         field = MutableStateFlow<NotificationPermissionUiState>(
             NotificationPermissionUiState(
                 isFirstTime = true,
-                shouldShowDismiss = true,
             ),
         )
 
@@ -79,7 +78,6 @@ internal class NotificationPermissionViewModel(
             uiState.update {
                 NotificationPermissionUiState(
                     isFirstTime = false,
-                    shouldShowDismiss = false,
                 )
             }
         } else {

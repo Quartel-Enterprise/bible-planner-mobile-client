@@ -31,7 +31,7 @@ internal fun NotificationPermissionContent(
         text = stringResource(textRes),
         confirmText = stringResource(confirmTextRes),
         onConfirm = { onEvent(NotificationPermissionUiEvent.OnConfirm) },
-        dismissText = declineText.takeIf { uiState.shouldShowDismiss },
+        dismissText = declineText.takeIf { uiState.isFirstTime },
         onDismiss = { onEvent(NotificationPermissionUiEvent.OnDecline) },
         icon = Icons.Outlined.Notifications,
     )
