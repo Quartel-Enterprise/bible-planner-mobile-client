@@ -74,6 +74,7 @@ class DayViewModel internal constructor(
     val stateWatcher: FlowWatcher<DayUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
 
     val actionWatcher: FlowWatcher<DayUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
+
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
