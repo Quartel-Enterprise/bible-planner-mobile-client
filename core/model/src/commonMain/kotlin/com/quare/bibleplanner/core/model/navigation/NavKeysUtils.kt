@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.navigation.utils
+package com.quare.bibleplanner.core.model.navigation
 
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
