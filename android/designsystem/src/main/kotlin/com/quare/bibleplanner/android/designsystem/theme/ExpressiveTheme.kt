@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 
 /*
  * Why: the app root still applies the shared theme (colors, contrast, Material You), so a native screen
- * keeps those colors and only adds Material 3 Expressive's motion and shapes on top.
+ * keeps those colors and shapes and only adds Material 3 Expressive's motion scheme on top.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

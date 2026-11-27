@@ -53,7 +53,14 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
     // Why: :android:feature:delete_notes becomes com.quare.bibleplanner.android.feature.deletenotes, the package.
     private fun Project.createNamespace(): String = "com.quare.bibleplanner" +
-        path.replace(':', '.').replace("_", "")
+        path
+            .replace(
+                oldChar = ':',
+                newChar = '.',
+            ).replace(
+                oldValue = "_",
+                newValue = "",
+            )
 
     private companion object {
         const val DESIGN_SYSTEM_PATH = ":android:designsystem"

@@ -71,7 +71,7 @@ moduleGraphAssert {
         // Native Android screens (step 2 of docs/architecture/native-ui-migration.md) sit on top of
         // the shared modules: nothing shared sees them, and they never see each other or :shared.
         ":android:feature:.* -X> :android:feature:.*",
-        ":(core|feature|ui|shared).* -X> :android:.*",
+        ":(?!(android:|androidApp )).* -X> :android:.*",
         ":android:.* -X> :shared",
     )
 }
