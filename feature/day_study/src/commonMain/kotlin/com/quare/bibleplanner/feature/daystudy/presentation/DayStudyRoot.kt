@@ -9,7 +9,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.getDayStudyDetailPane
@@ -18,7 +17,6 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteU
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
-import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -44,7 +42,7 @@ private fun DayStudyRootContent(route: DayStudyNavRoute) {
                 snackbarHostState.showSnackbar(getString(Res.string.ai_study_limit_reached_message))
 
             is DayStudyRouteUiAction.ShowWaitForGenerations -> snackbarHostState.showSnackbar(
-                getPluralString(Res.plurals.ai_study_wait_for_generations, action.count, action.count),
+                getWaitForGenerationsMessage(action.count),
             )
         }
     }

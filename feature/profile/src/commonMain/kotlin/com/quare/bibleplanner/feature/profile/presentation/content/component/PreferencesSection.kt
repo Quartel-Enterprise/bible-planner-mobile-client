@@ -98,12 +98,9 @@ private fun StudySuggestionSettingsModel.toSubtitleResource(): StringResource = 
 @Composable
 private fun themeSubtitle(state: ProfileUiState): String? = state.theme.valueOrNull()?.let { theme ->
     val themeName = stringResource(theme.toStringResource())
-    val colorScheme = state.colorScheme.valueOrNull()
-    if (colorScheme != null) {
+    state.colorScheme.valueOrNull()?.let { colorScheme ->
         "$themeName • ${stringResource(colorScheme.toStringResource())}"
-    } else {
-        themeName
-    }
+    } ?: themeName
 }
 
 private fun Theme.toStringResource(): StringResource = when (this) {

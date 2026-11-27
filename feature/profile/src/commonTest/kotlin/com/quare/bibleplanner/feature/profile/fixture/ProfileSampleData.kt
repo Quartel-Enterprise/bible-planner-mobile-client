@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import kotlinx.datetime.LocalDate
 import software.quare.loadable.Loadable
@@ -39,7 +40,7 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
     shouldShowDonateOption = Loadable.Loaded(false),
     isInstagramLinkVisible = Loadable.Loaded(false),
     theme = Loadable.Loaded(Theme.SYSTEM),
-    colorScheme = Loadable.Loaded(null),
+    colorScheme = Loadable.Loaded(ProfileColorScheme.STANDARD_CONTRAST),
     selectedLanguage = Loadable.Loaded(Language.ENGLISH),
     bibleVersionName = Loadable.Loaded(SAMPLE_BIBLE_VERSION_NAME),
     bibleDownloadProgress = Loadable.Loaded(null),

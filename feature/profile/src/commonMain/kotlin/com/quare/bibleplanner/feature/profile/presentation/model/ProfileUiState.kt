@@ -15,7 +15,7 @@ internal data class ProfileUiState(
     val shouldShowDonateOption: Loadable<Boolean>,
     val isInstagramLinkVisible: Loadable<Boolean>,
     val theme: Loadable<Theme>,
-    val colorScheme: Loadable<ProfileColorScheme?>,
+    val colorScheme: Loadable<ProfileColorScheme>,
     val selectedLanguage: Loadable<Language>,
     val bibleVersionName: Loadable<String?>,
     val bibleDownloadProgress: Loadable<Float?>,

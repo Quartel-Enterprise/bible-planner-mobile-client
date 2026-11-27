@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
-import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 class BookDetailsViewModel(
     private val booksRepository: BooksRepository,
@@ -59,7 +57,6 @@ class BookDetailsViewModel(
             previousAllChaptersRead = areAllChaptersRead
 
             val bookGroup = bookGroupMapper.fromBookId(book.id)
-            val bookCategoryName = getString(bookGroup.titleRes)
 
             uiState.update { currentState ->
                 val isSynopsisExpanded = (currentState as? BookDetailsUiState.Success)?.isSynopsisExpanded ?: false
@@ -72,7 +69,6 @@ class BookDetailsViewModel(
                     areAllChaptersRead = areAllChaptersRead,
                     isFavorite = book.isFavorite,
                     bookGroup = bookGroup,
-                    bookCategoryName = bookCategoryName,
                     isSynopsisExpanded = isSynopsisExpanded,
                 )
             }

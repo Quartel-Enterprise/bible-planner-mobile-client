@@ -8,7 +8,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class StoreNameMapperTest {
+internal class StoreNameResourceTest {
     @Test
     fun `GIVEN each purchase store WHEN mapping it THEN names the store the user subscribed on`() {
         // Given

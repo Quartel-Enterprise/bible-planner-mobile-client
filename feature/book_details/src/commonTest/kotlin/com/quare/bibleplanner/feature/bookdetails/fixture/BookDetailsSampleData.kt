@@ -13,7 +13,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 private const val BOOK_CHAPTERS = 150
 private const val READ_CHAPTERS = 76
 
-internal fun bookDetailsUiState(bookCategoryName: String): BookDetailsUiState.Success = BookDetailsUiState.Success(
+internal fun bookDetailsUiState(): BookDetailsUiState.Success = BookDetailsUiState.Success(
     id = BookId.PSA,
     chapters = (1..BOOK_CHAPTERS).map { number ->
         BookChapterModel(
@@ -29,6 +29,5 @@ internal fun bookDetailsUiState(bookCategoryName: String): BookDetailsUiState.Su
     areAllChaptersRead = false,
     isFavorite = true,
     bookGroup = BookGroup.WisdomBooks,
-    bookCategoryName = bookCategoryName,
     isSynopsisExpanded = true,
 )

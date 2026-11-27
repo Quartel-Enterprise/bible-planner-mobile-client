@@ -107,7 +107,6 @@ internal class BookDetailsViewModelTest {
                 areAllChaptersRead = false,
                 isFavorite = false,
                 bookGroup = BookGroup.Pentateuch,
-                bookCategoryName = "Pentateuch",
                 isSynopsisExpanded = false,
             ),
             state,
