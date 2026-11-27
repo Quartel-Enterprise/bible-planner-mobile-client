@@ -22,6 +22,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            api(projects.core.presentation)
             implementation(projects.core.plan)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)

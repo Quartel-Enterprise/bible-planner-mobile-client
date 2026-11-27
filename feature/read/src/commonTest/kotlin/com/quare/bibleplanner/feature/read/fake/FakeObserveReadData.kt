@@ -6,7 +6,6 @@ import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.jetbrains.compose.resources.StringResource
 
 internal class FakeObserveReadData(
     val data: MutableStateFlow<ReadDataUiModel>,
@@ -14,7 +13,6 @@ internal class FakeObserveReadData(
     override fun invoke(
         bookId: BookId,
         chapterNumber: Int,
-        bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
         prependedChapters: List<ReadNavigationSuggestionModel>,

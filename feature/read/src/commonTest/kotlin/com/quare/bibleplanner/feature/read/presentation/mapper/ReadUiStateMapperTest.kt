@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.read.presentation.mapper
 
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
@@ -26,7 +25,6 @@ internal class ReadUiStateMapperTest {
     private val mapper = ReadUiStateMapper()
     private val header = ReadHeaderUiModel(
         bookId = BookId.GEN,
-        bookStringResource = BookId.GEN.toBookNameResource(),
         chapterNumber = 1,
         isChapterRead = false,
         navigationSuggestions = ReadNavigationSuggestionsModel(
@@ -338,12 +336,10 @@ internal class ReadUiStateMapperTest {
     @Test
     fun `GIVEN a chapter to open WHEN creating the loading state THEN shows its header with default settings`() {
         // Given
-        val bookStringResource = BookId.EXO.toBookNameResource()
 
         // When
         val state = mapper.createLoadingState(
             bookId = BookId.EXO,
-            bookStringResource = bookStringResource,
             chapterNumber = 4,
             isChapterRead = true,
         )
@@ -353,7 +349,6 @@ internal class ReadUiStateMapperTest {
             expected = ReadUiState(
                 header = ReadHeaderUiModel(
                     bookId = BookId.EXO,
-                    bookStringResource = bookStringResource,
                     chapterNumber = 4,
                     isChapterRead = true,
                     navigationSuggestions = ReadNavigationSuggestionsModel(

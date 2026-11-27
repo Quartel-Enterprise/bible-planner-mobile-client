@@ -13,7 +13,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
-import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
 
 internal class ReadUiStateMapper {
@@ -47,13 +46,11 @@ internal class ReadUiStateMapper {
 
     fun createLoadingState(
         bookId: BookId,
-        bookStringResource: StringResource,
         chapterNumber: Int,
         isChapterRead: Boolean,
     ): ReadUiState = ReadUiState(
         header = ReadHeaderUiModel(
             bookId = bookId,
-            bookStringResource = bookStringResource,
             chapterNumber = chapterNumber,
             isChapterRead = isChapterRead,
             navigationSuggestions = ReadNavigationSuggestionsModel(

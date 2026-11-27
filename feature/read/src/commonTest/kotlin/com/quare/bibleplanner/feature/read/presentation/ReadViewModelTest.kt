@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
@@ -69,6 +67,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
@@ -184,6 +183,23 @@ internal class ReadViewModelTest {
                 actual = focus,
             )
             assertNull(viewModel.uiState.value.verseFocus)
+        }
+
+    @Test
+    fun `GIVEN target verses WHEN a native UI watches the state THEN receives the focus and its clearing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(targetVerseNumbers = listOf(4, 5))
+            val states = mutableListOf<ReadUiState>()
+            viewModel.stateWatcher.observe { states += it }
+
+            // When
+            viewModel.onEvent(ReadUiEvent.OnVerseFocusShown)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(4, 5), states.first().verseFocus?.verseNumbers)
+            assertNull(states.last().verseFocus)
         }
 
     @Test
@@ -1492,10 +1508,8 @@ internal class ReadViewModelTest {
         notificationPermissionRequests = 0
         trackedEvents = mutableListOf()
         selectionStore = FakeVerseSelectionStore()
-        val bookStringResource = Res.string.mark_as_read
         val chapter = ReadChapterUiModel(
             chapter = testChapter,
-            bookStringResource = bookStringResource,
             isRead = false,
             verses = (1..3).map { number ->
                 VerseUiModel(
@@ -1513,7 +1527,6 @@ internal class ReadViewModelTest {
             ReadDataUiModel(
                 header = ReadHeaderUiModel(
                     bookId = BookId.GEN,
-                    bookStringResource = bookStringResource,
                     chapterNumber = 3,
                     isChapterRead = false,
                     navigationSuggestions = navigationSuggestions,

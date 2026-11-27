@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
+import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -198,7 +199,6 @@ private fun ReadWideHeader(
 ) {
     BoxWithConstraints {
         val hasRoomForTitle = maxWidth >= titleMinColumnWidth
-        val bookStringResource = visibleChapter?.bookStringResource ?: header.bookStringResource
         val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
         val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
         Row(
@@ -216,7 +216,7 @@ private fun ReadWideHeader(
             if (hasRoomForTitle) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "${stringResource(bookStringResource)} $chapterNumber",
+                    text = "${bookId.getBookName()} $chapterNumber",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
