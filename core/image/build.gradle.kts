@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -24,7 +26,7 @@ kotlin {
             dependsOn(skikoMain)
         }
 
-        wasmJsMain {
+        webMain {
             dependsOn(skikoMain)
         }
 
@@ -72,4 +74,7 @@ kotlin {
             implementation(kotlin("test"))
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }

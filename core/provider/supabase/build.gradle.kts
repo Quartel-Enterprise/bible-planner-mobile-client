@@ -64,7 +64,7 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
-        wasmJsMain.dependencies {
+        webMain.dependencies {
             implementation(libs.ktor.client.js)
         }
         jvmMain.dependencies {
@@ -76,7 +76,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.provider.supabase.generated"
     objectName = "SupabaseBuildKonfig"
-    exposeObjectWithName = "SupabaseBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()

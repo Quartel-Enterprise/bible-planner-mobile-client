@@ -80,7 +80,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.feature.releasenotes.generated"
     objectName = "ReleaseNotesBuildKonfig"
-    exposeObjectWithName = "ReleaseNotesBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()

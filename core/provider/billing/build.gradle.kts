@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
@@ -129,7 +130,7 @@ kotlin {
             }
         }
 
-        wasmJsMain {
+        webMain {
             dependsOn(nonMobileMain)
             dependencies {
                 implementation(libs.ktor.client.js)
@@ -137,4 +138,7 @@ kotlin {
             }
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }

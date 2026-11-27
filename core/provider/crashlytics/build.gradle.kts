@@ -59,7 +59,6 @@ val sentryDsn: String = run {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.provider.crashlytics.generated"
     objectName = "CrashlyticsBuildKonfig"
-    exposeObjectWithName = "CrashlyticsBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "SENTRY_DSN", sentryDsn)

@@ -1,6 +1,6 @@
 {
   "core/provider/platform/src/jvmMain/kotlin/com/quare/bibleplanner/core/provider/platform/di/PlatformModule.jvm.kt": 5,
-  "core/provider/platform/src/wasmJsMain/kotlin/com/quare/bibleplanner/core/provider/platform/di/PlatformModule.wasmJs.kt": 5,
+  "core/provider/platform/src/webMain/kotlin/com/quare/bibleplanner/core/provider/platform/di/PlatformModule.web.kt": 5,
   "ui/component/src/commonMain/kotlin/com/quare/bibleplanner/ui/component/ResponsiveGridScope.kt": 14,
   "ui/component/src/commonMain/kotlin/com/quare/bibleplanner/ui/component/ResponsiveGridScopeImpl.kt": 26
 }
