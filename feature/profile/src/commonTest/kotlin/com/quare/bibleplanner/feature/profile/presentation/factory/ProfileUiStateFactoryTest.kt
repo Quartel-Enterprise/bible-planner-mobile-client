@@ -291,7 +291,7 @@ internal class ProfileUiStateFactoryTest {
     }
 
     @Test
-    fun `GIVEN the donate option is shown WHEN observing THEN titles the header as pro and support`() = runTest {
+    fun `GIVEN the donate option is enabled WHEN observing THEN shows the donate option`() = runTest {
         // Given
         prepareScenario(shouldShowDonate = true)
 
@@ -306,7 +306,7 @@ internal class ProfileUiStateFactoryTest {
     }
 
     @Test
-    fun `GIVEN the donate option is hidden WHEN observing THEN titles the header as pro only`() = runTest {
+    fun `GIVEN the donate option is disabled WHEN observing THEN hides the donate option`() = runTest {
         // Given
         prepareScenario(shouldShowDonate = false)
 
