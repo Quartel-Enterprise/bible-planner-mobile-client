@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature
+package com.quare.bibleplanner.feature.paywall.presentation.utils
 
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.feature_ad_free
@@ -16,6 +16,7 @@ import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors
 import bibleplanner.feature.paywall.generated.resources.feature_share_image_style
 import bibleplanner.feature.paywall.generated.resources.feature_share_image_style_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes
+import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes_subtext
 import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.PremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
@@ -32,7 +33,7 @@ internal fun PremiumFeature.toTitleResource(): StringResource = when (this) {
     is UnlimitedNotesPremiumFeature -> Res.string.feature_unlimited_notes
 }
 
-internal fun FixedPremiumFeature.toSubtextResource(): StringResource = when (this) {
+internal fun PremiumFeature.toSubtextResource(): StringResource = when (this) {
     FixedPremiumFeature.AI_DAY_STUDY -> Res.string.feature_ai_day_study_subtext
     FixedPremiumFeature.AI_CHAPTER_STUDY -> Res.string.feature_ai_chapter_study_subtext
     FixedPremiumFeature.AI_CHAT -> Res.string.feature_ai_chat_subtext
@@ -40,4 +41,10 @@ internal fun FixedPremiumFeature.toSubtextResource(): StringResource = when (thi
     FixedPremiumFeature.AD_FREE -> Res.string.feature_ad_free_subtext
     FixedPremiumFeature.HIGHLIGHT_COLORS -> Res.string.feature_highlight_colors_subtext
     FixedPremiumFeature.SHARE_IMAGE_STYLE -> Res.string.feature_share_image_style_subtext
+    is UnlimitedNotesPremiumFeature -> Res.string.feature_unlimited_notes_subtext
+}
+
+internal fun PremiumFeature.toSubtextArgs(): List<Any> = when (this) {
+    is FixedPremiumFeature -> emptyList()
+    is UnlimitedNotesPremiumFeature -> listOf(maxFreeNotes)
 }

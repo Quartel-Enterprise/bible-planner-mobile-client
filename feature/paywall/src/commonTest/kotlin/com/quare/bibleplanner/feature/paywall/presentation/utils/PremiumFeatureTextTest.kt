@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature
+package com.quare.bibleplanner.feature.paywall.presentation.utils
 
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.feature_ad_free
@@ -16,6 +16,7 @@ import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors
 import bibleplanner.feature.paywall.generated.resources.feature_share_image_style
 import bibleplanner.feature.paywall.generated.resources.feature_share_image_style_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes
+import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes_subtext
 import com.quare.bibleplanner.feature.paywall.presentation.model.FixedPremiumFeature
 import com.quare.bibleplanner.feature.paywall.presentation.model.UnlimitedNotesPremiumFeature
 import kotlin.test.Test
@@ -51,14 +52,29 @@ internal class PremiumFeatureTextTest {
     }
 
     @Test
-    fun `GIVEN the unlimited notes feature WHEN mapping its title THEN picks the unlimited notes title`() {
+    fun `GIVEN the unlimited notes feature WHEN mapping its texts THEN maps title subtext and limit`() {
         // Given
         val feature = UnlimitedNotesPremiumFeature(maxFreeNotes = 3)
 
         // When
-        val title = feature.toTitleResource()
+        val texts = Triple(feature.toTitleResource(), feature.toSubtextResource(), feature.toSubtextArgs())
 
         // Then
-        assertEquals(Res.string.feature_unlimited_notes, title)
+        assertEquals(
+            Triple(Res.string.feature_unlimited_notes, Res.string.feature_unlimited_notes_subtext, listOf<Any>(3)),
+            texts,
+        )
+    }
+
+    @Test
+    fun `GIVEN a fixed feature WHEN reading its subtext args THEN has none`() {
+        // Given
+        val feature = FixedPremiumFeature.AD_FREE
+
+        // When
+        val args = feature.toSubtextArgs()
+
+        // Then
+        assertEquals(emptyList(), args)
     }
 }
