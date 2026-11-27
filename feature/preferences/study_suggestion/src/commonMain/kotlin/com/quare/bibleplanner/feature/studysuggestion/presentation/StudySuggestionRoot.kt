@@ -6,9 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.Res
+import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_disabled_message
+import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_enabled_message
+import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_mode_blocked_message
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_title
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.getSheetPane
+import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionMessage
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.viewmodel.StudySuggestionViewModel
@@ -17,6 +21,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -48,11 +53,17 @@ private fun StudySuggestionUiActionCollector(uiActionFlow: Flow<StudySuggestionU
             is StudySuggestionUiAction.ShowSnackbar -> {
                 appSnackbarController.show(
                     AppSnackbarMessage(
-                        stringResource = action.message,
+                        stringResource = action.message.toStringResource(),
                         isDismissible = true,
                     ),
                 )
             }
         }
     }
+}
+
+private fun StudySuggestionMessage.toStringResource(): StringResource = when (this) {
+    StudySuggestionMessage.ENABLED -> Res.string.study_suggestion_enabled_message
+    StudySuggestionMessage.DISABLED -> Res.string.study_suggestion_disabled_message
+    StudySuggestionMessage.MODE_BLOCKED -> Res.string.study_suggestion_mode_blocked_message
 }

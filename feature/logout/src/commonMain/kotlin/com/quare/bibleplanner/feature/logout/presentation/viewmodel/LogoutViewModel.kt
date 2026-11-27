@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.logout.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.logout.generated.resources.Res
-import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
-import bibleplanner.feature.logout.generated.resources.logout_success_message
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -11,7 +8,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutProgress
-import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
@@ -27,7 +23,6 @@ import kotlinx.coroutines.flow.update
 
 internal class LogoutViewModel(
     private val logout: Logout,
-    private val logoutErrorMapper: LogoutErrorMapper,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LogoutUiEvent>(trackEvent) {
@@ -57,16 +52,16 @@ internal class LogoutViewModel(
 
     private suspend fun Result<Unit>.handleLogout() {
         onSuccess {
-            uiAction.emit(LogoutUiAction.NotifySuccess(Res.string.logout_success_message))
+            uiAction.emit(LogoutUiAction.NotifySuccess)
             navigator.navigateBack()
         }.onFailure { throwable ->
             if (throwable is LogoutFlushFailedException) {
                 trackLogoutFailed(reason = REASON_PENDING_CHANGES)
-                uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
+                uiState.update { LogoutUiState.PendingChangesError }
             } else {
                 trackLogoutFailed(reason = REASON_UNKNOWN)
                 uiState.update { LogoutUiState.Idle }
-                uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
+                uiAction.emit(LogoutUiAction.ShowError(LogoutError.UNKNOWN))
             }
         }
     }

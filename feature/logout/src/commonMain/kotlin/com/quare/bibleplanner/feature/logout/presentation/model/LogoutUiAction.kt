@@ -1,14 +1,10 @@
 package com.quare.bibleplanner.feature.logout.presentation.model
 
-import org.jetbrains.compose.resources.StringResource
-
 internal sealed interface LogoutUiAction {
-    data class ShowSnackbar(
-        val message: StringResource,
+    data class ShowError(
+        val error: LogoutError,
     ) : LogoutUiAction
 
     // Why: emitted right before the dialog navigates back, so the screen may be gone when it shows.
-    data class NotifySuccess(
-        val message: StringResource,
-    ) : LogoutUiAction
+    data object NotifySuccess : LogoutUiAction
 }

@@ -13,7 +13,7 @@ Captures a confirmed logout that could not complete. The `pending_changes` reaso
 `feature/logout/.../LogoutViewModel.kt` — failure branch of `LogoutUiEvent.ConfirmLogoutClick`:
 
 - `LogoutFlushFailedException` → `reason=pending_changes` (state becomes `LogoutUiState.PendingChangesError`, offering force logout)
-- any other throwable → `reason=unknown` (error snackbar via `LogoutErrorMapper`)
+- any other throwable → `reason=unknown` (emits `LogoutUiAction.ShowError(LogoutError.UNKNOWN)`, shown as an error snackbar)
 
 ## Parameters
 
