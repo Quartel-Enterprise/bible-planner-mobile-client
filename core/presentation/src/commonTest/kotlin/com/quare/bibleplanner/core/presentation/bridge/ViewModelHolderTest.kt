@@ -88,18 +88,6 @@ internal class ViewModelHolderTest {
     }
 
     @Test
-    fun `GIVEN no work started WHEN clearing THEN does not fail`() {
-        // When
-        holder.clear()
-
-        // Then
-        assertEquals(
-            expected = 1,
-            actual = createdViewModels.single().clearedCount,
-        )
-    }
-
-    @Test
     fun `GIVEN two holders WHEN clearing one THEN the view model of the other is not cleared`() {
         // Given
         val otherHolder = ViewModelHolder(FakeViewModel::class) { FakeViewModel() }

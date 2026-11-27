@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.presentation.bridge
 
-// Why: what Swift and JS hold to stop observing a flow when their view goes away.
+// Why: Swift and JS stop observing through this instead of the coroutine Job, which they can't hold or cancel.
 fun interface Watch {
     fun cancel()
 }

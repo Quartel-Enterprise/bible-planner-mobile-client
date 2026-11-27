@@ -16,9 +16,9 @@ class ViewModelHolder<VM : ViewModel>(
     createViewModel: () -> VM,
 ) {
     private val store = ViewModelStore()
-    private var isCleared = false
 
-    private val createdViewModel: VM = ViewModelProvider
+    // Why: dropped on clear() so a holder Swift or JS still references doesn't keep the cleared ViewModel alive.
+    private var createdViewModel: VM? = ViewModelProvider
         .create(
             store = store,
             factory = viewModelFactory { addInitializer(kClass) { createViewModel() } },
@@ -26,13 +26,10 @@ class ViewModelHolder<VM : ViewModel>(
 
     // Why: clear() ends the holder's life; reading a cancelled ViewModel would leave a screen silently dead.
     val viewModel: VM
-        get() {
-            check(!isCleared) { "ViewModelHolder was cleared; create a new one for the screen." }
-            return createdViewModel
-        }
+        get() = checkNotNull(createdViewModel) { "ViewModelHolder was cleared; create a new one for the screen." }
 
     fun clear() {
-        isCleared = true
+        createdViewModel = null
         store.clear()
     }
 }
