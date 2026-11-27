@@ -25,6 +25,7 @@ import bibleplanner.feature.books.generated.resources.content_description_clear_
 import bibleplanner.feature.books.generated.resources.grid
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import com.quare.bibleplanner.feature.books.fixture.booksUiState
 import com.quare.bibleplanner.feature.books.fixture.exodus
 import com.quare.bibleplanner.feature.books.fixture.genesis

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

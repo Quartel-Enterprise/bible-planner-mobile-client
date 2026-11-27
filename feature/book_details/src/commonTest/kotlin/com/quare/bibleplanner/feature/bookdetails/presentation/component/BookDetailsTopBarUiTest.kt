@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.ui.component.generated.resources.back
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.platform.Platform
