@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.viewmodel
 
 import com.quare.bibleplanner.core.presentation.bridge.ViewModelHolder
+import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import org.koin.mp.KoinPlatform
 
@@ -12,6 +13,11 @@ object NativeViewModels {
     // Why: Koin throws when it isn't started or can't build the ViewModel; without @Throws that terminates the app.
     @Throws(Exception::class)
     fun createReadingPlan(): ViewModelHolder<ReadingPlanViewModel> = ViewModelHolder(ReadingPlanViewModel::class) {
+        KoinPlatform.getKoin().get()
+    }
+
+    @Throws(Exception::class)
+    fun createBooks(): ViewModelHolder<BooksViewModel> = ViewModelHolder(BooksViewModel::class) {
         KoinPlatform.getKoin().get()
     }
 }

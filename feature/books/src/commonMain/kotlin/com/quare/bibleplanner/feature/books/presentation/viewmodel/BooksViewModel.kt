@@ -1,10 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.favorites
-import bibleplanner.feature.books.generated.resources.read
-import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBooksScreenPreferencesUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
@@ -16,6 +12,7 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -45,7 +42,7 @@ import org.jetbrains.compose.resources.getString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-class BooksViewModel(
+class BooksViewModel internal constructor(
     private val booksRepository: BooksRepository,
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
     private val bookGroupMapper: BookGroupMapper,
@@ -60,6 +57,11 @@ class BooksViewModel(
 
     val uiAction: SharedFlow<BooksUiAction>
         field = MutableSharedFlow<BooksUiAction>()
+
+    // Why: SwiftUI can't collect a Flow; it observes the screen through these, built only when it asks for them.
+    val stateWatcher: FlowWatcher<BooksUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
+
+    val actionWatcher: FlowWatcher<BooksUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
 
     private var allBooks: List<BookDataModel> = emptyList()
     private var bookNames: Map<BookId, String> = emptyMap()
@@ -346,17 +348,14 @@ class BooksViewModel(
         val filterOptions = listOf(
             BookFilterOption(
                 type = BookFilterType.OnlyRead,
-                label = Res.string.read,
                 isSelected = isOnlyRead,
             ),
             BookFilterOption(
                 type = BookFilterType.OnlyUnread,
-                label = Res.string.unread,
                 isSelected = isOnlyUnread,
             ),
             BookFilterOption(
                 type = BookFilterType.Favorites,
-                label = Res.string.favorites,
                 isSelected = isFavoritesOnly,
             ),
         )

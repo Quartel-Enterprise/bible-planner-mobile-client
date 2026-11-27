@@ -34,6 +34,8 @@ kotlin {
             export(projects.core.model)
             export(projects.core.presentation)
             export(projects.feature.readingPlan)
+            export(projects.feature.books)
+            export(projects.core.books)
         }
     }
 
@@ -78,6 +80,7 @@ kotlin {
             api(projects.feature.preferences.themeSelection)
             api(projects.feature.preferences.studySuggestion)
             api(projects.feature.readingPlan)
+            api(projects.feature.books)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
             api(projects.feature.deleteAccount)
