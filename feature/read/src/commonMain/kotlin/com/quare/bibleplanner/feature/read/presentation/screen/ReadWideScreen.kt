@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
-import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -216,7 +216,7 @@ private fun ReadWideHeader(
             if (hasRoomForTitle) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "${stringResource(bookId.toBookNameResource())} $chapterNumber",
+                    text = "${bookId.getBookName()} $chapterNumber",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

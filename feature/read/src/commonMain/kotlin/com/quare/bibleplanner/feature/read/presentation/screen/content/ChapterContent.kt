@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
@@ -22,7 +22,6 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.Chapter
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyEntryCard
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
 import com.quare.bibleplanner.feature.read.presentation.screen.component.toUntrimmed
-import org.jetbrains.compose.resources.stringResource
 
 private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
 
@@ -56,7 +55,7 @@ internal fun LazyListScope.chapterContent(
     item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         Column {
             ChapterHeader(
-                bookName = stringResource(chapter.chapter.bookId.toBookNameResource()),
+                bookName = chapter.chapter.bookId.getBookName(),
                 chapterNumber = chapter.chapter.chapterNumber,
                 isBookNameSpoken = spokenWord == ListeningWordTargetModel.ChapterBook,
                 isChapterNumberSpoken = spokenWord == ListeningWordTargetModel.ChapterNumber,
@@ -115,7 +114,7 @@ internal fun LazyListScope.chapterContent(
     }
     if (shouldListChapterStudyCard(isChapterStudyBeside)) {
         item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-            val bookName = stringResource(chapter.chapter.bookId.toBookNameResource())
+            val bookName = chapter.chapter.bookId.getBookName()
             ChapterStudyEntryCard(
                 chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf {
                     settings.isVerticalReadingEnabled

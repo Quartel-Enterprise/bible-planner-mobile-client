@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
-import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
@@ -44,7 +44,7 @@ internal fun ReadTopBar(
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val bookName = stringResource((visibleChapter?.chapter?.bookId ?: header.bookId).toBookNameResource())
+    val bookName = (visibleChapter?.chapter?.bookId ?: header.bookId).getBookName()
     val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
     TopAppBar(
         modifier = modifier,

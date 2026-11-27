@@ -162,9 +162,6 @@ class ReadViewModel internal constructor(
             }
         }
 
-    // Why: SwiftUI can't collect a Flow; it observes the screen through this, built only when it asks for it.
-    val stateWatcher: FlowWatcher<ReadUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
-
     val uiState: StateFlow<ReadUiState> = combine(
         combine(
             dataFlow,
@@ -209,6 +206,9 @@ class ReadViewModel internal constructor(
             isChapterRead = route.isChapterRead,
         ),
     )
+
+    // Why: SwiftUI can't collect a Flow; it observes the screen through this, built only when it asks for it.
+    val stateWatcher: FlowWatcher<ReadUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
 
     init {
         prefetchStudyQuotaForDaysAboutToFinish()
