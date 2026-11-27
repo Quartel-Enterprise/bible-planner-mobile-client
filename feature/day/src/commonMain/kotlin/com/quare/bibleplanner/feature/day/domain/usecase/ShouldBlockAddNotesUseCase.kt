@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseC
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
 
-class ShouldBlockAddNotesUseCase(
+internal class ShouldBlockAddNotesUseCase(
     private val getDaysWithNotesCount: GetDaysWithNotesCountUseCase,
     private val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
     private val isFreeUser: IsFreeUserUseCase,

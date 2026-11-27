@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.date.toLocalDate
 import kotlinx.datetime.LocalDate
 
-class GetLatestSelectableDateUseCase(
+internal class GetLatestSelectableDateUseCase(
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
 ) {

@@ -928,12 +928,15 @@ internal class DayViewModelTest {
             // Given
             prepareScenario()
             val watchedStates = mutableListOf<DayUiState>()
+            val currentState = viewModel.uiState.value
             viewModel.stateWatcher.observe { watchedStates += it }
+            val firstFrame = watchedStates.toList()
 
             // When
             awaitLoaded()
 
             // Then
+            assertEquals(listOf(currentState), firstFrame)
             assertIs<DayUiState.Loaded>(watchedStates.last())
         }
 
