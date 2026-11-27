@@ -19,11 +19,33 @@ fun AppAlertDialog(
     onDismiss: () -> Unit,
     isDestructive: Boolean = false,
 ) {
+    AppAlertDialog(
+        title = title,
+        confirmText = confirmText,
+        onConfirm = onConfirm,
+        dismissText = dismissText,
+        onDismiss = onDismiss,
+        isDestructive = isDestructive,
+        text = { Text(text = text) },
+    )
+}
+
+@Composable
+fun AppAlertDialog(
+    title: String,
+    confirmText: String,
+    onConfirm: () -> Unit,
+    dismissText: String?,
+    onDismiss: () -> Unit,
+    isDestructive: Boolean = false,
+    onDismissRequest: () -> Unit = onDismiss,
+    text: @Composable () -> Unit,
+) {
     val resolution = remember { AlertDialogResolution() }
     AlertDialog(
-        onDismissRequest = { resolution.resolve(onDismiss) },
+        onDismissRequest = { resolution.resolve(onDismissRequest) },
         title = { Text(text = title) },
-        text = { Text(text = text) },
+        text = text,
         confirmButton = {
             TextButton(
                 onClick = { resolution.resolve(onConfirm) },
