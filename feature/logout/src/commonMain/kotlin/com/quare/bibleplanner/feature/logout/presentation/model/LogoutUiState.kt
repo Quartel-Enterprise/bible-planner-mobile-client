@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.logout.presentation.model
 
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
-import org.jetbrains.compose.resources.StringResource
 
 internal sealed interface LogoutUiState {
     data object Idle : LogoutUiState
@@ -10,7 +9,6 @@ internal sealed interface LogoutUiState {
         val phase: LogoutPhase,
     ) : LogoutUiState
 
-    data class PendingChangesError(
-        val pendingResource: StringResource,
-    ) : LogoutUiState
+    // Why: unsynced favorites are the only pending changes a logout can lose, so the UI names them itself.
+    data object PendingChangesError : LogoutUiState
 }

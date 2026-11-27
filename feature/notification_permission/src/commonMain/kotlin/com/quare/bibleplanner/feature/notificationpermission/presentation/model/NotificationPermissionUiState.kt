@@ -1,10 +1,7 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation.model
 
-import org.jetbrains.compose.resources.StringResource
-
+// Why: the texts follow isFirstTime (ask first, then point to the settings), so each UI picks its own copy.
 data class NotificationPermissionUiState(
     val isFirstTime: Boolean,
-    val textRes: StringResource,
-    val confirmButtonTextRes: StringResource,
     val shouldShowDismiss: Boolean,
 )

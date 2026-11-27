@@ -1,11 +1,6 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.notification_permission.generated.resources.Res
-import bibleplanner.feature.notification_permission.generated.resources.notification_permission_accept
-import bibleplanner.feature.notification_permission.generated.resources.notification_permission_explanation
-import bibleplanner.feature.notification_permission.generated.resources.notification_permission_open_settings
-import bibleplanner.feature.notification_permission.generated.resources.notification_permission_settings_message
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -31,8 +26,6 @@ internal class NotificationPermissionViewModel(
         field = MutableStateFlow<NotificationPermissionUiState>(
             NotificationPermissionUiState(
                 isFirstTime = true,
-                textRes = Res.string.notification_permission_explanation,
-                confirmButtonTextRes = Res.string.notification_permission_accept,
                 shouldShowDismiss = true,
             ),
         )
@@ -86,8 +79,6 @@ internal class NotificationPermissionViewModel(
             uiState.update {
                 NotificationPermissionUiState(
                     isFirstTime = false,
-                    textRes = Res.string.notification_permission_settings_message,
-                    confirmButtonTextRes = Res.string.notification_permission_open_settings,
                     shouldShowDismiss = false,
                 )
             }

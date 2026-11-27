@@ -1,10 +1,6 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.Res
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_disabled_message
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_enabled_message
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_mode_blocked_message
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -14,6 +10,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.Se
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.SetStudySuggestionSyncEnabled
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.factory.StudySuggestionUiStateFactory
+import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionMessage
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiState
@@ -24,7 +21,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
 
 internal class StudySuggestionViewModel(
     private val setStudySuggestionEnabled: SetStudySuggestionEnabled,
@@ -52,7 +48,7 @@ internal class StudySuggestionViewModel(
             is StudySuggestionUiEvent.OnModeClick -> selectMode(event.mode)
 
             StudySuggestionUiEvent.OnBlockedModeClick -> showSnackbar(
-                Res.string.study_suggestion_mode_blocked_message,
+                StudySuggestionMessage.MODE_BLOCKED,
             )
 
             is StudySuggestionUiEvent.SyncToggleClicked -> toggleSync(event.isNewValueOn)
@@ -69,9 +65,9 @@ internal class StudySuggestionViewModel(
         viewModelScope.launch {
             setStudySuggestionEnabled(isNewValueOn)
             val message = if (isNewValueOn) {
-                Res.string.study_suggestion_enabled_message
+                StudySuggestionMessage.ENABLED
             } else {
-                Res.string.study_suggestion_disabled_message
+                StudySuggestionMessage.DISABLED
             }
             uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
         }
@@ -89,7 +85,7 @@ internal class StudySuggestionViewModel(
         }
     }
 
-    private fun showSnackbar(message: StringResource) {
+    private fun showSnackbar(message: StudySuggestionMessage) {
         viewModelScope.launch {
             uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
         }

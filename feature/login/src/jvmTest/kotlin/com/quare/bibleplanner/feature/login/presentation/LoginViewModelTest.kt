@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.login.presentation
 
-import bibleplanner.feature.login.generated.resources.Res
-import bibleplanner.feature.login.generated.resources.login_result_error
-import bibleplanner.feature.login.generated.resources.login_result_success
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -12,6 +9,7 @@ import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
+import com.quare.bibleplanner.feature.login.presentation.model.LoginResultMessage
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
@@ -186,7 +184,7 @@ internal class LoginViewModelTest {
                 trackedEvents.single(),
             )
             assertEquals(
-                listOf<LoginUiAction>(LoginUiAction.NotifyLoginResult(Res.string.login_result_success)),
+                listOf<LoginUiAction>(LoginUiAction.NotifyLoginResult(LoginResultMessage.SUCCESS)),
                 actions,
             )
         }
@@ -255,7 +253,7 @@ internal class LoginViewModelTest {
         // Then
         assertEquals(LoginError.CONNECTION, viewModel.state.value.error)
         assertFalse(viewModel.state.value.showGoogleSignInUnavailableDialog)
-        assertEquals(listOf<LoginUiAction>(LoginUiAction.NotifyLoginResult(Res.string.login_result_error)), actions)
+        assertEquals(listOf<LoginUiAction>(LoginUiAction.NotifyLoginResult(LoginResultMessage.ERROR)), actions)
         assertEquals(
             AnalyticsEventNames.LOGIN_FAILED to mapOf<String, Any>(
                 AnalyticsParams.METHOD to "google",

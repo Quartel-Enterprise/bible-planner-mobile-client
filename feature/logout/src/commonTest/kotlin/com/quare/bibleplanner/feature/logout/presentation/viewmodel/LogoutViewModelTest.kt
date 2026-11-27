@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutProgress
-import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
@@ -141,7 +140,7 @@ internal class LogoutViewModelTest {
             // Then
             assertEquals(LogoutUiState.Idle, viewModel.uiState.value)
             assertEquals(1, actions.size)
-            assertIs<LogoutUiAction.ShowSnackbar>(actions.first())
+            assertIs<LogoutUiAction.ShowError>(actions.first())
         }
 
     @Test
@@ -256,7 +255,6 @@ internal class LogoutViewModelTest {
         viewModel = LogoutViewModel(
             navigator = navigator,
             logout = { shouldFlush -> fakeLogout(shouldFlush, result) },
-            logoutErrorMapper = LogoutErrorMapper(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { navigator.commands.collect { commands += it } }
