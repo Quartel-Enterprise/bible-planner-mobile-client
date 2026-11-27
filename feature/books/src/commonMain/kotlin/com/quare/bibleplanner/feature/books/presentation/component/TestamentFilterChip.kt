@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.books.presentation.component
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.all_testaments
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import com.quare.bibleplanner.feature.books.presentation.model.BookTestamentFilter
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.AppDropdownChip

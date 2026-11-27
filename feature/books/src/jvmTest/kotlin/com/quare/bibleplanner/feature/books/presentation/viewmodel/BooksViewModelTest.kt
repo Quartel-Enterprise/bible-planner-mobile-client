@@ -802,6 +802,54 @@ internal class BooksViewModelTest {
             assertFalse(state.shouldShowTestamentToggle)
         }
 
+    @Test
+    fun `GIVEN loaded books WHEN a native UI watches the state THEN receives the current state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val states = mutableListOf<BooksUiState>()
+
+            // When
+            viewModel.stateWatcher.observe { states += it }
+
+            // Then
+            assertEquals(listOf(viewModel.uiState.value), states)
+            assertIs<BooksUiState.Success>(states.single())
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the state WHEN selecting a testament THEN receives the updated state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val states = mutableListOf<BooksUiState>()
+            viewModel.stateWatcher.observe { states += it }
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.NewTestament))
+
+            // Then
+            assertEquals(
+                BookTestamentFilter.NewTestament,
+                assertIs<BooksUiState.Success>(states.last()).selectedTestamentFilter,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the actions WHEN selecting a testament THEN receives the scroll to top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val watchedActions = mutableListOf<BooksUiAction>()
+            viewModel.actionWatcher.observe { watchedActions += it }
+
+            // When
+            sendEvent(BooksUiEvent.OnTestamentSelect(BookTestamentFilter.NewTestament))
+
+            // Then
+            assertEquals(listOf<BooksUiAction>(BooksUiAction.ScrollToTop), watchedActions)
+        }
+
     private fun successState(): BooksUiState.Success = assertIs<BooksUiState.Success>(viewModel.uiState.value)
 
     private fun chapter(isRead: Boolean): BookChapterModel = BookChapterModel(
