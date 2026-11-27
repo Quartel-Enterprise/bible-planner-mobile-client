@@ -29,7 +29,9 @@ platform after each one.
    web reaches gain a `js` target next to (and later instead of) `wasmJs`. Every multiplatform module now has both
    targets: web code goes in `webMain`, which both share, and `:shared` builds the `shared` JS library with
    TypeScript definitions (`./gradlew :shared:jsBrowserProductionLibraryDistribution`). A module whose build adds its
-   own `dependsOn` edges turns off the default hierarchy, so it wires `jsMain` and `wasmJsMain` to `webMain` itself.
+   own `dependsOn` edges turns off the default hierarchy, so it calls `dependWebTargetsOnWebMain()` (build-logic)
+   to wire `jsMain` and `wasmJsMain` to `webMain`. The js target builds ES modules, so `import.meta.url` (the Room
+   worker) keeps working once the React app bundles the library.
 2. **Android native.** The composables move out of the shared feature modules into Android modules with a design
    system on Material 3 Expressive.
 3. **SwiftUI and React**, one feature at a time, starting with the reading flow (main, reading plan, day, read,

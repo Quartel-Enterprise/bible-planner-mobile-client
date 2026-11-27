@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
@@ -25,14 +26,6 @@ kotlin {
 
         webMain {
             dependsOn(nonMobileMain)
-        }
-
-        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
-        jsMain {
-            dependsOn(webMain.get())
-        }
-        wasmJsMain {
-            dependsOn(webMain.get())
         }
 
         iosMain {
@@ -88,6 +81,9 @@ kotlin {
             implementation(libs.play.app.update.ktx)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
 
 buildkonfig {

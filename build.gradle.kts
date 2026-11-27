@@ -52,6 +52,9 @@ moduleGraphAssert {
         "iosMainImplementation",
         "jvmMainImplementation",
         "mobileMainImplementation",
+        "webMainImplementation",
+        "jsMainImplementation",
+        "wasmJsMainImplementation",
     )
     // :core:navigation and :core:provider:koin are the composition root: they wire every feature,
     // so they are the only core modules allowed to see features, and nothing below may see them.

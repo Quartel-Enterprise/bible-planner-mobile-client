@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -36,14 +38,6 @@ kotlin {
 
         webMain {
             dependsOn(nonMobileMain)
-        }
-
-        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
-        jsMain {
-            dependsOn(webMain.get())
-        }
-        wasmJsMain {
-            dependsOn(webMain.get())
         }
 
         iosMain {
@@ -85,6 +79,9 @@ kotlin {
             implementation(libs.coil.network.ktor)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
 
 compose.resources {

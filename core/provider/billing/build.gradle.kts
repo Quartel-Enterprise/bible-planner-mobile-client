@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
@@ -136,13 +137,8 @@ kotlin {
                 implementation(libs.kotlinx.browser)
             }
         }
-
-        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
-        jsMain {
-            dependsOn(webMain.get())
-        }
-        wasmJsMain {
-            dependsOn(webMain.get())
-        }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }

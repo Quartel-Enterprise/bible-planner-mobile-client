@@ -19,6 +19,8 @@ private external class CurrencyFormatter : JsAny {
     fun format(amount: Double): String
 }
 
+// Why: js() as a whole body is the interop both web targets compile; @JsFun is Wasm only.
 @OptIn(ExperimentalWasmJsInterop::class)
-@JsFun("(currency) => new Intl.NumberFormat(undefined, { style: 'currency', currency: currency })")
-private external fun createCurrencyFormatter(currency: String): CurrencyFormatter
+@Suppress("UNUSED_PARAMETER")
+private fun createCurrencyFormatter(currency: String): CurrencyFormatter =
+    js("new Intl.NumberFormat(undefined, { style: 'currency', currency: currency })")

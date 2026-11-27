@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -93,21 +95,16 @@ kotlin {
             dependsOn(iosMain.get())
         }
 
-        // Why: the manual dependsOn edges above turn off the default hierarchy, so both web targets are wired here.
         webMain {
             dependsOn(commonMain.get())
         }
-        jsMain {
-            dependsOn(webMain.get())
-        }
-        wasmJsMain {
-            dependsOn(webMain.get())
-        }
-
         androidMain.dependencies {
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.session)
             implementation(libs.koin.android)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
