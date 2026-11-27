@@ -116,6 +116,9 @@ baselineProfile {
 dependencies {
     implementation(projects.shared)
 
+    // Native Android UI
+    implementation(projects.android.feature.deleteNotes)
+
     // Features
     implementation(projects.feature.materialYou)
     implementation(projects.feature.preferences.themeSelection)

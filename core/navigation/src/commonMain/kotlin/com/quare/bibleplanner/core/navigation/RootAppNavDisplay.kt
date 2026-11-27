@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.isForwardPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -52,6 +53,7 @@ import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -146,7 +148,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
-                    entryProvider = toEntryProvider(),
+                    entryProvider = withNativeEntries(toEntryProvider()),
                 )
             }
         }
@@ -164,6 +166,13 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         )
         PendingBibleUpdatesPromptOverlay()
     }
+}
+
+@Composable
+private fun withNativeEntries(sharedEntries: (NavKey) -> NavEntry<NavKey>): (NavKey) -> NavEntry<NavKey> {
+    val koin = getKoin()
+    val nativeEntries = remember(koin) { koin.getOrNull<NativeEntryProvider>() } ?: return sharedEntries
+    return { key -> nativeEntries.entryFor(key) ?: sharedEntries(key) }
 }
 
 @Composable

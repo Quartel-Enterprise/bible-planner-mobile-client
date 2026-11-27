@@ -113,6 +113,8 @@ include(":feature:verse:share")
 include(":feature:verse:add_note")
 include(":feature:verse:selection_menu")
 include(":feature:verse:annotations")
+include(":android:designsystem")
+include(":android:feature:delete_notes")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

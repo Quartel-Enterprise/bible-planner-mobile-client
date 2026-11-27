@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_notes_title">Delete Notes</string>
+    <string name="delete_notes_message">Are you sure you want to delete the notes for this day? This action cannot be undone.</string>
+    <string name="delete_notes_cancel">Cancel</string>
+    <string name="delete_notes_confirm">Delete</string>
+</resources>
