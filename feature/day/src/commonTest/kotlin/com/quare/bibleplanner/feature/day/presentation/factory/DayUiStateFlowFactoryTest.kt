@@ -18,6 +18,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
@@ -33,7 +34,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
@@ -94,7 +94,6 @@ internal class DayUiStateFlowFactoryTest {
         isFavorite = false,
     )
     private lateinit var factory: DayUiStateFlowFactory
-    private lateinit var editDaySelectableDates: EditDaySelectableDates
 
     @Test
     fun `GIVEN a day missing from the plan WHEN creating the state THEN stays loading`() = runTest {
@@ -167,7 +166,10 @@ internal class DayUiStateFlowFactoryTest {
         assertNull(state.datePickerUiState.visiblePicker)
         assertNull(state.datePickerUiState.selectedDateMillis)
         assertNull(state.datePickerUiState.selectedLocalDate)
-        assertSame(editDaySelectableDates, state.datePickerUiState.selectableDates)
+        assertEquals(
+            EditDaySelectableDates(latestSelectableDate = LocalDate(1970, 1, 1)),
+            state.datePickerUiState.selectableDates,
+        )
     }
 
     @Test
@@ -368,10 +370,6 @@ internal class DayUiStateFlowFactoryTest {
         val localDateTimeProvider = { timestamp: Long ->
             Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(TimeZone.UTC)
         }
-        editDaySelectableDates = EditDaySelectableDates(
-            currentTimestampProvider = { 0L },
-            localDateTimeProvider = localDateTimeProvider,
-        )
         factory = DayUiStateFlowFactory(
             getDayDetails = GetDayDetailsUseCase(
                 getPlansByWeekUseCase = GetPlansByWeekUseCase(
@@ -402,7 +400,10 @@ internal class DayUiStateFlowFactoryTest {
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = editDaySelectableDates,
+            getLatestSelectableDate = GetLatestSelectableDateUseCase(
+                currentTimestampProvider = { 0L },
+                localDateTimeProvider = localDateTimeProvider,
+            ),
             convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(
                 localDateTimeProvider,
             ),

@@ -41,7 +41,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
-import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
@@ -1057,7 +1057,7 @@ internal class DayViewModelTest {
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(
+            getLatestSelectableDate = GetLatestSelectableDateUseCase(
                 currentTimestampProvider = { now },
                 localDateTimeProvider = localDateTimeProvider,
             ),

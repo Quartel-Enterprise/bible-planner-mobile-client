@@ -11,7 +11,6 @@ import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationMod
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
-import kotlinx.datetime.atTime
 
 /**
  * The day the screenshots open on: Genesis 1-3, every chapter ticked off, carrying a note of the
@@ -54,15 +53,7 @@ private fun datePickerUiState(): DatePickerUiState = DatePickerUiState(
     visiblePicker = null,
     selectedDateMillis = null,
     selectedLocalDate = readDate,
-    selectableDates = EditDaySelectableDates(
-        currentTimestampProvider = { 0L },
-        localDateTimeProvider = {
-            readDate.atTime(
-                hour = 7,
-                minute = 12,
-            )
-        },
-    ),
+    selectableDates = EditDaySelectableDates(latestSelectableDate = readDate),
     initialTimestamp = 0L,
     initialHour = 7,
     initialMinute = 12,

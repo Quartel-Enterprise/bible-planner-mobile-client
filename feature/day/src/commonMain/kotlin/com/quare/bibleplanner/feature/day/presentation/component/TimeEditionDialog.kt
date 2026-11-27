@@ -5,7 +5,6 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.cancel
 import bibleplanner.feature.day.generated.resources.next
@@ -97,13 +96,10 @@ internal fun TimeEditionDialog(
     }
 }
 
-@Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun EditDaySelectableDates.toComposeSelectableDates(): SelectableDates = remember(this) {
-    object : SelectableDates {
-        override fun isSelectableDate(utcTimeMillis: Long): Boolean =
-            this@toComposeSelectableDates.isSelectableDate(utcTimeMillis)
+private fun EditDaySelectableDates.toComposeSelectableDates(): SelectableDates = object : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+        this@toComposeSelectableDates.isSelectableDate(utcTimeMillis)
 
-        override fun isSelectableYear(year: Int): Boolean = this@toComposeSelectableDates.isSelectableYear(year)
-    }
+    override fun isSelectableYear(year: Int): Boolean = this@toComposeSelectableDates.isSelectableYear(year)
 }
