@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
-import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.main.generated.resources.Res
 import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.plans
@@ -53,7 +52,7 @@ internal class MainScreenViewModelTest {
     private lateinit var profileFlow: MutableStateFlow<UserProfile?>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var actions: List<MainScreenUiAction>
-    private lateinit var navigationItems: List<List<MainNavigationItemModel<NavKey>>>
+    private lateinit var navigationItems: List<List<MainNavigationItemModel<MainNavRouteDestination>>>
 
     @BeforeTest
     fun setUp() {
@@ -101,7 +100,7 @@ internal class MainScreenViewModelTest {
             // Then
             assertEquals(
                 listOf(MainNavRouteDestination.Plans, MainNavRouteDestination.Books, MainNavRouteDestination.Profile),
-                items.map(MainNavigationItemModel<NavKey>::route),
+                items.map(MainNavigationItemModel<MainNavRouteDestination>::route),
             )
             assertEquals(
                 MainNavigationIcon.Profile(
@@ -242,9 +241,12 @@ internal class MainScreenViewModelTest {
     fun `GIVEN a signed in user WHEN a native UI watches the tabs THEN receives the avatar of the profile tab`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(profile = null)
-            val watchedItems = mutableListOf<List<MainNavigationItemModel<NavKey>>>()
-            viewModel.navigationItemsWatcher.observe { watchedItems += it }
+            prepareScenario(
+                profile = null,
+                collectInBackground = false,
+            )
+            val watchedItems = mutableListOf<List<MainNavigationItemModel<MainNavRouteDestination>>>()
+            viewModel.stateWatcher.observe { watchedItems += it }
 
             // When
             profileFlow.value = profile
@@ -283,6 +285,7 @@ internal class MainScreenViewModelTest {
     private fun TestScope.prepareScenario(
         language: Language = Language.ENGLISH,
         profile: UserProfile? = null,
+        collectInBackground: Boolean = true,
     ) {
         profileFlow = MutableStateFlow(profile)
         trackedEvents = mutableListOf()
@@ -291,10 +294,14 @@ internal class MainScreenViewModelTest {
             observeUserProfile = { profileFlow },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        actions = mutableListOf()
+        navigationItems = mutableListOf()
+        // Why: a watcher test must prove the watcher alone starts the WhileSubscribed flows.
+        if (!collectInBackground) return
         actions = mutableListOf<MainScreenUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }
-        navigationItems = mutableListOf<List<MainNavigationItemModel<NavKey>>>().also { collected ->
+        navigationItems = mutableListOf<List<MainNavigationItemModel<MainNavRouteDestination>>>().also { collected ->
             backgroundScope.launch { viewModel.mainNavigationItemModels.collect { collected += it } }
         }
     }

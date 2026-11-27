@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.main.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import androidx.navigation3.runtime.NavKey
 import com.mohamedrejeb.calf.sf.symbols.SFSymbol
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
@@ -40,7 +39,7 @@ class MainScreenViewModel internal constructor(
     val uiAction: SharedFlow<MainScreenUiAction>
         field = MutableSharedFlow<MainScreenUiAction>()
 
-    val mainNavigationItemModels: StateFlow<List<MainNavigationItemModel<NavKey>>> =
+    val mainNavigationItemModels: StateFlow<List<MainNavigationItemModel<MainNavRouteDestination>>> =
         observeUserProfile().map(::toMainNavigationItemModels).stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -48,7 +47,7 @@ class MainScreenViewModel internal constructor(
         )
 
     // Why: SwiftUI can't collect a Flow; it observes the tabs and actions through these, built only when it asks.
-    val navigationItemsWatcher: FlowWatcher<List<MainNavigationItemModel<NavKey>>> by lazy {
+    val stateWatcher: FlowWatcher<List<MainNavigationItemModel<MainNavRouteDestination>>> by lazy {
         FlowWatcher(mainNavigationItemModels, viewModelScope)
     }
 
@@ -72,7 +71,9 @@ class MainScreenViewModel internal constructor(
         }
     }
 
-    private fun toMainNavigationItemModels(userProfile: UserProfile?): List<MainNavigationItemModel<NavKey>> = listOf(
+    private fun toMainNavigationItemModels(
+        userProfile: UserProfile?,
+    ): List<MainNavigationItemModel<MainNavRouteDestination>> = listOf(
         MainNavRouteDestination.Plans,
         MainNavRouteDestination.Books,
         MainNavRouteDestination.Profile,
@@ -80,7 +81,7 @@ class MainScreenViewModel internal constructor(
 
     private fun MainNavRouteDestination.toMainNavigationItemModel(
         userProfile: UserProfile?,
-    ): MainNavigationItemModel<NavKey> = MainNavigationItemModel(
+    ): MainNavigationItemModel<MainNavRouteDestination> = MainNavigationItemModel(
         route = this,
         presentationModel = when (this) {
             MainNavRouteDestination.Plans -> MainNavigationItemPresentationModel(

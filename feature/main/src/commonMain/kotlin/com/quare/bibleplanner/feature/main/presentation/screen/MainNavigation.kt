@@ -28,6 +28,7 @@ import com.mohamedrejeb.calf.ui.navigation.AdaptiveNavigationBar
 import com.mohamedrejeb.calf.ui.navigation.UIKitTabBarConfiguration
 import com.mohamedrejeb.calf.ui.navigation.UIKitUITabBarItem
 import com.mohamedrejeb.calf.ui.uikit.UIKitImage
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -45,7 +46,7 @@ internal fun MainNavigationBar(
     modifier: Modifier,
     isNativeBarVisible: Boolean,
     selectedRoute: NavKey?,
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -99,17 +100,18 @@ internal fun MainNavigationBar(
 }
 
 @Composable
-private fun MainNavigationItemModel<NavKey>.toUIKitUITabBarItem(): UIKitUITabBarItem = UIKitUITabBarItem(
-    title = stringResource(route.toTabTitle()),
-    image = UIKitImage.SystemName(presentationModel.iosIcon.symbolName),
-    selectedImage = UIKitImage.SystemName(presentationModel.iosIcon.selectedSymbolName),
-)
+private fun MainNavigationItemModel<MainNavRouteDestination>.toUIKitUITabBarItem(): UIKitUITabBarItem =
+    UIKitUITabBarItem(
+        title = stringResource(route.toTabTitle()),
+        image = UIKitImage.SystemName(presentationModel.iosIcon.symbolName),
+        selectedImage = UIKitImage.SystemName(presentationModel.iosIcon.selectedSymbolName),
+    )
 
 @Composable
 internal fun MainNavigationRail(
     modifier: Modifier,
     selectedRoute: NavKey?,
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -134,8 +136,8 @@ internal fun MainNavigationRail(
 
 @Composable
 private fun MainNavigationItemsComponent(
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
-    isItemSelected: (MainNavigationItemModel<NavKey>) -> Boolean,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
+    isItemSelected: (MainNavigationItemModel<MainNavRouteDestination>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
     itemFactory: @Composable (Modifier, Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {
@@ -172,7 +174,7 @@ private fun MainNavigationItemsComponent(
 @Composable
 private fun MainNavigationItemIcon(
     icon: MainNavigationIcon,
-    route: NavKey,
+    route: MainNavRouteDestination,
     contentDescription: String,
 ) {
     when (icon) {
