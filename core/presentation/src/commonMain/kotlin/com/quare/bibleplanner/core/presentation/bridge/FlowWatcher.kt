@@ -10,12 +10,14 @@ import kotlinx.coroutines.launch
 
 /*
  * Why: Swift and JS can't collect a Flow, so the native UIs observe a ViewModel's state and actions
- * through a callback, delivered on the main thread.
+ * through a callback, delivered on the main thread. The ViewModel passes its viewModelScope, so clearing its
+ * ViewModelHolder ends every watch even when the native side never cancels one.
  */
 class FlowWatcher<T : Any>(
     private val flow: Flow<T>,
+    private val scope: CoroutineScope,
 ) {
-    // Why: an uncaught exception would terminate the iOS app; a failed observation is logged instead.
+    // Why: an uncaught exception would terminate the iOS app; Kermit's error log reaches the crash reporter instead.
     private val loggingHandler = CoroutineExceptionHandler { _, throwable ->
         Logger.e(throwable) { "FlowWatcher stopped observing after an exception" }
     }
@@ -23,11 +25,13 @@ class FlowWatcher<T : Any>(
     fun observe(onEach: (T) -> Unit): Watch {
         /*
          * Why: undispatched on Main.immediate, so the collector is subscribed before observe returns. A UiAction
-         * emitted right after (no replay) is not lost, and a StateFlow's value reaches the first frame.
+         * emitted right after (no replay) is not lost, and a StateFlow's value reaches the first frame. Callers are
+         * on the main thread already (SwiftUI models are MainActor, JS has one thread), so the first values are too.
          */
-        val job = CoroutineScope(
-            Dispatchers.Main.immediate + loggingHandler,
-        ).launch(start = CoroutineStart.UNDISPATCHED) {
+        val job = scope.launch(
+            context = Dispatchers.Main.immediate + loggingHandler,
+            start = CoroutineStart.UNDISPATCHED,
+        ) {
             flow.collect(onEach::invoke)
         }
         return Watch(job::cancel)

@@ -1,7 +1,10 @@
 package com.quare.bibleplanner.core.presentation.bridge
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +30,7 @@ internal class FlowWatcherTest {
     private val received = mutableListOf<Int>()
     private lateinit var watcher: FlowWatcher<Int>
     private lateinit var watch: Watch
+    private val ownerScope = CoroutineScope(SupervisorJob())
 
     @BeforeTest
     fun setUp() {
@@ -36,6 +40,7 @@ internal class FlowWatcherTest {
     @AfterTest
     fun tearDown() {
         if (::watch.isInitialized) watch.cancel()
+        ownerScope.cancel()
         Dispatchers.resetMain()
     }
 
@@ -196,7 +201,30 @@ internal class FlowWatcherTest {
             )
         }
 
+    @Test
+    fun `GIVEN an observed flow WHEN the owner scope is cancelled THEN does not call onEach anymore`() =
+        runTest(testDispatcher) {
+            // Given
+            val values = MutableSharedFlow<Int>()
+            prepareScenario(flow = values)
+            watch = watcher.observe { received += it }
+            values.emit(1)
+
+            // When
+            ownerScope.cancel()
+            values.emit(2)
+
+            // Then
+            assertEquals(
+                expected = listOf(1),
+                actual = received,
+            )
+        }
+
     private fun prepareScenario(flow: Flow<Int>) {
-        watcher = FlowWatcher(flow)
+        watcher = FlowWatcher(
+            flow = flow,
+            scope = ownerScope,
+        )
     }
 }
