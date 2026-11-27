@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.books.domain.isChapterRead
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 
-class CalculateAllChaptersReadStatusUseCase {
+internal class CalculateAllChaptersReadStatusUseCase {
     operator fun invoke(
         passages: List<PassageModel>,
         books: List<BookDataModel>,

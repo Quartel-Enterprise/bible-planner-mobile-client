@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class DayRepositoryImpl(
+internal class DayRepositoryImpl(
     private val dayLocalDataSource: DayLocalDataSource,
     private val planRepository: PlanRepository,
     private val dayEntityToModelMapper: DayEntityToModelMapper,

@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.day.domain.usecase
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 
-class UpdateDayReadTimestampUseCase(
+internal class UpdateDayReadTimestampUseCase(
     private val dayRepository: DayRepository,
 ) {
     suspend operator fun invoke(

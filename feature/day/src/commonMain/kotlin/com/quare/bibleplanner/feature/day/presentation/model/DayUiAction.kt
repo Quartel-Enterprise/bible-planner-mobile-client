@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.model
 
-internal sealed interface DayUiAction {
+sealed interface DayUiAction {
     data class ShowSnackBar(
         val message: DayMessage,
     ) : DayUiAction

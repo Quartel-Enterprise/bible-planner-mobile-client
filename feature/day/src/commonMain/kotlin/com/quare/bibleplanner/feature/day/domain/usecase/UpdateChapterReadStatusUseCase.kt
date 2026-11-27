@@ -9,7 +9,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import kotlinx.coroutines.flow.first
 
-class UpdateChapterReadStatusUseCase(
+internal class UpdateChapterReadStatusUseCase(
     private val dayRepository: DayRepository,
     private val markPassagesRead: UpdatePassageReadStatusUseCase,
     private val getPlansByWeek: GetPlansByWeekUseCase,

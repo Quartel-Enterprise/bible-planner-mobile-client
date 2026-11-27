@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import kotlinx.coroutines.flow.Flow
 
-class DayLocalDataSource(
+internal class DayLocalDataSource(
     private val dayDao: DayDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) {

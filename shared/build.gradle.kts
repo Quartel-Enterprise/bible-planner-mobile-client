@@ -40,6 +40,7 @@ kotlin {
             export(projects.feature.main)
             export(projects.core.profile)
             export(projects.core.books)
+            export(projects.feature.day)
         }
     }
 

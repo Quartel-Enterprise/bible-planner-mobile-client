@@ -922,6 +922,51 @@ internal class DayViewModelTest {
         assertTrue(commands.value.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a native UI watches the state WHEN the day loads THEN receives the loaded day`() =
+        viewModelStore.runTest {
+            // Given
+            prepareScenario()
+            val watchedStates = mutableListOf<DayUiState>()
+            val currentState = viewModel.uiState.value
+            viewModel.stateWatcher.observe { watchedStates += it }
+            val firstFrame = watchedStates.toList()
+
+            // When
+            awaitLoaded()
+
+            // Then
+            assertEquals(listOf(currentState), firstFrame)
+            assertIs<DayUiState.Loaded>(watchedStates.last())
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the actions WHEN a chapter toggle fails THEN receives the message`() =
+        viewModelStore.runTest {
+            // Given
+            prepareScenario()
+            awaitLoaded()
+            val watchedActions = mutableListOf<DayUiAction>()
+            viewModel.actionWatcher.observe { watchedActions += it }
+
+            // When
+            viewModel.onEvent(
+                DayUiEvent.OnChapterCheckboxClick(
+                    UpdateReadStatusOfPassageStrategy.Chapter(
+                        passageIndex = 0,
+                        chapterIndex = 7,
+                    ),
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf<DayUiAction>(DayUiAction.ShowSnackBar(DayMessage.FAILED_TO_TOGGLE_CHAPTER)),
+                watchedActions,
+            )
+        }
+
     private suspend fun TestScope.awaitLoaded(): DayUiState.Loaded {
         val state = viewModel.uiState.first { it is DayUiState.Loaded }
         runCurrent()

@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-class GetDayDetailsUseCase(
+internal class GetDayDetailsUseCase(
     private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
     private val dayRepository: DayRepository,
 ) {
