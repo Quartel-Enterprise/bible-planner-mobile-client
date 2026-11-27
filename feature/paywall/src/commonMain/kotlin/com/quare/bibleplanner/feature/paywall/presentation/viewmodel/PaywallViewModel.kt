@@ -166,7 +166,7 @@ internal class PaywallViewModel(
                                     uiAction.emit(
                                         PaywallUiAction.ShowError(
                                             error = exceptionMapper.map(error),
-                                            storeName = null,
+                                            storeName = storeName,
                                         ),
                                     )
                                 }

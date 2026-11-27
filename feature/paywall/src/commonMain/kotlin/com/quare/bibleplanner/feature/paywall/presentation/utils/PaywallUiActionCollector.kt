@@ -24,9 +24,7 @@ internal fun PaywallUiActionCollector(
     ActionCollector(actionsFlow) { uiAction ->
         when (uiAction) {
             is PaywallUiAction.ShowError -> {
-                val resource = uiAction.error.toStringResource()
-                val message = uiAction.storeName?.let { getString(resource, it) } ?: getString(resource)
-                snackbarHostState.showSnackbar(message)
+                snackbarHostState.showSnackbar(getString(uiAction.error.toStringResource(), uiAction.storeName))
             }
         }
     }

@@ -290,7 +290,7 @@ internal class PaywallViewModelTest {
                 trackedEvents.last(),
             )
             assertEquals(
-                listOf(PaywallUiAction.ShowError(PaywallError.PURCHASE_CANCELLED, storeName = null)),
+                listOf(PaywallUiAction.ShowError(PaywallError.PURCHASE_CANCELLED, storeName = "App Store")),
                 actions,
             )
             assertFalse(assertIs<PaywallUiState.Success>(viewModel.uiState.value).isPurchasing)

@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.utils
 
 import bibleplanner.feature.edit_profile.generated.resources.Res
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_name_updated
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_removed
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_synced
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_too_large
@@ -11,7 +10,6 @@ import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfile
 import org.jetbrains.compose.resources.StringResource
 
 internal fun EditProfileMessage.toStringResource(): StringResource = when (this) {
-    EditProfileMessage.NAME_UPDATED -> Res.string.edit_profile_name_updated
     EditProfileMessage.PHOTO_SYNCED -> Res.string.edit_profile_photo_synced
     EditProfileMessage.PHOTO_REMOVED -> Res.string.edit_profile_photo_removed
     EditProfileMessage.PHOTO_UPDATED -> Res.string.edit_profile_photo_updated

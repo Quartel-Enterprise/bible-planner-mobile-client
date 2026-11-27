@@ -6,11 +6,12 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
+import bibleplanner.feature.edit_profile.generated.resources.Res
+import bibleplanner.feature.edit_profile.generated.resources.edit_profile_name_updated
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.EditNameNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.EditNameDialog
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiAction
-import com.quare.bibleplanner.feature.editprofile.presentation.utils.toStringResource
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.EditNameViewModel
 import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -28,8 +29,8 @@ fun EntryProviderScope<NavKey>.editName() {
         val navigator = koinInject<Navigator>()
         ActionCollector(viewModel.uiAction) { action ->
             when (action) {
-                is EditNameUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
-                    getString(action.message.toStringResource()),
+                EditNameUiAction.NotifyNameUpdated -> snackbarHostState.showSnackbar(
+                    getString(Res.string.edit_profile_name_updated),
                     withDismissAction = true,
                 )
             }

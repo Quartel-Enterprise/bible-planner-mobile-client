@@ -8,7 +8,6 @@ import com.quare.bibleplanner.feature.editprofile.domain.usecase.UpdateDisplayNa
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.EditNameUiState
-import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -59,7 +58,7 @@ internal class EditNameViewModel(
             }
             updateDisplayName(trimmed)
             navigator.navigateBack()
-            uiAction.emit(EditNameUiAction.ShowSnackbar(EditProfileMessage.NAME_UPDATED))
+            uiAction.emit(EditNameUiAction.NotifyNameUpdated)
         }
     }
 

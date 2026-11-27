@@ -50,6 +50,7 @@ class EditNameViewModelTest {
             // Then
             assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
             assertEquals(listOf("Outro Nome"), updatedNames)
+            assertEquals(listOf<EditNameUiAction>(EditNameUiAction.NotifyNameUpdated), actions)
         }
 
     @Test
