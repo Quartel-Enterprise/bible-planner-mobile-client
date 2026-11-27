@@ -33,6 +33,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
@@ -93,6 +94,7 @@ internal class DayUiStateFlowFactoryTest {
         isFavorite = false,
     )
     private lateinit var factory: DayUiStateFlowFactory
+    private lateinit var editDaySelectableDates: EditDaySelectableDates
 
     @Test
     fun `GIVEN a day missing from the plan WHEN creating the state THEN stays loading`() = runTest {
@@ -165,7 +167,7 @@ internal class DayUiStateFlowFactoryTest {
         assertNull(state.datePickerUiState.visiblePicker)
         assertNull(state.datePickerUiState.selectedDateMillis)
         assertNull(state.datePickerUiState.selectedLocalDate)
-        assertIs<EditDaySelectableDates>(state.datePickerUiState.selectableDates)
+        assertSame(editDaySelectableDates, state.datePickerUiState.selectableDates)
     }
 
     @Test
@@ -366,6 +368,10 @@ internal class DayUiStateFlowFactoryTest {
         val localDateTimeProvider = { timestamp: Long ->
             Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(TimeZone.UTC)
         }
+        editDaySelectableDates = EditDaySelectableDates(
+            currentTimestampProvider = { 0L },
+            localDateTimeProvider = localDateTimeProvider,
+        )
         factory = DayUiStateFlowFactory(
             getDayDetails = GetDayDetailsUseCase(
                 getPlansByWeekUseCase = GetPlansByWeekUseCase(
@@ -396,10 +402,7 @@ internal class DayUiStateFlowFactoryTest {
                 localDateTimeToDateMapper = LocalDateTimeToDateMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(
-                currentTimestampProvider = { 0L },
-                localDateTimeProvider = localDateTimeProvider,
-            ),
+            editDaySelectableDates = editDaySelectableDates,
             convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(
                 localDateTimeProvider,
             ),

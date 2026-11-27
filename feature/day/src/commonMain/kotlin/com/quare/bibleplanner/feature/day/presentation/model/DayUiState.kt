@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.day.presentation.model
 
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
 
 internal sealed interface DayUiState {
     data object Loading : DayUiState
