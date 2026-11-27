@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutProgress
+import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
@@ -25,7 +26,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,8 +59,7 @@ internal class LogoutViewModelTest {
             viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
             // Then
-            assertEquals(1, actions.size)
-            assertIs<LogoutUiAction.NotifySuccess>(actions[0])
+            assertEquals(listOf<LogoutUiAction>(LogoutUiAction.NotifySuccess), actions)
             assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         }
 
@@ -124,7 +123,7 @@ internal class LogoutViewModelTest {
             viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
             // Then
-            assertIs<LogoutUiState.PendingChangesError>(viewModel.uiState.value)
+            assertEquals(LogoutUiState.PendingChangesError, viewModel.uiState.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -139,8 +138,7 @@ internal class LogoutViewModelTest {
 
             // Then
             assertEquals(LogoutUiState.Idle, viewModel.uiState.value)
-            assertEquals(1, actions.size)
-            assertIs<LogoutUiAction.ShowError>(actions.first())
+            assertEquals(listOf<LogoutUiAction>(LogoutUiAction.ShowError(LogoutError.UNKNOWN)), actions)
         }
 
     @Test

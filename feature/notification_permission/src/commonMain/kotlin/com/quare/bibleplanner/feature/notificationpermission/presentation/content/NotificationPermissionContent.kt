@@ -21,22 +21,15 @@ internal fun NotificationPermissionContent(
     onEvent: (NotificationPermissionUiEvent) -> Unit,
 ) {
     val declineText = stringResource(Res.string.notification_permission_decline)
+    val (textRes, confirmTextRes) = if (uiState.isFirstTime) {
+        Res.string.notification_permission_explanation to Res.string.notification_permission_accept
+    } else {
+        Res.string.notification_permission_settings_message to Res.string.notification_permission_open_settings
+    }
     AppAlertDialog(
         title = stringResource(Res.string.notification_permission_title),
-        text = stringResource(
-            if (uiState.isFirstTime) {
-                Res.string.notification_permission_explanation
-            } else {
-                Res.string.notification_permission_settings_message
-            },
-        ),
-        confirmText = stringResource(
-            if (uiState.isFirstTime) {
-                Res.string.notification_permission_accept
-            } else {
-                Res.string.notification_permission_open_settings
-            },
-        ),
+        text = stringResource(textRes),
+        confirmText = stringResource(confirmTextRes),
         onConfirm = { onEvent(NotificationPermissionUiEvent.OnConfirm) },
         dismissText = declineText.takeIf { uiState.shouldShowDismiss },
         onDismiss = { onEvent(NotificationPermissionUiEvent.OnDecline) },
