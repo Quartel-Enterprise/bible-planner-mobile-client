@@ -9,6 +9,8 @@ import org.koin.mp.KoinPlatform
  * reaches Koin. Each screen keeps its holder and clears it when the screen goes away.
  */
 object NativeViewModels {
+    // Why: Koin throws when it isn't started or can't build the ViewModel; without @Throws that terminates the app.
+    @Throws(Exception::class)
     fun createReadingPlan(): ViewModelHolder<ReadingPlanViewModel> = ViewModelHolder(ReadingPlanViewModel::class) {
         KoinPlatform.getKoin().get()
     }
