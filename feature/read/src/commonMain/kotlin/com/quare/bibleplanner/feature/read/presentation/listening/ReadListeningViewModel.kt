@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ReadListeningViewModel(
+class ReadListeningViewModel internal constructor(
     private val route: ReadNavRoute,
     private val controller: ChapterListeningController,
     private val gate: ChapterListeningGate,
