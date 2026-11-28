@@ -52,6 +52,7 @@ import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
+import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.getKoin
@@ -122,36 +123,38 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             LocalIsWideLayout provides isWide,
         ) {
             SharedTransitionLayout {
-                NavDisplay(
-                    backStack = displayBackStack,
-                    onBack = onNavigateBack,
-                    sceneStrategies = listOf(
-                        SheetSceneStrategy(),
-                        DialogSceneStrategy(),
-                        remember(isWide, dayStudyReadingFraction) {
-                            StudyPanelSceneStrategy(
-                                isWide = isWide,
-                                readingFraction = dayStudyReadingFraction,
-                                onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
+                CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+                    NavDisplay(
+                        backStack = displayBackStack,
+                        onBack = onNavigateBack,
+                        sceneStrategies = listOf(
+                            SheetSceneStrategy(),
+                            DialogSceneStrategy(),
+                            remember(isWide, dayStudyReadingFraction) {
+                                StudyPanelSceneStrategy(
+                                    isWide = isWide,
+                                    readingFraction = dayStudyReadingFraction,
+                                    onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
+                                )
+                            },
+                            remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
+                        ),
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        transitionSpec = { navigationTransitions.createForwardTransition(scope = this) },
+                        popTransitionSpec = { navigationTransitions.createBackwardTransition(scope = this) },
+                        predictivePopTransitionSpec = { swipeEdge ->
+                            navigationTransitions.createPredictiveBackTransition(
+                                scope = this,
+                                swipeEdge = swipeEdge,
                             )
                         },
-                        remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
-                    ),
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                    transitionSpec = { navigationTransitions.createForwardTransition(scope = this) },
-                    popTransitionSpec = { navigationTransitions.createBackwardTransition(scope = this) },
-                    predictivePopTransitionSpec = { swipeEdge ->
-                        navigationTransitions.createPredictiveBackTransition(
-                            scope = this,
-                            swipeEdge = swipeEdge,
-                        )
-                    },
-                    entryDecorators = listOf(
-                        rememberSaveableStateHolderNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator(),
-                    ),
-                    entryProvider = withNativeEntries(toEntryProvider()),
-                )
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
+                        entryProvider = withNativeEntries(toEntryProvider()),
+                    )
+                }
             }
         }
         DayStudyBackgroundGenerationOverlay()
