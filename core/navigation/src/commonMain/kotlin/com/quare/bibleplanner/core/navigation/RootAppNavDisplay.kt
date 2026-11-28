@@ -154,7 +154,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                             rememberSaveableStateHolderNavEntryDecorator(),
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
-                        entryProvider = withNativeEntries(toEntryProvider()),
+                        entryProvider = withNativeEntries(toEntryProvider(mainTabEntries)),
                     )
                 }
             }
@@ -176,7 +176,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun withNativeEntries(sharedEntries: (NavKey) -> NavEntry<NavKey>): (NavKey) -> NavEntry<NavKey> {
+fun withNativeEntries(sharedEntries: (NavKey) -> NavEntry<NavKey>): (NavKey) -> NavEntry<NavKey> {
     val koin = getKoin()
     val nativeEntries = remember(koin) { koin.getOrNull<NativeEntryProvider>() } ?: return sharedEntries
     return { key -> nativeEntries.entryFor(key) ?: sharedEntries(key) }

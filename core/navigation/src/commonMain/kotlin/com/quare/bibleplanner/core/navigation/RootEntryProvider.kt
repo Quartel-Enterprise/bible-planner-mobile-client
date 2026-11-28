@@ -7,7 +7,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import com.quare.bibleplanner.core.navigation.slot.RootDayCompletionBanner
 import com.quare.bibleplanner.core.navigation.slot.RootDayStudySection
-import com.quare.bibleplanner.core.navigation.slot.RootMainTabEntries
 import com.quare.bibleplanner.feature.accountdetails.presentation.accountDetails
 import com.quare.bibleplanner.feature.accountdetails.presentation.renameDevice
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
@@ -39,6 +38,7 @@ import com.quare.bibleplanner.feature.login.presentation.loginRoot
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.loginSyncNudge
 import com.quare.bibleplanner.feature.loginwarning.presentation.loginWarning
 import com.quare.bibleplanner.feature.logout.presentation.logout
+import com.quare.bibleplanner.feature.main.presentation.MainTabEntries
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
@@ -56,13 +56,15 @@ import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.verseSele
 import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
 @Composable
-internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKey> = entryProvider {
+internal fun SharedTransitionScope.toEntryProvider(
+    mainTabEntries: MainTabEntries,
+): (NavKey) -> NavEntry<NavKey> = entryProvider {
     val sharedTransitionScope = this@toEntryProvider
     loginRoot()
     loginWarning()
     loginSyncNudge()
     logout()
-    mainScreen(RootMainTabEntries(sharedTransitionScope))
+    mainScreen(mainTabEntries)
     day(
         sharedTransitionScope = sharedTransitionScope,
         dayStudySection = RootDayStudySection,

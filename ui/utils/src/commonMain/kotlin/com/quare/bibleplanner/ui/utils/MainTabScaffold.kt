@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -121,12 +120,10 @@ private fun HostedTabScaffold(
     val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
-    // Why: the reservation reads the height when it changes, after the host measures its bar.
-    val currentHostedTabBarHeight by rememberUpdatedState(hostedTabBarHeight)
     ReserveBottomOverlayHeightEffect {
         maxOf(
             navigationBarInsets.getBottom(density).toFloat(),
-            with(density) { currentHostedTabBarHeight.toPx() },
+            with(density) { hostedTabBarHeight.toPx() },
         ) + with(density) { reservedFabHeight.toFabClearance().toPx() }
     }
 
@@ -141,7 +138,10 @@ private fun HostedTabScaffold(
         },
         content = { paddingValues ->
             CompositionLocalProvider(
-                value = LocalMainPadding provides paddingValues.withHostedFabClearance(reservedFabHeight),
+                value = LocalMainPadding provides paddingValues.withFabClearance(
+                    fabAreaHeight = reservedFabHeight,
+                    bottomUnderFab = paddingValues.calculateBottomPadding(),
+                ),
                 content = content,
             )
         },
@@ -199,7 +199,7 @@ private fun NarrowTabScaffold(
             CompositionLocalProvider(
                 value = LocalMainPadding provides paddingValues.withFabClearance(
                     fabAreaHeight = reservedFabHeight,
-                    navigationBarInsets = navigationBarInsets,
+                    bottomUnderFab = with(density) { navigationBarInsets.getBottom(this).toDp() },
                 ),
                 content = content,
             )
@@ -247,29 +247,15 @@ private fun MeasuredFabBox(
 @Composable
 private fun PaddingValues.withFabClearance(
     fabAreaHeight: Dp,
-    navigationBarInsets: WindowInsets,
+    bottomUnderFab: Dp,
 ): PaddingValues {
     if (fabAreaHeight <= 0.dp) return this
     val layoutDirection = LocalLayoutDirection.current
-    val density = LocalDensity.current
-    val navigationBarBottom = with(density) { navigationBarInsets.getBottom(this).toDp() }
     return PaddingValues(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = navigationBarBottom + fabAreaHeight.toFabClearance(),
-    )
-}
-
-@Composable
-private fun PaddingValues.withHostedFabClearance(fabAreaHeight: Dp): PaddingValues {
-    if (fabAreaHeight <= 0.dp) return this
-    val layoutDirection = LocalLayoutDirection.current
-    return PaddingValues(
-        start = calculateStartPadding(layoutDirection),
-        top = calculateTopPadding(),
-        end = calculateEndPadding(layoutDirection),
-        bottom = calculateBottomPadding() + fabAreaHeight.toFabClearance(),
+        bottom = bottomUnderFab + fabAreaHeight.toFabClearance(),
     )
 }
 

@@ -18,14 +18,13 @@ import androidx.navigationevent.compose.NavigationForwardHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
-import com.quare.bibleplanner.core.navigation.NativeEntryProvider
+import com.quare.bibleplanner.core.navigation.withNativeEntries
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.main.presentation.LocalMainTabEntries
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
-import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -74,20 +73,20 @@ private fun MainTabsNavDisplay(
     val sharedTabEntries = checkNotNull(LocalMainTabEntries.current) {
         "RootAppNavDisplay provides the shared main tabs"
     }
-    val koin = getKoin()
-    val nativeEntries = remember(koin) { koin.getOrNull<NativeEntryProvider>() }
-    val sharedEntries = entryProvider {
-        // Why: MainContent draws the bar or rail, and LocalHostedTabBarHeight makes the shared tabs skip theirs.
-        sharedTabEntries.register(
-            scope = this,
-            navigationBar = {},
-            navigationRail = {},
-            animatedContentScope = animatedContentScope,
-        )
+    val sharedEntries: (NavKey) -> NavEntry<NavKey> = remember(sharedTabEntries, animatedContentScope) {
+        entryProvider {
+            // Why: MainContent draws the bar or rail, and LocalHostedTabBarHeight makes the shared tabs skip theirs.
+            sharedTabEntries.register(
+                scope = this,
+                navigationBar = {},
+                navigationRail = {},
+                animatedContentScope = animatedContentScope,
+            )
+        }
     }
     val navigationTransitions = rememberNavigationTransitions()
     NavDisplay(
-        entries = tabState.toDecoratedEntries { key -> nativeEntries?.entryFor(key) ?: sharedEntries(key) },
+        entries = tabState.toDecoratedEntries(withNativeEntries(sharedEntries)),
         modifier = Modifier.fillMaxSize(),
         onBack = tabState::goBack,
         transitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
