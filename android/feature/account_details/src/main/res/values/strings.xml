@@ -20,30 +20,4 @@
     <string name="account_details_logout">Sign out of account</string>
     <string name="account_details_device_signed_out">Session ended on that device</string>
     <string name="account_details_action_error">Something went wrong. Please try again.</string>
-    <string name="account_details_active_now">Active now</string>
-    <plurals name="account_details_minutes_ago">
-        <item quantity="one">%1$d min ago</item>
-        <item quantity="other">%1$d min ago</item>
-    </plurals>
-    <plurals name="account_details_hours_ago">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
-    </plurals>
-    <string name="account_details_today">Today</string>
-    <string name="account_details_yesterday">Yesterday</string>
-    <string name="account_details_tomorrow">Tomorrow</string>
-    <plurals name="account_details_days_ago">
-        <item quantity="one">%1$d day ago</item>
-        <item quantity="other">%1$d days ago</item>
-    </plurals>
-    <string name="account_details_last_week">Last week</string>
-    <plurals name="account_details_weeks_ago">
-        <item quantity="one">%1$d week ago</item>
-        <item quantity="other">%1$d weeks ago</item>
-    </plurals>
-    <string name="account_details_last_month">Last month</string>
-    <plurals name="account_details_months_ago">
-        <item quantity="one">%1$d month ago</item>
-        <item quantity="other">%1$d months ago</item>
-    </plurals>
 </resources>

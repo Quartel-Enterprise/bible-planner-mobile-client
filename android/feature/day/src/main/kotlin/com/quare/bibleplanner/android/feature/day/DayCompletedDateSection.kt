@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.day
 
-import android.text.format.DateFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -24,18 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.date.rememberDateTimeLabel
 import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
-import kotlinx.datetime.number
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-
-private const val TIME_SKELETON_24_HOURS = "Hm"
-private const val TIME_SKELETON_12_HOURS = "hma"
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun DayCompletedDateSection(
@@ -92,22 +84,14 @@ internal fun DayCompletedDateSection(
 
 @Composable
 private fun rememberFormattedReadDate(date: DatePresentationModel): String {
-    val locale = LocalConfiguration.current.locales[0]
-    // Why: the locale alone picks 12 or 24 hours, while the user's clock setting must win.
-    val is24Hour = DateFormat.is24HourFormat(LocalContext.current)
-    return remember(date, locale, is24Hour) {
-        val dateTime = LocalDateTime.of(
-            date.year,
-            date.month.number,
-            date.day,
-            date.hour.toIntOrNull() ?: 0,
-            date.minute.toIntOrNull() ?: 0,
+    val dateTime = remember(date) {
+        LocalDateTime(
+            year = date.year,
+            month = date.month,
+            day = date.day,
+            hour = date.hour.toIntOrNull() ?: 0,
+            minute = date.minute.toIntOrNull() ?: 0,
         )
-        val datePart = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(dateTime)
-        val timeSkeleton = if (is24Hour) TIME_SKELETON_24_HOURS else TIME_SKELETON_12_HOURS
-        val timePart = DateTimeFormatter
-            .ofPattern(DateFormat.getBestDateTimePattern(locale, timeSkeleton), locale)
-            .format(dateTime)
-        "$datePart, $timePart"
     }
+    return rememberDateTimeLabel(dateTime)
 }

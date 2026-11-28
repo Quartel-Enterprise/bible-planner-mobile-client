@@ -35,7 +35,8 @@ platform after each one.
 2. **Android native.** The composables move out of the shared feature modules into Android modules with a design
    system on Material 3 Expressive, laid out like Blitz Split's `android/`:
    - `android/designsystem` holds the theme (`ExpressiveTheme`, Material 3 Expressive over the app's color scheme)
-     and the components every screen shares.
+     and the components every screen shares, including the date and time labels (`date` package: medium date, time
+     on the system 12/24-hour setting, relative days such as Today or 3 days ago) and their strings.
    - `android/feature/<name>` holds one feature's screen: a `<Name>Content` composable that takes the shared
      ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
      `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
