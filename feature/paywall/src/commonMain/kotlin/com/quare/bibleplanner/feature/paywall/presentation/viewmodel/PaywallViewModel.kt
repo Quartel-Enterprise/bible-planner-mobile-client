@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class PaywallViewModel(
+class PaywallViewModel internal constructor(
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
     private val getAuthenticatedUserId: GetAuthenticatedUserId,
