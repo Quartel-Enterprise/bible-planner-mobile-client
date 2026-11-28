@@ -11,7 +11,10 @@
     <string name="listening_player_pause">Pausar</string>
     <string name="listening_player_play">Reproducir</string>
     <string name="listening_player_day_title">Lectura de hoy</string>
-    <string name="listening_player_day_progress">%1$d de %2$d capítulos</string>
+    <plurals name="listening_player_day_progress">
+        <item quantity="one">%1$d de %2$d capítulo</item>
+        <item quantity="other">%1$d de %2$d capítulos</item>
+    </plurals>
     <string name="listening_player_locked_sheet">Desbloquea %1$s para seguir escuchando</string>
     <string name="listening_player_unlock">Desbloquear</string>
     <string name="listening_player_verse_of">Versículo %1$d de %2$d</string>

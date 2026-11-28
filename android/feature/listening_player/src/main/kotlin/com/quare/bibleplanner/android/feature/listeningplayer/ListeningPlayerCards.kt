@@ -29,10 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,8 +45,10 @@ import com.quare.bibleplanner.feature.read.presentation.listening.model.Listenin
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerUiState
 import com.quare.bibleplanner.feature.read.presentation.listening.player.ListeningSleepTimerUiModel
+import java.text.NumberFormat
 
 private const val FIFTEEN_MINUTES = 15
+private const val SPEED_MAX_FRACTION_DIGITS = 2
 private const val THIRTY_MINUTES = 30
 private val cardShape = RoundedCornerShape(16.dp)
 private val daySegmentHeight = 6.dp
@@ -160,8 +165,9 @@ internal fun DayProgressCard(
                 style = MaterialTheme.typography.labelLarge,
             )
             Text(
-                text = stringResource(
-                    R.string.listening_player_day_progress,
+                text = pluralStringResource(
+                    R.plurals.listening_player_day_progress,
+                    dayProgress.chapters.size,
                     dayProgress.currentIndex + 1,
                     dayProgress.chapters.size,
                 ),
@@ -203,6 +209,10 @@ internal fun SpeedCard(
     speed: Float,
     onEvent: (ChapterListeningPlayerUiEvent) -> Unit,
 ) {
+    val locale = LocalConfiguration.current.locales[0]
+    val speedFormat = remember(locale) {
+        NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = SPEED_MAX_FRACTION_DIGITS }
+    }
     PlayerSection(verticalPadding = 10.dp) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -223,14 +233,12 @@ internal fun SpeedCard(
                 FilterChip(
                     selected = option == speed,
                     onClick = { onEvent(ChapterListeningPlayerUiEvent.OnSpeedClick(option)) },
-                    label = { Text(text = "${option.toSpeedLabel()}x") },
+                    label = { Text(text = "${speedFormat.format(option.toDouble())}x") },
                 )
             }
         }
     }
 }
-
-private fun Float.toSpeedLabel(): String = if (this % 1f == 0f) toInt().toString() else toString()
 
 @Composable
 internal fun SleepTimerCard(

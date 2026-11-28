@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -104,9 +106,11 @@ private fun FollowedVerseText(
 ) {
     val style = MaterialTheme.typography.bodyLarge
     val scrollState = rememberScrollState()
-    var layout by remember { mutableStateOf<TextLayoutResult?>(null) }
+    val layoutHolder = remember { TextLayoutHolder() }
+    // Why: only a change in the number of lines moves the word to another line, so only that recomposes.
+    var lineCount by remember { mutableIntStateOf(0) }
     // Why: right after the verse changes the layout is still the previous verse's, whose lines don't match.
-    val currentLayout = layout?.takeIf { it.layoutInput.text.text == text }
+    val currentLayout = layoutHolder.result?.takeIf { it.layoutInput.text.text == text }
     // Why: the pause after the verse's last word has no word, and the card must not jump back to its top then.
     val lastWordLine = remember(text) { LastWordLine() }
     val wordLine = highlightedWord
@@ -114,7 +118,7 @@ private fun FollowedVerseText(
         ?.let { word -> currentLayout?.getLineForOffset(word.first) }
         ?: lastWordLine.line
     lastWordLine.line = wordLine
-    LaunchedEffect(text, wordLine) {
+    LaunchedEffect(text, wordLine, lineCount) {
         val top = currentLayout?.getLineTop((wordLine - 1).coerceAtLeast(0)) ?: 0f
         scrollState.animateScrollTo(top.toInt())
     }
@@ -137,7 +141,10 @@ private fun FollowedVerseText(
             ),
             style = style,
             fontFamily = displaySerifFontFamily(),
-            onTextLayout = { layout = it },
+            onTextLayout = { result ->
+                layoutHolder.result = result
+                lineCount = result.lineCount
+            },
         )
     }
 }
@@ -145,6 +152,11 @@ private fun FollowedVerseText(
 // Why: a plain holder, since the remembered line only feeds the next composition and must not trigger one.
 private class LastWordLine {
     var line: Int = 0
+}
+
+// Why: a plain holder, since a new layout on every spoken word must not recompose the card again.
+private class TextLayoutHolder {
+    var result: TextLayoutResult? = null
 }
 
 private fun String.withListeningWord(
@@ -289,8 +301,16 @@ private fun ChapterJumpButton(
             .width(chapterButtonWidth)
             .clip(RoundedCornerShape(12.dp))
             // Why: a disabled clickable with no label is announced as an unnamed control, so the first chapter's has none.
-            .then(if (label == null) Modifier else Modifier.clickable(onClick = onClick))
-            .padding(vertical = 4.dp),
+            .then(
+                if (label == null) {
+                    Modifier
+                } else {
+                    Modifier.clickable(
+                        role = Role.Button,
+                        onClick = onClick,
+                    )
+                },
+            ).padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
