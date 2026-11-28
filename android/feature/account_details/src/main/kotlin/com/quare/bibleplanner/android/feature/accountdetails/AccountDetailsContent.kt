@@ -39,6 +39,7 @@ internal fun AccountDetailsContent(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val sheetCloseGuard = rememberSheetCloseGuard()
+    val renameGuard = rememberSheetCloseGuard()
     SheetExitAnimationEffect(
         animateOut = sheetState::hide,
         animateBackIn = sheetState::show,
@@ -71,11 +72,11 @@ internal fun AccountDetailsContent(
                 isExpanded = uiState.isDevicesExpanded,
                 onToggleClick = { onEvent(AccountDetailsUiEvent.OnToggleDevices) },
                 /*
-                 * Why: the rename dialog opens over this sheet without popping it, and the guard's pending close
-                 * expires on its own, so it keeps a double tap from opening the dialog twice.
+                 * Why: the rename dialog opens over this sheet without popping it. Its own guard keeps a double tap
+                 * from opening the dialog twice without blocking a real dismiss of the sheet afterwards.
                  */
                 onRenameClick = { device ->
-                    sheetCloseGuard.close { onEvent(AccountDetailsUiEvent.OnRenameDeviceClick(device)) }
+                    renameGuard.close { onEvent(AccountDetailsUiEvent.OnRenameDeviceClick(device)) }
                 },
                 onSignOutClick = { device -> handleSignOutClick(device, sheetCloseGuard::close, onEvent) },
             )
