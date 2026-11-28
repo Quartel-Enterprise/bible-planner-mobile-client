@@ -59,8 +59,18 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
     // Why: the app finds native screens with ServiceLoader, so an unlisted factory would silently keep the shared UI.
     private fun Project.checkNativeEntryFactoryIsListed() {
         val servicesFile = file("src/main/resources/META-INF/services/$NATIVE_ENTRY_FACTORY")
+        val servicesPath = servicesFile.relativeTo(rootDir)
         check(servicesFile.isFile) {
-            "$path must list its NativeEntryFactory implementation in ${servicesFile.relativeTo(rootDir)}"
+            "$path must list its NativeEntryFactory implementation in $servicesPath"
+        }
+        // Why: a services file copied from another screen's module would point at that screen's factory instead.
+        val namespace = createNamespace()
+        val listedFactories = servicesFile
+            .readLines()
+            .map { line -> line.substringBefore('#').trim() }
+            .filter { line -> line.isNotEmpty() }
+        check(listedFactories.isNotEmpty() && listedFactories.all { factory -> factory.startsWith("$namespace.") }) {
+            "$servicesPath must list this module's own NativeEntryFactory implementation, under package $namespace"
         }
     }
 
