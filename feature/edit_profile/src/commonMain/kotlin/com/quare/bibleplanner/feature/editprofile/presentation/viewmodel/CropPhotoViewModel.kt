@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class CropPhotoViewModel(
+class CropPhotoViewModel internal constructor(
     private val route: CropPhotoNavRoute,
     private val cropImage: AvatarImageCropper,
     private val setProfilePhoto: SetProfilePhoto,
