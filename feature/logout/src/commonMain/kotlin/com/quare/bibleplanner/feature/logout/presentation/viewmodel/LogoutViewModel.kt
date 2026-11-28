@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
-internal class LogoutViewModel(
+class LogoutViewModel internal constructor(
     private val logout: Logout,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
