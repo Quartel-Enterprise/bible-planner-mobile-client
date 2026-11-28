@@ -41,11 +41,12 @@ import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySu
 import com.valentinilk.shimmer.shimmer
 import software.quare.loadable.valueOrNull
 
+// Why: one line leaves almost no text beside "Show more" at large font scales.
+private const val DESCRIPTION_COLLAPSED_MAX_LINES = 2
 private val scopeNoteShape = RoundedCornerShape(10.dp)
 private val sectionLetterSpacing = 0.4.sp
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 private const val DISABLED_MODES_ALPHA = 0.45f
-private const val DESCRIPTION_COLLAPSED_MAX_LINES = 1
 
 @Composable
 internal fun StudySuggestionContent(
