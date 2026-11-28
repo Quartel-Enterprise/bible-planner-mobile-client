@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyQuotaMo
  * Why: quota is null while logged out or when the free studies left couldn't be read,
  * so isLocked treats null as unlocked.
  */
-internal data class ChapterStudyHeroUiModel(
+data class ChapterStudyHeroUiModel(
     val isPro: Boolean,
     val quota: ChapterStudyQuotaModel?,
     val isRewardedUnlockOffered: Boolean,

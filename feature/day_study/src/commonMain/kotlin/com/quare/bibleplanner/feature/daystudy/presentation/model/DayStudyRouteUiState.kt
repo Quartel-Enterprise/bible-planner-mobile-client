@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import software.quare.loadable.Loadable
 
-internal data class DayStudyRouteUiState(
+data class DayStudyRouteUiState(
     val card: Loadable<DayStudyCardUiModel>,
     val generation: DayStudyGenerationUiModel?,
     val generationError: DayStudyGenerationError?,

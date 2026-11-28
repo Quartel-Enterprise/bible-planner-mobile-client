@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
 import software.quare.loadable.loadedOrNull
 
-internal class ContactSupportViewModel(
+class ContactSupportViewModel internal constructor(
     private val mailtoFactory: ContactSupportMailtoFactory,
     private val navigator: Navigator,
     uiStateFactory: ContactSupportUiStateFactory,
