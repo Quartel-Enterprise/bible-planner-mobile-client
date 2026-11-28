@@ -123,6 +123,8 @@ dependencies {
     implementation(projects.android.feature.loginSyncNudge)
     implementation(projects.android.feature.deleteVersion)
     implementation(projects.android.feature.deleteProgress)
+    implementation(projects.android.feature.congrats)
+    implementation(projects.android.feature.notificationPermission)
 
     // Features
     implementation(projects.feature.materialYou)

@@ -120,6 +120,8 @@ include(":android:feature:add_notes_free_warning")
 include(":android:feature:login_sync_nudge")
 include(":android:feature:delete_version")
 include(":android:feature:delete_progress")
+include(":android:feature:congrats")
+include(":android:feature:notification_permission")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")
