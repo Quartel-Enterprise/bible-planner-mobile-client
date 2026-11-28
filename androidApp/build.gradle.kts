@@ -131,6 +131,7 @@ dependencies {
     implementation(projects.android.feature.paywallTeaser)
     implementation(projects.android.feature.subscriptionDetails)
     implementation(projects.android.feature.studyUnlock)
+    implementation(projects.android.feature.renameDevice)
 
     // Features
     implementation(projects.feature.materialYou)

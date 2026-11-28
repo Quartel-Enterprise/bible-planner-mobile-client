@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rename_device_title">Renomear dispositivo</string>
+    <string name="rename_device_name_label">Nome do dispositivo</string>
+    <string name="rename_device_save">Salvar</string>
+    <string name="rename_device_cancel">Cancelar</string>
+    <string name="rename_device_error">Algo deu errado. Tente novamente.</string>
+</resources>

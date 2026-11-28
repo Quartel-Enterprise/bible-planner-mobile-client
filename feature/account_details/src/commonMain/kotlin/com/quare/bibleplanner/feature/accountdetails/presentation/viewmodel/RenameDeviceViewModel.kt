@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
-internal class RenameDeviceViewModel(
+class RenameDeviceViewModel internal constructor(
     private val renameDevice: RenameDevice,
     private val navigator: Navigator,
     route: RenameDeviceNavRoute,

@@ -37,7 +37,7 @@ internal class HomeViewModel(
             }
 
             HomeUiEvent.OnSnackbarClick -> snackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = StringResource(
                         id = "string:saved",
                         key = "saved",

@@ -42,6 +42,7 @@ fun AppAlertDialog(
     dismissText: String?,
     onDismiss: () -> Unit,
     isDestructive: Boolean = false,
+    isConfirmEnabled: Boolean = true,
     onDismissRequest: () -> Unit = onDismiss,
     icon: ImageVector? = null,
     text: @Composable () -> Unit,
@@ -64,6 +65,7 @@ fun AppAlertDialog(
         confirmButton = {
             TextButton(
                 onClick = { resolution.resolve(onConfirm) },
+                enabled = isConfirmEnabled,
                 colors = if (isDestructive) {
                     ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 } else {

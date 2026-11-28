@@ -128,6 +128,7 @@ include(":android:feature:pix_qr")
 include(":android:feature:paywall_teaser")
 include(":android:feature:subscription_details")
 include(":android:feature:study_unlock")
+include(":android:feature:rename_device")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

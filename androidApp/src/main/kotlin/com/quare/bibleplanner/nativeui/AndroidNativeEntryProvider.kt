@@ -14,6 +14,7 @@ import com.quare.bibleplanner.android.feature.materialyou.toNavEntry
 import com.quare.bibleplanner.android.feature.notificationpermission.toNavEntry
 import com.quare.bibleplanner.android.feature.paywallteaser.toNavEntry
 import com.quare.bibleplanner.android.feature.pixqr.toNavEntry
+import com.quare.bibleplanner.android.feature.renamedevice.toNavEntry
 import com.quare.bibleplanner.android.feature.studyunlock.toNavEntry
 import com.quare.bibleplanner.android.feature.subscriptiondetails.toNavEntry
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
@@ -28,6 +29,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
+import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
@@ -48,6 +50,7 @@ internal class AndroidNativeEntryProvider : NativeEntryProvider {
         is PaywallTeaserNavRoute -> key.toNavEntry()
         is SubscriptionDetailsNavRoute -> key.toNavEntry()
         is StudyUnlockNavRoute -> key.toNavEntry()
+        is RenameDeviceNavRoute -> key.toNavEntry()
         else -> null
     }
 }

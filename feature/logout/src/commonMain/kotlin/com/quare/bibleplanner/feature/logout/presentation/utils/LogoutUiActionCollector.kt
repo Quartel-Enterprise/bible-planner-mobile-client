@@ -27,7 +27,7 @@ internal fun LogoutUiActionCollector(uiActionFlow: Flow<LogoutUiAction>) {
             )
 
             LogoutUiAction.NotifySuccess -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.logout_success_message,
                     isDismissible = false,
                 ),
