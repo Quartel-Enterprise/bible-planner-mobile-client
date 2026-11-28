@@ -24,10 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,7 +60,15 @@ internal fun StudyUnlockContent(
     onEvent: (StudyUnlockUiEvent) -> Unit,
 ) {
     val isPlaying = uiState.videoState == StudyUnlockVideoState.PLAYING
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val currentIsPlaying by rememberUpdatedState(isPlaying)
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        /*
+         * Why: back and a scrim tap still dismiss with the gestures off, and a pop while the video plays would
+         * lose the reward, or pop the screen below too once the earned reward pops the sheet again.
+         */
+        confirmValueChange = remember { { value: SheetValue -> value != SheetValue.Hidden || !currentIsPlaying } },
+    )
     val sheetCloseGuard = rememberSheetCloseGuard()
     val onDismiss = { sheetCloseGuard.close { onEvent(StudyUnlockUiEvent.OnDismiss) } }
     SheetExitAnimationEffect(
