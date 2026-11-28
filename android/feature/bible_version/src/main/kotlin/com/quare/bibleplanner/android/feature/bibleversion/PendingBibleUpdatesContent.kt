@@ -87,7 +87,10 @@ internal fun PendingBibleUpdatesContent(
             Text(
                 modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
                 text = if (selectedCount > 1) {
-                    stringResource(R.string.bible_version_update_count, selectedCount)
+                    stringResource(
+                        R.string.bible_version_update_count,
+                        selectedCount,
+                    )
                 } else {
                     stringResource(R.string.bible_version_update)
                 },

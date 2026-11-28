@@ -7,6 +7,5 @@ dependencies {
     implementation(projects.core.books)
     implementation(projects.core.model)
     implementation(projects.core.utils)
-    implementation(projects.ui.utils)
     implementation(libs.compose.materialIconsExtended)
 }

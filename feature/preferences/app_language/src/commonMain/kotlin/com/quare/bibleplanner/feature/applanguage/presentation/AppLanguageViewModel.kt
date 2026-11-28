@@ -62,10 +62,4 @@ class AppLanguageViewModel internal constructor(
             navigator.navigateBack()
         }
     }
-
-    private fun emitAction(action: AppLanguageUiAction) {
-        viewModelScope.launch {
-            uiAction.emit(action)
-        }
-    }
 }

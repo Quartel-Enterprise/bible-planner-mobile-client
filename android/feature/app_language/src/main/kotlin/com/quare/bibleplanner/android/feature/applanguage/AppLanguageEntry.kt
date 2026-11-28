@@ -8,9 +8,7 @@ import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.applanguage.presentation.AppLanguageViewModel
-import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiAction
-import com.quare.bibleplanner.feature.applanguage.presentation.utils.rememberApplyLanguage
-import com.quare.bibleplanner.ui.utils.ActionCollector
+import com.quare.bibleplanner.feature.applanguage.presentation.utils.AppLanguageActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
 internal fun AppLanguageNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
@@ -20,12 +18,7 @@ internal fun AppLanguageNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val viewModel = koinViewModel<AppLanguageViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     // Why: the shared screen applies the locale the same way, so a language change recreates the activity alike.
-    val applyLanguage = rememberApplyLanguage()
-    ActionCollector(viewModel.uiAction) { action ->
-        when (action) {
-            is AppLanguageUiAction.ApplyLanguage -> applyLanguage(action.language)
-        }
-    }
+    AppLanguageActionCollector(actionsFlow = viewModel.uiAction)
     ExpressiveTheme {
         AppLanguageContent(
             uiState = uiState,

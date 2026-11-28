@@ -7,7 +7,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-internal fun AppLanguageActionCollector(actionsFlow: Flow<AppLanguageUiAction>) {
+fun AppLanguageActionCollector(actionsFlow: Flow<AppLanguageUiAction>) {
     val applyLanguage = rememberApplyLanguage()
     ActionCollector(actionsFlow) { action ->
         when (action) {

@@ -204,13 +204,19 @@ private fun BibleVersionStatusText(
         )
 
         is DownloadStatusModel.InProgress.Downloading -> withDownloadedSize(
-            status = stringResource(R.string.bible_version_downloading_progress, downloadStatus.progressStr),
+            status = stringResource(
+                R.string.bible_version_downloading_progress,
+                downloadStatus.progressStr,
+            ),
             progress = downloadStatus.progress,
             size = size,
         )
 
         is DownloadStatusModel.InProgress.Paused -> withDownloadedSize(
-            status = stringResource(R.string.bible_version_paused_progress, downloadStatus.progressStr),
+            status = stringResource(
+                R.string.bible_version_paused_progress,
+                downloadStatus.progressStr,
+            ),
             progress = downloadStatus.progress,
             size = size,
         )
@@ -235,7 +241,11 @@ private fun withSize(
 ): String = if (size == null) {
     status
 } else {
-    stringResource(R.string.bible_version_status_with_size, status, megabytesText(size))
+    stringResource(
+        R.string.bible_version_status_with_size,
+        status,
+        megabytesText(size),
+    )
 }
 
 @Composable
