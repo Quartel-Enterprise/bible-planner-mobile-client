@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface DayStudyRouteUiEvent : UiEvent {
+sealed interface DayStudyRouteUiEvent : UiEvent {
     data object OnRetryClick : DayStudyRouteUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.DAY_STUDY_RETRY_CLICKED,

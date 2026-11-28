@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class ChapterStudyViewModel(
+class ChapterStudyViewModel internal constructor(
     private val useCases: ChapterStudyUseCases,
     private val generationCoordinator: ChapterStudyGenerationCoordinator,
     private val pendingVerseFocusStore: PendingVerseFocusStore,

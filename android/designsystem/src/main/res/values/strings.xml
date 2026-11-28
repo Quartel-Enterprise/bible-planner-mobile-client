@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progress_dialog_loading">Loading</string>
+    <string name="study_show_more">Show more</string>
+    <string name="study_show_less">Show less</string>
+    <string name="study_generating_title">Preparing your study</string>
+    <string name="study_error_title">Generation failed</string>
+    <string name="study_error">Could not load the study. Try again.</string>
+    <string name="study_error_offline">The connection was lost while generating the study. Check your internet and try again.</string>
+    <string name="study_retry">Try again</string>
+    <string name="study_ai_disclaimer">AI-generated content to support understanding. It does not replace reading the full text.</string>
 </resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_study_title">Estudo do dia</string>
+    <string name="day_study_generate">Gerar</string>
+    <string name="day_study_view">Ver</string>
+    <string name="day_study_subscribe">Assinar</string>
+    <string name="day_study_generate_hint">Gerar usa 1 análise grátis</string>
+    <string name="day_study_generate_hint_pro">Gere uma visão geral das passagens deste dia</string>
+    <string name="day_study_view_hint">Visão geral das passagens deste dia</string>
+    <string name="day_study_quota_free">%1$d grátis</string>
+    <string name="day_study_exhausted_subtitle">Suas %1$d análises grátis acabaram</string>
+    <string name="day_study_pro_badge">PRO</string>
+    <string name="day_study_generated">Gerado</string>
+    <string name="day_study_limit_reached">Você já usou todas as suas análises grátis.</string>
+    <string name="day_study_generating_subtitle">A IA está lendo as passagens de hoje. Isso pode levar até 1 minuto — pode fechar e voltar quando quiser.</string>
+    <string name="day_study_phase_reading">Lendo as passagens de hoje</string>
+    <string name="day_study_phase_chapters">Resumindo cada capítulo</string>
+    <string name="day_study_phase_context">Reunindo o contexto histórico</string>
+    <string name="day_study_phase_questions">Levantando perguntas comuns</string>
+    <plurals name="day_study_wait_for_generations">
+        <item quantity="one">Aguarde a análise em andamento terminar antes de gerar uma nova.</item>
+        <item quantity="other">Aguarde as %1$d análises em andamento terminarem antes de gerar uma nova.</item>
+    </plurals>
+    <string name="day_study_tab_summary">Resumo</string>
+    <string name="day_study_tab_context">Contexto</string>
+    <string name="day_study_tab_questions">Perguntas</string>
+    <string name="day_study_summary_by_chapter">POR CAPÍTULO</string>
+    <string name="day_study_summary_takeaways">Em resumo</string>
+    <string name="day_study_context_title">Contexto histórico</string>
+    <string name="day_study_questions_title">Perguntas comuns</string>
+    <string name="day_study_chat_entry_title">Pergunte sobre esta leitura</string>
+    <string name="day_study_chat_entry_placeholder">Pergunte qualquer coisa sobre %1$s…</string>
+    <string name="day_study_chat_entry_hint">O chat já conhece o contexto de hoje</string>
+    <string name="day_study_back">Voltar</string>
+    <string name="day_study_unlock">Desbloquear</string>
+</resources>

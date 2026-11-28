@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_study_title">Daily study</string>
+    <string name="day_study_generate">Generate</string>
+    <string name="day_study_view">View</string>
+    <string name="day_study_subscribe">Subscribe</string>
+    <string name="day_study_generate_hint">Generating uses 1 free analysis</string>
+    <string name="day_study_generate_hint_pro">Generate an overview of this day\'s passages</string>
+    <string name="day_study_view_hint">Overview of this day\'s passages</string>
+    <string name="day_study_quota_free">%1$d free</string>
+    <string name="day_study_exhausted_subtitle">You have used your %1$d free analyses</string>
+    <string name="day_study_pro_badge">PRO</string>
+    <string name="day_study_generated">Generated</string>
+    <string name="day_study_limit_reached">You\'ve used all your free analyses.</string>
+    <string name="day_study_generating_subtitle">The AI is reading today\'s passages. This can take up to 1 minute — you can close and come back anytime.</string>
+    <string name="day_study_phase_reading">Reading today\'s passages</string>
+    <string name="day_study_phase_chapters">Summarizing each chapter</string>
+    <string name="day_study_phase_context">Gathering the historical context</string>
+    <string name="day_study_phase_questions">Raising common questions</string>
+    <plurals name="day_study_wait_for_generations">
+        <item quantity="one">Wait for the current analysis to finish before generating a new one.</item>
+        <item quantity="other">Wait for the %1$d ongoing analyses to finish before generating a new one.</item>
+    </plurals>
+    <string name="day_study_tab_summary">Summary</string>
+    <string name="day_study_tab_context">Context</string>
+    <string name="day_study_tab_questions">Questions</string>
+    <string name="day_study_summary_by_chapter">BY CHAPTER</string>
+    <string name="day_study_summary_takeaways">In summary</string>
+    <string name="day_study_context_title">Historical context</string>
+    <string name="day_study_questions_title">Common questions</string>
+    <string name="day_study_chat_entry_title">Ask about this reading</string>
+    <string name="day_study_chat_entry_placeholder">Ask anything about %1$s…</string>
+    <string name="day_study_chat_entry_hint">The chat already knows today\'s context</string>
+    <string name="day_study_back">Back</string>
+    <string name="day_study_unlock">Unlock</string>
+</resources>
