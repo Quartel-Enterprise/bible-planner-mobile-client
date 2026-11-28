@@ -164,7 +164,7 @@ screen's main one:
 | Read | `feature/read/.../presentation/screen/ReadUiTest.kt` |
 | Profile (preferences and account) | `feature/profile/.../presentation/ProfileUiTest.kt` |
 | Annotations | `feature/verse/annotations/.../presentation/content/AnnotationsUiTest.kt` |
-| Release notes (top bar title) | `feature/release_notes/.../presentation/ReleaseNotesUiTest.kt` |
+| Release notes (top bar title and tabs) | `feature/release_notes/.../presentation/ReleaseNotesUiTest.kt` |
 | Top bar titles in a shared transition | `PaywallTopBarUiTest`, `BookDetailsTopBarUiTest`, `DayScreenTopBarUiTest` |
 
 The whole app, driven from launch across several screens, is covered by the

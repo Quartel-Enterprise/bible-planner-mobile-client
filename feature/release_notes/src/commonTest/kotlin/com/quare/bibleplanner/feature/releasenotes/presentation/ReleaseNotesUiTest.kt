@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 internal class ReleaseNotesUiTest {
     private var isReleaseNotesShown by mutableStateOf(false)
-    private val sentEvents = mutableListOf<ReleaseNotesUiEvent>()
+    private lateinit var sentEvents: MutableList<ReleaseNotesUiEvent>
     private val successState = ReleaseNotesUiState.Success(
         latestRelease = null,
         upcomingReleases = emptyList(),
@@ -49,10 +49,7 @@ internal class ReleaseNotesUiTest {
         runComposeUiTest(effectContext = AnimationsDisabled) {
             // Given
             val title = getString(Res.string.release_notes_screen_title)
-            prepareScenario(
-                title = title,
-                uiState = ReleaseNotesUiState.Error,
-            )
+            prepareScenario(uiState = ReleaseNotesUiState.Error)
 
             // When
             isReleaseNotesShown = true
@@ -75,7 +72,9 @@ internal class ReleaseNotesUiTest {
     fun `GIVEN the latest tab is selected WHEN tapping another tab THEN sends the tab selection`() =
         runComposeUiTest(effectContext = AnimationsDisabled) {
             // Given
-            prepareSuccessScenario()
+            prepareScenario(uiState = successState)
+            isReleaseNotesShown = true
+            waitForIdle()
 
             // When
             onNodeWithText(getString(Res.string.release_notes_tab_past)).performClick()
@@ -93,7 +92,9 @@ internal class ReleaseNotesUiTest {
     fun `GIVEN the latest tab is selected WHEN tapping it again THEN sends no event`() =
         runComposeUiTest(effectContext = AnimationsDisabled) {
             // Given
-            prepareSuccessScenario()
+            prepareScenario(uiState = successState)
+            isReleaseNotesShown = true
+            waitForIdle()
 
             // When
             onNodeWithText(getString(Res.string.release_notes_tab_latest)).performClick()
@@ -105,19 +106,9 @@ internal class ReleaseNotesUiTest {
             )
         }
 
-    private suspend fun ComposeUiTest.prepareSuccessScenario() {
-        prepareScenario(
-            title = getString(Res.string.release_notes_screen_title),
-            uiState = successState,
-        )
-        isReleaseNotesShown = true
-        waitForIdle()
-    }
-
-    private fun ComposeUiTest.prepareScenario(
-        title: String,
-        uiState: ReleaseNotesUiState,
-    ) {
+    private suspend fun ComposeUiTest.prepareScenario(uiState: ReleaseNotesUiState) {
+        val title = getString(Res.string.release_notes_screen_title)
+        sentEvents = mutableListOf()
         setUiTestContent {
             SharedTransitionTestContent(
                 isTargetShown = isReleaseNotesShown,

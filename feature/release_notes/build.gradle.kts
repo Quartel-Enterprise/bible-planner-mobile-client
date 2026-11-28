@@ -18,6 +18,7 @@ kotlin {
     jvm()
 
     sourceSets {
+        // Why: only iOS draws the native SwiftUI screen, so the other targets share the Compose root.
         val nonIosMain = create("nonIosMain") {
             dependsOn(commonMain.get())
         }
@@ -30,11 +31,7 @@ kotlin {
             dependsOn(nonIosMain)
         }
 
-        jsMain {
-            dependsOn(nonIosMain)
-        }
-
-        wasmJsMain {
+        webMain {
             dependsOn(nonIosMain)
         }
 
