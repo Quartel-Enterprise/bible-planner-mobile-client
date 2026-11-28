@@ -35,8 +35,8 @@
     <string name="chat_cancel">Cancelar</string>
     <string name="chat_confirm_rename">Confirmar</string>
     <string name="chat_conversation_options">Opciones de la conversación</string>
-    <string name="chat_bucket_today">Hoy</string>
-    <string name="chat_bucket_yesterday">Ayer</string>
+    <string name="chat_today">Hoy</string>
+    <string name="chat_yesterday">Ayer</string>
     <string name="chat_bucket_last_seven_days">Últimos 7 días</string>
     <string name="chat_bucket_month_year">%1$s de %2$d</string>
     <string name="chat_close">Cerrar</string>
@@ -45,8 +45,6 @@
         <item quantity="one">%1$d pregunta gratis restante</item>
         <item quantity="other">%1$d preguntas gratis restantes</item>
     </plurals>
-    <string name="chat_date_today">Hoy</string>
-    <string name="chat_date_yesterday">Ayer</string>
     <string name="chat_date_tomorrow">Mañana</string>
     <plurals name="chat_date_days_ago">
         <item quantity="one">Hace %1$d día</item>

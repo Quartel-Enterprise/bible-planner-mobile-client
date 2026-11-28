@@ -38,8 +38,8 @@ internal fun relativeTimeLabel(relativeTime: RelativeTime): String = when (relat
 
 @Composable
 internal fun bucketLabel(bucket: ChatConversationBucket): String = when (bucket) {
-    ChatConversationBucket.Today -> stringResource(R.string.chat_bucket_today)
-    ChatConversationBucket.Yesterday -> stringResource(R.string.chat_bucket_yesterday)
+    ChatConversationBucket.Today -> stringResource(R.string.chat_today)
+    ChatConversationBucket.Yesterday -> stringResource(R.string.chat_yesterday)
     ChatConversationBucket.LastSevenDays -> stringResource(R.string.chat_bucket_last_seven_days)
     is ChatConversationBucket.InMonth -> monthBucketLabel(bucket)
 }
@@ -48,7 +48,12 @@ internal fun bucketLabel(bucket: ChatConversationBucket): String = when (bucket)
 @Composable
 private fun monthBucketLabel(bucket: ChatConversationBucket.InMonth): String {
     val month = stringResource(bucket.month.toStringRes())
-    val currentYear = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year }
+    val currentYear = remember {
+        Clock.System
+            .now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .year
+    }
     return if (bucket.year == currentYear) {
         month
     } else {
@@ -62,9 +67,9 @@ private fun monthBucketLabel(bucket: ChatConversationBucket.InMonth): String {
 
 @Composable
 private fun dateRepresentationLabel(representation: DateRepresentation): String = when (representation) {
-    DateRepresentation.Today -> stringResource(R.string.chat_date_today)
+    DateRepresentation.Today -> stringResource(R.string.chat_today)
 
-    DateRepresentation.Yesterday -> stringResource(R.string.chat_date_yesterday)
+    DateRepresentation.Yesterday -> stringResource(R.string.chat_yesterday)
 
     DateRepresentation.Tomorrow -> stringResource(R.string.chat_date_tomorrow)
 

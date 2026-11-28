@@ -29,6 +29,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.text.rememberSyncedTextFieldState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatQuotaUiModel
 

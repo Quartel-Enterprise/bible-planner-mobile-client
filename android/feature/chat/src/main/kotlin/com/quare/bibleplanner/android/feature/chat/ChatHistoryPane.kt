@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.text.rememberSyncedTextFieldState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 

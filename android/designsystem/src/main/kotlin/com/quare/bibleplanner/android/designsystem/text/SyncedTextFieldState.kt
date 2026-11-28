@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.android.feature.chat
+package com.quare.bibleplanner.android.designsystem.text
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -15,7 +15,7 @@ import androidx.compose.runtime.snapshotFlow
  * itself (a restored draft, clearing after a send). Each value the field sends comes back as state; those echoes
  * are skipped, since one can arrive after newer typing, and any other value replaces the field's text.
  */
-internal class SyncedTextFieldState(
+class SyncedTextFieldState internal constructor(
     val textFieldState: TextFieldState,
     private val currentValue: State<String>,
     private val currentOnValueChange: State<(String) -> Unit>,
@@ -35,6 +35,11 @@ internal class SyncedTextFieldState(
     }
 
     internal fun onValueChanged(value: String) {
+        // Why: the latest sent text coming back means every earlier echo is obsolete, even a repeated one.
+        if (value == sentValues.lastOrNull()) {
+            sentValues.clear()
+            return
+        }
         val echoIndex = sentValues.indexOf(value)
         if (echoIndex >= 0) {
             repeat(echoIndex + 1) { sentValues.removeFirst() }
@@ -46,7 +51,7 @@ internal class SyncedTextFieldState(
 }
 
 @Composable
-internal fun rememberSyncedTextFieldState(
+fun rememberSyncedTextFieldState(
     value: String,
     onValueChange: (String) -> Unit,
 ): SyncedTextFieldState {

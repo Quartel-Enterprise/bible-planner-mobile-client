@@ -13,22 +13,28 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatMessageUiModel
 
 private const val BUBBLE_MAX_WIDTH_FRACTION = 0.85f
 private const val CARET = "▌"
 private const val CARET_BLINK_MILLIS = 500
+private const val CARET_ID = "caret"
+private const val CARET_WIDTH_EM = 0.6f
 private val userBubbleShape = RoundedCornerShape(
     topStart = 18.dp,
     topEnd = 18.dp,
@@ -71,6 +77,7 @@ internal fun ChatMessageBubble(
             ) {
                 Text(
                     text = message.annotatedText(),
+                    inlineContent = if (message.isStreaming) caretInlineContent() else emptyMap(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (message.isFromUser) {
                         MaterialTheme.colorScheme.onPrimary
@@ -84,21 +91,28 @@ internal fun ChatMessageBubble(
 }
 
 @Composable
-private fun ChatMessageUiModel.annotatedText(): AnnotatedString {
-    if (!isStreaming) return AnnotatedString(text)
-    val caretColor = MaterialTheme.colorScheme.primary.copy(alpha = caretAlpha())
-    return buildAnnotatedString {
-        append(text)
-        withStyle(SpanStyle(color = caretColor)) {
-            append(CARET)
+private fun ChatMessageUiModel.annotatedText(): AnnotatedString = remember(text, isStreaming) {
+    if (isStreaming) {
+        buildAnnotatedString {
+            append(text)
+            appendInlineContent(
+                id = CARET_ID,
+                alternateText = CARET,
+            )
         }
+    } else {
+        AnnotatedString(text)
     }
 }
 
+/*
+ * Why: the caret's alpha is read only in graphicsLayer, so its blinking redraws the caret alone instead of
+ * recomposing and laying out the whole streamed answer every frame.
+ */
 @Composable
-private fun caretAlpha(): Float {
+private fun caretInlineContent(): Map<String, InlineTextContent> {
     val transition = rememberInfiniteTransition()
-    val alpha by transition.animateFloat(
+    val alpha = transition.animateFloat(
         initialValue = 1f,
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
@@ -106,5 +120,24 @@ private fun caretAlpha(): Float {
             repeatMode = RepeatMode.Reverse,
         ),
     )
-    return alpha
+    val caretColor = MaterialTheme.colorScheme.primary
+    val caretStyle = MaterialTheme.typography.bodyMedium
+    return remember(alpha, caretColor, caretStyle) {
+        mapOf(
+            CARET_ID to InlineTextContent(
+                placeholder = Placeholder(
+                    width = CARET_WIDTH_EM.em,
+                    height = 1.em,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                ),
+            ) {
+                Text(
+                    text = CARET,
+                    modifier = Modifier.graphicsLayer { this.alpha = alpha.value },
+                    color = caretColor,
+                    style = caretStyle,
+                )
+            },
+        )
+    }
 }
