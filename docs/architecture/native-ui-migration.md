@@ -60,7 +60,8 @@ platform after each one.
      provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there. On narrow
      screens the bar hides on scroll like the shared one: the tabs draw under it and pad their scrolling content's
      end by `LocalHostedTabBarHeight`, while `LocalHostedTabBarHeightOffset` says how far it slid away, so
-     `ReserveHostedTabBarHeightEffect` keeps snackbars and FABs on its visible top. A native
+     `ReserveHostedTabBarHeightEffect` keeps snackbars and FABs on its visible top. A tab that jumps its list in code calls
+     `LocalRevealHostedTabBar` to bring the hidden bar back. A native
      tab draws only its body too, does the same, and keeps its shared elements toward root screens
      with `LocalSharedTransitionScope` and `LocalMainEntryAnimatedContentScope` (`android/navigation`), the root
      entry's scope that the main screen provides, since the factory only gets the tab's key.

@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.designsystem.avatar
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -51,26 +49,36 @@ fun ProfileAvatarImage(
     val avatarModifier = modifier
         .size(size)
         .clip(CircleShape)
-    val photoBytesHash = photoBytes?.contentHashCode()
     val targetSizePx = with(LocalDensity.current) { size.roundToPx() }
+    // Why: a new avatar for bytes another one already decoded, like the tab icon's, shows the photo on its first frame.
+    val cachedBitmap = remember(photoBytes) { photoBytes?.let(DecodedAvatarPhotoCache::findOrNull)?.bitmap }
     var decodedPhoto by remember { mutableStateOf<DecodedPhoto?>(null) }
-    // Why: keeps the previous photo on screen while new bytes decode or a new URL loads, instead of the placeholder.
-    var lastPhotoBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    // Why: keyed on the content hash, so a profile update that copies the same bytes doesn't decode them again.
+    // Why: keeps the previous photo on screen while new bytes decode or a new URL loads, instead of the fallback.
+    var lastPhotoBitmap by remember { mutableStateOf(cachedBitmap) }
     LaunchedEffect(
-        photoBytesHash,
+        photoBytes,
         targetSizePx,
     ) {
-        if (photoBytes == null || photoBytesHash == null) return@LaunchedEffect
-        val bitmap = withContext(Dispatchers.Default) { photoBytes.toSampledImageBitmap(targetSizePx) }
+        if (photoBytes == null) return@LaunchedEffect
+        val bitmap = DecodedAvatarPhotoCache.findCoveringOrNull(
+            bytes = photoBytes,
+            targetSizePx = targetSizePx,
+        ) ?: withContext(Dispatchers.Default) {
+            DecodedAvatarPhotoCache.decode(
+                bytes = photoBytes,
+                targetSizePx = targetSizePx,
+            )
+        }
         decodedPhoto = DecodedPhoto(
-            bytesHash = photoBytesHash,
+            bytes = photoBytes,
             bitmap = bitmap,
         )
         if (bitmap != null) lastPhotoBitmap = bitmap
     }
-    val isDecoding = photoBytesHash != null && decodedPhoto?.bytesHash != photoBytesHash
-    val photoBitmap = decodedPhoto?.takeIf { it.bytesHash == photoBytesHash }?.bitmap
+    val isDecoding = photoBytes != null && decodedPhoto?.bytes !== photoBytes
+    val photoBitmap = decodedPhoto?.takeIf { it.bytes === photoBytes }?.bitmap
+        ?: cachedBitmap
+        ?: lastPhotoBitmap.takeIf { isDecoding }
     val placeholder = lastPhotoBitmap
     val fallback: @Composable (Modifier) -> Unit = { fallbackModifier ->
         InitialsAvatarBox(
@@ -87,36 +95,31 @@ fun ProfileAvatarImage(
             modifier = avatarModifier,
         )
 
-        isDecoding && placeholder != null -> AvatarBitmapImage(
-            bitmap = placeholder,
-            modifier = avatarModifier,
-        )
-
         photoUrl != null -> SubcomposeAsyncImage(
             model = photoUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = avatarModifier,
             loading = {
-                AvatarLoadingImage(
-                    placeholder = placeholder,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                if (placeholder == null) {
+                    fallback(Modifier.fillMaxSize())
+                } else {
+                    AvatarBitmapImage(
+                        bitmap = placeholder,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             },
             error = { fallback(Modifier.fillMaxSize()) },
-        )
-
-        isDecoding -> AvatarLoadingImage(
-            placeholder = null,
-            modifier = avatarModifier,
         )
 
         else -> fallback(avatarModifier)
     }
 }
 
+// Why: bytes are compared by reference, so a profile update that keeps the same array doesn't decode it again.
 private class DecodedPhoto(
-    val bytesHash: Int,
+    val bytes: ByteArray,
     val bitmap: ImageBitmap?,
 )
 
@@ -131,21 +134,6 @@ private fun AvatarBitmapImage(
         contentScale = ContentScale.Crop,
         modifier = modifier,
     )
-}
-
-@Composable
-private fun AvatarLoadingImage(
-    placeholder: ImageBitmap?,
-    modifier: Modifier,
-) {
-    if (placeholder == null) {
-        Box(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest))
-    } else {
-        AvatarBitmapImage(
-            bitmap = placeholder,
-            modifier = modifier,
-        )
-    }
 }
 
 @Composable
@@ -177,42 +165,6 @@ private fun InitialsAvatarBox(
             )
         }
     }
-}
-
-// Why: a full-resolution camera photo would hold megabytes of pixels for an avatar a few dozen pixels wide.
-private fun ByteArray.toSampledImageBitmap(targetSizePx: Int): ImageBitmap? {
-    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeByteArray(
-        this,
-        0,
-        size,
-        bounds,
-    )
-    val options = BitmapFactory.Options().apply {
-        inSampleSize = getSampleSize(
-            shorterSidePx = minOf(bounds.outWidth, bounds.outHeight),
-            targetSizePx = targetSizePx,
-        )
-    }
-    return BitmapFactory
-        .decodeByteArray(
-            this,
-            0,
-            size,
-            options,
-        )?.asImageBitmap()
-}
-
-// Why: the photo is cropped to a circle, so its shorter side must still cover the target after sampling.
-private fun getSampleSize(
-    shorterSidePx: Int,
-    targetSizePx: Int,
-): Int {
-    var sampleSize = 1
-    while (targetSizePx > 0 && shorterSidePx / (sampleSize * 2) >= targetSizePx) {
-        sampleSize *= 2
-    }
-    return sampleSize
 }
 
 private fun String?.toInitials(): String? {
