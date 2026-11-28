@@ -116,9 +116,8 @@ private fun HostedTabScaffold(
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
     val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
-    val visibleHostedTabBarHeightPx = rememberVisibleHostedTabBarHeightPx()
-    val navigationBarInsets = WindowInsets.navigationBars
-    ReserveHostedTabBarHeightEffect(extraHeight = reservedFabHeight.toFabClearance())
+    val visibleHostedTabBarClearancePx = rememberVisibleHostedTabBarClearancePx()
+    ReserveHostedTabBarHeightEffect { reservedFabHeight.toFabClearance() }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -131,12 +130,7 @@ private fun HostedTabScaffold(
                  * on the bar's visible top like NarrowTabScaffold's and rests above the gesture bar once it hides.
                  */
                 modifier = Modifier.graphicsLayer {
-                    if (hostedTabBarHeight > 0.dp) {
-                        translationY = -maxOf(
-                            visibleHostedTabBarHeightPx(),
-                            navigationBarInsets.getBottom(this).toFloat(),
-                        )
-                    }
+                    if (hostedTabBarHeight > 0.dp) translationY = -visibleHostedTabBarClearancePx()
                 },
                 content = floatingActionButton,
             )
@@ -168,9 +162,11 @@ private fun NarrowTabScaffold(
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
     ReserveBottomOverlayHeightEffect {
-        val visibleBottomBarPx = (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f)
-        maxOf(navigationBarInsets.getBottom(density).toFloat(), visibleBottomBarPx) +
-            with(density) { reservedFabHeight.toFabClearance().toPx() }
+        getVisibleBarClearancePx(
+            barHeightPx = bottomBarHeightPx,
+            heightOffsetPx = scrollBehavior.state.heightOffset,
+            navigationBarBottomPx = navigationBarInsets.getBottom(density).toFloat(),
+        ) + with(density) { reservedFabHeight.toFabClearance().toPx() }
     }
 
     Scaffold(

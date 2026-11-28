@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -53,6 +52,7 @@ import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItem
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
 import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeightOffset
+import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 
 // Why: the same breakpoint as the shared MainTabScaffold, so the rail shows up where it does today.
 private val wideScreenWidth = 600.dp
@@ -70,9 +70,10 @@ internal fun MainContent(
     val density = LocalDensity.current
     var barHeight by remember { mutableStateOf(0.dp) }
     // Why: the same behavior as the shared NarrowTabScaffold, so scrolling a tab down slides the bar away.
-    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
-    val barState = scrollBehavior.state
+    val barScrollController = rememberMainBarScrollController()
+    val barState = barScrollController.state
     val barHeightOffset = remember(barState) { { barState.heightOffset } }
+    val revealBar = remember(barScrollController) { barScrollController::reveal }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth > wideScreenWidth
         // Why: a tab the bar was hidden on, or a rail that replaced it, would otherwise leave a new tab without it.
@@ -80,7 +81,7 @@ internal fun MainContent(
             selectedTab,
             isWide,
         ) {
-            barState.heightOffset = 0f
+            barScrollController.show()
         }
         /*
          * Why: the tabs stay in the same slot whether the rail or the bar shows, so rotating the device keeps
@@ -100,7 +101,7 @@ internal fun MainContent(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .then(if (isWide) Modifier else Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)),
+                    .then(if (isWide) Modifier else Modifier.nestedScroll(barScrollController.nestedScrollConnection)),
             ) {
                 // Why: the tabs draw under the bar, which pads for the gesture bar itself, so they scroll under both.
                 Box(
@@ -117,6 +118,7 @@ internal fun MainContent(
                     CompositionLocalProvider(
                         LocalHostedTabBarHeight provides if (isWide) 0.dp else barHeight,
                         LocalHostedTabBarHeightOffset provides if (isWide) noBarHeightOffset else barHeightOffset,
+                        LocalRevealHostedTabBar provides revealBar,
                         content = tabs,
                     )
                 }

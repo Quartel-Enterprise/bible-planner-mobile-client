@@ -48,6 +48,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.content.getReadin
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
+import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
@@ -115,8 +116,10 @@ private fun ReadingPlanScrollEffect(
                 currentOnEvent(ReadingPlanUiEvent.OnActiveRowVisibilityChange(isActiveRowVisible))
             }
     }
+    val revealHostedTabBar = LocalRevealHostedTabBar.current
     LaunchedEffect(state.scrollToTop) {
         if (state.scrollToTop) {
+            revealHostedTabBar()
             lazyListState.animateScrollToItem(index = 0)
             delay(SCROLL_TO_TOP_SETTLE_MILLIS)
             currentOnEvent(ReadingPlanUiEvent.OnScrollToTopCompleted)
@@ -139,6 +142,7 @@ private fun ScrollToWeekEffect(
      * Why: keyed on the request, not the whole state. The scroll flips isScrolledDown and isActiveRowVisible, and
      * restarting on those new states would pause and replay the scroll halfway through.
      */
+    val revealHostedTabBar = LocalRevealHostedTabBar.current
     LaunchedEffect(scrollToWeekNumber, isLoaded) {
         if (scrollToWeekNumber <= 0 || !isLoaded) return@LaunchedEffect
         val skipAutomaticScroll = state.scrollToWeekIsAutomatic && includeSidePanel
@@ -152,6 +156,7 @@ private fun ScrollToWeekEffect(
                 )
             } ?: -1
             if (targetIndex >= 0) {
+                revealHostedTabBar()
                 lazyListState.animateScrollToItem(index = targetIndex)
             }
         }
