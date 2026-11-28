@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
+import com.quare.bibleplanner.feature.read.presentation.screen.content.getChapterStartIndices
 
 @Composable
 internal fun rememberVisibleChapter(

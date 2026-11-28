@@ -12,7 +12,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -35,7 +35,7 @@ internal fun ReadTopBar(
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val bookName = (visibleChapter?.chapter?.bookId ?: header.bookId).getBookName()
+    val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
     val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
     TopAppBar(
         modifier = modifier,
@@ -47,7 +47,13 @@ internal fun ReadTopBar(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                Text(text = "$bookName $chapterNumber")
+                Text(
+                    text = verseReferenceLabel(
+                        bookId = bookId,
+                        chapterNumber = chapterNumber,
+                        verseNumbers = emptyList(),
+                    ),
+                )
             }
         },
         navigationIcon = {
@@ -61,7 +67,7 @@ internal fun ReadTopBar(
                     onClick = {
                         onEvent(
                             ReadUiEvent.OnChapterStudyClick(
-                                bookId = visibleChapter?.chapter?.bookId ?: header.bookId,
+                                bookId = bookId,
                                 chapterNumber = chapterNumber,
                                 source = ChapterStudyEntrySource.TOP_BAR,
                             ),

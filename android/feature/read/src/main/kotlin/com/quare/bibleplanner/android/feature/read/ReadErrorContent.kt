@@ -27,10 +27,9 @@ import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.ui.component.text.megabytesText
 
 private const val PROGRESS_BAR_WIDTH_FRACTION = 0.6f
-private const val BYTES_IN_MEGABYTE = 1_000_000
-private const val DECIMAL_PLACE = 10
 
 @Composable
 internal fun ReadErrorContent(
@@ -178,10 +177,3 @@ private fun DownloadProgressIndicator(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-@Composable
-private fun megabytesText(bytes: Long): String = stringResource(
-    R.string.read_megabytes_size,
-    bytes / BYTES_IN_MEGABYTE,
-    bytes % BYTES_IN_MEGABYTE * DECIMAL_PLACE / BYTES_IN_MEGABYTE,
-)

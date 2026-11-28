@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,9 +64,11 @@ internal fun LazyListScope.chapterSkeletonContent(position: ChapterSkeletonPosit
 
 @Composable
 private fun ChapterHeaderSkeleton() {
+    val pulse by rememberSkeletonPulse()
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer { alpha = pulse }
             .padding(vertical = headerVerticalPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -85,8 +88,11 @@ private fun ChapterHeaderSkeleton() {
 
 @Composable
 private fun VerseSkeletonRow(lineWidthFractions: List<Float>) {
+    val pulse by rememberSkeletonPulse()
     Row(
-        modifier = Modifier.padding(vertical = verseVerticalPadding),
+        modifier = Modifier
+            .graphicsLayer { alpha = pulse }
+            .padding(vertical = verseVerticalPadding),
         horizontalArrangement = Arrangement.spacedBy(9.dp),
     ) {
         ReadSkeletonBox(
@@ -109,25 +115,21 @@ private fun VerseSkeletonRow(lineWidthFractions: List<Float>) {
     }
 }
 
-internal enum class ChapterSkeletonPosition {
-    LEADING,
-    TRAILING,
-}
+@Composable
+internal fun rememberSkeletonPulse(): State<Float> = rememberInfiniteTransition(label = "read_skeleton").animateFloat(
+    initialValue = 1f,
+    targetValue = PULSE_MIN_ALPHA,
+    animationSpec = infiniteRepeatable(
+        animation = tween(PULSE_MILLIS),
+        repeatMode = RepeatMode.Reverse,
+    ),
+    label = "read_skeleton_alpha",
+)
 
 @Composable
 internal fun ReadSkeletonBox(modifier: Modifier = Modifier) {
-    val pulse by rememberInfiniteTransition(label = "read_skeleton").animateFloat(
-        initialValue = 1f,
-        targetValue = PULSE_MIN_ALPHA,
-        animationSpec = infiniteRepeatable(
-            animation = tween(PULSE_MILLIS),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "read_skeleton_alpha",
-    )
     Box(
         modifier = modifier
-            .graphicsLayer { alpha = pulse }
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
                 shape = skeletonShape,

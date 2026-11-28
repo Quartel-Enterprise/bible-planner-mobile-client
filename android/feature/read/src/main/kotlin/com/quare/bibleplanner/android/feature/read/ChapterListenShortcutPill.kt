@@ -30,9 +30,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.feature.read.presentation.listening.getListeningMinutes
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
+import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 
 private const val LISTEN_SHORTCUT_TAG = "listen_shortcut"

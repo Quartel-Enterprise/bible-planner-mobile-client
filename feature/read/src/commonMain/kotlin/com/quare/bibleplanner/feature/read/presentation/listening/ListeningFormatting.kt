@@ -7,11 +7,11 @@ import kotlin.time.DurationUnit
 
 private const val CLOCK_SECONDS_DIGITS = 2
 
-internal fun Duration.toClockText(): String = coerceAtLeast(Duration.ZERO).toComponents { minutes, seconds, _ ->
+fun Duration.toClockText(): String = coerceAtLeast(Duration.ZERO).toComponents { minutes, seconds, _ ->
     "$minutes:${seconds.toString().padStart(CLOCK_SECONDS_DIGITS, '0')}"
 }
 
-internal fun getListeningMinutes(
+fun getListeningMinutes(
     verseTexts: List<String>,
     speed: Float,
 ): Int {

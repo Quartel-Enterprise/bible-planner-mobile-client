@@ -37,7 +37,7 @@ internal fun AnnotatedString.withListeningWord(
 }
 
 // Why: the player's range counts from the trimmed verse text, and the reader shows it untrimmed.
-internal fun IntRange.toUntrimmed(text: String): IntRange {
+fun IntRange.toUntrimmed(text: String): IntRange {
     val leadingSpaces = text.length - text.trimStart().length
     return first + leadingSpaces..last + leadingSpaces
 }

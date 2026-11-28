@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -79,7 +79,11 @@ private fun ChapterEndButton(
         )
         suggestion?.let {
             Text(
-                text = "${it.bookId.getBookName()} ${it.chapterNumber}",
+                text = verseReferenceLabel(
+                    bookId = it.bookId,
+                    chapterNumber = it.chapterNumber,
+                    verseNumbers = emptyList(),
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

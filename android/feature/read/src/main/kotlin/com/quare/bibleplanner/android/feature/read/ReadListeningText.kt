@@ -5,13 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
-import com.quare.bibleplanner.core.chapterlistening.domain.usecase.EstimateListeningTimeUseCase
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
-import kotlin.math.roundToInt
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-
-private const val CLOCK_SECONDS_DIGITS = 2
 
 @Composable
 internal fun chapterTitle(chapter: ChapterLocationModel): String = verseReference(
@@ -28,21 +22,6 @@ internal fun verseReference(
     chapterNumber = chapter.chapterNumber,
     verseNumbers = listOfNotNull(verseNumber),
 )
-
-internal fun Duration.toClockText(): String = coerceAtLeast(Duration.ZERO).toComponents { minutes, seconds, _ ->
-    "$minutes:${seconds.toString().padStart(CLOCK_SECONDS_DIGITS, '0')}"
-}
-
-internal fun getListeningMinutes(
-    verseTexts: List<String>,
-    speed: Float,
-): Int {
-    val total = EstimateListeningTimeUseCase()(
-        verseTexts = verseTexts,
-        speed = speed,
-    )
-    return total.toDouble(DurationUnit.MINUTES).roundToInt().coerceAtLeast(1)
-}
 
 @Composable
 internal fun listeningWordStyle(): SpanStyle = SpanStyle(
@@ -73,10 +52,4 @@ internal fun AnnotatedString.withListeningWord(
                 end = safeWord.last + 1,
             )
         }.toAnnotatedString()
-}
-
-// Why: the player's range counts from the trimmed verse text, and the reader shows it untrimmed.
-internal fun IntRange.toUntrimmed(text: String): IntRange {
-    val leadingSpaces = text.length - text.trimStart().length
-    return first + leadingSpaces..last + leadingSpaces
 }

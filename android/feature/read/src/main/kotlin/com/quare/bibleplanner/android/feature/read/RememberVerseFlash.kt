@@ -13,8 +13,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
+import com.quare.bibleplanner.feature.read.presentation.screen.findVerseItemIndex
 import kotlinx.coroutines.delay
 
 private const val FLASH_IN_MILLIS = 350

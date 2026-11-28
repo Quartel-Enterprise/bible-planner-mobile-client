@@ -8,7 +8,9 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,8 +33,10 @@ internal fun BibleVersionChip(
         label = {
             when (versionName) {
                 Loadable.Loading -> {
+                    val pulse by rememberSkeletonPulse()
                     ReadSkeletonBox(
                         modifier = Modifier
+                            .graphicsLayer { alpha = pulse }
                             .width(abbreviationShimmerWidth)
                             .height(abbreviationShimmerHeight),
                     )

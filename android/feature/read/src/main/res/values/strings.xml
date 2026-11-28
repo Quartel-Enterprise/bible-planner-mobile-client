@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="read_change_bible_version">Change Bible Version</string>
-    <string name="read_chapter_not_downloaded_error">You haven\'t downloaded "%1$s %2$d" in the "%3$s" version yet.</string>
+    <string name="read_chapter_not_downloaded_error">You haven\'t downloaded \"%1$s %2$d\" in the \"%3$s\" version yet.</string>
     <string name="read_chapter_study_card_subtitle">Summary, context and reflections · AI</string>
     <string name="read_chapter_study_card_subtitle_with_chapter">%1$s · Summary, context and reflections · AI</string>
     <string name="read_chapter_study_card_title">Study this chapter</string>
@@ -62,6 +62,5 @@
     <string name="read_listening_narration_paused_title">Narration paused for now</string>
     <string name="read_listening_narration_paused_body">New chapters come back next month. Chapters already narrated still play.</string>
     <string name="read_listening_sleep_timer_ended">Sleep timer ended · good night</string>
-    <string name="read_megabytes_size">%1$d.%2$d MB</string>
     <string name="read_back">Back</string>
 </resources>

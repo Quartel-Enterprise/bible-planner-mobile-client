@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.DayReadingCompleteBanner
@@ -190,7 +190,11 @@ private fun ReadWideHeader(
             if (hasRoomForTitle) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "${bookId.getBookName()} $chapterNumber",
+                    text = verseReferenceLabel(
+                        bookId = bookId,
+                        chapterNumber = chapterNumber,
+                        verseNumbers = emptyList(),
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

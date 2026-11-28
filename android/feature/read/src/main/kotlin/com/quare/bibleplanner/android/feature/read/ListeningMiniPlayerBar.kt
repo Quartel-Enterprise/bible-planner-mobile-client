@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.toClockText
 
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 private val barHeight = 64.dp

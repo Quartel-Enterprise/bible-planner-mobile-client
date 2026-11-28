@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="read_change_bible_version">Cambiar Versión de la Biblia</string>
-    <string name="read_chapter_not_downloaded_error">Aún no has descargado "%1$s %2$d" en la versión "%3$s".</string>
+    <string name="read_chapter_not_downloaded_error">Aún no has descargado \"%1$s %2$d\" en la versión \"%3$s\".</string>
     <string name="read_chapter_study_card_subtitle">Resumen, contexto y reflexiones · IA</string>
     <string name="read_chapter_study_card_subtitle_with_chapter">%1$s · Resumen, contexto y reflexiones · IA</string>
     <string name="read_chapter_study_card_title">Estudiar este capítulo</string>
@@ -62,6 +62,5 @@
     <string name="read_listening_narration_paused_title">Narración en pausa por ahora</string>
     <string name="read_listening_narration_paused_body">Los capítulos nuevos vuelven el mes que viene. Los ya narrados siguen sonando.</string>
     <string name="read_listening_sleep_timer_ended">Temporizador terminado · buenas noches</string>
-    <string name="read_megabytes_size">%1$d,%2$d MB</string>
     <string name="read_back">Volver</string>
 </resources>

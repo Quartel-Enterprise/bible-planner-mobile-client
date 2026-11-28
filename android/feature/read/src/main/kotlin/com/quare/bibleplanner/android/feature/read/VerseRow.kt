@@ -224,7 +224,11 @@ private fun VerseLine(
                     drawContent()
                     if (verse.isSelected) {
                         textLayoutResult?.let { layout ->
-                            drawSelectionUnderline(layout, fontSize, textStyle.color)
+                            drawSelectionUnderline(
+                                layout = layout,
+                                fontSize = fontSize,
+                                color = textStyle.color,
+                            )
                         }
                     }
                 },

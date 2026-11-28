@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatus
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
+import com.quare.bibleplanner.feature.read.presentation.screen.findVerseItemIndex
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
