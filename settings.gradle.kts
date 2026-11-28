@@ -126,6 +126,7 @@ include(":android:feature:edit_plan_start_date")
 include(":android:feature:material_you")
 include(":android:feature:pix_qr")
 include(":android:feature:paywall_teaser")
+include(":android:feature:subscription_details")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

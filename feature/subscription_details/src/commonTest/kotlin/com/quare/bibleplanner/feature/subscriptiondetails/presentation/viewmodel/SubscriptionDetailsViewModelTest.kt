@@ -77,6 +77,7 @@ internal class SubscriptionDetailsViewModelTest {
                     purchaseDate = purchaseDate,
                     expirationDate = expirationDate,
                     willRenew = false,
+                    store = PurchaseStore.APP_STORE,
                 ),
                 state,
             )

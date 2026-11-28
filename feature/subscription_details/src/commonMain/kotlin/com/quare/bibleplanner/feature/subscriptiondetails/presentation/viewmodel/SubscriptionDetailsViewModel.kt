@@ -22,6 +22,7 @@ class SubscriptionDetailsViewModel(
                     purchaseDate = status.purchaseDate,
                     expirationDate = status.expirationDate,
                     willRenew = status.willRenew,
+                    store = status.store,
                 )
             } else {
                 SubscriptionDetailsUiState.Error

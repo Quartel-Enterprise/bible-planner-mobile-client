@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="subscription_details_status_title">Status da Assinatura</string>
+    <string name="subscription_details_active">Ativo</string>
+    <string name="subscription_details_plan_pro">Plano Pro</string>
+    <string name="subscription_details_plan_pro_monthly">Pro / Plano Mensal</string>
+    <string name="subscription_details_plan_pro_annual">Pro / Plano Anual</string>
+    <string name="subscription_details_purchase_title">Detalhes da Compra</string>
+    <string name="subscription_details_purchase_date">Data da Compra</string>
+    <string name="subscription_details_renews">Renova em</string>
+    <string name="subscription_details_expires">Expira em</string>
+    <string name="subscription_details_origin">Origem</string>
+    <string name="subscription_details_store_google_play">Google Play</string>
+    <string name="subscription_details_store_app_store">App Store</string>
+    <string name="subscription_details_store_web">Site</string>
+    <string name="subscription_details_close">Fechar</string>
+</resources>
