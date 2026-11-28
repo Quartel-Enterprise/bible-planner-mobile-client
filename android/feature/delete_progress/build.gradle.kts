@@ -6,4 +6,5 @@ dependencies {
     implementation(projects.feature.deleteProgress)
     implementation(projects.core.model)
     implementation(projects.ui.utils)
+    implementation(libs.compose.materialIconsExtended)
 }

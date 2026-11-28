@@ -40,7 +40,7 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
                     "androidx-compose-material3",
                     "compose-ui",
                     "compose-ui-toolingPreview",
-                    "compose-materialIconsExtended",
+                    "compose-materialIconsCore",
                 ).forEach { alias -> add("implementation", libs.findLibrary(alias).get()) }
                 add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
                 // Why: a feature screen builds its Navigation 3 entry with the shared ViewModel from Koin.

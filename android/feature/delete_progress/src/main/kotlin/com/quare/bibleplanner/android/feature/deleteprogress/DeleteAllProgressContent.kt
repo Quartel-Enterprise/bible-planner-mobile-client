@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceRow
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceType
+import com.quare.bibleplanner.android.designsystem.theme.success
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 
@@ -129,7 +130,7 @@ private fun StatusColumn(isDeleted: Boolean) {
                 modifier = Modifier.size(progressIconSize),
                 imageVector = Icons.Default.Check,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
+                tint = MaterialTheme.colorScheme.success,
             )
         } else {
             LoadingIndicator(modifier = Modifier.size(progressIconSize))

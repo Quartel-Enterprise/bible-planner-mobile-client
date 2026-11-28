@@ -79,6 +79,22 @@ internal class DeleteVersionViewModelTest {
         }
 
     @Test
+    fun `GIVEN a failing deletion WHEN confirming THEN goes back to the confirmation without tracking or closing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DeleteVersionUiEvent.OnConfirmDelete)
+
+            // When
+            deletionGate.completeExceptionally(IllegalStateException("disk error"))
+
+            // Then
+            assertEquals(DeleteVersionUiState.Idle, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the confirmation WHEN cancelling THEN closes without deleting`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
