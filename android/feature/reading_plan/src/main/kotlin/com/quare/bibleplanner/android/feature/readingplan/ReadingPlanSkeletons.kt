@@ -49,16 +49,36 @@ internal fun ReadingPlanHeroSkeleton(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            SkeletonBox(shimmer, Modifier.width(110.dp).height(14.dp), color = placeholderColor)
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.width(110.dp).height(14.dp),
+                color = placeholderColor,
+            )
             Column(
                 modifier = Modifier.padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                SkeletonBox(shimmer, Modifier.fillMaxWidth(0.85f).height(26.dp), color = placeholderColor)
-                SkeletonBox(shimmer, Modifier.fillMaxWidth(0.55f).height(26.dp), color = placeholderColor)
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.fillMaxWidth(0.85f).height(26.dp),
+                    color = placeholderColor,
+                )
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.fillMaxWidth(0.55f).height(26.dp),
+                    color = placeholderColor,
+                )
             }
-            SkeletonBox(shimmer, Modifier.width(120.dp).height(14.dp), color = placeholderColor)
-            SkeletonBox(shimmer, Modifier.fillMaxWidth(0.7f).height(12.dp), color = placeholderColor)
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.width(120.dp).height(14.dp),
+                color = placeholderColor,
+            )
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.fillMaxWidth(0.7f).height(12.dp),
+                color = placeholderColor,
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,24 +123,48 @@ internal fun ReadingPlanProgressSkeleton(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                SkeletonBox(shimmer, Modifier.size(20.dp), shape = CircleShape)
-                SkeletonBox(shimmer, Modifier.width(120.dp).height(18.dp))
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.size(20.dp),
+                    shape = CircleShape,
+                )
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.width(120.dp).height(18.dp),
+                )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                SkeletonBox(shimmer, Modifier.size(100.dp), shape = CircleShape)
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.size(100.dp),
+                    shape = CircleShape,
+                )
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    SkeletonBox(shimmer, Modifier.fillMaxWidth(0.6f).height(18.dp))
-                    SkeletonBox(shimmer, Modifier.fillMaxWidth(0.4f).height(14.dp))
-                    SkeletonBox(shimmer, Modifier.width(120.dp).height(28.dp), shape = pillShape)
+                    SkeletonBox(
+                        shimmer = shimmer,
+                        modifier = Modifier.fillMaxWidth(0.6f).height(18.dp),
+                    )
+                    SkeletonBox(
+                        shimmer = shimmer,
+                        modifier = Modifier.fillMaxWidth(0.4f).height(14.dp),
+                    )
+                    SkeletonBox(
+                        shimmer = shimmer,
+                        modifier = Modifier.width(120.dp).height(28.dp),
+                        shape = pillShape,
+                    )
                 }
             }
-            SkeletonBox(shimmer, Modifier.fillMaxWidth(0.7f).height(14.dp))
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.fillMaxWidth(0.7f).height(14.dp),
+            )
         }
     }
 }
@@ -191,20 +235,37 @@ private fun WeekHeaderSkeleton(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SkeletonBox(shimmer, Modifier.width(80.dp).height(16.dp))
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.width(80.dp).height(16.dp),
+            )
             if (isCurrent) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    SkeletonBox(shimmer, Modifier.width(70.dp).height(12.dp))
-                    SkeletonBox(shimmer, Modifier.weight(1f).height(6.dp), shape = pillShape)
+                    SkeletonBox(
+                        shimmer = shimmer,
+                        modifier = Modifier.width(70.dp).height(12.dp),
+                    )
+                    SkeletonBox(
+                        shimmer = shimmer,
+                        modifier = Modifier.weight(1f).height(6.dp),
+                        shape = pillShape,
+                    )
                 }
             } else {
-                SkeletonBox(shimmer, Modifier.fillMaxWidth(0.4f).height(12.dp))
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.fillMaxWidth(0.4f).height(12.dp),
+                )
             }
         }
-        SkeletonBox(shimmer, Modifier.size(24.dp), shape = CircleShape)
+        SkeletonBox(
+            shimmer = shimmer,
+            modifier = Modifier.size(24.dp),
+            shape = CircleShape,
+        )
     }
 }
 
@@ -238,18 +299,37 @@ private fun DaySkeletonRow(shimmer: Shimmer) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                SkeletonBox(shimmer, Modifier.width(22.dp).height(16.dp))
-                SkeletonBox(shimmer, Modifier.width(18.dp).height(10.dp))
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.width(22.dp).height(16.dp),
+                )
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.width(18.dp).height(10.dp),
+                )
             }
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                SkeletonBox(shimmer, Modifier.fillMaxWidth(0.45f).height(16.dp))
-                SkeletonBox(shimmer, Modifier.fillMaxWidth(0.65f).height(12.dp))
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.fillMaxWidth(0.45f).height(16.dp),
+                )
+                SkeletonBox(
+                    shimmer = shimmer,
+                    modifier = Modifier.fillMaxWidth(0.65f).height(12.dp),
+                )
             }
-            SkeletonBox(shimmer, Modifier.size(36.dp), shape = CircleShape)
-            SkeletonBox(shimmer, Modifier.width(8.dp).height(14.dp))
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+            )
+            SkeletonBox(
+                shimmer = shimmer,
+                modifier = Modifier.width(8.dp).height(14.dp),
+            )
         }
     }
 }

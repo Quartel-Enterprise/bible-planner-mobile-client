@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
+import com.quare.bibleplanner.feature.readingplan.presentation.content.COLLAPSED_WEEK_LIMIT
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanListItem
 import com.quare.bibleplanner.feature.readingplan.presentation.content.buildReadingPlanWeekItems
 import com.quare.bibleplanner.feature.readingplan.presentation.content.getReadingPlanItemKey
@@ -59,7 +60,6 @@ import kotlinx.coroutines.delay
 private const val PLANS_LIST_TAG = "plans_list"
 private const val HERO_ITEM_KEY = "hero"
 private const val WEEK_SKELETON_COUNT = 4
-private const val COLLAPSED_WEEK_LIMIT = 2
 private const val SCROLL_LAYOUT_SETTLE_MILLIS = 100L
 private const val SCROLL_TO_TOP_SETTLE_MILLIS = 400L
 private val splitBreakpoint = 600.dp
@@ -132,19 +132,26 @@ private fun ScrollToWeekEffect(
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val currentOnEvent by rememberUpdatedState(onEvent)
+    val currentLoadedState by rememberUpdatedState(state as? ReadingPlanUiState.Loaded)
     val scrollToWeekNumber = state.scrollToWeekNumber
-    val loadedState = state as? ReadingPlanUiState.Loaded
-    LaunchedEffect(scrollToWeekNumber, loadedState) {
-        if (scrollToWeekNumber <= 0 || loadedState == null) return@LaunchedEffect
+    val isLoaded = state is ReadingPlanUiState.Loaded
+    /*
+     * Why: keyed on the request, not the whole state. The scroll flips isScrolledDown and isActiveRowVisible, and
+     * restarting on those new states would pause and replay the scroll halfway through.
+     */
+    LaunchedEffect(scrollToWeekNumber, isLoaded) {
+        if (scrollToWeekNumber <= 0 || !isLoaded) return@LaunchedEffect
         val skipAutomaticScroll = state.scrollToWeekIsAutomatic && includeSidePanel
         if (!skipAutomaticScroll) {
-            val targetIndex = getReadingPlanWeekScrollIndex(
-                state = loadedState,
-                includeSidePanel = includeSidePanel,
-                weekNumber = scrollToWeekNumber,
-            )
+            delay(SCROLL_LAYOUT_SETTLE_MILLIS)
+            val targetIndex = currentLoadedState?.let { loadedState ->
+                getReadingPlanWeekScrollIndex(
+                    state = loadedState,
+                    includeSidePanel = includeSidePanel,
+                    weekNumber = scrollToWeekNumber,
+                )
+            } ?: -1
             if (targetIndex >= 0) {
-                delay(SCROLL_LAYOUT_SETTLE_MILLIS)
                 lazyListState.animateScrollToItem(index = targetIndex)
             }
         }

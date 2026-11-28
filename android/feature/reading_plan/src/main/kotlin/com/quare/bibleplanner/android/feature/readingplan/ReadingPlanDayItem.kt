@@ -179,7 +179,7 @@ internal fun ReadingPlanDayItem(
             DayReadToggle(
                 isRead = isRead,
                 isAccented = dayPlan.isAccented,
-                contentDescription = stringResource(R.string.reading_plan_day_read, dayNumber),
+                contentDescription = stringResource(R.string.reading_plan_day_read, dayPlan.globalDayIndex),
                 onClick = {
                     onEvent(
                         ReadingPlanUiEvent.OnDayReadClick(

@@ -4,7 +4,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
-private const val COLLAPSED_WEEK_LIMIT = 2
+const val COLLAPSED_WEEK_LIMIT = 2
 
 sealed interface ReadingPlanListItem {
     data class SectionHeader(
@@ -21,7 +21,7 @@ sealed interface ReadingPlanListItem {
     ) : ReadingPlanListItem
 }
 
-const val SIDE_PANEL_ITEM_COUNT = 3
+internal const val SIDE_PANEL_ITEM_COUNT = 3
 
 fun buildReadingPlanWeekItems(state: ReadingPlanUiState.Loaded): List<ReadingPlanListItem> {
     val grouped = state.weekPlans.groupBy { it.group }
