@@ -5,17 +5,22 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -33,9 +38,13 @@ private val sectionSpacing = 16.dp
 internal fun ProfileContent(
     state: ProfileUiState,
     transitionScopes: ProfileTransitionScopes?,
+    hostedTabBarHeight: Dp,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        // Why: in landscape a side display cutout would otherwise cover the cards.
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.union(WindowInsets.displayCutout),
+    ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val isTwoColumns = maxWidth > twoColumnsMinWidth
@@ -50,7 +59,8 @@ internal fun ProfileContent(
                     start = innerPadding.calculateStartPadding(layoutDirection) + screenPadding + centeringPadding,
                     top = innerPadding.calculateTopPadding() + screenPadding,
                     end = innerPadding.calculateEndPadding(layoutDirection) + screenPadding + centeringPadding,
-                    bottom = innerPadding.calculateBottomPadding() + screenPadding,
+                    // Why: the profile scrolls under the main screen's bar, so its last row clears it while it shows.
+                    bottom = innerPadding.calculateBottomPadding() + hostedTabBarHeight + screenPadding,
                 ),
                 verticalArrangement = Arrangement.spacedBy(sectionSpacing),
             ) {

@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.avatar.ProfileAvatarImage
+import com.quare.bibleplanner.core.profile.domain.model.photoBytes
+import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 

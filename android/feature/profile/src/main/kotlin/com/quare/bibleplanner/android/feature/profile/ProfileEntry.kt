@@ -19,6 +19,7 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
 import com.quare.bibleplanner.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
+import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
 import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import com.quare.bibleplanner.ui.utils.toClipEntry
@@ -41,6 +42,7 @@ private fun ProfileTabEntryContent() {
         ProfileContent(
             state = state,
             transitionScopes = transitionScopes,
+            hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp,
             onEvent = viewModel::onEvent,
         )
     }
