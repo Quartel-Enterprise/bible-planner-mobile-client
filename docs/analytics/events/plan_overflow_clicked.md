@@ -22,3 +22,4 @@ None.
 ## Notes
 
 - Closing the menu without selecting an option is tracked separately: [plan_overflow_dismissed](plan_overflow_dismissed.md).
+- The iOS app draws this menu with SwiftUI's native `Menu`, which doesn't report opening or closing, so iOS app versions from the SwiftUI Plans tab on never send it.

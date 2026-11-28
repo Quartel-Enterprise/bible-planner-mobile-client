@@ -126,7 +126,13 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             LocalIsWideLayout provides isWide,
         ) {
             SharedTransitionLayout {
-                val mainTabEntries = remember(this) { RootMainTabEntries(this) }
+                val koin = getKoin()
+                val mainTabEntries = remember(this, koin) {
+                    RootMainTabEntries(
+                        sharedTransitionScope = this,
+                        nativeTabContent = koin.getOrNull<NativeTabContentProvider>(),
+                    )
+                }
                 CompositionLocalProvider(
                     LocalMainTabEntries provides mainTabEntries,
                     LocalSharedTransitionScope provides this,

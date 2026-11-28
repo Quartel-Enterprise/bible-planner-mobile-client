@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
+import com.quare.bibleplanner.core.navigation.NativeTabContentProvider
 import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentDataSource
 import com.quare.bibleplanner.core.provider.ads.domain.service.RewardedAdDataSource
 import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
@@ -24,6 +25,8 @@ import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionD
 import com.quare.bibleplanner.feature.login.di.iosLoginModule
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.ReleaseNotesNativeScreenFactory
 import com.quare.bibleplanner.nativeui.IosNativeEntryProvider
+import com.quare.bibleplanner.nativeui.IosNativeTabContentProvider
+import com.quare.bibleplanner.nativeui.NativeScreenFactory
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
 import com.quare.bibleplanner.notification.IosDownloadLiveActivity
 import com.quare.bibleplanner.review.IosReviewRequester
@@ -55,6 +58,7 @@ fun initializeKoinForIos(
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
     releaseNotesScreenFactory: ReleaseNotesNativeScreenFactory,
+    nativeScreenFactory: NativeScreenFactory,
 ) {
     if (isInitialized) return
     try {
@@ -74,6 +78,7 @@ fun initializeKoinForIos(
                     single { downloadLiveActivity }
                     single { releaseNotesScreenFactory }
                     single<NativeEntryProvider> { IosNativeEntryProvider() }
+                    single<NativeTabContentProvider> { IosNativeTabContentProvider(nativeScreenFactory) }
                     factory<RequestInAppReview> {
                         RequestInAppReview {
                             withContext(Dispatchers.Main) { reviewRequester.requestReview() }
@@ -105,6 +110,7 @@ fun MainViewController(
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
     releaseNotesScreenFactory: ReleaseNotesNativeScreenFactory,
+    nativeScreenFactory: NativeScreenFactory,
 ): UIViewController = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
@@ -116,6 +122,7 @@ fun MainViewController(
             rewardedAdDataSource = rewardedAdDataSource,
             adsConsentDataSource = adsConsentDataSource,
             releaseNotesScreenFactory = releaseNotesScreenFactory,
+            nativeScreenFactory = nativeScreenFactory,
         )
     },
 ) {

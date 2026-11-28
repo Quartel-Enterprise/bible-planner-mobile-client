@@ -22,3 +22,4 @@ None.
 ## Notes
 
 - Because this fires from a generic dismiss callback, it is not a precise "user declined the menu" signal — treat volume trends directionally, not as a strict funnel step.
+- The iOS app draws this menu with SwiftUI's native `Menu`, which doesn't report opening or closing, so iOS app versions from the SwiftUI Plans tab on never send it.

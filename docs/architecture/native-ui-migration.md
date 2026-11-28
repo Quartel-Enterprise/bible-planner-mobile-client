@@ -90,3 +90,28 @@ A screen is ready for its SwiftUI version once Swift can create its ViewModel an
 
 Swift then keeps the holder for the screen's lifetime, calls `onEvent` on its ViewModel, and calls `clear()` when the
 screen goes away.
+
+### Drawing a screen in SwiftUI
+
+Until step 4, the Compose root keeps drawing the app on iOS and hosts each SwiftUI screen in its place:
+
+- `NativeScreenFactory` (`:shared` `iosMain`) has one function per SwiftUI screen, which Swift implements
+  (`SwiftUINativeScreenFactory`) and passes into `MainViewController`. Each returns a `NativeScreen`: the
+  screen's `UIViewController` and a `dispose()` that clears its `ViewModelHolder`.
+- `NativeScreenContent` hosts that view controller and keeps the `NativeScreen` in the entry's
+  `ViewModelStore`, so it lives exactly as long as the Compose ViewModel it replaces: switching tabs keeps it,
+  and leaving the entry for good calls `dispose()`.
+- A main tab goes through `NativeTabContentProvider` (`:core:navigation`): the shared main screen still draws
+  the tab bar, so `RootMainTabEntries` swaps only the tab's body inside `MainTabScaffold`. A root route goes
+  through `NativeEntryProvider`, like the release notes screen.
+- The SwiftUI screen keeps its `ViewModelHolder`, watches `stateWatcher` and `actionWatcher`, sends every
+  `UiEvent` through `onEvent`, and lets the ViewModel navigate through the shared back stack. Its strings live
+  in the app's `<lang>.lproj` tables (`ReadingPlan.strings`, plurals in `.stringsdict`), read through
+  `NativeLocalization`, which follows the in-app language the app language screen sets at run time.
+  `scripts/check_ios_translations.py` checks that every table has the same keys and format specifiers in `en`,
+  `pt-BR` and `es`. Book names stay in the shared Compose resources until step 4: Swift loads them through
+  `NativeBookNames` (`:shared` `iosMain`).
+- Kotlin enums reach Swift as classes, so the screen mirrors each one by `name` in a Swift enum
+  (`PlanModeKind`) to map it to text and an SF Symbol with an exhaustive `switch`.
+- The `iosApp` folder is a synchronized group in the Xcode project, so new Swift files and `.lproj` tables
+  need no `project.pbxproj` change.
