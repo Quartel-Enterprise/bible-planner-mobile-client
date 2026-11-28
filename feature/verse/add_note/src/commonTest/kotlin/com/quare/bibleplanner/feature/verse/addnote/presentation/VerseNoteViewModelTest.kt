@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -207,6 +208,59 @@ internal class VerseNoteViewModelTest {
             assertTrue(viewModel.uiState.value.isExisting)
         }
 
+    @Test
+    fun `GIVEN a save in flight WHEN tapping save again THEN writes the note once and leaves once`() =
+        runTest(testDispatcher) {
+            // Given
+            val pendingWrite = CompletableDeferred<Unit>()
+            prepareScenario(pendingWrite = pendingWrite)
+            viewModel.onEvent(VerseNoteUiEvent.OnTextChange("Minha reflexao"))
+            viewModel.onEvent(VerseNoteUiEvent.OnSaveClick)
+
+            // When
+            viewModel.onEvent(VerseNoteUiEvent.OnSaveClick)
+            pendingWrite.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = savedNotes.size,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN a delete in flight WHEN confirming again THEN removes the note once and leaves once`() =
+        runTest(testDispatcher) {
+            // Given
+            val pendingWrite = CompletableDeferred<Unit>()
+            prepareScenario(
+                existingNote = existingNote(),
+                pendingWrite = pendingWrite,
+            )
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteClick)
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteConfirm)
+
+            // When
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteConfirm)
+            pendingWrite.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = deletedNoteIds.size,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+        }
+
     private fun existingNote(): VerseNote = VerseNote(
         id = "note-1",
         chapter = testChapter,
@@ -216,7 +270,10 @@ internal class VerseNoteViewModelTest {
         updatedAtEpochMillis = 0L,
     )
 
-    private fun TestScope.prepareScenario(existingNote: VerseNote? = null) {
+    private fun TestScope.prepareScenario(
+        existingNote: VerseNote? = null,
+        pendingWrite: CompletableDeferred<Unit>? = null,
+    ) {
         savedNotes = mutableListOf()
         deletedNoteIds = mutableListOf()
         trackedEvents = mutableListOf()
@@ -231,8 +288,12 @@ internal class VerseNoteViewModelTest {
             getVerseNote = { existingNote },
             saveVerseNote = { noteId, _, _, text ->
                 savedNotes += noteId to text
+                pendingWrite?.await()
             },
-            deleteVerseNote = { noteId -> deletedNoteIds += noteId },
+            deleteVerseNote = { noteId ->
+                deletedNoteIds += noteId
+                pendingWrite?.await()
+            },
             getVersesShareContent = { _, _, _ ->
                 VersesShareContentModel(
                     text = "1 Primeiro 2 Segundo",
