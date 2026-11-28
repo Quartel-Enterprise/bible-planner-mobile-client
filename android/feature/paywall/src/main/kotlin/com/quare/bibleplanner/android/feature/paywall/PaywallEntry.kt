@@ -3,9 +3,7 @@ package com.quare.bibleplanner.android.feature.paywall
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -22,11 +20,9 @@ internal fun PaywallNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(key = thi
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    var failedAttempts by remember { mutableIntStateOf(0) }
     ActionCollector(viewModel.uiAction) { uiAction ->
         when (uiAction) {
             is PaywallUiAction.ShowError -> {
-                failedAttempts++
                 snackbarHostState.showSnackbar(
                     context.getString(uiAction.error.toMessage(), uiAction.storeName),
                 )
@@ -37,7 +33,6 @@ internal fun PaywallNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(key = thi
         PaywallContent(
             uiState = uiState,
             snackbarHostState = snackbarHostState,
-            failedAttempts = failedAttempts,
             onEvent = viewModel::onEvent,
         )
     }
