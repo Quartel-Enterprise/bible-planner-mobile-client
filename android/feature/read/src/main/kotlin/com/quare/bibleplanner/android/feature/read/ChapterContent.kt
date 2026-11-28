@@ -1,0 +1,149 @@
+package com.quare.bibleplanner.android.feature.read
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.core.books.util.verseReferenceLabel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
+import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.screen.component.toUntrimmed
+
+/*
+ * Why: vertical reading emits every chapter into one list, so the next chapter is already below
+ * and the chapter arrows are dropped.
+ */
+internal fun LazyListScope.chapterContent(
+    chapter: ReadChapterUiModel,
+    header: ReadHeaderUiModel,
+    settings: ReaderSettingsModel,
+    isChapterStudyBeside: Boolean,
+    isListenShortcutShown: Boolean,
+    focusedVerseNumber: Int?,
+    verseFlash: VerseFlash,
+    listening: ReadListeningUiState,
+    onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    val listeningPlayer = listening.player
+        ?.takeIf { player ->
+            player.chapter.bookId == chapter.chapter.bookId &&
+                player.chapter.chapterNumber == chapter.chapter.chapterNumber &&
+                player.status != ListeningStatusModel.FINISHED
+        }
+    val listeningVerseNumber = listeningPlayer?.verseNumber
+    // Why: the word's range belongs to the narrated version's text, so a reader showing another version marks none.
+    val spokenWord = listeningPlayer
+        ?.takeIf { player -> player.bibleVersionId.equals(chapter.chapter.bibleVersionId, ignoreCase = true) }
+        ?.spokenWord
+    item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
+        Column {
+            ChapterHeader(
+                bookName = chapter.chapter.bookId.getBookName(),
+                chapterNumber = chapter.chapter.chapterNumber,
+                isBookNameSpoken = spokenWord == ListeningWordTargetModel.ChapterBook,
+                isChapterNumberSpoken = spokenWord == ListeningWordTargetModel.ChapterNumber,
+            )
+            if (listening.isAvailable && isListenShortcutShown) {
+                ChapterListenShortcutPill(
+                    chapter = chapter,
+                    listening = listening,
+                    onListeningEvent = onListeningEvent,
+                )
+            }
+        }
+    }
+    items(
+        count = chapter.verses.size,
+        key = { index ->
+            "verse-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}-${chapter.verses[index].number}"
+        },
+    ) { index ->
+        val verse = chapter.verses[index]
+        val flashFocus = verseFlash.focus
+        val isFlashing = flashFocus != null &&
+            flashFocus.bookId == chapter.chapter.bookId &&
+            flashFocus.chapterNumber == chapter.chapter.chapterNumber &&
+            verse.number in flashFocus.verseNumbers
+        VerseRow(
+            verse = verse,
+            settings = settings,
+            flashAlpha = verseFlash.alpha.takeIf { isFlashing },
+            isDimmed = focusedVerseNumber != null && focusedVerseNumber != verse.number,
+            isListening = verse.number == listeningVerseNumber,
+            listeningHeadingWord = (spokenWord as? ListeningWordTargetModel.Heading)
+                ?.range
+                ?.takeIf { verse.number == listeningVerseNumber },
+            listeningWord = (spokenWord as? ListeningWordTargetModel.Verse)
+                ?.range
+                ?.takeIf { verse.number == listeningVerseNumber }
+                ?.toUntrimmed(verse.text),
+            onClick = {
+                onEvent(
+                    ReadUiEvent.OnVerseClick(
+                        chapter = chapter.chapter,
+                        verseNumber = verse.number,
+                    ),
+                )
+            },
+            onNoteIconClick = { noteMark ->
+                onEvent(
+                    ReadUiEvent.OnNoteIconClick(
+                        chapter = chapter.chapter,
+                        noteMark = noteMark,
+                    ),
+                )
+            },
+        )
+    }
+    if (shouldListChapterStudyCard(isChapterStudyBeside)) {
+        item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
+            val chapterLabel = verseReferenceLabel(
+                bookId = chapter.chapter.bookId,
+                chapterNumber = chapter.chapter.chapterNumber,
+                verseNumbers = emptyList(),
+            )
+            ChapterStudyEntryCard(
+                chapterLabel = chapterLabel.takeIf { settings.isVerticalReadingEnabled },
+                onClick = {
+                    onEvent(
+                        ReadUiEvent.OnChapterStudyClick(
+                            bookId = chapter.chapter.bookId,
+                            chapterNumber = chapter.chapter.chapterNumber,
+                            source = ChapterStudyEntrySource.CHAPTER_END,
+                        ),
+                    )
+                },
+                modifier = Modifier.padding(top = 28.dp),
+            )
+        }
+    }
+    item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
+        ChapterEndNavigationRow(
+            suggestions = header.navigationSuggestions.takeIf { !settings.isVerticalReadingEnabled },
+            isRead = chapter.isRead,
+            onReadClick = {
+                onEvent(
+                    ReadUiEvent.ToggleReadStatus(
+                        bookId = chapter.chapter.bookId,
+                        chapterNumber = chapter.chapter.chapterNumber,
+                    ),
+                )
+            },
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: the shared getChapterStartIndices counts the same items, so both must agree on the study card.
+private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside
