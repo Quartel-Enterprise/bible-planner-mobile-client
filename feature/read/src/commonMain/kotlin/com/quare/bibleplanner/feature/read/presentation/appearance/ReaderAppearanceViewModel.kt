@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ReaderAppearanceViewModel(
+class ReaderAppearanceViewModel internal constructor(
     private val setReaderFontSize: SetReaderFontSize,
     private val setReaderFont: SetReaderFont,
     private val setReaderFocusAid: SetReaderFocusAid,

@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface AccountDetailsUiEvent : UiEvent {
+sealed interface AccountDetailsUiEvent : UiEvent {
     data object OnToggleDevices : AccountDetailsUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.CONNECTED_DEVICES_TOGGLED,

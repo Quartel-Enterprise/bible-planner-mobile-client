@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.editprofile
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.feature.editprofile.presentation.content.rememberCameraPicker
-import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
@@ -93,13 +91,4 @@ private fun CameraLaunchOverlay() {
     ) {
         CircularProgressIndicator(color = Color.White)
     }
-}
-
-@StringRes
-private fun EditProfileMessage.toStringRes(): Int = when (this) {
-    EditProfileMessage.PHOTO_SYNCED -> R.string.edit_profile_photo_synced
-    EditProfileMessage.PHOTO_REMOVED -> R.string.edit_profile_photo_removed
-    EditProfileMessage.PHOTO_UPDATED -> R.string.edit_profile_photo_updated
-    EditProfileMessage.PHOTO_UNREADABLE -> R.string.edit_profile_photo_unreadable
-    EditProfileMessage.PHOTO_TOO_LARGE -> R.string.edit_profile_photo_too_large
 }

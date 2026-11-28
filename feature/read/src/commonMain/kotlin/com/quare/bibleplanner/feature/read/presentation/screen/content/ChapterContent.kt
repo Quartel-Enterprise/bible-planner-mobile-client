@@ -149,7 +149,7 @@ internal fun LazyListScope.chapterContent(
     }
 }
 
-internal fun getChapterStartIndices(
+fun getChapterStartIndices(
     chapters: List<ReadChapterUiModel>,
     leadingItemCount: Int,
     isChapterStudyBeside: Boolean,
@@ -164,4 +164,5 @@ internal fun getChapterStartIndices(
     }
 }
 
-private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside
+// Why: public so the native reader lists the same items getChapterStartIndices counts.
+fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside

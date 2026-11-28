@@ -37,6 +37,7 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.navigation.AppBackStack
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
+import com.quare.bibleplanner.core.navigation.slot.RootMainTabEntries
 import com.quare.bibleplanner.core.navigation.strategy.SheetSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.StudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
@@ -46,12 +47,14 @@ import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpda
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
 import com.quare.bibleplanner.feature.inappupdate.presentation.InAppUpdateDownloadOverlay
+import com.quare.bibleplanner.feature.main.presentation.LocalMainTabEntries
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
+import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.getKoin
@@ -122,36 +125,42 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             LocalIsWideLayout provides isWide,
         ) {
             SharedTransitionLayout {
-                NavDisplay(
-                    backStack = displayBackStack,
-                    onBack = onNavigateBack,
-                    sceneStrategies = listOf(
-                        SheetSceneStrategy(),
-                        DialogSceneStrategy(),
-                        remember(isWide, dayStudyReadingFraction) {
-                            StudyPanelSceneStrategy(
-                                isWide = isWide,
-                                readingFraction = dayStudyReadingFraction,
-                                onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
+                val mainTabEntries = remember(this) { RootMainTabEntries(this) }
+                CompositionLocalProvider(
+                    LocalMainTabEntries provides mainTabEntries,
+                    LocalSharedTransitionScope provides this,
+                ) {
+                    NavDisplay(
+                        backStack = displayBackStack,
+                        onBack = onNavigateBack,
+                        sceneStrategies = listOf(
+                            SheetSceneStrategy(),
+                            DialogSceneStrategy(),
+                            remember(isWide, dayStudyReadingFraction) {
+                                StudyPanelSceneStrategy(
+                                    isWide = isWide,
+                                    readingFraction = dayStudyReadingFraction,
+                                    onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
+                                )
+                            },
+                            remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
+                        ),
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        transitionSpec = { navigationTransitions.createForwardTransition(scope = this) },
+                        popTransitionSpec = { navigationTransitions.createBackwardTransition(scope = this) },
+                        predictivePopTransitionSpec = { swipeEdge ->
+                            navigationTransitions.createPredictiveBackTransition(
+                                scope = this,
+                                swipeEdge = swipeEdge,
                             )
                         },
-                        remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
-                    ),
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                    transitionSpec = { navigationTransitions.createForwardTransition(scope = this) },
-                    popTransitionSpec = { navigationTransitions.createBackwardTransition(scope = this) },
-                    predictivePopTransitionSpec = { swipeEdge ->
-                        navigationTransitions.createPredictiveBackTransition(
-                            scope = this,
-                            swipeEdge = swipeEdge,
-                        )
-                    },
-                    entryDecorators = listOf(
-                        rememberSaveableStateHolderNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator(),
-                    ),
-                    entryProvider = withNativeEntries(toEntryProvider()),
-                )
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
+                        entryProvider = withNativeEntries(toEntryProvider(mainTabEntries)),
+                    )
+                }
             }
         }
         DayStudyBackgroundGenerationOverlay()
@@ -171,7 +180,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun withNativeEntries(sharedEntries: (NavKey) -> NavEntry<NavKey>): (NavKey) -> NavEntry<NavKey> {
+fun withNativeEntries(sharedEntries: (NavKey) -> NavEntry<NavKey>): (NavKey) -> NavEntry<NavKey> {
     val koin = getKoin()
     val nativeEntries = remember(koin) { koin.getOrNull<NativeEntryProvider>() } ?: return sharedEntries
     return { key -> nativeEntries.entryFor(key) ?: sharedEntries(key) }

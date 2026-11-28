@@ -37,7 +37,7 @@ import software.quare.loadable.Loadable
 import software.quare.loadable.map
 import software.quare.loadable.toLoaded
 
-internal class AccountDetailsViewModel(
+class AccountDetailsViewModel internal constructor(
     private val signOutDevice: SignOutDevice,
     private val navigator: Navigator,
     observeCurrentUser: ObserveCurrentUser,

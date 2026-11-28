@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.read.presentation.deletecolor
 
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.highlight_color_removed
-import bibleplanner.feature.read.generated.resources.highlight_color_removed_kept
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
@@ -86,7 +83,7 @@ internal class DeleteHighlightColorViewModelTest {
             )
             assertEquals(
                 expected = listOf<DeleteHighlightColorUiAction>(
-                    DeleteHighlightColorUiAction.NotifyDeletion(Res.string.highlight_color_removed_kept),
+                    DeleteHighlightColorUiAction.NotifyDeletion(hasKeptHighlights = true),
                 ),
                 actual = actions,
             )
@@ -121,7 +118,7 @@ internal class DeleteHighlightColorViewModelTest {
             )
             assertEquals(
                 expected = listOf<DeleteHighlightColorUiAction>(
-                    DeleteHighlightColorUiAction.NotifyDeletion(Res.string.highlight_color_removed),
+                    DeleteHighlightColorUiAction.NotifyDeletion(hasKeptHighlights = false),
                 ),
                 actual = actions,
             )

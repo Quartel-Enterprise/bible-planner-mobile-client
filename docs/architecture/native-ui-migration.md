@@ -35,10 +35,13 @@ platform after each one.
 2. **Android native.** The composables move out of the shared feature modules into Android modules with a design
    system on Material 3 Expressive, laid out like Blitz Split's `android/`:
    - `android/designsystem` holds the theme (`ExpressiveTheme`, Material 3 Expressive over the app's color scheme)
-     and the components every screen shares.
+     and the components every screen shares, including the date and time labels (`date` package: medium date, time
+     on the system 12/24-hour setting, relative days such as Today or 3 days ago) and their strings.
    - `android/feature/<name>` holds one feature's screen: a `<Name>Content` composable that takes the shared
      ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
      `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
+     Book content is the exception: book names, book group titles and synopses (66 books in every language) stay in
+     the shared Compose resources, and native screens read them from there until step 4 gives them one native home.
    - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose and the Material
      icons, and to every feature module Koin, Navigation 3, the design system and `android/navigation`. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
      public; Compose Multiplatform's Android build already depends on it, so both resolve to one library.
@@ -51,6 +54,13 @@ platform after each one.
      `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request at a
      time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
      becomes `public` with an `internal` constructor so the Android module can name it.
+   - The tabs follow the same rule one level down: `android/feature/main` draws the tab bar or rail and runs the
+     inner `NavDisplay`, which asks the `NativeEntryProvider` for each tab key and falls back to the shared tab
+     from `LocalMainTabEntries` (provided by `RootAppNavDisplay` with the root's shared transition scope). It
+     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there. A native
+     tab draws only its body too, reserves the same bottom height, and keeps its shared elements toward root screens
+     with `LocalSharedTransitionScope` and `LocalMainEntryAnimatedContentScope` (`android/navigation`), the root
+     entry's scope that the main screen provides, since the factory only gets the tab's key.
    - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never
      depends on another one, and none depends on `:shared`. jscpd doesn't scan `android/` while its screens
      still duplicate the Compose Multiplatform ones they replace.

@@ -6,4 +6,30 @@
     <string name="language_name_english">English</string>
     <string name="language_name_portuguese_brazil">Portuguese (Brazil)</string>
     <string name="language_name_spanish">Spanish</string>
+    <string name="date_active_now">Active now</string>
+    <plurals name="date_minutes_ago">
+        <item quantity="one">%1$d min ago</item>
+        <item quantity="other">%1$d min ago</item>
+    </plurals>
+    <plurals name="date_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <string name="date_today">Today</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <plurals name="date_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+    <string name="date_last_week">Last week</string>
+    <plurals name="date_weeks_ago">
+        <item quantity="one">%1$d week ago</item>
+        <item quantity="other">%1$d weeks ago</item>
+    </plurals>
+    <string name="date_last_month">Last month</string>
+    <plurals name="date_months_ago">
+        <item quantity="one">%1$d month ago</item>
+        <item quantity="other">%1$d months ago</item>
+    </plurals>
 </resources>
