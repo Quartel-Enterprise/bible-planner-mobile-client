@@ -40,14 +40,26 @@ internal fun LoginNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
         }
     }
     val composeAuth = viewModel.composeAuth
-    val nativeSignInStates = mapOf(
-        LoginProvider.GOOGLE to composeAuth.rememberSignInWithGoogle(
-            onResult = { result -> viewModel.onEvent(LoginUiEvent.SocialAuthResult(LoginProvider.GOOGLE, result)) },
-            type = GoogleDialogType.BOTTOM_SHEET,
-        ),
-        LoginProvider.APPLE to composeAuth.rememberSignInWithApple(
-            onResult = { result -> viewModel.onEvent(LoginUiEvent.SocialAuthResult(LoginProvider.APPLE, result)) },
-        ),
+    val googleSignInState = composeAuth.rememberSignInWithGoogle(
+        onResult = { result ->
+            viewModel.onEvent(
+                LoginUiEvent.SocialAuthResult(
+                    provider = LoginProvider.GOOGLE,
+                    result = result,
+                ),
+            )
+        },
+        type = GoogleDialogType.BOTTOM_SHEET,
+    )
+    val appleSignInState = composeAuth.rememberSignInWithApple(
+        onResult = { result ->
+            viewModel.onEvent(
+                LoginUiEvent.SocialAuthResult(
+                    provider = LoginProvider.APPLE,
+                    result = result,
+                ),
+            )
+        },
     )
     ExpressiveTheme {
         LoginContent(
@@ -59,9 +71,16 @@ internal fun LoginNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
                  * collected state only disables its button a frame later, so a double tap would start sign-in twice.
                  */
                 val isAlreadyStarting = viewModel.state.value.loadingProvider == provider
-                val nativeSignInState = nativeSignInStates[provider]
-                if (!isAlreadyStarting && nativeSignInState != null) {
-                    viewModel.onEvent(LoginUiEvent.SocialLoginClick(provider, nativeSignInState))
+                if (!isAlreadyStarting) {
+                    viewModel.onEvent(
+                        LoginUiEvent.SocialLoginClick(
+                            provider = provider,
+                            nativeSignInState = when (provider) {
+                                LoginProvider.GOOGLE -> googleSignInState
+                                LoginProvider.APPLE -> appleSignInState
+                            },
+                        ),
+                    )
                 }
             },
         )

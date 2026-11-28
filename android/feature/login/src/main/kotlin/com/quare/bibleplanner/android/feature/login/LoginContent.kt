@@ -168,7 +168,7 @@ private fun SocialLoginButton(
                 Image(
                     modifier = Modifier.align(Alignment.CenterStart),
                     painter = painterResource(iconRes),
-                    contentDescription = text,
+                    contentDescription = null,
                 )
                 Text(text = text)
             }
