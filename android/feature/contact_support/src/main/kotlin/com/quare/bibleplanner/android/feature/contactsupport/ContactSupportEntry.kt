@@ -8,9 +8,13 @@ import android.os.Build
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
@@ -31,9 +35,17 @@ internal fun ContactSupportNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val snackbarHostState = remember { SnackbarHostState() }
+    /*
+     * Why: a second tap before the email app shows up would open it twice. The guard lifts when the user
+     * comes back to the app, or at once when the launch fails, so it never depends on how fast the app starts.
+     */
+    var isOpeningEmail by remember { mutableStateOf(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { isOpeningEmail = false }
     ActionCollector(viewModel.uiAction) { uiAction ->
         when (uiAction) {
-            is ContactSupportUiAction.OpenLink -> context.openEmailApp(uiAction.url)
+            is ContactSupportUiAction.OpenLink -> if (!isOpeningEmail) {
+                isOpeningEmail = context.openEmailApp(uiAction.url)
+            }
 
             is ContactSupportUiAction.Copy -> clipboard.setClipEntry(uiAction.text.toClipEntry())
 
@@ -55,12 +67,13 @@ internal fun ContactSupportNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     }
 }
 
-private fun Context.openEmailApp(mailto: String) {
-    try {
-        startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(mailto)))
-    } catch (_: ActivityNotFoundException) {
-        // Why: with no email app the address stays on screen with its copy button.
-    } catch (_: SecurityException) {
-        // Why: a work profile policy or a non-exported mail activity can refuse the launch, like no email app.
-    }
+private fun Context.openEmailApp(mailto: String): Boolean = try {
+    startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(mailto)))
+    true
+} catch (_: ActivityNotFoundException) {
+    // Why: with no email app the address stays on screen with its copy button.
+    false
+} catch (_: SecurityException) {
+    // Why: a work profile policy or a non-exported mail activity can refuse the launch, like no email app.
+    false
 }

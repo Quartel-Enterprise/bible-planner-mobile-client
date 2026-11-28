@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.core.user)
     implementation(projects.core.utils)
     implementation(projects.ui.utils)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.compose.materialIconsExtended)
     implementation(libs.quare.loadable)
 }

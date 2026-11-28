@@ -32,10 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,11 +51,7 @@ import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactS
 import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimationEffect
 import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
 import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
-import kotlinx.coroutines.delay
 import software.quare.loadable.valueOrNull
-import kotlin.time.Duration.Companion.seconds
-
-private val emailLaunchCooldown = 1.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,14 +62,7 @@ internal fun ContactSupportContent(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val sheetCloseGuard = rememberSheetCloseGuard()
-    var isOpeningEmail by remember { mutableStateOf(false) }
     // Why: a double tap on open email would otherwise launch the email app twice.
-    LaunchedEffect(isOpeningEmail) {
-        if (isOpeningEmail) {
-            delay(emailLaunchCooldown)
-            isOpeningEmail = false
-        }
-    }
     SheetExitAnimationEffect(
         animateOut = sheetState::hide,
         animateBackIn = sheetState::show,
@@ -131,10 +117,7 @@ internal fun ContactSupportContent(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        if (!isOpeningEmail) {
-                            isOpeningEmail = true
-                            onEvent(ContactSupportUiEvent.OnSendEmailClick)
-                        }
+                        onEvent(ContactSupportUiEvent.OnSendEmailClick)
                     },
                 ) {
                     Icon(
