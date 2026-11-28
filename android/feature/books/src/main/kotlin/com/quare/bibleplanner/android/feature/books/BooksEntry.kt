@@ -19,6 +19,7 @@ import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
 import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import org.koin.compose.viewmodel.koinViewModel
 
 internal fun MainNavRouteDestination.Books.toNavEntry(): NavEntry<NavKey> = NavEntry(key = this) {
@@ -60,12 +61,12 @@ private fun BooksTabEntryContent() {
 }
 
 @Composable
-private fun rememberBooksTransitionScopes(): BooksTransitionScopes? {
+private fun rememberBooksTransitionScopes(): TransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
     val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
     // Why: a new instance on every state change would keep every book item from skipping recomposition.
     return remember(sharedTransitionScope, animatedVisibilityScope) {
-        BooksTransitionScopes(
+        TransitionScopes(
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
         )

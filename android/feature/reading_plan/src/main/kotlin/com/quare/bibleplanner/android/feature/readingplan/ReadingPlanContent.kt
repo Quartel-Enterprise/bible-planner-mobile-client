@@ -49,6 +49,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
@@ -71,7 +72,7 @@ private val horizontalItemPadding = 16.dp
 @Composable
 internal fun ReadingPlanContent(
     state: ReadingPlanUiState,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
@@ -167,7 +168,7 @@ private fun ScrollToWeekEffect(
 @Composable
 private fun ReadingPlanList(
     state: ReadingPlanUiState,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     lazyListState: LazyListState,
     contentPadding: PaddingValues,
     onEvent: (ReadingPlanUiEvent) -> Unit,
@@ -344,7 +345,7 @@ private fun LazyListScope.weekItems(
     loadedState: ReadingPlanUiState.Loaded?,
     shimmer: Shimmer?,
     itemWidth: Dp,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     if (loadedState == null) {

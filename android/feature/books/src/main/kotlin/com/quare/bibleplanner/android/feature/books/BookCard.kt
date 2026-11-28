@@ -37,6 +37,9 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationM
 import com.quare.bibleplanner.feature.books.presentation.utils.getShadowClip
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import com.quare.bibleplanner.ui.utils.highlightText
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedBoundsOf
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 
 private val cardShape = RoundedCornerShape(16.dp)
 private val cardShadowClip = getShadowClip(cardShape)
@@ -44,7 +47,7 @@ private val cardShadowClip = getShadowClip(cardShape)
 @Composable
 internal fun BookCard(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onClick: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -65,7 +68,7 @@ internal fun BookCard(
 @Composable
 internal fun BookTypeIcon(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     iconSize: Dp,
     shape: Shape,
     iconAlpha: Float,
@@ -108,7 +111,7 @@ internal fun BookTypeIcon(
 internal fun BookTitleText(
     book: BookPresentationModel,
     searchQuery: String,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     style: TextStyle,
 ) {
     val bookName = book.name
@@ -138,7 +141,7 @@ internal fun BookTitleText(
 @Composable
 internal fun BookProgressText(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     style: TextStyle,
 ) {
     val parts = book.chapterProgressText.split(" ")
@@ -182,7 +185,7 @@ internal fun BookProgressText(
 @Composable
 internal fun BookPercentageText(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     style: TextStyle,
 ) {
     val bookIdName = book.id.name
@@ -211,7 +214,7 @@ internal fun BookPercentageText(
 @Composable
 internal fun BookProgressIndicator(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     height: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -236,7 +239,7 @@ internal fun BookProgressIndicator(
 @Composable
 internal fun BookFavoriteButton(
     book: BookPresentationModel,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     unselectedTint: Color,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,

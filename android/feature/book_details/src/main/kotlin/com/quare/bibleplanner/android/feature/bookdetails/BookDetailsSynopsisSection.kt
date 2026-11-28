@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 
 private const val COLLAPSED_MAX_LINES = 3
 private const val ELLIPSIS = "… "
@@ -44,7 +46,7 @@ internal fun BookDetailsSynopsisSection(
     bookGroupName: String,
     bookGroupSharedKey: String,
     isExpanded: Boolean,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onToggleExpanded: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {

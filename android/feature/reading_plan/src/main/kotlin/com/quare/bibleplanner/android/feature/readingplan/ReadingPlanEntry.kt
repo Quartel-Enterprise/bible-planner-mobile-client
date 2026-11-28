@@ -18,6 +18,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -48,12 +49,12 @@ private fun ReadingPlanEntryContent() {
 }
 
 @Composable
-private fun rememberReadingPlanTransitionScopes(): ReadingPlanTransitionScopes? {
+private fun rememberReadingPlanTransitionScopes(): TransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
     val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
     // Why: a new instance on every state change would keep every day item from skipping recomposition.
     return remember(sharedTransitionScope, animatedVisibilityScope) {
-        ReadingPlanTransitionScopes(
+        TransitionScopes(
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
         )

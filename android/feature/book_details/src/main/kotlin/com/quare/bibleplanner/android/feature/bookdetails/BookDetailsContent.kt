@@ -38,6 +38,8 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 import androidx.compose.ui.res.stringResource as androidStringResource
 import org.jetbrains.compose.resources.stringResource as sharedStringResource
 
@@ -49,7 +51,7 @@ private val contentMaxWidth = 800.dp
 @Composable
 internal fun BookDetailsContent(
     state: BookDetailsUiState,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BookDetailsUiEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -90,7 +92,7 @@ internal fun BookDetailsContent(
 @Composable
 private fun BookDetailsTopBar(
     state: BookDetailsUiState,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: (BookDetailsUiEvent) -> Unit,
 ) {
@@ -149,7 +151,7 @@ private fun BookDetailsTopBar(
 @Composable
 private fun BookDetailsLoadedContent(
     state: BookDetailsUiState.Success,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BookDetailsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

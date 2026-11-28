@@ -32,6 +32,8 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayoutOf
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -45,7 +47,7 @@ private val ColorScheme.gold: Color
 @Composable
 internal fun ProfileProAndDonateSection(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -107,7 +109,7 @@ internal fun ProfileProAndDonateSection(
 }
 
 @Composable
-private fun BecomeProTitle(transitionScopes: ProfileTransitionScopes?) {
+private fun BecomeProTitle(transitionScopes: TransitionScopes?) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         ActionCardTitle(
             text = stringResource(R.string.profile_become_pro_part_1),

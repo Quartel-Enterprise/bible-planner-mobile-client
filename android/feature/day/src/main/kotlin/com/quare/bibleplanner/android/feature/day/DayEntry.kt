@@ -23,6 +23,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudySe
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -42,7 +43,7 @@ internal fun DayNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
         val animatedVisibilityScope = LocalNavAnimatedContentScope.current
         // Why: a new instance on every state change would keep the header and the date from skipping recomposition.
         remember(sharedTransitionScope, animatedVisibilityScope) {
-            DayTransitionScopes(
+            TransitionScopes(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
             )

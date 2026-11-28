@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.android.feature.books
+package com.quare.bibleplanner.ui.utils.transition
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
@@ -6,18 +6,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /*
- * Why: these keys must match the book details and reader screens (native or Compose Multiplatform) for the
- * shared element transitions between the books tab and them to keep running.
+ * Why: the helpers below take it nullable, so a preview, or a host without a shared transition scope, skips the
+ * modifier instead of crashing.
  */
-internal class BooksTransitionScopes(
+class TransitionScopes(
     val sharedTransitionScope: SharedTransitionScope,
     val animatedVisibilityScope: AnimatedVisibilityScope,
 )
 
 @Composable
-internal fun Modifier.sharedElementOf(
-    transitionScopes: BooksTransitionScopes?,
-    key: String,
+fun Modifier.sharedElementOf(
+    transitionScopes: TransitionScopes?,
+    key: Any,
 ): Modifier = if (transitionScopes == null) {
     this
 } else {
@@ -30,9 +30,9 @@ internal fun Modifier.sharedElementOf(
 }
 
 @Composable
-internal fun Modifier.sharedBoundsOf(
-    transitionScopes: BooksTransitionScopes?,
-    key: String,
+fun Modifier.sharedBoundsOf(
+    transitionScopes: TransitionScopes?,
+    key: Any,
     clipInOverlayDuringTransition: SharedTransitionScope.OverlayClip? = null,
 ): Modifier = if (transitionScopes == null) {
     this
@@ -52,4 +52,19 @@ internal fun Modifier.sharedBoundsOf(
             )
         }
     }
+}
+
+// Why: for an element in a TopAppBar, which never re-places a shared element that ends early (CMP-10888).
+@Composable
+fun Modifier.sharedElementWithRelayoutOf(
+    transitionScopes: TransitionScopes?,
+    key: Any,
+): Modifier = if (transitionScopes == null) {
+    this
+} else {
+    sharedElementWithRelayout(
+        sharedTransitionScope = transitionScopes.sharedTransitionScope,
+        animatedVisibilityScope = transitionScopes.animatedVisibilityScope,
+        key = key,
+    )
 }

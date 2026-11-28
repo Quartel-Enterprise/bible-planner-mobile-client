@@ -59,6 +59,8 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 import kotlinx.datetime.LocalDate
 
 // Why: baseline profile journeys (tools/baseline-profile) open a day through this tag.
@@ -73,7 +75,7 @@ internal fun ReadingPlanDayItem(
     weekNumber: Int,
     dayPlan: DayPlanPresentationModel,
     isFlashing: Boolean,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val day = dayPlan.day
@@ -203,7 +205,7 @@ private fun PlannedReadDateColumn(
     plannedReadDate: LocalDate,
     dayPlan: DayPlanPresentationModel,
     weekNumber: Int,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
 ) {
     val dayNumber = dayPlan.day.number
     val isRead = dayPlan.day.isRead
@@ -282,7 +284,7 @@ private fun DayTextColumn(
     weekNumber: Int,
     isHighlighted: Boolean,
     isOverdue: Boolean,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     modifier: Modifier = Modifier,
 ) {
     val isRead = day.isRead
