@@ -257,12 +257,13 @@ private fun DiagnosticsRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            modifier = Modifier.weight(1f),
             text = label,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        // Why: a long value such as the account email must wrap itself, not squeeze the label to a sliver.
         Text(
+            modifier = Modifier.weight(1f),
             text = value,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,

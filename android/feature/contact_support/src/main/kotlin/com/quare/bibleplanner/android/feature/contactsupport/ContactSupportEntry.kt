@@ -60,5 +60,7 @@ private fun Context.openEmailApp(mailto: String) {
         startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(mailto)))
     } catch (_: ActivityNotFoundException) {
         // Why: with no email app the address stays on screen with its copy button.
+    } catch (_: SecurityException) {
+        // Why: a work profile policy or a non-exported mail activity can refuse the launch, like no email app.
     }
 }
