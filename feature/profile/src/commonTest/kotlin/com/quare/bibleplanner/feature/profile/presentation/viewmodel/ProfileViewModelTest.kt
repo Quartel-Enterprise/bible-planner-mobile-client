@@ -61,8 +61,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -74,6 +76,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 internal class ProfileViewModelTest {
     private val adsConsentService = FakeAdsConsentService(
@@ -304,6 +308,97 @@ internal class ProfileViewModelTest {
                 actual = actions,
             )
             assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a link just opened WHEN tapping the link again THEN opens it only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_POLICY))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_POLICY))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf<ProfileUiAction>(ProfileUiAction.OpenLink(LegalUrl.PRIVACY_POLICY)),
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link opened a while ago WHEN tapping the link again THEN opens it again`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.TERMS))
+        advanceTimeBy(1.seconds + 1.milliseconds)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.TERMS))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = List(2) { ProfileUiAction.OpenLink(LegalUrl.TERMS_OF_SERVICE) },
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `GIVEN the privacy options form open WHEN tapping privacy options again THEN opens the form once`() =
+        runTest(testDispatcher) {
+            // Given
+            adsConsentService.privacyOptionsDismissal = CompletableDeferred()
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = adsConsentService.privacyOptionsShownCount,
+            )
+        }
+
+    @Test
+    fun `GIVEN the privacy options form closed WHEN tapping privacy options again THEN opens the form again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 2,
+                actual = adsConsentService.privacyOptionsShownCount,
+            )
+        }
+
+    @Test
+    fun `GIVEN the progress still being read WHEN tapping delete progress again THEN opens the confirmation once`() =
+        runTest(testDispatcher) {
+            // Given
+            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+            prepareScenario(hasReadingProgress = true)
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.DELETE_PROGRESS))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.DELETE_PROGRESS))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.Navigate(DeleteAllProgressNavRoute)),
+                actual = commands,
+            )
         }
 
     @Test
