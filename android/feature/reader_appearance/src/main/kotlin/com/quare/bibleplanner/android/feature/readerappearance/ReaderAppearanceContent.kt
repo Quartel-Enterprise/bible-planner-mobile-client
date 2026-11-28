@@ -41,6 +41,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -258,11 +261,16 @@ private fun TextSizeSlider(
     onEvent: (ReaderAppearanceUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Why: fontSizeSp only updates after the async write, so on release it can still hold an older drag value.
+    var lastDraggedValue by remember { mutableFloatStateOf(fontSizeSp) }
     Slider(
         modifier = modifier,
         value = fontSizeSp,
-        onValueChange = { value -> onEvent(ReaderAppearanceUiEvent.OnFontSizeChange(value)) },
-        onValueChangeFinished = { onEvent(ReaderAppearanceUiEvent.OnFontSizeChangeFinished(fontSizeSp)) },
+        onValueChange = { value ->
+            lastDraggedValue = value
+            onEvent(ReaderAppearanceUiEvent.OnFontSizeChange(value))
+        },
+        onValueChangeFinished = { onEvent(ReaderAppearanceUiEvent.OnFontSizeChangeFinished(lastDraggedValue)) },
         valueRange = ReaderFontSize.MIN..ReaderFontSize.MAX,
         steps = ((ReaderFontSize.MAX - ReaderFontSize.MIN) / ReaderFontSize.STEP).toInt() - 1,
         colors = SliderDefaults.colors(
