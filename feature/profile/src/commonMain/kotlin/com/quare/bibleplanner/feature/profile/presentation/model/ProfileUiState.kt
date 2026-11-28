@@ -8,7 +8,7 @@ import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import kotlinx.datetime.LocalDate
 import software.quare.loadable.Loadable
 
-internal data class ProfileUiState(
+data class ProfileUiState(
     val accountStatusModel: AccountStatusModel,
     val subscriptionStatus: Loadable<SubscriptionStatus?>,
     val isProCardVisible: Loadable<Boolean>,

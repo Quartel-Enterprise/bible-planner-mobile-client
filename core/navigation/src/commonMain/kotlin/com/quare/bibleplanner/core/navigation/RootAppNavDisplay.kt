@@ -3,7 +3,6 @@ package com.quare.bibleplanner.core.navigation
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -52,7 +51,8 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
-import com.quare.bibleplanner.ui.utils.mainContentBottomInset
+import com.quare.bibleplanner.ui.utils.bottomPadding
+import com.quare.bibleplanner.ui.utils.mainContentBottomInsetPx
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
@@ -119,6 +119,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             }
         }
         val navigationTransitions = rememberNavigationTransitions()
+        val bottomInsetPx = mainContentBottomInsetPx()
         NavigationCommandCollector(appBackStack)
         CompositionLocalProvider(
             LocalSnackbarHostState provides snackbarHostState,
@@ -168,12 +169,12 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = mainContentBottomInset()),
+                .bottomPadding(heightPx = bottomInsetPx),
         )
         InAppUpdateDownloadOverlay(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = mainContentBottomInset()),
+                .bottomPadding(heightPx = bottomInsetPx),
         )
         PendingBibleUpdatesPromptOverlay()
     }

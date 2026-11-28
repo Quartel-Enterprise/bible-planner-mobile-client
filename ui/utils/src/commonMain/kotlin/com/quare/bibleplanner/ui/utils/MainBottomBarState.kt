@@ -11,9 +11,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
+import kotlin.math.roundToInt
 
 class MainBottomBarState {
     private val reservations = mutableStateListOf<BottomOverlayReservation>()
@@ -48,26 +52,88 @@ fun ReserveBottomOverlayHeightEffect(heightPx: () -> Float) {
 }
 
 /*
- * Why: a tab the native main screen hosts keeps snackbars and the bottom overlays above the host's navigation bar,
- * which LocalHostedTabBarHeight measures (zero beside a rail), plus whatever the tab draws over it, such as a FAB.
+ * Why: a tab the native main screen hosts keeps snackbars and the bottom overlays above the visible part of the
+ * host's navigation bar (zero beside a rail), which hides on scroll, plus whatever the tab draws over it, such as a
+ * FAB.
  */
 @Composable
-fun ReserveHostedTabBarHeightEffect(extraHeight: Dp) {
-    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
-    val navigationBarInsets = WindowInsets.navigationBars
+fun ReserveHostedTabBarHeightEffect(extraHeight: () -> Dp = { 0.dp }) {
+    val visibleHostedTabBarClearancePx = rememberVisibleHostedTabBarClearancePx()
     val density = LocalDensity.current
+    // Why: a lambda, so an animated FAB height is read by the reservation instead of recomposing the caller.
     ReserveBottomOverlayHeightEffect {
-        maxOf(
-            navigationBarInsets.getBottom(density).toFloat(),
-            with(density) { hostedTabBarHeight.toPx() },
-        ) + with(density) { extraHeight.toPx() }
+        visibleHostedTabBarClearancePx() + with(density) { extraHeight().toPx() }
     }
 }
 
+/*
+ * Why: read inside a layout, draw or snapshotFlow lambda, so the bar sliding away doesn't recompose the caller.
+ * It is the visible part of the host's bar, and never less than the gesture bar it rests above once hidden.
+ */
 @Composable
-fun mainContentBottomInset(): Dp {
-    val state = LocalMainBottomBarState.current
+fun rememberVisibleHostedTabBarClearancePx(): () -> Float {
+    val hostedTabBarHeightPx = with(LocalDensity.current) { (LocalHostedTabBarHeight.current ?: 0.dp).toPx() }
+    val heightOffset = LocalHostedTabBarHeightOffset.current
+    val navigationBarInsets = WindowInsets.navigationBars
     val density = LocalDensity.current
-    val navigationBarBottom = WindowInsets.navigationBars.getBottom(density).toFloat()
-    return with(density) { maxOf(navigationBarBottom, state.visibleHeightPx).toDp() }
+    val currentHeightPx by rememberUpdatedState(hostedTabBarHeightPx)
+    return remember(
+        heightOffset,
+        navigationBarInsets,
+        density,
+    ) {
+        {
+            getVisibleBarClearancePx(
+                barHeightPx = currentHeightPx,
+                heightOffsetPx = heightOffset(),
+                navigationBarBottomPx = navigationBarInsets.getBottom(density).toFloat(),
+            )
+        }
+    }
+}
+
+internal fun getVisibleBarClearancePx(
+    barHeightPx: Float,
+    heightOffsetPx: Float,
+    navigationBarBottomPx: Float,
+): Float = maxOf(
+    navigationBarBottomPx,
+    (barHeightPx + heightOffsetPx).coerceAtLeast(0f),
+)
+
+/*
+ * Why: the reserved height changes on every frame while a bar hides on scroll, so callers read it in the layout
+ * phase through this lambda instead of recomposing on each frame.
+ */
+@Composable
+fun mainContentBottomInsetPx(): () -> Float {
+    val state = LocalMainBottomBarState.current
+    val navigationBarInsets = WindowInsets.navigationBars
+    val density = LocalDensity.current
+    return remember(
+        state,
+        navigationBarInsets,
+        density,
+    ) {
+        { maxOf(navigationBarInsets.getBottom(density).toFloat(), state.visibleHeightPx) }
+    }
+}
+
+// Why: pads by a height read in the layout phase, so a height that animates relayouts without recomposing.
+fun Modifier.bottomPadding(heightPx: () -> Float): Modifier = layout { measurable, constraints ->
+    val padding = heightPx().roundToInt().coerceAtLeast(0)
+    val placeable = measurable.measure(constraints.offset(vertical = -padding))
+    val height = (placeable.height + padding).coerceIn(
+        minimumValue = constraints.minHeight,
+        maximumValue = constraints.maxHeight,
+    )
+    layout(
+        width = placeable.width,
+        height = height,
+    ) {
+        placeable.place(
+            x = 0,
+            y = 0,
+        )
+    }
 }

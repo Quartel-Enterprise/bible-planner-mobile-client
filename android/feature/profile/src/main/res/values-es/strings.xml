@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_theme_option">Tema</string>
+    <string name="profile_app_language_option">Idioma</string>
+    <string name="profile_bible_version_option">Versión de la Biblia</string>
+    <string name="profile_terms_of_service">Términos de Servicio</string>
+    <string name="profile_privacy_policy">Política de Privacidad</string>
+    <string name="profile_privacy_options">Opciones de privacidad</string>
+    <string name="profile_become_pro_part_1">Hazte</string>
+    <string name="profile_become_pro_part_2">Pro</string>
+    <string name="profile_app_section">APP</string>
+    <string name="profile_release_notes_option">Notas de la Versión</string>
+    <string name="profile_release_notes_subtitle">Mira qué cambió</string>
+    <string name="profile_instagram">Instagram</string>
+    <string name="profile_start_date">Fecha de inicio del plan</string>
+    <string name="profile_delete_progress_option">Eliminar todo el progreso</string>
+    <string name="profile_no_progress_to_delete_message">No hay progreso para eliminar</string>
+    <string name="profile_donate_option">Donar</string>
+    <string name="profile_pro_and_support">Pro y Soporte</string>
+    <string name="profile_pro_section">Pro</string>
+    <string name="profile_preferences">Preferencias</string>
+    <string name="profile_account_data_section">Cuenta y datos</string>
+    <string name="profile_social_section">Social</string>
+    <string name="profile_support_comments_section">Soporte y comentarios</string>
+    <string name="profile_contact_support_option">Contactar soporte</string>
+    <string name="profile_rate_app_option">Valorar la app</string>
+    <string name="profile_check_for_updates_option">Buscar actualizaciones</string>
+    <string name="profile_check_for_updates_checking">Buscando…</string>
+    <string name="profile_check_for_updates_subtitle">Versión %1$s</string>
+    <string name="profile_up_to_date_message">Ya tienes la versión más reciente</string>
+    <string name="profile_update_check_failed_message">No se pudo buscar actualizaciones. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="profile_become_pro_subtitle">Desbloquea funciones exclusivas y apoya nuestra misión.</string>
+    <string name="profile_donate_subtitle">Apoya nuestro trabajo y ayúdanos a mantener el desarrollo.</string>
+    <string name="profile_theme_light">Claro</string>
+    <string name="profile_theme_dark">Oscuro</string>
+    <string name="profile_theme_system">Predeterminado del sistema</string>
+    <string name="profile_you_re_pro">Eres Pro</string>
+    <string name="profile_pro_description_simple">¡Gracias por tu apoyo!</string>
+    <string name="profile_contrast_standard">Contraste estándar</string>
+    <string name="profile_contrast_medium">Contraste medio</string>
+    <string name="profile_contrast_high">Contraste alto</string>
+    <string name="profile_dynamic_colors">Colores dinámicos</string>
+    <string name="profile_app_version_disclaimer">Versión %1$s</string>
+    <string name="profile_login_card_title">No has iniciado sesión</string>
+    <string name="profile_login_card_subtitle">Inicie sesión para disfrutar de una mejor experiencia.</string>
+    <string name="profile_login_card_no_name">Usuario</string>
+    <string name="profile_edit_profile_action">Editar perfil</string>
+    <string name="profile_login_card_error_title">Error</string>
+    <string name="profile_login_card_error_subtitle">Se produjo un error al iniciar sesión.</string>
+    <string name="profile_login_card_button">Iniciar sesión</string>
+    <string name="profile_logout_button">Cerrar sesión</string>
+    <string name="profile_login_requires_internet">Necesitas conexión a internet para iniciar sesión</string>
+    <string name="profile_logout_requires_internet">Necesitas conexión a internet para cerrar sesión de forma segura</string>
+    <string name="profile_delete_progress_option_subtitle">Tu cuenta y suscripción se mantienen</string>
+    <string name="profile_delete_account_option">Eliminar cuenta</string>
+    <string name="profile_delete_account_option_subtitle">Elimina permanentemente tu cuenta y todos los datos</string>
+    <string name="profile_delete_account_requires_internet">Conéctate a internet para eliminar tu cuenta</string>
+    <string name="profile_study_suggestion_option">Sugerencia de estudio</string>
+    <string name="profile_study_suggestion_enabled_dialog">Activada · aviso destacado</string>
+    <string name="profile_study_suggestion_enabled_banner">Activada · banner discreto</string>
+    <string name="profile_study_suggestion_disabled">Desactivada</string>
+    <string name="profile_annotations_option">Anotaciones</string>
+    <string name="profile_annotations_summary_empty">Destacados, versículos guardados y notas</string>
+    <plurals name="profile_annotations_highlight_count">
+        <item quantity="one">%1$d destacado</item>
+        <item quantity="other">%1$d destacados</item>
+    </plurals>
+    <plurals name="profile_annotations_saved_count">
+        <item quantity="one">%1$d guardado</item>
+        <item quantity="other">%1$d guardados</item>
+    </plurals>
+    <plurals name="profile_annotations_note_count">
+        <item quantity="one">%1$d nota</item>
+        <item quantity="other">%1$d notas</item>
+    </plurals>
+    <plurals name="profile_annotations_other_version_count">
+        <item quantity="one">%1$d marca en %2$s</item>
+        <item quantity="other">%1$d marcas en %2$s</item>
+    </plurals>
+    <string name="profile_language_english">Inglés</string>
+    <string name="profile_language_portuguese_brazil">Portugués (Brasil)</string>
+    <string name="profile_language_spanish">Español</string>
+</resources>

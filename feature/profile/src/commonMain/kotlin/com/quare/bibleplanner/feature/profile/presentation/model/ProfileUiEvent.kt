@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface ProfileUiEvent : UiEvent {
+sealed interface ProfileUiEvent : UiEvent {
     data class OnItemClick(
         val type: ProfileOptionItemType,
     ) : ProfileUiEvent {

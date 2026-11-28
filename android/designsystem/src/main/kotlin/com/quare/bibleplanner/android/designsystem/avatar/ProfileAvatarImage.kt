@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.designsystem.avatar
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,14 +20,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val whitespace = Regex("\\s+")
 private const val INITIALS_FONT_RATIO = 0.38f
@@ -40,78 +43,114 @@ fun ProfileAvatarImage(
     displayName: String?,
     size: Dp,
     modifier: Modifier = Modifier,
+    fallbackIcon: ImageVector = Icons.Rounded.AccountCircle,
+    fallbackIconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     val avatarModifier = modifier
         .size(size)
         .clip(CircleShape)
-    // Why: keeps the previous photo on screen while a new URL loads, instead of flashing the placeholder.
-    var lastPhotoBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    val photoBitmap = remember(photoBytes) { photoBytes?.toImageBitmap() }
-    when {
-        photoBitmap != null -> {
-            LaunchedEffect(photoBitmap) { lastPhotoBitmap = photoBitmap }
-            Image(
-                bitmap = photoBitmap,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = avatarModifier,
+    val targetSizePx = with(LocalDensity.current) { size.roundToPx() }
+    // Why: a new avatar for bytes another one already decoded, like the tab icon's, shows the photo on its first frame.
+    val cachedBitmap = remember(photoBytes) { photoBytes?.let(DecodedAvatarPhotoCache::findOrNull)?.bitmap }
+    var decodedPhoto by remember { mutableStateOf<DecodedPhoto?>(null) }
+    // Why: keeps the previous photo on screen while new bytes decode or a new URL loads, instead of the fallback.
+    var lastPhotoBitmap by remember { mutableStateOf(cachedBitmap) }
+    LaunchedEffect(
+        photoBytes,
+        targetSizePx,
+    ) {
+        if (photoBytes == null) return@LaunchedEffect
+        val bitmap = DecodedAvatarPhotoCache.findCoveringOrNull(
+            bytes = photoBytes,
+            targetSizePx = targetSizePx,
+        ) ?: withContext(Dispatchers.Default) {
+            DecodedAvatarPhotoCache.decode(
+                bytes = photoBytes,
+                targetSizePx = targetSizePx,
             )
         }
-
-        photoUrl != null -> {
-            val placeholder = lastPhotoBitmap
-            SubcomposeAsyncImage(
-                model = photoUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = avatarModifier,
-                loading = {
-                    if (placeholder == null) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                        )
-                    } else {
-                        Image(
-                            bitmap = placeholder,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
-                },
-                error = {
-                    InitialsAvatarBox(
-                        displayName = displayName,
-                        size = size,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                },
-            )
-        }
-
-        else -> InitialsAvatarBox(
+        decodedPhoto = DecodedPhoto(
+            bytes = photoBytes,
+            bitmap = bitmap,
+        )
+        if (bitmap != null) lastPhotoBitmap = bitmap
+    }
+    val isDecoding = photoBytes != null && decodedPhoto?.bytes !== photoBytes
+    val photoBitmap = decodedPhoto?.takeIf { it.bytes === photoBytes }?.bitmap
+        ?: cachedBitmap
+        ?: lastPhotoBitmap.takeIf { isDecoding }
+    val placeholder = lastPhotoBitmap
+    val fallback: @Composable (Modifier) -> Unit = { fallbackModifier ->
+        InitialsAvatarBox(
             displayName = displayName,
             size = size,
-            modifier = avatarModifier,
+            fallbackIcon = fallbackIcon,
+            fallbackIconTint = fallbackIconTint,
+            modifier = fallbackModifier,
         )
     }
+    when {
+        photoBitmap != null -> AvatarBitmapImage(
+            bitmap = photoBitmap,
+            modifier = avatarModifier,
+        )
+
+        photoUrl != null -> SubcomposeAsyncImage(
+            model = photoUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = avatarModifier,
+            loading = {
+                if (placeholder == null) {
+                    fallback(Modifier.fillMaxSize())
+                } else {
+                    AvatarBitmapImage(
+                        bitmap = placeholder,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            },
+            error = { fallback(Modifier.fillMaxSize()) },
+        )
+
+        else -> fallback(avatarModifier)
+    }
+}
+
+// Why: bytes are compared by reference, so a profile update that keeps the same array doesn't decode it again.
+private class DecodedPhoto(
+    val bytes: ByteArray,
+    val bitmap: ImageBitmap?,
+)
+
+@Composable
+private fun AvatarBitmapImage(
+    bitmap: ImageBitmap,
+    modifier: Modifier,
+) {
+    Image(
+        bitmap = bitmap,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = modifier,
+    )
 }
 
 @Composable
 private fun InitialsAvatarBox(
     displayName: String?,
     size: Dp,
+    fallbackIcon: ImageVector,
+    fallbackIconTint: Color,
     modifier: Modifier,
 ) {
     val initials = remember(displayName) { displayName.toInitials() }
     if (initials == null) {
         Icon(
-            imageVector = Icons.Rounded.AccountCircle,
+            imageVector = fallbackIcon,
             contentDescription = null,
             modifier = modifier,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = fallbackIconTint,
         )
     } else {
         Box(
@@ -127,8 +166,6 @@ private fun InitialsAvatarBox(
         }
     }
 }
-
-private fun ByteArray.toImageBitmap(): ImageBitmap? = BitmapFactory.decodeByteArray(this, 0, size)?.asImageBitmap()
 
 private fun String?.toInitials(): String? {
     val words = this

@@ -15,6 +15,8 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
+import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
@@ -34,12 +36,16 @@ private fun BooksTabEntryContent() {
             activeState.firstVisibleItemIndex > 0 || activeState.firstVisibleItemScrollOffset > 0
         }
     }
+    val revealHostedTabBar = LocalRevealHostedTabBar.current
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
-            BooksUiAction.ScrollToTop -> lazyGridStates.scrollAllToTop()
+            BooksUiAction.ScrollToTop -> {
+                revealHostedTabBar()
+                lazyGridStates.scrollAllToTop()
+            }
         }
     }
-    ReserveHostedTabBarHeightEffect(extraHeight = 0.dp)
+    ReserveHostedTabBarHeightEffect()
     val transitionScopes = rememberBooksTransitionScopes()
     ExpressiveTheme {
         BooksContent(
@@ -47,6 +53,7 @@ private fun BooksTabEntryContent() {
             isScrolled = isScrolled,
             lazyGridState = lazyGridStates.getCurrent(state),
             transitionScopes = transitionScopes,
+            hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp,
             onEvent = viewModel::onEvent,
         )
     }

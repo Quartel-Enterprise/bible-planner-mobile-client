@@ -45,6 +45,7 @@ internal fun BooksContent(
     isScrolled: Boolean,
     lazyGridState: LazyGridState,
     transitionScopes: BooksTransitionScopes?,
+    hostedTabBarHeight: Dp,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     Scaffold(
@@ -59,6 +60,8 @@ internal fun BooksContent(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.union(WindowInsets.displayCutout),
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
+        // Why: the books scroll under the main screen's bar, so the last one clears it while it shows.
+        val bottomPadding = innerPadding.calculateBottomPadding() + hostedTabBarHeight
         val bodyModifier = Modifier
             .padding(
                 start = innerPadding.calculateStartPadding(layoutDirection),
@@ -67,7 +70,7 @@ internal fun BooksContent(
             ).fillMaxSize()
         when (state) {
             BooksUiState.Loading -> Box(
-                modifier = bodyModifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                modifier = bodyModifier.padding(bottom = bottomPadding),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
@@ -76,7 +79,7 @@ internal fun BooksContent(
             is BooksUiState.Success -> BooksGrid(
                 state = state,
                 lazyGridState = lazyGridState,
-                bottomPadding = innerPadding.calculateBottomPadding(),
+                bottomPadding = bottomPadding,
                 transitionScopes = transitionScopes,
                 onEvent = onEvent,
                 modifier = bodyModifier,

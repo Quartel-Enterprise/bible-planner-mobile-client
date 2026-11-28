@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import software.quare.connectivity.IsConnected
 
-internal class ProfileViewModel(
+class ProfileViewModel internal constructor(
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
     private val getInstagramUrl: GetInstagramUrlUseCase,
     private val getAppStoreLink: GetAppStoreLinkUseCase,

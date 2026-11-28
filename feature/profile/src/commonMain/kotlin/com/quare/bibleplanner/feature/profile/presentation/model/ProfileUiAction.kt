@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation.model
 
-internal sealed interface ProfileUiAction {
+sealed interface ProfileUiAction {
     data class OpenLink(
         val url: String,
     ) : ProfileUiAction

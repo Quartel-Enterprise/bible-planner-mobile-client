@@ -66,7 +66,8 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.ui.utils.HideMainFabEffect
-import com.quare.bibleplanner.ui.utils.mainContentBottomInset
+import com.quare.bibleplanner.ui.utils.bottomPadding
+import com.quare.bibleplanner.ui.utils.mainContentBottomInsetPx
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,6 +97,7 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
         ) {
             HideMainFabEffect()
+            val bottomInsetPx = mainContentBottomInsetPx()
             val cardModifier = if (isWide) {
                 Modifier
                     .padding(desktopEdgePadding)
@@ -104,7 +106,8 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = mobileHorizontalPadding)
-                    .padding(bottom = mainContentBottomInset() + mobileBottomPadding)
+                    .bottomPadding(heightPx = bottomInsetPx)
+                    .padding(bottom = mobileBottomPadding)
             }
             BackgroundCard(
                 jobs = uiState.jobs,

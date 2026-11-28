@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.quare.bibleplanner.feature.readingplan.presentation.content.getReadingPlanWeekScrollIndex
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 import kotlinx.coroutines.delay
 
 private const val SCROLL_LAYOUT_SETTLE_MILLIS = 100L
@@ -19,6 +20,7 @@ internal fun ScrollToWeekAction(
     lazyListState: LazyListState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
+    val revealHostedTabBar = LocalRevealHostedTabBar.current
     LaunchedEffect(scrollToWeekNumber, loadedUiState) {
         if (scrollToWeekNumber <= 0 || loadedUiState == null) {
             return@LaunchedEffect
@@ -32,6 +34,7 @@ internal fun ScrollToWeekAction(
             )
             if (targetIndex >= 0) {
                 delay(SCROLL_LAYOUT_SETTLE_MILLIS)
+                revealHostedTabBar()
                 lazyListState.animateScrollToItem(index = targetIndex)
             }
         }

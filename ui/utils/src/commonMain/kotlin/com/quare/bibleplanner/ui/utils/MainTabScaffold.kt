@@ -115,7 +115,9 @@ private fun HostedTabScaffold(
 ) {
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
-    ReserveHostedTabBarHeightEffect(extraHeight = reservedFabHeight.toFabClearance())
+    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
+    val visibleHostedTabBarClearancePx = rememberVisibleHostedTabBarClearancePx()
+    ReserveHostedTabBarHeightEffect { reservedFabHeight.toFabClearance() }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -123,14 +125,22 @@ private fun HostedTabScaffold(
             MeasuredFabBox(
                 fabAreaHeight = fabAreaHeight,
                 onFabAreaHeightChange = { fabAreaHeight = it },
+                /*
+                 * Why: the body reaches under the host's bar, which consumes the gesture bar inset, so the FAB rides
+                 * on the bar's visible top like NarrowTabScaffold's and rests above the gesture bar once it hides.
+                 */
+                modifier = Modifier.graphicsLayer {
+                    if (hostedTabBarHeight > 0.dp) translationY = -visibleHostedTabBarClearancePx()
+                },
                 content = floatingActionButton,
             )
         },
         content = { paddingValues ->
             CompositionLocalProvider(
-                value = LocalMainPadding provides paddingValues.withFabClearance(
-                    fabAreaHeight = reservedFabHeight,
-                    bottomUnderFab = paddingValues.calculateBottomPadding(),
+                value = LocalMainPadding provides paddingValues.withBottom(
+                    bottom = paddingValues.calculateBottomPadding() +
+                        hostedTabBarHeight +
+                        reservedFabHeight.toFabClearance(),
                 ),
                 content = content,
             )
@@ -152,9 +162,11 @@ private fun NarrowTabScaffold(
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
     ReserveBottomOverlayHeightEffect {
-        val visibleBottomBarPx = (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f)
-        maxOf(navigationBarInsets.getBottom(density).toFloat(), visibleBottomBarPx) +
-            with(density) { reservedFabHeight.toFabClearance().toPx() }
+        getVisibleBarClearancePx(
+            barHeightPx = bottomBarHeightPx,
+            heightOffsetPx = scrollBehavior.state.heightOffset,
+            navigationBarBottomPx = navigationBarInsets.getBottom(density).toFloat(),
+        ) + with(density) { reservedFabHeight.toFabClearance().toPx() }
     }
 
     Scaffold(
@@ -240,12 +252,17 @@ private fun PaddingValues.withFabClearance(
     bottomUnderFab: Dp,
 ): PaddingValues {
     if (fabAreaHeight <= 0.dp) return this
+    return withBottom(bottom = bottomUnderFab + fabAreaHeight.toFabClearance())
+}
+
+@Composable
+private fun PaddingValues.withBottom(bottom: Dp): PaddingValues {
     val layoutDirection = LocalLayoutDirection.current
     return PaddingValues(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = bottomUnderFab + fabAreaHeight.toFabClearance(),
+        bottom = bottom,
     )
 }
 

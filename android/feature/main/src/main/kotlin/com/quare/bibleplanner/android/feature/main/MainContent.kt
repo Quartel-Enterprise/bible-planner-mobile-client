@@ -2,18 +2,19 @@ package com.quare.bibleplanner.android.feature.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -23,29 +24,42 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.avatar.ProfileAvatarImage
 import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
+import com.quare.bibleplanner.core.profile.domain.model.photoBytes
+import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
+import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeightOffset
+import com.quare.bibleplanner.ui.utils.LocalRevealHostedTabBar
 
 // Why: the same breakpoint as the shared MainTabScaffold, so the rail shows up where it does today.
 private val wideScreenWidth = 600.dp
 private val tabIconSize = 24.dp
+private val noBarHeightOffset: () -> Float = { 0f }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainContent(
     tabItems: List<MainNavigationItemModel<MainNavRouteDestination>>,
@@ -55,8 +69,20 @@ internal fun MainContent(
 ) {
     val density = LocalDensity.current
     var barHeight by remember { mutableStateOf(0.dp) }
+    // Why: the same behavior as the shared NarrowTabScaffold, so scrolling a tab down slides the bar away.
+    val barScrollController = rememberMainBarScrollController()
+    val barState = barScrollController.state
+    val barHeightOffset = remember(barState) { { barState.heightOffset } }
+    val revealBar = remember(barScrollController) { barScrollController::reveal }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth > wideScreenWidth
+        // Why: a tab the bar was hidden on, or a rail that replaced it, would otherwise leave a new tab without it.
+        LaunchedEffect(
+            selectedTab,
+            isWide,
+        ) {
+            barScrollController.show()
+        }
         /*
          * Why: the tabs stay in the same slot whether the rail or the bar shows, so rotating the device keeps
          * the inner NavDisplay and every tab's saved state.
@@ -71,11 +97,16 @@ internal fun MainContent(
                     )
                 }
             }
-            Column(modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .then(if (isWide) Modifier else Modifier.nestedScroll(barScrollController.nestedScrollConnection)),
+            ) {
+                // Why: the tabs draw under the bar, which pads for the gesture bar itself, so they scroll under both.
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .consumeWindowInsets(
                             if (isWide) {
                                 NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start)
@@ -85,16 +116,22 @@ internal fun MainContent(
                         ),
                 ) {
                     CompositionLocalProvider(
-                        value = LocalHostedTabBarHeight provides if (isWide) 0.dp else barHeight,
+                        LocalHostedTabBarHeight provides if (isWide) 0.dp else barHeight,
+                        LocalHostedTabBarHeightOffset provides if (isWide) noBarHeightOffset else barHeightOffset,
+                        LocalRevealHostedTabBar provides revealBar,
                         content = tabs,
                     )
                 }
                 if (!isWide) {
                     ExpressiveTheme {
                         MainNavigationBar(
-                            modifier = Modifier.onSizeChanged { size ->
-                                barHeight = with(density) { size.height.toDp() }
-                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .graphicsLayer { translationY = -barState.heightOffset }
+                                .onSizeChanged { size ->
+                                    barHeight = with(density) { size.height.toDp() }
+                                    barState.heightOffsetLimit = -size.height.toFloat()
+                                },
                             tabItems = tabItems,
                             selectedTab = selectedTab,
                             onEvent = onEvent,
@@ -162,12 +199,15 @@ private fun MainTabIcon(tabItem: MainNavigationItemModel<MainNavRouteDestination
             contentDescription = contentDescription,
         )
 
-        is MainNavigationIcon.Profile -> MainTabAvatarImage(
-            avatar = icon.avatar,
+        is MainNavigationIcon.Profile -> ProfileAvatarImage(
+            photoUrl = icon.avatar.photoUrl,
+            photoBytes = icon.avatar.photoBytes,
             displayName = icon.displayName,
             size = tabIconSize,
+            modifier = Modifier.semantics { this.contentDescription = contentDescription },
             fallbackIcon = tabItem.route.toIcon(),
-            contentDescription = contentDescription,
+            // Why: without a photo or a name the tab shows a plain icon, tinted like the other tabs' icons.
+            fallbackIconTint = LocalContentColor.current,
         )
     }
 }
