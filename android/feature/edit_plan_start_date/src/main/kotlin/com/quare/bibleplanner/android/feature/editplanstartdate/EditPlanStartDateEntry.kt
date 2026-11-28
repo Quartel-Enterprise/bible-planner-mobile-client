@@ -21,7 +21,7 @@ fun EditPlanStartDateNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     if (state is EditPlanStartDateUiState.Loaded) {
         ExpressiveTheme {
             EditPlanStartDateContent(
-                initialTimestamp = state.initialTimestamp,
+                state = state,
                 onEvent = viewModel::onEvent,
             )
         }

@@ -15,11 +15,13 @@ fun MaterialYouBottomSheetNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     metadata = DialogSceneStrategy.dialog(),
 ) {
     val viewModel = koinViewModel<AndroidColorSchemeViewModel>()
-    val isDynamicColorsEnabled by viewModel.uiState.collectAsState()
-    ExpressiveTheme {
-        MaterialYouContent(
-            isDynamicColorsEnabled = isDynamicColorsEnabled,
-            onEvent = viewModel::onEvent,
-        )
+    val uiState by viewModel.uiState.collectAsState()
+    uiState?.let { isDynamicColorsEnabled ->
+        ExpressiveTheme {
+            MaterialYouContent(
+                isDynamicColorsEnabled = isDynamicColorsEnabled,
+                onEvent = viewModel::onEvent,
+            )
+        }
     }
 }

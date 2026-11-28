@@ -9,13 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.quare.bibleplanner.android.designsystem.dialog.rememberAlertDialogResolution
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
+import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 
 @Composable
 internal fun EditPlanStartDateContent(
-    initialTimestamp: Long,
+    state: EditPlanStartDateUiState.Loaded,
     onEvent: (EditPlanStartDateUiEvent) -> Unit,
 ) {
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialTimestamp)
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = state.initialTimestamp)
     // Why: a second tap would save the date and navigate back twice, closing the screen below.
     val resolution = rememberAlertDialogResolution()
     val dismiss = { resolution.resolve { onEvent(EditPlanStartDateUiEvent.OnDismissDialog) } }

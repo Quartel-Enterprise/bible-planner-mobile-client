@@ -17,8 +17,9 @@ class AndroidColorSchemeViewModel internal constructor(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AndroidColorSchemeUiEvent>(trackEvent) {
-    val uiState: StateFlow<Boolean>
-        field = MutableStateFlow(false)
+    // Why: null until the stored setting loads, so the switch never shows a placeholder value.
+    val uiState: StateFlow<Boolean?>
+        field = MutableStateFlow<Boolean?>(null)
 
     init {
         observe(

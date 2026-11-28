@@ -14,9 +14,11 @@ fun EntryProviderScope<NavKey>.materialYou() {
     entry<MaterialYouBottomSheetNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<AndroidColorSchemeViewModel>()
         val state by viewModel.uiState.collectAsState()
-        MaterialYouDialog(
-            isMaterialYouActivated = state,
-            onEvent = viewModel::onEvent,
-        )
+        state?.let { isMaterialYouActivated ->
+            MaterialYouDialog(
+                isMaterialYouActivated = isMaterialYouActivated,
+                onEvent = viewModel::onEvent,
+            )
+        }
     }
 }
