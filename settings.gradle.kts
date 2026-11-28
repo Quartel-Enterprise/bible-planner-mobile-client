@@ -122,6 +122,8 @@ include(":android:feature:delete_version")
 include(":android:feature:delete_progress")
 include(":android:feature:congrats")
 include(":android:feature:notification_permission")
+include(":android:feature:edit_plan_start_date")
+include(":android:feature:material_you")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

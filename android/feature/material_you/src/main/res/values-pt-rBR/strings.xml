@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="material_you_title">Cores dinâmicas</string>
+    <string name="material_you_toggle_label">Usar cores dinâmicas</string>
+    <string name="material_you_message">As cores dinâmicas adaptam a aparência do app para combinar com o papel de parede do seu dispositivo. Quando ativadas, botões, planos de fundo e destaques usarão cores extraídas do seu papel de parede.</string>
+    <string name="material_you_compat_note">Disponível no Android 12 ou superior. Versões anteriores usam o esquema padrão.</string>
+    <string name="material_you_got_it">Entendi</string>
+</resources>

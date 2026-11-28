@@ -7,16 +7,20 @@ import com.quare.bibleplanner.android.feature.congrats.toNavEntry
 import com.quare.bibleplanner.android.feature.deletenotes.toNavEntry
 import com.quare.bibleplanner.android.feature.deleteprogress.toNavEntry
 import com.quare.bibleplanner.android.feature.deleteversion.toNavEntry
+import com.quare.bibleplanner.android.feature.editplanstartdate.toNavEntry
 import com.quare.bibleplanner.android.feature.loginsyncnudge.toNavEntry
 import com.quare.bibleplanner.android.feature.loginwarning.toNavEntry
+import com.quare.bibleplanner.android.feature.materialyou.toNavEntry
 import com.quare.bibleplanner.android.feature.notificationpermission.toNavEntry
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
+import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
 
@@ -30,6 +34,8 @@ internal class AndroidNativeEntryProvider : NativeEntryProvider {
         is DeleteAllProgressNavRoute -> key.toNavEntry()
         is CongratsNavRoute -> key.toNavEntry()
         is NotificationPermissionNavRoute -> key.toNavEntry()
+        is EditPlanStartDateNavRoute -> key.toNavEntry()
+        is MaterialYouBottomSheetNavRoute -> key.toNavEntry()
         else -> null
     }
 }

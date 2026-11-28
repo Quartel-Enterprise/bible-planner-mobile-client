@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AndroidColorSchemeViewModel(
+class AndroidColorSchemeViewModel internal constructor(
     private val useCases: MaterialYouUseCases,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AndroidColorSchemeUiEvent>(trackEvent) {
-    val uiState: StateFlow<Boolean>
-        field = MutableStateFlow(false)
+    // Why: null until the stored setting loads, so the switch never shows a placeholder value.
+    val uiState: StateFlow<Boolean?>
+        field = MutableStateFlow<Boolean?>(null)
 
     init {
         observe(

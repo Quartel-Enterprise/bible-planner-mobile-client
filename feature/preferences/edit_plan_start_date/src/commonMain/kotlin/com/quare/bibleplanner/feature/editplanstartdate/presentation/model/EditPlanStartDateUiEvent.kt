@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface EditPlanStartDateUiEvent : UiEvent {
+sealed interface EditPlanStartDateUiEvent : UiEvent {
     data object OnDismissDialog : EditPlanStartDateUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.EDIT_PLAN_START_DATE_DISMISSED,

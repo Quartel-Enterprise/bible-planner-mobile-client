@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -18,8 +19,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class AndroidColorSchemeViewModelTest {
@@ -49,7 +49,27 @@ internal class AndroidColorSchemeViewModelTest {
             val isDynamicColorsEnabled = viewModel.uiState.value
 
             // Then
-            assertTrue(isDynamicColorsEnabled)
+            assertEquals(true, isDynamicColorsEnabled)
+        }
+
+    @Test
+    fun `GIVEN the stored setting has not loaded yet WHEN the screen opens THEN shows no value`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel = AndroidColorSchemeViewModel(
+                useCases = MaterialYouUseCases(
+                    getIsDynamicColorsEnabledFlow = { emptyFlow() },
+                    setIsDynamicColorsEnabled = {},
+                ),
+                navigator = Navigator(),
+                trackEvent = { _, _ -> },
+            )
+
+            // When
+            val isDynamicColorsEnabled = viewModel.uiState.value
+
+            // Then
+            assertNull(isDynamicColorsEnabled)
         }
 
     @Test
@@ -63,7 +83,7 @@ internal class AndroidColorSchemeViewModelTest {
 
             // Then
             assertEquals(listOf(true), repository.writes)
-            assertTrue(viewModel.uiState.value)
+            assertEquals(true, viewModel.uiState.value)
             assertEquals(listOf(AnalyticsEventNames.DYNAMIC_COLORS_TOGGLED), trackedEvents)
         }
 
@@ -77,7 +97,7 @@ internal class AndroidColorSchemeViewModelTest {
 
         // Then
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-        assertFalse(viewModel.uiState.value)
+        assertEquals(false, viewModel.uiState.value)
     }
 
     @Test

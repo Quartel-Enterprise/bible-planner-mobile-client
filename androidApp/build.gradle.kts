@@ -125,6 +125,8 @@ dependencies {
     implementation(projects.android.feature.deleteProgress)
     implementation(projects.android.feature.congrats)
     implementation(projects.android.feature.notificationPermission)
+    implementation(projects.android.feature.editPlanStartDate)
+    implementation(projects.android.feature.materialYou)
 
     // Features
     implementation(projects.feature.materialYou)
