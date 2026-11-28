@@ -130,6 +130,7 @@ dependencies {
     implementation(projects.android.feature.pixQr)
     implementation(projects.android.feature.paywallTeaser)
     implementation(projects.android.feature.subscriptionDetails)
+    implementation(projects.android.feature.studyUnlock)
 
     // Features
     implementation(projects.feature.materialYou)

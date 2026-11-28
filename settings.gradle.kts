@@ -127,6 +127,7 @@ include(":android:feature:material_you")
 include(":android:feature:pix_qr")
 include(":android:feature:paywall_teaser")
 include(":android:feature:subscription_details")
+include(":android:feature:study_unlock")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

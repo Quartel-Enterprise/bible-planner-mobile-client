@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class StudyUnlockViewModel(
+class StudyUnlockViewModel internal constructor(
     private val route: StudyUnlockNavRoute,
     private val navigator: Navigator,
     private val rewardedAdService: RewardedAdService,
