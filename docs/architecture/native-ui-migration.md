@@ -46,8 +46,7 @@ platform after each one.
      file: `settings.gradle.kts` includes every directory under `android/feature`, `:androidApp` depends on all of
      them, and the module lists its `NativeEntryFactory` (`android/navigation`, the class that turns its route into
      `toNavEntry()`) in `src/main/resources/META-INF/services/com.quare.bibleplanner.android.navigation.NativeEntryFactory`.
-     The convention plugin fails the build when that file is missing, or when a class it lists has no matching
-     source file under `src/main/kotlin`.
+     The convention plugin fails the build when that file is missing or lists no factory from the module's own package.
    - `:androidApp` binds a `NativeEntryProvider` (`:core:navigation`) that asks the factories `ServiceLoader` finds;
      `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request at a
      time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
