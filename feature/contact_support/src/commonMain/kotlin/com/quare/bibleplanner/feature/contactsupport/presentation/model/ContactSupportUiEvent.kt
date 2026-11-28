@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface ContactSupportUiEvent : UiEvent {
+sealed interface ContactSupportUiEvent : UiEvent {
     data object OnDismiss : ContactSupportUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.CONTACT_SUPPORT_DISMISSED,
