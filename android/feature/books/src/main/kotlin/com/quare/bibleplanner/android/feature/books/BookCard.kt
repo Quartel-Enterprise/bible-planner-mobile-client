@@ -39,6 +39,7 @@ import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import com.quare.bibleplanner.ui.utils.highlightText
 
 private val cardShape = RoundedCornerShape(16.dp)
+private val cardShadowClip = getShadowClip(cardShape)
 
 @Composable
 internal fun BookCard(
@@ -54,7 +55,7 @@ internal fun BookCard(
             .sharedBoundsOf(
                 transitionScopes = transitionScopes,
                 key = "book-${book.id.name}",
-                clipInOverlayDuringTransition = getShadowClip(cardShape),
+                clipInOverlayDuringTransition = cardShadowClip,
             ),
         shape = cardShape,
         content = content,

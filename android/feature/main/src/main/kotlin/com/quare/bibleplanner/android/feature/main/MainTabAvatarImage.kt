@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -65,19 +66,30 @@ internal fun MainTabAvatarImage(
     }
     val bitmap = photoBitmap
     when {
-        bitmap != null -> Image(
+        photoBytes != null && bitmap != null -> Image(
             bitmap = bitmap,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = avatarModifier,
         )
 
-        photoBytes == null && photoUrl != null -> SubcomposeAsyncImage(
+        photoUrl != null -> SubcomposeAsyncImage(
             model = photoUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = avatarModifier,
-            loading = { fallback() },
+            loading = {
+                if (bitmap == null) {
+                    fallback()
+                } else {
+                    Image(
+                        bitmap = bitmap,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            },
             error = { fallback() },
         )
 
@@ -114,15 +126,15 @@ private fun AvatarFallbackImage(
 }
 
 /*
- * Why: decodes off the main thread and keeps the last decoded photo while a new one decodes, so the tab
- * icon doesn't flash back to the initials on every profile update.
+ * Why: decodes off the main thread and keeps the last decoded photo while new bytes decode and while the
+ * uploaded photo's URL loads, so the tab icon doesn't flash back to the initials on every profile update.
  */
 @Composable
 private fun rememberDecodedBitmap(photoBytes: ByteArray?): State<ImageBitmap?> {
     val state = remember { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(photoBytes) {
-        state.value = photoBytes?.let { bytes ->
-            withContext(Dispatchers.Default) { bytes.toImageBitmap() }
+        if (photoBytes != null) {
+            state.value = withContext(Dispatchers.Default) { photoBytes.toImageBitmap() }
         }
     }
     return state
@@ -137,9 +149,12 @@ private fun String?.toInitials(): String? {
         .split(whitespace)
         .filter { it.isNotBlank() }
     if (words.isEmpty()) return null
-    val first = words.first().first()
-    val last = words.takeIf { it.size > 1 }?.last()?.first()
-    return "$first${last ?: ""}".uppercase()
+    val first = words.first().toFirstCharacter()
+    val last = words.takeIf { it.size > 1 }?.last()?.toFirstCharacter()
+    return "$first${last.orEmpty()}".uppercase()
 }
+
+// Why: a name starting with an emoji or another supplementary character would otherwise keep half a surrogate pair.
+private fun String.toFirstCharacter(): String = take(Character.charCount(codePointAt(0)))
 
 private fun Dp.toInitialsFontSize(): TextUnit = (value * INITIALS_FONT_RATIO).sp

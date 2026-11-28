@@ -13,6 +13,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 class MainBottomBarState {
     private val reservations = mutableStateListOf<BottomOverlayReservation>()
@@ -43,6 +44,23 @@ fun ReserveBottomOverlayHeightEffect(heightPx: () -> Float) {
     }
     LaunchedEffect(reservation) {
         snapshotFlow { currentHeightPx() }.collect { height -> reservation.heightPx = height }
+    }
+}
+
+/*
+ * Why: a tab the native main screen hosts keeps snackbars and the bottom overlays above the host's navigation bar,
+ * which LocalHostedTabBarHeight measures (zero beside a rail), plus whatever the tab draws over it, such as a FAB.
+ */
+@Composable
+fun ReserveHostedTabBarHeightEffect(extraHeight: Dp) {
+    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
+    val navigationBarInsets = WindowInsets.navigationBars
+    val density = LocalDensity.current
+    ReserveBottomOverlayHeightEffect {
+        maxOf(
+            navigationBarInsets.getBottom(density).toFloat(),
+            with(density) { hostedTabBarHeight.toPx() },
+        ) + with(density) { extraHeight.toPx() }
     }
 }
 

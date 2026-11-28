@@ -1,13 +1,10 @@
 package com.quare.bibleplanner.android.feature.books
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -18,8 +15,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
-import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
-import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
+import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,7 +39,7 @@ private fun BooksTabEntryContent() {
             BooksUiAction.ScrollToTop -> lazyGridStates.scrollAllToTop()
         }
     }
-    ReserveHostedTabBarHeightEffect()
+    ReserveHostedTabBarHeightEffect(extraHeight = 0.dp)
     val transitionScopes = rememberBooksTransitionScopes()
     ExpressiveTheme {
         BooksContent(
@@ -52,23 +48,6 @@ private fun BooksTabEntryContent() {
             lazyGridState = lazyGridStates.getCurrent(state),
             transitionScopes = transitionScopes,
             onEvent = viewModel::onEvent,
-        )
-    }
-}
-
-/*
- * Why: the same reservation the shared MainTabScaffold makes when the native main screen hosts it, so snackbars
- * and the bottom overlays stay above the host's navigation bar while this tab shows.
- */
-@Composable
-private fun ReserveHostedTabBarHeightEffect() {
-    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
-    val navigationBarInsets = WindowInsets.navigationBars
-    val density = LocalDensity.current
-    ReserveBottomOverlayHeightEffect {
-        maxOf(
-            navigationBarInsets.getBottom(density).toFloat(),
-            with(density) { hostedTabBarHeight.toPx() },
         )
     }
 }
