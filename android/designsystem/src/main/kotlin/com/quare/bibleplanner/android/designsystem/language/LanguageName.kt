@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.quare.bibleplanner.android.designsystem.R
 import com.quare.bibleplanner.core.utils.locale.Language
 
-// Why: the language picker and the Bible version list name languages the same way.
+// Why: the language picker, the Bible version list, the profile and contact support name languages the same way.
 @StringRes
 fun Language.toNameRes(): Int = when (this) {
     Language.ENGLISH -> R.string.language_name_english
