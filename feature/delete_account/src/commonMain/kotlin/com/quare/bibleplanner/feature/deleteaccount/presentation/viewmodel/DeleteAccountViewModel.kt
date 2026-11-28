@@ -50,6 +50,7 @@ class DeleteAccountViewModel internal constructor(
                 isConfirmEnabled = false,
                 isProUser = false,
                 subscriptionStore = null,
+                confirmationKeyword = null,
             ),
         )
 
@@ -58,8 +59,14 @@ class DeleteAccountViewModel internal constructor(
 
     init {
         viewModelScope.launch {
-            confirmationKeyword = getConfirmationKeyword()
-            uiState.update { it.copy(isConfirmEnabled = it.confirmationText.matchesKeyword()) }
+            val keyword = getConfirmationKeyword()
+            confirmationKeyword = keyword
+            uiState.update {
+                it.copy(
+                    confirmationKeyword = keyword,
+                    isConfirmEnabled = it.confirmationText.matchesKeyword(),
+                )
+            }
         }
         getSubscriptionStatusFlow()
             .onEach { status -> uiState.update { it.withSubscription(status) } }

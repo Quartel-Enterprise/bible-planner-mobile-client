@@ -11,7 +11,6 @@
     <string name="delete_account_store_web">on the website where you subscribed</string>
     <string name="delete_account_servers_note">Your data is permanently removed from our servers the moment you delete the account.</string>
     <string name="delete_account_confirmation_label">Type %1$s to confirm</string>
-    <string name="delete_account_confirmation_keyword">DELETE</string>
     <string name="delete_account_deleting_data">Removing your data…</string>
     <string name="delete_account_closing">Closing your account…</string>
     <string name="delete_account_deleted">Account deleted</string>

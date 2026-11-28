@@ -8,4 +8,6 @@ data class DeleteAccountUiState(
     val isConfirmEnabled: Boolean,
     val isProUser: Boolean,
     val subscriptionStore: PurchaseStore?,
+    // Why: each UI shows the keyword the ViewModel checks, so the hint can never drift from the check.
+    val confirmationKeyword: String?,
 )

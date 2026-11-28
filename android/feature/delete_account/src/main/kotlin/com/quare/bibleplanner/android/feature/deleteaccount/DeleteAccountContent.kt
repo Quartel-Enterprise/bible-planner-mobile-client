@@ -129,7 +129,7 @@ private fun ConfirmationColumn(
     uiState: DeleteAccountUiState,
     onEvent: (DeleteAccountUiEvent) -> Unit,
 ) {
-    val keyword = stringResource(R.string.delete_account_confirmation_keyword)
+    val keyword = uiState.confirmationKeyword.orEmpty()
     Column(
         modifier = Modifier
             .fillMaxWidth()

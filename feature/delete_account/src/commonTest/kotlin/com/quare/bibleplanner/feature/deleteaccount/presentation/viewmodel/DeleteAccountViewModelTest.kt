@@ -15,6 +15,7 @@ import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAcc
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -67,6 +68,18 @@ internal class DeleteAccountViewModelTest {
 
         // Then
         assertFalse(state.isConfirmEnabled)
+    }
+
+    @Test
+    fun `GIVEN the keyword loaded WHEN starting THEN exposes the keyword the check uses`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(CONFIRMATION_KEYWORD, state.confirmationKeyword)
     }
 
     @Test
@@ -218,7 +231,12 @@ internal class DeleteAccountViewModelTest {
     @Test
     fun `GIVEN a deletion in progress WHEN cancelling THEN stays on the dialog`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(
+            deleteAccountFlow = flow {
+                emit(DeleteAccountProgress.InProgress(DeleteAccountPhase.DELETING_DATA))
+                awaitCancellation()
+            },
+        )
         typeKeyword()
         viewModel.onEvent(DeleteAccountUiEvent.OnConfirmDelete)
 
@@ -312,9 +330,10 @@ internal class DeleteAccountViewModelTest {
     private fun TestScope.prepareScenario(
         subscriptionStatus: SubscriptionStatus? = SubscriptionStatus.Free,
         failingPhase: DeleteAccountPhase? = null,
+        deleteAccountFlow: Flow<DeleteAccountProgress> = fakeDeleteAccount(failingPhase),
     ) {
         viewModel = DeleteAccountViewModel(
-            deleteAccount = { fakeDeleteAccount(failingPhase) },
+            deleteAccount = { deleteAccountFlow },
             getConfirmationKeyword = { CONFIRMATION_KEYWORD },
             getSubscriptionStatusFlow = { flowOf(subscriptionStatus) },
             navigator = navigator,
