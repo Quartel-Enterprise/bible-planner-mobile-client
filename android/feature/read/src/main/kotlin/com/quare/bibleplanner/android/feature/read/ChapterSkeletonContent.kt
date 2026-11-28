@@ -115,7 +115,7 @@ internal enum class ChapterSkeletonPosition {
 }
 
 @Composable
-private fun ReadSkeletonBox(modifier: Modifier = Modifier) {
+internal fun ReadSkeletonBox(modifier: Modifier = Modifier) {
     val pulse by rememberInfiniteTransition(label = "read_skeleton").animateFloat(
         initialValue = 1f,
         targetValue = PULSE_MIN_ALPHA,

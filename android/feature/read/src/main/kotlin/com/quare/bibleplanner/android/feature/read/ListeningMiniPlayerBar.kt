@@ -1,0 +1,344 @@
+package com.quare.bibleplanner.android.feature.read
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningPlayerUiModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+
+private const val SOFT_PRIMARY_ALPHA = 0.12f
+private val barHeight = 64.dp
+private val progressHeight = 3.dp
+private val leadingSize = 40.dp
+private val actionButtonHeight = 34.dp
+private val contentMaxWidth = 640.dp
+
+@Composable
+internal fun ListeningMiniPlayerBar(
+    player: ListeningPlayerUiModel,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val progress by animateFloatAsState(targetValue = player.progress)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(progressHeight)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(progress)
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .widthIn(max = contentMaxWidth)
+                .fillMaxWidth()
+                .height(barHeight)
+                .padding(
+                    start = 12.dp,
+                    end = 4.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            val unavailableCopy = player.status.toUnavailableCopy()
+            when {
+                unavailableCopy != null -> UnavailableContent(player, unavailableCopy, onEvent)
+                player.status == ListeningStatusModel.PREPARING -> PreparingContent(player, onEvent)
+                player.status == ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
+                player.status == ListeningStatusModel.NEXT_LOCKED -> LockedContent(player, onEvent)
+                else -> PlaybackContent(player, onEvent)
+            }
+            IconButton(onClick = { onEvent(ReadListeningUiEvent.OnCloseClick) }) {
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = stringResource(R.string.read_listening_close),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.PlaybackContent(
+    player: ListeningPlayerUiModel,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    val isPlaying = player.status == ListeningStatusModel.PLAYING
+    FilledIconButton(
+        modifier = Modifier.size(leadingSize),
+        onClick = { onEvent(ReadListeningUiEvent.OnPlayPauseClick) },
+    ) {
+        Icon(
+            imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+            contentDescription = stringResource(
+                if (isPlaying) R.string.read_listening_pause else R.string.read_listening_play,
+            ),
+        )
+    }
+    val dayProgress = player.dayProgress
+    val subtitle = when {
+        player.status == ListeningStatusModel.FINISHED -> stringResource(R.string.read_listening_mini_finished)
+
+        // Why: a chapter moved to while paused loads only once played, so it has no length to show yet.
+        player.verseCount == 0 -> stringResource(R.string.read_listening_mini_not_loaded)
+
+        dayProgress != null -> stringResource(
+            R.string.read_listening_mini_day,
+            dayProgress.currentIndex + 1,
+            dayProgress.chapters.size,
+            player.remaining.toClockText(),
+        )
+
+        isPlaying -> stringResource(
+            R.string.read_listening_mini_playing,
+            player.versionAbbreviation,
+            player.remaining.toClockText(),
+        )
+
+        else -> stringResource(R.string.read_listening_mini_paused, player.remaining.toClockText())
+    }
+    PlayerTitleColumn(
+        title = verseReference(
+            chapter = player.chapter,
+            verseNumber = player.verseNumber,
+        ),
+        subtitle = subtitle,
+        isAnimating = isPlaying,
+        onEvent = onEvent,
+    )
+    IconButton(onClick = { onEvent(ReadListeningUiEvent.OnNextVerseClick) }) {
+        Icon(
+            imageVector = Icons.Rounded.SkipNext,
+            contentDescription = stringResource(R.string.read_listening_next_verse),
+        )
+    }
+}
+
+@Composable
+private fun RowScope.PreparingContent(
+    player: ListeningPlayerUiModel,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    LeadingBox(color = MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(20.dp),
+            strokeWidth = 2.5.dp,
+        )
+    }
+    PlayerTitleColumn(
+        title = stringResource(R.string.read_listening_preparing),
+        subtitle = "${chapterTitle(player.chapter)} · ${player.versionAbbreviation}",
+        isAnimating = null,
+        onEvent = onEvent,
+    )
+}
+
+@Composable
+private fun RowScope.UnavailableContent(
+    player: ListeningPlayerUiModel,
+    copy: ListeningUnavailableCopy,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    LeadingIcon(
+        imageVector = copy.icon,
+        tint = MaterialTheme.colorScheme.tertiary,
+    )
+    PlayerTitleColumn(
+        title = stringResource(copy.title, player.versionAbbreviation),
+        subtitle = stringResource(copy.body),
+        isAnimating = null,
+        onEvent = onEvent,
+    )
+    copy.action?.let { action ->
+        OutlinedButton(
+            modifier = Modifier.height(actionButtonHeight),
+            onClick = { onEvent(ReadListeningUiEvent.OnUnavailableActionClick) },
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            Text(text = stringResource(action))
+        }
+    }
+}
+
+@Composable
+private fun RowScope.InterruptedContent(
+    player: ListeningPlayerUiModel,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    LeadingBox(color = MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)) {
+        IconButton(onClick = { onEvent(ReadListeningUiEvent.OnPlayPauseClick) }) {
+            Icon(
+                imageVector = Icons.Rounded.PlayArrow,
+                contentDescription = stringResource(R.string.read_listening_play),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+    PlayerTitleColumn(
+        title = stringResource(R.string.read_listening_interrupted_title),
+        subtitle = stringResource(
+            R.string.read_listening_paused_at,
+            verseReference(
+                chapter = player.chapter,
+                verseNumber = player.verseNumber,
+            ),
+        ),
+        isAnimating = null,
+        onEvent = onEvent,
+    )
+    Button(
+        modifier = Modifier.height(actionButtonHeight),
+        onClick = { onEvent(ReadListeningUiEvent.OnPlayPauseClick) },
+        contentPadding = PaddingValues(horizontal = 14.dp),
+    ) {
+        Text(text = stringResource(R.string.read_listening_resume))
+    }
+}
+
+@Composable
+private fun RowScope.LockedContent(
+    player: ListeningPlayerUiModel,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    val lockedChapter = player.lockedChapter ?: player.chapter
+    LeadingIcon(
+        imageVector = Icons.Rounded.Lock,
+        tint = MaterialTheme.colorScheme.primary,
+    )
+    PlayerTitleColumn(
+        title = stringResource(R.string.read_listening_locked_title, chapterTitle(lockedChapter)),
+        subtitle = stringResource(R.string.read_listening_locked_body),
+        isAnimating = null,
+        onEvent = onEvent,
+    )
+    Button(
+        modifier = Modifier.height(actionButtonHeight),
+        onClick = { onEvent(ReadListeningUiEvent.OnUnlockNextClick) },
+        contentPadding = PaddingValues(horizontal = 14.dp),
+    ) {
+        Text(text = stringResource(R.string.read_listening_unlock))
+    }
+}
+
+@Composable
+private fun LeadingBox(
+    color: Color,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(leadingSize)
+            .clip(CircleShape)
+            .background(color),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun LeadingIcon(
+    imageVector: ImageVector,
+    tint: Color,
+) {
+    LeadingBox(color = tint.copy(alpha = SOFT_PRIMARY_ALPHA)) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = tint,
+        )
+    }
+}
+
+@Composable
+private fun RowScope.PlayerTitleColumn(
+    title: String,
+    subtitle: String,
+    isAnimating: Boolean?,
+    onEvent: (ReadListeningUiEvent) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onEvent(ReadListeningUiEvent.OnMiniPlayerClick) }
+            .padding(
+                horizontal = 6.dp,
+                vertical = 4.dp,
+            ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                modifier = Modifier.weight(1f, fill = false),
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            isAnimating?.let { ListeningEqualizerIndicator(isAnimating = it) }
+        }
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}

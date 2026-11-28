@@ -14,6 +14,12 @@ import kotlin.time.DurationUnit
 private const val CLOCK_SECONDS_DIGITS = 2
 
 @Composable
+internal fun chapterTitle(chapter: ChapterLocationModel): String = verseReference(
+    chapter = chapter,
+    verseNumber = null,
+)
+
+@Composable
 internal fun verseReference(
     chapter: ChapterLocationModel,
     verseNumber: Int?,
