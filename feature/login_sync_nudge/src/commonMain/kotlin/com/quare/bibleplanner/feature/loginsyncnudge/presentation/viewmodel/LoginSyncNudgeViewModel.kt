@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class LoginSyncNudgeViewModel(
+class LoginSyncNudgeViewModel internal constructor(
     private val snoozeLoginNudge: SnoozeLoginNudge,
     private val dismissLoginNudgePermanently: DismissLoginNudgePermanently,
     private val navigator: Navigator,

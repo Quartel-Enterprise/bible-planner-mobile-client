@@ -10,7 +10,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarningUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
-internal class LoginWarningViewModel(
+class LoginWarningViewModel internal constructor(
     private val navigator: Navigator,
     route: LoginWarningNavRoute,
     trackEvent: TrackEvent,
