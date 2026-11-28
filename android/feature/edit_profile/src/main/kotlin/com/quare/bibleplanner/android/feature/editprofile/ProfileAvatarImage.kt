@@ -81,6 +81,13 @@ internal fun ProfileAvatarImage(
                         )
                     }
                 },
+                error = {
+                    InitialsAvatarBox(
+                        displayName = displayName,
+                        size = size,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                },
             )
         }
 
@@ -130,9 +137,12 @@ private fun String?.toInitials(): String? {
         .split(whitespace)
         .filter { it.isNotBlank() }
     if (words.isEmpty()) return null
-    val first = words.first().first()
-    val last = words.takeIf { it.size > 1 }?.last()?.first()
-    return "$first${last ?: ""}".uppercase()
+    val first = words.first().toFirstCharacter()
+    val last = words.takeIf { it.size > 1 }?.last()?.toFirstCharacter()
+    return "$first${last.orEmpty()}".uppercase()
 }
+
+// Why: a name starting with an emoji or another supplementary character would otherwise keep half a surrogate pair.
+private fun String.toFirstCharacter(): String = take(Character.charCount(codePointAt(0)))
 
 private fun Dp.toInitialsFontSize(): TextUnit = (value * INITIALS_FONT_RATIO).sp

@@ -144,10 +144,6 @@ class CropPhotoViewModel internal constructor(
         uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }
 
-    private fun emit(action: CropPhotoUiAction) {
-        viewModelScope.launch { uiAction.emit(action) }
-    }
-
     private fun CropPhotoUiState.clamp(): CropPhotoUiState {
         if (imageWidth <= 0 || imageHeight <= 0) return this
         val (maxX, maxY) = getMaxPanOffset(
