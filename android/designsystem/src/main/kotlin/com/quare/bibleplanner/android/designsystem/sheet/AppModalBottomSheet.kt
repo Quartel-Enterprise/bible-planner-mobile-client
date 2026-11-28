@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.android.designsystem.sheet
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -9,11 +10,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -21,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.R
 import com.quare.bibleplanner.ui.utils.sheet.SheetCloseGuard
@@ -40,6 +45,8 @@ fun AppModalBottomSheet(
     title: String,
     onDismiss: () -> Unit,
     subtitle: String? = null,
+    sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
+    snackbarHostState: SnackbarHostState? = null,
     content: @Composable ColumnScope.(sheetCloseGuard: SheetCloseGuard) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -52,25 +59,35 @@ fun AppModalBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onClose,
         sheetState = sheetState,
+        sheetMaxWidth = sheetMaxWidth,
         sheetGesturesEnabled = !sheetCloseGuard.isClosing,
     ) {
-        Column(
-            modifier = Modifier
-                .blockPointerInput(isBlocked = sheetCloseGuard.isClosing)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = horizontalPadding,
-                    end = horizontalPadding,
-                    bottom = 16.dp,
-                ),
-        ) {
-            SheetHeader(
-                title = title,
-                subtitle = subtitle,
-                onClose = onClose,
-            )
-            content(sheetCloseGuard)
+        // Why: the sheet is a window over the app, so a message shown while it is open needs a host inside it.
+        Box {
+            Column(
+                modifier = Modifier
+                    .blockPointerInput(isBlocked = sheetCloseGuard.isClosing)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = horizontalPadding,
+                        end = horizontalPadding,
+                        bottom = 16.dp,
+                    ),
+            ) {
+                SheetHeader(
+                    title = title,
+                    subtitle = subtitle,
+                    onClose = onClose,
+                )
+                content(sheetCloseGuard)
+            }
+            snackbarHostState?.let { safeSnackbarHostState ->
+                SnackbarHost(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    hostState = safeSnackbarHostState,
+                )
+            }
         }
     }
 }

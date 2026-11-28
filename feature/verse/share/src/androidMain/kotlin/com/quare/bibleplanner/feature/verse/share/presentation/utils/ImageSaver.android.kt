@@ -13,9 +13,7 @@ import kotlinx.coroutines.launch
  * through the system file picker instead, which needs none.
  */
 @Composable
-internal actual fun rememberImageSaver(
-    onResult: (ImageSaveResult) -> Unit,
-): (imageBytes: ByteArray, fileName: String) -> Unit {
+actual fun rememberImageSaver(onResult: (ImageSaveResult) -> Unit): (imageBytes: ByteArray, fileName: String) -> Unit {
     val coroutineScope = rememberCoroutineScope()
     val saveThroughDialog = rememberFileDialogImageSaver(onResult)
     return { imageBytes, fileName ->
