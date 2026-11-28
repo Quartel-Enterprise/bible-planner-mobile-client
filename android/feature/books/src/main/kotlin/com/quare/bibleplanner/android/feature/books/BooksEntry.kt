@@ -64,12 +64,7 @@ private fun BooksTabEntryContent() {
 private fun rememberBooksTransitionScopes(): TransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
     val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
-    /*
-     * Why: these keys must match the book details and reader screens (native or Compose Multiplatform) for the shared
-     * element transitions between the books tab and them to keep running.
-     *
-     * It is remembered: a new instance on every state change would keep every book item from skipping recomposition.
-     */
+    // Why: a new instance on every state change would keep every book item from skipping recomposition.
     return remember(sharedTransitionScope, animatedVisibilityScope) {
         TransitionScopes(
             sharedTransitionScope = sharedTransitionScope,

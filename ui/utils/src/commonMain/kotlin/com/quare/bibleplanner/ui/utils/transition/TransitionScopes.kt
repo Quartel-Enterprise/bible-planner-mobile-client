@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /*
- * Why: one holder for the scopes a screen's shared elements need, null when the screen has no shared transition
- * scope (a preview, or a host without one), so each modifier below is skipped instead of crashing.
+ * Why: the helpers below take it nullable, so a preview, or a host without a shared transition scope, skips the
+ * modifier instead of crashing.
  */
 class TransitionScopes(
     val sharedTransitionScope: SharedTransitionScope,

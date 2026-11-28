@@ -41,13 +41,7 @@ internal fun DayNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val focusManager = LocalFocusManager.current
     val transitionScopes = LocalSharedTransitionScope.current?.let { sharedTransitionScope ->
         val animatedVisibilityScope = LocalNavAnimatedContentScope.current
-        /*
-         * Why: the plans tab (native or Compose Multiplatform) declares the same keys (SharedTransitionAnimationUtils),
-         * so the week title, the day title and the planned date keep flying between it and this native screen.
-         *
-         * It is remembered: a new instance on every state change would keep the header and the date from skipping
-         * recomposition.
-         */
+        // Why: a new instance on every state change would keep the header and the date from skipping recomposition.
         remember(sharedTransitionScope, animatedVisibilityScope) {
             TransitionScopes(
                 sharedTransitionScope = sharedTransitionScope,

@@ -52,12 +52,7 @@ private fun ReadingPlanEntryContent() {
 private fun rememberReadingPlanTransitionScopes(): TransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
     val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
-    /*
-     * Why: the Compose Multiplatform day screen declares the same keys (SharedTransitionAnimationUtils), so the week
-     * title, the day title and the planned date keep flying between this tab and the day.
-     *
-     * It is remembered: a new instance on every state change would keep every day item from skipping recomposition.
-     */
+    // Why: a new instance on every state change would keep every day item from skipping recomposition.
     return remember(sharedTransitionScope, animatedVisibilityScope) {
         TransitionScopes(
             sharedTransitionScope = sharedTransitionScope,

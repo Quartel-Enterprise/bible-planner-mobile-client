@@ -19,13 +19,7 @@ internal fun BookDetailsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(key =
     val uiState by viewModel.uiState.collectAsState()
     val transitionScopes = LocalSharedTransitionScope.current?.let { sharedTransitionScope ->
         val animatedVisibilityScope = LocalNavAnimatedContentScope.current
-        /*
-         * Why: these keys must match the books tab's and the reader's (native or Compose Multiplatform) for the shared
-         * element transitions to keep running between them and this native screen.
-         *
-         * It is remembered: a new instance on every state change would keep every chapter item from skipping
-         * recomposition.
-         */
+        // Why: a new instance on every state change would keep every chapter item from skipping recomposition.
         remember(sharedTransitionScope, animatedVisibilityScope) {
             TransitionScopes(
                 sharedTransitionScope = sharedTransitionScope,
