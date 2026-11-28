@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class BookDetailsViewModel(
+class BookDetailsViewModel internal constructor(
     private val booksRepository: BooksRepository,
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,

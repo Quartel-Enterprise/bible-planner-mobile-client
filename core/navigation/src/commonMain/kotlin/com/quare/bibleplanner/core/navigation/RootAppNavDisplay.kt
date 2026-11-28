@@ -54,6 +54,7 @@ import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
+import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.getKoin
@@ -125,7 +126,10 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         ) {
             SharedTransitionLayout {
                 val mainTabEntries = remember(this) { RootMainTabEntries(this) }
-                CompositionLocalProvider(LocalMainTabEntries provides mainTabEntries) {
+                CompositionLocalProvider(
+                    LocalMainTabEntries provides mainTabEntries,
+                    LocalSharedTransitionScope provides this,
+                ) {
                     NavDisplay(
                         backStack = displayBackStack,
                         onBack = onNavigateBack,
