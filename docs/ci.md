@@ -391,7 +391,7 @@ physical device nothing else is using. See [Performance](performance.md).
 
 The `ios-app` workflow builds the Xcode project, `iosApp/iosApp.xcodeproj`, the way a developer
 runs it on the simulator: the `iosApp` scheme in Debug, for `generic/platform=iOS Simulator`, with
-`CODE_SIGNING_ALLOWED=NO`. Nothing else compiles the Swift code before `release.yml` does, and the
+`CODE_SIGNING_ALLOWED=NO` and `ARCHS=arm64` (no x86_64 slice). Nothing else compiles the Swift code before `release.yml` does, and the
 SwiftUI screens of the [native UI migration](architecture/native-ui-migration.md) are in Swift, so
 without it a Swift compile error, or a change to a Kotlin type that Swift no longer compiles against,
 would merge and only fail the next release.
@@ -399,9 +399,10 @@ would merge and only fail the next release.
 - **Kotlin.** The project's `Compile Kotlin Framework` build phase runs
   `./gradlew :shared:embedAndSignAppleFrameworkForXcode`, which links the debug `Shared` framework
   for `iosSimulatorArm64`. It inherits the job's environment, so it uses the JDK and Gradle cache
-  `./.github/actions/gradle` set up, and the `~/.konan` entry of the `ios` job of `ui-tests` (see
-  [UI tests](#ui-tests)): the debug framework links against the same compiled library caches as
-  the simulator test binaries. A debug link skips the link-time optimization that makes the
+  `./.github/actions/gradle` set up, and restores, without ever saving, the `~/.konan` entry of the
+  `ios` job of `ui-tests` (see [UI tests](#ui-tests)): the debug framework links against the same
+  compiled library caches as the simulator test binaries, and an entry saved by this shorter job
+  would lack the ui-test caches, which `actions/cache` never overwrites. A debug link skips the link-time optimization that makes the
   release link take up to 26 minutes (see [iOS release link](#ios-release-link)). The job is a
   default reader of the Gradle cache: it restores `main`'s entry on a pull request and writes on
   `main`.
@@ -414,7 +415,7 @@ would merge and only fail the next release.
   from the target, as it does for fastlane's build in `release.yml`.
 
 It runs only when a pull request touches `iosApp/`, `shared/`, `feature/`, `core/`, `ui/`,
-`build-logic/`, the Gradle files, `version.xcconfig` (which `Config.xcconfig` includes) or the
+`build-logic/`, the Gradle files, `.github/actions/gradle/`, `version.xcconfig` (which `Config.xcconfig` includes) or the
 workflow itself, and starts with the `review-gate` job. It is not a required check, so a pull request
 it skips is not held; `merge-when-green` waits for it when it runs.
 

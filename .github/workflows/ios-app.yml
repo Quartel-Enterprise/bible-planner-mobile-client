@@ -14,6 +14,7 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/ios-app.yml'
+      - '.github/actions/gradle/**'
       - 'iosApp/**'
       - 'shared/**'
       - 'feature/**'
@@ -32,6 +33,7 @@ on:
       - main
     paths:
       - '.github/workflows/ios-app.yml'
+      - '.github/actions/gradle/**'
       - 'iosApp/**'
       - 'shared/**'
       - 'feature/**'
@@ -97,15 +99,16 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      # The same entry as the ios job of ui-tests: the debug framework links against the same
+      # Restores the entry the ios job of ui-tests saves: the debug framework links against the same
       # compiled library caches as the simulator test binaries, which take about 15 minutes to build
-      # cold.
+      # cold. Restore only: actions/cache never overwrites a key, so if this shorter job saved first,
+      # its entry would lack the ui-test library caches and ui-tests would rebuild them every run.
       - name: Read the Kotlin version
         id: kotlin
         run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
 
       - name: Cache the Kotlin/Native toolchain and library caches
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
@@ -148,4 +151,5 @@ jobs:
           -sdk iphonesimulator
           -destination 'generic/platform=iOS Simulator'
           CODE_SIGNING_ALLOWED=NO
+          ARCHS=arm64
           build
