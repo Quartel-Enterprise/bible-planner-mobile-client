@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -25,7 +24,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -38,6 +36,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.dialog.AppAlertDialog
+import com.quare.bibleplanner.android.designsystem.theme.isDark
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
@@ -49,7 +48,6 @@ import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
 
 private val progressSize = 20.dp
 private val progressStrokeWidth = 2.dp
-private const val DARK_SURFACE_LUMINANCE = 0.5f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,9 +204,6 @@ private fun termsText(): AnnotatedString {
         append(part3)
     }
 }
-
-// Why: the app's theme setting can differ from the system's, so the surface tells which logo stays visible.
-private fun ColorScheme.isDark(): Boolean = surface.luminance() < DARK_SURFACE_LUMINANCE
 
 @StringRes
 private fun LoginProvider.toText(): Int = when (this) {
