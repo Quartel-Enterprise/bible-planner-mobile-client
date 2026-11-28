@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +77,8 @@ private val cardSkeletonHeight = 72.dp
 private val hintSkeletonWidth = 210.dp
 private val hintSkeletonHeight = 12.dp
 private val bodySkeletonWidthFractions = listOf(1f, 0.94f, 0.62f)
+private const val PORTUGUESE_BRAZIL_TAG = "pt-BR"
+private const val SPANISH_TAG = "es"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -172,9 +173,9 @@ private fun LoadingContent() {
 }
 
 @Composable
-private fun CtaSkeleton() {
+private fun CtaSkeleton(modifier: Modifier = Modifier) {
     SkeletonBox(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(ctaHeight),
         shape = CircleShape,
@@ -212,13 +213,21 @@ private fun LoadedContent(
     onEvent: (DayReadingCompleteUiEvent) -> Unit,
 ) {
     val isToday = state.timing == DayTimingState.ON_TIME
-    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.let { date -> dayLabel(date, state.language) }
+    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.let { date ->
+        dayLabelText(
+            date = date,
+            language = state.language,
+        )
+    }
     val readingLabel = state.passages.toReadingLabel()
 
     SheetIconTile(imageVector = Icons.Rounded.TaskAlt)
     Spacer(modifier = Modifier.height(12.dp))
     Text(
-        text = kickerText(state.timing, dayLabel),
+        text = kickerText(
+            timing = state.timing,
+            dayLabel = dayLabel,
+        ),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
@@ -226,7 +235,11 @@ private fun LoadedContent(
     )
     Spacer(modifier = Modifier.height(6.dp))
     Text(
-        text = titleText(state.timing, readingLabel, dayLabel),
+        text = titleText(
+            timing = state.timing,
+            readingLabel = readingLabel,
+            dayLabel = dayLabel,
+        ),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
@@ -234,14 +247,20 @@ private fun LoadedContent(
     Spacer(modifier = Modifier.height(8.dp))
     Text(
         modifier = Modifier.widthIn(max = bodyMaxWidth),
-        text = bodyText(state, dayLabel),
+        text = bodyText(
+            state = state,
+            dayLabel = dayLabel,
+        ),
         style = MaterialTheme.typography.bodyMedium,
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(modifier = Modifier.height(16.dp))
     StudyCard(
-        title = cardTitleText(isToday, dayLabel),
+        title = cardTitleText(
+            isToday = isToday,
+            dayLabel = dayLabel,
+        ),
         subtitle = pluralStringResource(
             R.plurals.day_reading_complete_card_subtitle,
             state.chapterCount,
@@ -252,7 +271,7 @@ private fun LoadedContent(
     Spacer(modifier = Modifier.height(14.dp))
     val ctaState = state.ctaState.valueOrNull()
     if (ctaState == null) {
-        CtaSkeleton()
+        CtaSkeleton(modifier = Modifier.shimmer())
     } else {
         Button(
             onClick = { sheetCloseGuard.close { onEvent(DayReadingCompleteUiEvent.OnCtaClick(readingLabel)) } },
@@ -266,7 +285,12 @@ private fun LoadedContent(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = ctaText(ctaState, isToday))
+            Text(
+                text = ctaText(
+                    ctaState = ctaState,
+                    isToday = isToday,
+                ),
+            )
         }
     }
     hintText(ctaState)?.let { hint ->
@@ -341,25 +365,32 @@ private fun QuotaHintRow(hint: String) {
 }
 
 @Composable
-private fun dayLabel(
+private fun dayLabelText(
     date: LocalDate,
     language: Language,
 ): String {
-    val locale = LocalConfiguration.current.locales[0]
-    val monthName = remember(date, locale, language) { date.toMonthName(locale, language) }
+    val monthName = remember(date, language) { date.toMonthName(language) }
     return stringResource(R.string.day_reading_complete_day_label, date.day, monthName)
 }
 
-private fun LocalDate.toMonthName(
-    locale: Locale,
-    language: Language,
-): String {
+/*
+ * Why: a device in a language the app doesn't translate (French, pt-PT) shows the English strings, so the month
+ * must follow the app's Language rather than the configuration locale, or it reads "Janvier 5".
+ */
+private fun LocalDate.toMonthName(language: Language): String {
+    val locale = language.toLocale()
     val rawMonthName = toJavaLocalDate().month.getDisplayName(TextStyle.FULL_STANDALONE, locale)
     return if (language == Language.ENGLISH) {
         rawMonthName.replaceFirstChar { char -> char.titlecase(locale) }
     } else {
         rawMonthName.lowercase(locale)
     }
+}
+
+private fun Language.toLocale(): Locale = when (this) {
+    Language.ENGLISH -> Locale.ENGLISH
+    Language.PORTUGUESE_BRAZIL -> Locale.forLanguageTag(PORTUGUESE_BRAZIL_TAG)
+    Language.SPANISH -> Locale.forLanguageTag(SPANISH_TAG)
 }
 
 @Composable
