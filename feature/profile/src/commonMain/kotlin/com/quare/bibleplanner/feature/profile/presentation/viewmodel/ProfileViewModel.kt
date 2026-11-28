@@ -40,6 +40,8 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -51,7 +53,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import software.quare.connectivity.IsConnected
+import kotlin.time.Duration.Companion.seconds
 
 class ProfileViewModel internal constructor(
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
@@ -68,6 +72,9 @@ class ProfileViewModel internal constructor(
     val uiAction: SharedFlow<ProfileUiAction>
         field = MutableSharedFlow<ProfileUiAction>()
     private val isCheckingForUpdate = MutableStateFlow(false)
+    private val externalActionJobs = mutableMapOf<ProfileOptionItemType, Job>()
+    private val linkRepeatGuard = 1.seconds
+    private val privacyOptionsRepeatGuard = 5.seconds
     val uiState: StateFlow<ProfileUiState> = flow {
         val reducedState = combine(
             uiStateFactory.create(initialState = uiState.value),
@@ -92,18 +99,16 @@ class ProfileViewModel internal constructor(
 
                     ProfileOptionItemType.STUDY_SUGGESTION -> goToRoute(StudySuggestionNavRoute)
 
-                    ProfileOptionItemType.PRIVACY_POLICY -> emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
+                    ProfileOptionItemType.PRIVACY_POLICY -> openLink(event.type, LegalUrl.PRIVACY_POLICY)
 
-                    ProfileOptionItemType.TERMS -> emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
+                    ProfileOptionItemType.TERMS -> openLink(event.type, LegalUrl.TERMS_OF_SERVICE)
 
-                    ProfileOptionItemType.PRIVACY_OPTIONS -> viewModelScope.launch {
-                        adsConsentService.showPrivacyOptions()
-                    }
+                    ProfileOptionItemType.PRIVACY_OPTIONS -> privacyOptionsClick()
 
                     ProfileOptionItemType.BECOME_PRO ->
                         goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))
 
-                    ProfileOptionItemType.INSTAGRAM -> emitAction(OpenLink(getInstagramUrl()))
+                    ProfileOptionItemType.INSTAGRAM -> openLink(event.type, getInstagramUrl())
 
                     ProfileOptionItemType.EDIT_PLAN_START_DAY -> goToRoute(EditPlanStartDateNavRoute)
 
@@ -124,7 +129,7 @@ class ProfileViewModel internal constructor(
 
                     ProfileOptionItemType.CONTACT_SUPPORT -> goToRoute(ContactSupportNavRoute)
 
-                    ProfileOptionItemType.RATE_APP -> rateAppClick()
+                    ProfileOptionItemType.RATE_APP -> openLink(event.type, getAppStoreLink())
 
                     ProfileOptionItemType.CHECK_FOR_UPDATE -> checkForUpdateClick()
 
@@ -156,12 +161,6 @@ class ProfileViewModel internal constructor(
         }
     }
 
-    private fun rateAppClick() {
-        viewModelScope.launch {
-            emitAction(OpenLink(getAppStoreLink()))
-        }
-    }
-
     private fun checkForUpdateClick() {
         if (isCheckingForUpdate.value) return
         isCheckingForUpdate.value = true
@@ -183,8 +182,20 @@ class ProfileViewModel internal constructor(
         }
     }
 
+    private fun privacyOptionsClick() {
+        launchExternalAction(ProfileOptionItemType.PRIVACY_OPTIONS) {
+            val form = viewModelScope.launch { adsConsentService.showPrivacyOptions() }
+            /*
+             * Why: once up, the form covers the row; the timeout keeps a form that never reports back (its activity
+             * recreated meanwhile) from leaving the row ignored until the screen is gone.
+             */
+            withTimeoutOrNull(privacyOptionsRepeatGuard) { form.join() }
+        }
+    }
+
+    // Why: the back stack already drops a second confirmation, but a second "nothing to delete" message would show.
     private fun deleteProgressClick() {
-        viewModelScope.launch {
+        launchExternalAction(ProfileOptionItemType.DELETE_PROGRESS) {
             val progress = calculateBibleProgress().first()
             if (progress > 0) {
                 navigator.navigate(DeleteAllProgressNavRoute)
@@ -211,10 +222,30 @@ class ProfileViewModel internal constructor(
         navigator.navigate(route)
     }
 
-    private fun emitAction(action: ProfileUiAction) {
-        viewModelScope.launch {
-            uiAction.emit(action)
+    /*
+     * Why: the browser opens a moment after the tap, so a double tap would otherwise open the page twice; repeats
+     * within a short window are ignored.
+     */
+    private fun openLink(
+        type: ProfileOptionItemType,
+        url: String,
+    ) {
+        launchExternalAction(type) {
+            uiAction.emit(OpenLink(url))
+            delay(linkRepeatGuard)
         }
+    }
+
+    /*
+     * Why: these rows open something above the profile (a page, the consent form, a dialog) only after suspending,
+     * so a second tap on the same row meanwhile is ignored instead of opening it twice.
+     */
+    private fun launchExternalAction(
+        type: ProfileOptionItemType,
+        action: suspend () -> Unit,
+    ) {
+        if (externalActionJobs[type]?.isActive == true) return
+        externalActionJobs[type] = viewModelScope.launch { action() }
     }
 
     private companion object {
