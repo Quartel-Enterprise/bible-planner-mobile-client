@@ -38,11 +38,9 @@ internal fun Modifier.titleSharedElementOf(
 ): Modifier = if (transitionScopes == null) {
     this
 } else {
-    then(
-        Modifier.sharedElementWithRelayout(
-            sharedTransitionScope = transitionScopes.sharedTransitionScope,
-            animatedVisibilityScope = transitionScopes.animatedVisibilityScope,
-            key = key,
-        ),
+    sharedElementWithRelayout(
+        sharedTransitionScope = transitionScopes.sharedTransitionScope,
+        animatedVisibilityScope = transitionScopes.animatedVisibilityScope,
+        key = key,
     )
 }

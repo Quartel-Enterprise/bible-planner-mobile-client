@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
@@ -56,7 +57,11 @@ internal fun DayHeaderTitle(
             weekNumber = state.weekNumber,
             dayNumber = state.day.number,
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // Why: the title is split into texts for the transitions, but TalkBack still reads it as one.
+        Row(
+            modifier = Modifier.semantics(mergeDescendants = true) {},
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 text = stringResource(R.string.day_week_title, state.weekNumber),
                 modifier = Modifier.titleSharedElementOf(
@@ -64,13 +69,7 @@ internal fun DayHeaderTitle(
                     key = SharedTransitionAnimationUtils.buildWeekNumberId(state.weekNumber),
                 ),
             )
-            Text(
-                text = " — ",
-                modifier = Modifier.titleSharedElementOf(
-                    transitionScopes = transitionScopes,
-                    key = SharedTransitionAnimationUtils.buildWeekSeparatorId(state.weekNumber),
-                ),
-            )
+            Text(text = " — ")
             Text(
                 text = stringResource(R.string.day_day_title, dayIndex),
                 modifier = Modifier.titleSharedElementOf(
