@@ -18,6 +18,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.screen.component.toUntrimmed
+import com.quare.bibleplanner.feature.read.presentation.screen.content.shouldListChapterStudyCard
 
 /*
  * Why: vertical reading emits every chapter into one list, so the next chapter is already below
@@ -144,6 +145,3 @@ internal fun LazyListScope.chapterContent(
         )
     }
 }
-
-// Why: the shared getChapterStartIndices counts the same items, so both must agree on the study card.
-private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside

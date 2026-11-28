@@ -1,0 +1,88 @@
+package com.quare.bibleplanner.android.feature.read
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarScrollBehavior
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.ui.utils.asStable
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ReadBottomBar(
+    header: ReadHeaderUiModel,
+    scrollBehavior: BottomAppBarScrollBehavior,
+    listening: ReadListeningUiState,
+    onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BottomAppBar(
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        windowInsets = WindowInsets.navigationBars.asStable(),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            ChapterNavigationButton(
+                suggestion = header.navigationSuggestions.previous,
+                isNext = false,
+                onClick = onEvent,
+            )
+            if (listening.isAvailable) {
+                val chapter = ChapterLocationModel(
+                    bookId = header.bookId,
+                    chapterNumber = header.chapterNumber,
+                )
+                val player = listening.player?.takeIf { it.chapter == chapter }
+                ListenToggleButton(
+                    isActive = player != null,
+                    isPlaying = player?.status == ListeningStatusModel.PLAYING,
+                    onClick = {
+                        onListeningEvent(
+                            ReadListeningUiEvent.OnListenClick(
+                                chapter = chapter,
+                                source = ListeningEntrySource.BOTTOM_BAR,
+                            ),
+                        )
+                    },
+                )
+            }
+            ReadStatusPill(
+                modifier = Modifier.weight(1f),
+                isRead = header.isChapterRead,
+                onClick = {
+                    onEvent(
+                        ReadUiEvent.ToggleReadStatus(
+                            bookId = header.bookId,
+                            chapterNumber = header.chapterNumber,
+                        ),
+                    )
+                },
+            )
+            ChapterNavigationButton(
+                suggestion = header.navigationSuggestions.next,
+                isNext = true,
+                onClick = onEvent,
+            )
+        }
+    }
+}

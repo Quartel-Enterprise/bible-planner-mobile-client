@@ -20,30 +20,4 @@
     <string name="account_details_logout">Cerrar sesión de la cuenta</string>
     <string name="account_details_device_signed_out">Sesión cerrada en ese dispositivo</string>
     <string name="account_details_action_error">Algo salió mal. Inténtalo de nuevo.</string>
-    <string name="account_details_active_now">Activo ahora</string>
-    <plurals name="account_details_minutes_ago">
-        <item quantity="one">Hace %1$d min</item>
-        <item quantity="other">Hace %1$d min</item>
-    </plurals>
-    <plurals name="account_details_hours_ago">
-        <item quantity="one">Hace %1$d hora</item>
-        <item quantity="other">Hace %1$d horas</item>
-    </plurals>
-    <string name="account_details_today">Hoy</string>
-    <string name="account_details_yesterday">Ayer</string>
-    <string name="account_details_tomorrow">Mañana</string>
-    <plurals name="account_details_days_ago">
-        <item quantity="one">Hace %1$d día</item>
-        <item quantity="other">Hace %1$d días</item>
-    </plurals>
-    <string name="account_details_last_week">Semana pasada</string>
-    <plurals name="account_details_weeks_ago">
-        <item quantity="one">Hace %1$d semana</item>
-        <item quantity="other">Hace %1$d semanas</item>
-    </plurals>
-    <string name="account_details_last_month">Mes pasado</string>
-    <plurals name="account_details_months_ago">
-        <item quantity="one">Hace %1$d mes</item>
-        <item quantity="other">Hace %1$d meses</item>
-    </plurals>
 </resources>

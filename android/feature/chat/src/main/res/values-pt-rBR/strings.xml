@@ -35,8 +35,6 @@
     <string name="chat_cancel">Cancelar</string>
     <string name="chat_confirm_rename">Confirmar</string>
     <string name="chat_conversation_options">Opções da conversa</string>
-    <string name="chat_today">Hoje</string>
-    <string name="chat_yesterday">Ontem</string>
     <string name="chat_bucket_last_seven_days">Últimos 7 dias</string>
     <string name="chat_bucket_month_year">%1$s de %2$d</string>
     <string name="chat_close">Fechar</string>
@@ -44,30 +42,6 @@
     <plurals name="chat_free_questions_left">
         <item quantity="one">%1$d pergunta grátis restante</item>
         <item quantity="other">%1$d perguntas grátis restantes</item>
-    </plurals>
-    <string name="chat_date_tomorrow">Amanhã</string>
-    <plurals name="chat_date_days_ago">
-        <item quantity="one">%1$d dia atrás</item>
-        <item quantity="other">%1$d dias atrás</item>
-    </plurals>
-    <string name="chat_date_last_week">Semana passada</string>
-    <plurals name="chat_date_weeks_ago">
-        <item quantity="one">%1$d semana atrás</item>
-        <item quantity="other">%1$d semanas atrás</item>
-    </plurals>
-    <string name="chat_date_last_month">Mês passado</string>
-    <plurals name="chat_date_months_ago">
-        <item quantity="one">%1$d mês atrás</item>
-        <item quantity="other">%1$d meses atrás</item>
-    </plurals>
-    <string name="chat_relative_active_now">Ativo agora</string>
-    <plurals name="chat_relative_minutes_ago">
-        <item quantity="one">há %1$d min</item>
-        <item quantity="other">há %1$d min</item>
-    </plurals>
-    <plurals name="chat_relative_hours_ago">
-        <item quantity="one">há %1$d hora</item>
-        <item quantity="other">há %1$d horas</item>
     </plurals>
     <string name="chat_january">Janeiro</string>
     <string name="chat_february">Fevereiro</string>

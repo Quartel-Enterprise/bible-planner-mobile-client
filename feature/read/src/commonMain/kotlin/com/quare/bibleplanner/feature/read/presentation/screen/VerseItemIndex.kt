@@ -4,7 +4,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 import com.quare.bibleplanner.feature.read.presentation.screen.content.getChapterStartIndices
 
-internal fun findVerseItemIndex(
+fun findVerseItemIndex(
     chapters: List<ReadChapterUiModel>,
     leadingItemCount: Int,
     isChapterStudyBeside: Boolean,

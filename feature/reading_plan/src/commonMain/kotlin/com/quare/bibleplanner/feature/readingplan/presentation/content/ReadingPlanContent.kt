@@ -249,7 +249,7 @@ private fun ShowMoreButton(
     onEvent: (ReadingPlanUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hiddenCount = (totalWeeks - 2).coerceAtLeast(0)
+    val hiddenCount = (totalWeeks - COLLAPSED_WEEK_LIMIT).coerceAtLeast(0)
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,

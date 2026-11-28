@@ -8,6 +8,12 @@ import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 
 @Composable
+internal fun chapterTitle(chapter: ChapterLocationModel): String = verseReference(
+    chapter = chapter,
+    verseNumber = null,
+)
+
+@Composable
 internal fun verseReference(
     chapter: ChapterLocationModel,
     verseNumber: Int?,
