@@ -43,11 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.sheet.AppModalBottomSheet
 import com.quare.bibleplanner.core.image.encodeToPng
-import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
 import com.quare.bibleplanner.ui.theme.font.ShareCardFont
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,7 +63,7 @@ private val fontTileSize = 42.dp
 internal fun ShareVerseImageContent(
     uiState: ShareVerseUiState,
     isWideLayout: Boolean,
-    actionGuard: ShareImageActionGuard,
+    actionGuard: ShareActionGuard,
     snackbarHostState: SnackbarHostState,
     onEvent: (ShareVerseUiEvent) -> Unit,
 ) {
@@ -75,6 +75,7 @@ internal fun ShareVerseImageContent(
     ) {
         // Why: the sheet is its own window, so the layer must come from the context of the window that draws the card.
         val graphicsLayer = rememberGraphicsLayer()
+        ShareActionGuardEffect(guard = actionGuard)
         if (isWideLayout) {
             ShareImageWideLayout(
                 uiState = uiState,
@@ -97,7 +98,7 @@ internal fun ShareVerseImageContent(
 private fun ShareImageNarrowLayout(
     uiState: ShareVerseUiState,
     graphicsLayer: GraphicsLayer,
-    actionGuard: ShareImageActionGuard,
+    actionGuard: ShareActionGuard,
     onEvent: (ShareVerseUiEvent) -> Unit,
 ) {
     Column(
@@ -137,7 +138,7 @@ private fun ShareImageNarrowLayout(
 private fun ShareImageWideLayout(
     uiState: ShareVerseUiState,
     graphicsLayer: GraphicsLayer,
-    actionGuard: ShareImageActionGuard,
+    actionGuard: ShareActionGuard,
     onEvent: (ShareVerseUiEvent) -> Unit,
 ) {
     Row(
@@ -304,7 +305,7 @@ private fun TypographySection(
 private fun ShareActionsRow(
     isReady: Boolean,
     graphicsLayer: GraphicsLayer,
-    actionGuard: ShareImageActionGuard,
+    actionGuard: ShareActionGuard,
     onEvent: (ShareVerseUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -315,10 +316,9 @@ private fun ShareActionsRow(
      */
     val captureCard: ((ByteArray) -> ShareVerseUiEvent) -> Unit = { toEvent ->
         coroutineScope.launch {
-            suspendRunCatching {
-                val imageBitmap = graphicsLayer.toImageBitmap()
-                withContext(Dispatchers.Default) { imageBitmap.encodeToPng() }
-            }.onSuccess { imageBytes -> onEvent(toEvent(imageBytes)) }
+            graphicsLayer
+                .createPng()
+                .onSuccess { imageBytes -> onEvent(toEvent(imageBytes)) }
                 .onFailure {
                     actionGuard.isSharing = false
                     actionGuard.isSaving = false
@@ -374,3 +374,12 @@ internal fun ShareSectionLabel(text: String) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
+
+/*
+ * Why: core's suspendRunCatching is inline and built for a newer JVM target than the Android modules, so it can't be
+ * inlined here; this does the same, letting cancellation through.
+ */
+private suspend fun GraphicsLayer.createPng(): Result<ByteArray> = runCatching {
+    val imageBitmap = toImageBitmap()
+    withContext(Dispatchers.Default) { imageBitmap.encodeToPng() }
+}.onFailure { exception -> if (exception is CancellationException) throw exception }

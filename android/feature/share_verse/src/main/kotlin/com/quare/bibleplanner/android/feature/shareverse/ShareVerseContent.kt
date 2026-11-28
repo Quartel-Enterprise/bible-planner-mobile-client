@@ -29,6 +29,7 @@ private val optionIconSize = 44.dp
 @Composable
 internal fun ShareVerseContent(
     uiState: ShareVerseUiState,
+    actionGuard: ShareActionGuard,
     onEvent: (ShareVerseUiEvent) -> Unit,
 ) {
     AppModalBottomSheet(
@@ -36,6 +37,7 @@ internal fun ShareVerseContent(
         subtitle = uiState.reference.takeIf { it.isNotEmpty() },
         onDismiss = { onEvent(ShareVerseUiEvent.OnDismiss) },
     ) {
+        ShareActionGuardEffect(guard = actionGuard)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             ShareOptionItem(
                 imageVector = Icons.AutoMirrored.Filled.Subject,

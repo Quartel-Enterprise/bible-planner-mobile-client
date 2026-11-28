@@ -11,8 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
@@ -40,24 +38,20 @@ internal fun ShareVerseNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
 ) {
     val viewModel = koinViewModel<ShareVerseViewModel> { parametersOf(this) }
     val uiState by viewModel.uiState.collectAsState()
-    /*
-     * Why: a second tap before the share sheet shows up would open it twice. The guard lifts when the user comes back
-     * to the app, or at once when the launch fails, so it never depends on how fast the share sheet starts.
-     */
-    var isSharingText by remember { mutableStateOf(false) }
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { isSharingText = false }
+    val actionGuard = remember { ShareActionGuard() }
     ActionCollector(viewModel.uiAction) { uiAction ->
         if (uiAction is ShareVerseUiAction.ShareText) {
-            isSharingText = launchShare(message = uiAction.content.shareText)
+            actionGuard.isSharing = launchShare(message = uiAction.content.shareText)
         }
     }
     ExpressiveTheme {
         ShareVerseContent(
             uiState = uiState,
+            actionGuard = actionGuard,
             onEvent = { event ->
                 if (event == ShareVerseUiEvent.OnShareAsTextClick) {
-                    if (!isSharingText) {
-                        isSharingText = true
+                    if (!actionGuard.isBusy) {
+                        actionGuard.isSharing = true
                         viewModel.onEvent(event)
                     }
                 } else {
@@ -83,8 +77,7 @@ internal fun ShareVerseImageNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     }
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val actionGuard = remember { ShareImageActionGuard() }
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actionGuard.isSharing = false }
+    val actionGuard = remember { ShareActionGuard() }
     ShareVerseImageActionCollector(
         viewModel = viewModel,
         actionGuard = actionGuard,
@@ -104,7 +97,7 @@ internal fun ShareVerseImageNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
 @Composable
 private fun ShareVerseImageActionCollector(
     viewModel: ShareVerseViewModel,
-    actionGuard: ShareImageActionGuard,
+    actionGuard: ShareActionGuard,
     snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
