@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.chapterstudy.presentation.model
 
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
 
-internal sealed interface ChapterStudyContentUiState {
+sealed interface ChapterStudyContentUiState {
     data object Loading : ChapterStudyContentUiState
 
     /*
