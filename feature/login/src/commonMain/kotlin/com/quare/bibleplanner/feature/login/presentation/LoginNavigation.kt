@@ -56,7 +56,7 @@ fun EntryProviderScope<NavKey>.loginRoot() {
             onLoginResult = { message ->
                 if (notifyResultViaSnackbar) {
                     appSnackbarController.show(
-                        AppSnackbarMessage(
+                        AppSnackbarMessage.Resource(
                             stringResource = message,
                             isDismissible = false,
                         ),

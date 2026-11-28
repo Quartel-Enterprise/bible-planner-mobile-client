@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rename_device_title">Rename device</string>
+    <string name="rename_device_name_label">Device name</string>
+    <string name="rename_device_save">Save</string>
+    <string name="rename_device_cancel">Cancel</string>
+    <string name="rename_device_error">Something went wrong. Please try again.</string>
+</resources>

@@ -16,7 +16,7 @@ internal fun RenameDeviceUiActionCollector(uiActionFlow: Flow<RenameDeviceUiActi
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             RenameDeviceUiAction.ShowError -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.account_details_action_error,
                     isDismissible = true,
                 ),

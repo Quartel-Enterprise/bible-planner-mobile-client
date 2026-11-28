@@ -25,7 +25,7 @@ internal fun DeleteAccountUiActionCollector(uiActionFlow: Flow<DeleteAccountUiAc
             )
 
             DeleteAccountUiAction.NotifySuccess -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.delete_account_success_message,
                     isDismissible = false,
                 ),

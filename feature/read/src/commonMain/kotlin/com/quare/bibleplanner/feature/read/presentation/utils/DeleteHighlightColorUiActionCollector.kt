@@ -15,7 +15,7 @@ internal fun DeleteHighlightColorUiActionCollector(uiActionFlow: Flow<DeleteHigh
         when (uiAction) {
             is DeleteHighlightColorUiAction.NotifyDeletion -> {
                 appSnackbarController.show(
-                    AppSnackbarMessage(
+                    AppSnackbarMessage.Resource(
                         stringResource = uiAction.stringResource,
                         isDismissible = true,
                     ),
