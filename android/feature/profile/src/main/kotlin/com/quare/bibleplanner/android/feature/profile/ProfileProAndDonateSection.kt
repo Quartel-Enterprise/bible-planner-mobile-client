@@ -81,7 +81,10 @@ internal fun ProfileProAndDonateSection(
                                 subtitle = stringResource(R.string.profile_pro_description_simple),
                                 icon = Icons.Default.Star,
                                 iconTint = gold,
-                                border = BorderStroke(2.dp, gold),
+                                border = BorderStroke(
+                                    width = 2.dp,
+                                    color = gold,
+                                ),
                                 onClick = { onEvent(ProfileUiEvent.OnProCardClick) },
                             )
                         }
@@ -108,11 +111,17 @@ private fun BecomeProTitle(transitionScopes: ProfileTransitionScopes?) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         ActionCardTitle(
             text = stringResource(R.string.profile_become_pro_part_1),
-            modifier = Modifier.sharedElementWithRelayoutOf(transitionScopes, BECOME_PRO_PART_1_KEY),
+            modifier = Modifier.sharedElementWithRelayoutOf(
+                transitionScopes = transitionScopes,
+                key = BECOME_PRO_PART_1_KEY,
+            ),
         )
         ActionCardTitle(
             text = stringResource(R.string.profile_become_pro_part_2),
-            modifier = Modifier.sharedElementWithRelayoutOf(transitionScopes, BECOME_PRO_PART_2_KEY),
+            modifier = Modifier.sharedElementWithRelayoutOf(
+                transitionScopes = transitionScopes,
+                key = BECOME_PRO_PART_2_KEY,
+            ),
         )
     }
 }

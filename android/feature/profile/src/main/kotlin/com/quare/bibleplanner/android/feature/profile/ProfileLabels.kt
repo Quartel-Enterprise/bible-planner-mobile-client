@@ -2,19 +2,16 @@ package com.quare.bibleplanner.android.feature.profile
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import com.quare.bibleplanner.android.designsystem.date.rememberMediumDateLabel
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import kotlinx.datetime.toJavaLocalDate
 import software.quare.loadable.valueOrNull
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import com.quare.bibleplanner.android.designsystem.R as DesignSystemR
 
 private const val PERCENT = 100
 
@@ -40,16 +37,9 @@ internal fun toBibleVersionSubtitle(state: ProfileUiState): String? =
 @Composable
 internal fun planStartDateSubtitle(state: ProfileUiState): String? {
     val planStartDate = state.planStartDate.valueOrNull() ?: return null
-    // Why: the app language can differ from the system's, and the configuration carries the one the app shows.
-    val locale = LocalConfiguration.current.locales[0]
-    val dateLabel = remember(planStartDate, locale) {
-        DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.MEDIUM)
-            .withLocale(locale)
-            .format(planStartDate.toJavaLocalDate())
-    }
+    val dateLabel = rememberMediumDateLabel(planStartDate)
     return if (planStartDate == state.currentDate) {
-        "${stringResource(R.string.profile_today)}, $dateLabel"
+        "${stringResource(DesignSystemR.string.date_today)}, $dateLabel"
     } else {
         dateLabel
     }

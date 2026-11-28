@@ -122,7 +122,7 @@ function with a non-`Unit` return type whose name does not start with an approve
 
 **Exempt** (the rule skips these):
 - `@Composable` functions that return a value — the Compose API guidelines deliberately name these as
-  nouns (`googleLogo()`, `megabytesText()`, `mainContentBottomInset()`).
+  nouns (`googleLogo()`, `megabytesText()`, `mainContentBottomInsetPx()`).
 - Extension functions on `Modifier` (`Modifier.shimmer()`, `Modifier.verticalScrollbar()`).
 - `override` and `actual` declarations — the convention is enforced at the `expect`/interface site.
 - `operator` functions, and names ending in `…OrNull` / `…Of` / `…For`.

@@ -121,8 +121,20 @@ private fun List<OtherVersionAnnotationCountModel>.otherVersionsText(): String =
 private fun AnnotationsSummaryModel.summaryText(): String {
     if (highlightCount + savedCount + noteCount == 0) return stringResource(R.string.profile_annotations_summary_empty)
     return listOf(
-        pluralStringResource(R.plurals.profile_annotations_highlight_count, highlightCount, highlightCount),
-        pluralStringResource(R.plurals.profile_annotations_saved_count, savedCount, savedCount),
-        pluralStringResource(R.plurals.profile_annotations_note_count, noteCount, noteCount),
+        pluralStringResource(
+            R.plurals.profile_annotations_highlight_count,
+            highlightCount,
+            highlightCount,
+        ),
+        pluralStringResource(
+            R.plurals.profile_annotations_saved_count,
+            savedCount,
+            savedCount,
+        ),
+        pluralStringResource(
+            R.plurals.profile_annotations_note_count,
+            noteCount,
+            noteCount,
+        ),
     ).joinToString(separator = SUMMARY_SEPARATOR)
 }

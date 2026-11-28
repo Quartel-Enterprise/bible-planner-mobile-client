@@ -35,6 +35,8 @@ internal class MainBarScrollController(
             available: Offset,
             source: NestedScrollSource,
         ): Offset {
+            // Why: a reveal still animating would otherwise write over the offset the user's scroll moves.
+            if (source == NestedScrollSource.UserInput && consumed.y != 0f) revealJob?.cancel()
             val result = behaviorConnection.onPostScroll(
                 consumed = consumed,
                 available = available,

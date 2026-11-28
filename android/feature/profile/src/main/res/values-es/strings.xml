@@ -31,7 +31,6 @@
     <string name="profile_update_check_failed_message">No se pudo buscar actualizaciones. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="profile_become_pro_subtitle">Desbloquea funciones exclusivas y apoya nuestra misión.</string>
     <string name="profile_donate_subtitle">Apoya nuestro trabajo y ayúdanos a mantener el desarrollo.</string>
-    <string name="profile_today">Hoy</string>
     <string name="profile_theme_light">Claro</string>
     <string name="profile_theme_dark">Oscuro</string>
     <string name="profile_theme_system">Predeterminado del sistema</string>

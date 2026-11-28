@@ -31,7 +31,6 @@
     <string name="profile_update_check_failed_message">Couldn\'t check for updates. Check your connection and try again.</string>
     <string name="profile_become_pro_subtitle">Unlock exclusive features &amp; support our mission.</string>
     <string name="profile_donate_subtitle">Support our work and help us keep the development.</string>
-    <string name="profile_today">Today</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
     <string name="profile_theme_system">System Default</string>

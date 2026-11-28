@@ -47,8 +47,11 @@ internal fun ProfileContent(
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val isTwoColumns = maxWidth > twoColumnsMinWidth
-            val centeringPadding = ((maxWidth - maxWidth.coerceAtMost(contentMaxWidth)) / 2).coerceAtLeast(0.dp)
+            // Why: the shared screen measures its breakpoint and cap inside its 16dp padding, so this does too.
+            val availableWidth = maxWidth - screenPadding * 2
+            val isTwoColumns = availableWidth > twoColumnsMinWidth
+            val centeringPadding =
+                ((availableWidth - availableWidth.coerceAtMost(contentMaxWidth)) / 2).coerceAtLeast(0.dp)
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 /*

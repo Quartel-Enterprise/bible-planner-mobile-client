@@ -8,19 +8,20 @@ import androidx.compose.ui.graphics.asImageBitmap
 
 /*
  * Why: every avatar of the same photo bytes (the tab icon, the expanded photo, the bar and rail swapping on rotation)
- * shares one decode, keyed by the array's reference, so a newly composed one shows the photo on its first frame.
+ * shares one decode, so a newly composed one shows the photo on its first frame. It is keyed by the bytes' content,
+ * since each screen's ViewModel reads the profile from its own Room query and gets its own copy of the array.
  */
 internal object DecodedAvatarPhotoCache {
     private const val MAX_SIZE_BYTES = 16 * 1024 * 1024
 
-    private val cache = object : LruCache<ByteArray, DecodedAvatarPhoto>(MAX_SIZE_BYTES) {
+    private val cache = object : LruCache<AvatarPhotoKey, DecodedAvatarPhoto>(MAX_SIZE_BYTES) {
         override fun sizeOf(
-            key: ByteArray,
+            key: AvatarPhotoKey,
             value: DecodedAvatarPhoto,
-        ): Int = key.size + value.bitmap.asAndroidBitmap().byteCount
+        ): Int = key.bytes.size + value.bitmap.asAndroidBitmap().byteCount
     }
 
-    fun findOrNull(bytes: ByteArray): DecodedAvatarPhoto? = cache.get(bytes)
+    fun findOrNull(bytes: ByteArray): DecodedAvatarPhoto? = cache.get(AvatarPhotoKey(bytes))
 
     fun findCoveringOrNull(
         bytes: ByteArray,
@@ -56,9 +57,10 @@ internal object DecodedAvatarPhotoCache {
             sampleSize = sampleSize,
         )
         // Why: keeps the sharpest decode, so a small tab icon doesn't replace the expanded photo's.
+        val key = AvatarPhotoKey(bytes)
         synchronized(this) {
-            val cached = cache.get(bytes)
-            if (cached == null || cached.sampleSize > sampleSize) cache.put(bytes, decoded)
+            val cached = cache.get(key)
+            if (cached == null || cached.sampleSize > sampleSize) cache.put(key, decoded)
         }
         return bitmap
     }
@@ -74,6 +76,17 @@ internal object DecodedAvatarPhotoCache {
         }
         return sampleSize
     }
+}
+
+private class AvatarPhotoKey(
+    val bytes: ByteArray,
+) {
+    private val contentHashCode = bytes.contentHashCode()
+
+    override fun equals(other: Any?): Boolean =
+        other is AvatarPhotoKey && (other.bytes === bytes || other.bytes.contentEquals(bytes))
+
+    override fun hashCode(): Int = contentHashCode
 }
 
 internal class DecodedAvatarPhoto(

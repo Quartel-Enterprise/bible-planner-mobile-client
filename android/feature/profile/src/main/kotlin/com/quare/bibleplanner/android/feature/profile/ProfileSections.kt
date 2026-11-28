@@ -150,7 +150,10 @@ internal fun ProfileAppSection(
             title = stringResource(R.string.profile_release_notes_option),
             icon = rememberVectorPainter(Icons.Default.Description),
             subtitle = stringResource(R.string.profile_release_notes_subtitle),
-            headlineModifier = Modifier.sharedElementOf(transitionScopes, RELEASE_NOTES_KEY),
+            headlineModifier = Modifier.sharedElementOf(
+                transitionScopes = transitionScopes,
+                key = RELEASE_NOTES_KEY,
+            ),
             onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.RELEASE_NOTES)) },
         )
     }
@@ -202,7 +205,10 @@ internal fun ProfileLogoutButton(onClick: () -> Unit) {
             .fillMaxWidth()
             .heightIn(min = logoutButtonMinHeight),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant,
+        ),
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
     ) {
         Icon(

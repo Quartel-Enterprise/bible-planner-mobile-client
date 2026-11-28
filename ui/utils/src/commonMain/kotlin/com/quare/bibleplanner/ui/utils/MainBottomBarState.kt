@@ -119,12 +119,6 @@ fun mainContentBottomInsetPx(): () -> Float {
     }
 }
 
-@Composable
-fun mainContentBottomInset(): Dp {
-    val bottomInsetPx = mainContentBottomInsetPx()
-    return with(LocalDensity.current) { bottomInsetPx().toDp() }
-}
-
 // Why: pads by a height read in the layout phase, so a height that animates relayouts without recomposing.
 fun Modifier.bottomPadding(heightPx: () -> Float): Modifier = layout { measurable, constraints ->
     val padding = heightPx().roundToInt().coerceAtLeast(0)
