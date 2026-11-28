@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import software.quare.connectivity.IsConnected
 import kotlin.time.Duration.Companion.seconds
 
@@ -73,6 +74,7 @@ class ProfileViewModel internal constructor(
     private val isCheckingForUpdate = MutableStateFlow(false)
     private val externalActionJobs = mutableMapOf<ProfileOptionItemType, Job>()
     private val linkRepeatGuard = 1.seconds
+    private val privacyOptionsRepeatGuard = 5.seconds
     val uiState: StateFlow<ProfileUiState> = flow {
         val reducedState = combine(
             uiStateFactory.create(initialState = uiState.value),
@@ -101,9 +103,7 @@ class ProfileViewModel internal constructor(
 
                     ProfileOptionItemType.TERMS -> openLink(event.type, LegalUrl.TERMS_OF_SERVICE)
 
-                    ProfileOptionItemType.PRIVACY_OPTIONS -> launchExternalAction(event.type) {
-                        adsConsentService.showPrivacyOptions()
-                    }
+                    ProfileOptionItemType.PRIVACY_OPTIONS -> privacyOptionsClick()
 
                     ProfileOptionItemType.BECOME_PRO ->
                         goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))
@@ -182,6 +182,18 @@ class ProfileViewModel internal constructor(
         }
     }
 
+    private fun privacyOptionsClick() {
+        launchExternalAction(ProfileOptionItemType.PRIVACY_OPTIONS) {
+            val form = viewModelScope.launch { adsConsentService.showPrivacyOptions() }
+            /*
+             * Why: once up, the form covers the row; the timeout keeps a form that never reports back (its activity
+             * recreated meanwhile) from leaving the row ignored until the screen is gone.
+             */
+            withTimeoutOrNull(privacyOptionsRepeatGuard) { form.join() }
+        }
+    }
+
+    // Why: the back stack already drops a second confirmation, but a second "nothing to delete" message would show.
     private fun deleteProgressClick() {
         launchExternalAction(ProfileOptionItemType.DELETE_PROGRESS) {
             val progress = calculateBibleProgress().first()

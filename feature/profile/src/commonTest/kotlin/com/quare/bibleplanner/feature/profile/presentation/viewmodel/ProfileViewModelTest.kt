@@ -383,11 +383,31 @@ internal class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the progress still being read WHEN tapping delete progress again THEN opens the confirmation once`() =
+    fun `GIVEN a privacy options form that never reports back WHEN tapping it again later THEN opens the form again`() =
+        runTest(testDispatcher) {
+            // Given
+            adsConsentService.privacyOptionsDismissal = CompletableDeferred()
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+            advanceTimeBy(5.seconds + 1.milliseconds)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 2,
+                actual = adsConsentService.privacyOptionsShownCount,
+            )
+        }
+
+    @Test
+    fun `GIVEN no progress still being read WHEN tapping delete progress again THEN says nothing to delete once`() =
         runTest(testDispatcher) {
             // Given
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            prepareScenario(hasReadingProgress = true)
+            prepareScenario(hasReadingProgress = false)
             viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.DELETE_PROGRESS))
 
             // When
@@ -396,8 +416,8 @@ internal class ProfileViewModelTest {
 
             // Then
             assertEquals(
-                expected = listOf<NavigationCommand>(NavigationCommand.Navigate(DeleteAllProgressNavRoute)),
-                actual = commands,
+                expected = listOf<ProfileUiAction>(ProfileUiAction.ShowNoProgressToDelete),
+                actual = actions,
             )
         }
 
