@@ -19,7 +19,4 @@
     <string name="contact_support_open_email">Abrir e-mail</string>
     <string name="contact_support_copy_email">Copiar endereço de e-mail</string>
     <string name="contact_support_email_copied">E-mail copiado para a área de transferência</string>
-    <string name="contact_support_language_english">Inglês</string>
-    <string name="contact_support_language_portuguese_brazil">Português (Brasil)</string>
-    <string name="contact_support_language_spanish">Espanhol</string>
 </resources>

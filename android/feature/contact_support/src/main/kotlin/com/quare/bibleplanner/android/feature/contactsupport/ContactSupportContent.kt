@@ -41,9 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.icon.SheetIconTile
+import com.quare.bibleplanner.android.designsystem.language.toNameRes
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.contactsupport.domain.model.SupportContact
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiEvent
@@ -159,7 +159,7 @@ private fun DiagnosticsCard(uiState: ContactSupportUiState) {
             label = stringResource(R.string.contact_support_language_label),
             value = uiState.selectedLanguage
                 .valueOrNull()
-                ?.let { language -> stringResource(language.toLabel()) }
+                ?.let { language -> stringResource(language.toNameRes()) }
                 .orEmpty(),
         )
         DiagnosticsRow(
@@ -269,13 +269,6 @@ private fun Platform.toLabel(): Int = when (this) {
     Platform.Ios -> R.string.contact_support_platform_ios
     is Platform.Desktop -> R.string.contact_support_platform_desktop
     Platform.Web -> R.string.contact_support_platform_web
-}
-
-@StringRes
-private fun Language.toLabel(): Int = when (this) {
-    Language.ENGLISH -> R.string.contact_support_language_english
-    Language.PORTUGUESE_BRAZIL -> R.string.contact_support_language_portuguese_brazil
-    Language.SPANISH -> R.string.contact_support_language_spanish
 }
 
 @StringRes

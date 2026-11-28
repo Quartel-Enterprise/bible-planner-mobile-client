@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.quare.bibleplanner.android.designsystem.date.rememberMediumDateLabel
+import com.quare.bibleplanner.android.designsystem.language.toNameRes
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
-import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import software.quare.loadable.valueOrNull
@@ -25,7 +25,7 @@ internal fun themeSubtitle(state: ProfileUiState): String? = state.theme.valueOr
 
 @Composable
 internal fun languageSubtitle(state: ProfileUiState): String? = state.selectedLanguage.valueOrNull()?.let { language ->
-    stringResource(language.toStringRes())
+    stringResource(language.toNameRes())
 }
 
 internal fun toBibleVersionSubtitle(state: ProfileUiState): String? =
@@ -69,11 +69,4 @@ private fun ProfileColorScheme.toStringRes(): Int = when (this) {
     ProfileColorScheme.STANDARD_CONTRAST -> R.string.profile_contrast_standard
     ProfileColorScheme.MEDIUM_CONTRAST -> R.string.profile_contrast_medium
     ProfileColorScheme.HIGH_CONTRAST -> R.string.profile_contrast_high
-}
-
-@StringRes
-private fun Language.toStringRes(): Int = when (this) {
-    Language.ENGLISH -> R.string.profile_language_english
-    Language.PORTUGUESE_BRAZIL -> R.string.profile_language_portuguese_brazil
-    Language.SPANISH -> R.string.profile_language_spanish
 }

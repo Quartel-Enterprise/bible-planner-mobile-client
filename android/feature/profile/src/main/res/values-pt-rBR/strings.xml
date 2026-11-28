@@ -77,7 +77,4 @@
         <item quantity="one">%1$d marcação em %2$s</item>
         <item quantity="other">%1$d marcações em %2$s</item>
     </plurals>
-    <string name="profile_language_english">Inglês</string>
-    <string name="profile_language_portuguese_brazil">Português (Brasil)</string>
-    <string name="profile_language_spanish">Espanhol</string>
 </resources>
