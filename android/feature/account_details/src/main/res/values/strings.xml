@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_details_title">Account details</string>
+    <string name="account_details_login_method">Login method</string>
+    <string name="account_details_login_google">Google</string>
+    <string name="account_details_login_apple">Apple</string>
+    <string name="account_details_login_other">Email</string>
+    <string name="account_details_last_login">Last login</string>
+    <string name="account_details_created_at">Account created on</string>
+    <string name="account_details_value_unknown">—</string>
+    <string name="account_details_connected_devices">Connected devices</string>
+    <plurals name="account_details_devices_active">
+        <item quantity="one">%1$d active</item>
+        <item quantity="other">%1$d active</item>
+    </plurals>
+    <string name="account_details_this_device">THIS DEVICE</string>
+    <string name="account_details_device_options">Device options</string>
+    <string name="account_details_rename">Rename</string>
+    <string name="account_details_sign_out">Sign out</string>
+    <string name="account_details_logout">Sign out of account</string>
+    <string name="account_details_device_signed_out">Session ended on that device</string>
+    <string name="account_details_action_error">Something went wrong. Please try again.</string>
+    <string name="account_details_active_now">Active now</string>
+    <plurals name="account_details_minutes_ago">
+        <item quantity="one">%1$d min ago</item>
+        <item quantity="other">%1$d min ago</item>
+    </plurals>
+    <plurals name="account_details_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <string name="account_details_today">Today</string>
+    <string name="account_details_yesterday">Yesterday</string>
+    <string name="account_details_tomorrow">Tomorrow</string>
+    <plurals name="account_details_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+    <string name="account_details_last_week">Last week</string>
+    <plurals name="account_details_weeks_ago">
+        <item quantity="one">%1$d week ago</item>
+        <item quantity="other">%1$d weeks ago</item>
+    </plurals>
+    <string name="account_details_last_month">Last month</string>
+    <plurals name="account_details_months_ago">
+        <item quantity="one">%1$d month ago</item>
+        <item quantity="other">%1$d months ago</item>
+    </plurals>
+</resources>

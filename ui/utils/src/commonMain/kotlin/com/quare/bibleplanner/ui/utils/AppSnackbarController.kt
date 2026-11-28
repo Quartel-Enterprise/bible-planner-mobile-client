@@ -10,9 +10,14 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 class AppSnackbarController {
     val messages: SharedFlow<AppSnackbarMessage>
-        field = MutableSharedFlow<AppSnackbarMessage>(extraBufferCapacity = 1)
+        // Why: messages that arrive while one is showing wait their turn instead of being dropped.
+        field = MutableSharedFlow<AppSnackbarMessage>(extraBufferCapacity = MESSAGE_QUEUE_SIZE)
 
     fun show(message: AppSnackbarMessage) {
         messages.tryEmit(message)
+    }
+
+    private companion object {
+        const val MESSAGE_QUEUE_SIZE = 8
     }
 }
