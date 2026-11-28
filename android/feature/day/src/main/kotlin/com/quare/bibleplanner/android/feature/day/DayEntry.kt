@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.getDayStudyMainPane
@@ -21,6 +22,7 @@ import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudySection
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
+import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -36,6 +38,16 @@ internal fun DayNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val transitionScopes = LocalSharedTransitionScope.current?.let { sharedTransitionScope ->
+        val animatedVisibilityScope = LocalNavAnimatedContentScope.current
+        // Why: a new instance on every state change would keep the header and the date from skipping recomposition.
+        remember(sharedTransitionScope, animatedVisibilityScope) {
+            DayTransitionScopes(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+            )
+        }
+    }
     LaunchedEffect(isWide) {
         onEvent(DayUiEvent.OnWidthClassChanged(isWide))
     }
@@ -51,6 +63,7 @@ internal fun DayNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
             state = uiState,
             isWide = isWide,
             snackbarHostState = snackbarHostState,
+            transitionScopes = transitionScopes,
             onEvent = onEvent,
             studySection = { loaded, modifier ->
                 DayStudySection(
