@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.dialog.AppAlertDialog
 import com.quare.bibleplanner.android.designsystem.theme.success
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
+import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.model.SubscriptionDetailsUiState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
@@ -80,11 +81,13 @@ internal fun SubscriptionDetailsContent(
                     supporting = rememberFormattedDate(date),
                 )
             }
-            DetailItem(
-                icon = Icons.Outlined.Shop,
-                headline = stringResource(R.string.subscription_details_origin),
-                supporting = stringResource(R.string.subscription_details_store_google_play),
-            )
+            state.store?.let { store ->
+                DetailItem(
+                    icon = Icons.Outlined.Shop,
+                    headline = stringResource(R.string.subscription_details_origin),
+                    supporting = stringResource(store.toLabel()),
+                )
+            }
         }
     }
 }
@@ -127,4 +130,11 @@ private fun ProPlanType.toLabel(): Int = when (this) {
     ProPlanType.MONTHLY -> R.string.subscription_details_plan_pro_monthly
     ProPlanType.ANNUAL -> R.string.subscription_details_plan_pro_annual
     ProPlanType.UNKNOWN -> R.string.subscription_details_plan_pro
+}
+
+@StringRes
+private fun PurchaseStore.toLabel(): Int = when (this) {
+    PurchaseStore.PLAY_STORE -> R.string.subscription_details_store_google_play
+    PurchaseStore.APP_STORE -> R.string.subscription_details_store_app_store
+    PurchaseStore.WEB -> R.string.subscription_details_store_web
 }

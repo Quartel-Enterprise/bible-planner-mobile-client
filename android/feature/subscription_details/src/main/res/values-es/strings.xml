@@ -11,5 +11,7 @@
     <string name="subscription_details_expires">Expira el</string>
     <string name="subscription_details_origin">Origen</string>
     <string name="subscription_details_store_google_play">Google Play</string>
+    <string name="subscription_details_store_app_store">App Store</string>
+    <string name="subscription_details_store_web">Sitio web</string>
     <string name="subscription_details_close">Cerrar</string>
 </resources>
