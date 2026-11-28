@@ -36,9 +36,6 @@ internal fun rememberListeningFollow(
     var isFollowing by remember { mutableStateOf(true) }
     var isAutoScrolling by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val currentChapters by rememberUpdatedState(chapters)
-    val currentLeadingItemCount by rememberUpdatedState(leadingItemCount)
-    val currentIsChapterStudyBeside by rememberUpdatedState(isChapterStudyBeside)
     val isTracking = player != null &&
         player.verseNumber != null &&
         player.status != ListeningStatusModel.FINISHED
@@ -85,7 +82,7 @@ internal fun rememberListeningFollow(
             .collect { isScrolling ->
                 if (isScrolling || isAutoScrolling) return@collect
                 val index = currentVerseItemIndex ?: return@collect
-                isFollowing = listState.isItemFullyVisible(index)
+                isFollowing = listState.isItemInView(index)
             }
     }
     val isVerseAbove by remember(listState) {
@@ -101,8 +98,14 @@ internal fun rememberListeningFollow(
     )
 }
 
-private fun LazyListState.isItemFullyVisible(index: Int): Boolean {
+/*
+ * Why: a verse taller than the space below the follow position can never be fully visible, so it
+ * counts as in view while its start is on screen or while it fills the whole screen.
+ */
+private fun LazyListState.isItemInView(index: Int): Boolean {
     val item = layoutInfo.visibleItemsInfo.find { it.index == index } ?: return false
-    return item.offset >= layoutInfo.viewportStartOffset &&
-        item.offset + item.size <= layoutInfo.viewportEndOffset
+    val itemEnd = item.offset + item.size
+    val isStartOnScreen = item.offset >= layoutInfo.viewportStartOffset && item.offset < layoutInfo.viewportEndOffset
+    val isFillingScreen = item.offset <= layoutInfo.viewportStartOffset && itemEnd >= layoutInfo.viewportEndOffset
+    return isStartOnScreen || isFillingScreen
 }

@@ -52,6 +52,14 @@ internal fun ReadWideScreen(
     onListeningEvent: (ReadListeningUiEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    // Why: the chapter skeletons pulse only while a neighbouring chapter is loading.
+    val skeletonPulse = if (state.isLoadingPreviousChapter ||
+        state.isLoadingNextChapter
+    ) {
+        rememberSkeletonPulse()
+    } else {
+        null
+    }
     val listBindings = observeReadListBindings(
         state = state,
         listening = listening,
@@ -107,7 +115,10 @@ internal fun ReadWideScreen(
                                 contentPadding = PaddingValues(bottom = 24.dp),
                             ) {
                                 if (state.isLoadingPreviousChapter) {
-                                    chapterSkeletonContent(ChapterSkeletonPosition.LEADING)
+                                    chapterSkeletonContent(
+                                        position = ChapterSkeletonPosition.LEADING,
+                                        pulse = { skeletonPulse?.value ?: 1f },
+                                    )
                                 }
                                 content.chapters.forEach { chapter ->
                                     chapterContent(
@@ -125,7 +136,10 @@ internal fun ReadWideScreen(
                                     )
                                 }
                                 if (state.isLoadingNextChapter) {
-                                    chapterSkeletonContent(ChapterSkeletonPosition.TRAILING)
+                                    chapterSkeletonContent(
+                                        position = ChapterSkeletonPosition.TRAILING,
+                                        pulse = { skeletonPulse?.value ?: 1f },
+                                    )
                                 }
                             }
                         }

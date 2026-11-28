@@ -46,7 +46,10 @@ internal fun ListeningFinishOfferCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(cardCornerRadius),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = BORDER_ALPHA)),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = BORDER_ALPHA),
+        ),
         shadowElevation = 8.dp,
     ) {
         Row(

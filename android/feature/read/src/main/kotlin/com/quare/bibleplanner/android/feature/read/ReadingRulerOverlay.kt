@@ -23,7 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,7 +53,7 @@ private val dismissInset = 8.dp
 internal fun ReadingRulerOverlay(
     lineHeight: Dp,
     lines: Int,
-    initialBandOffset: Dp,
+    initialBandOffset: () -> Dp,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -62,7 +62,9 @@ internal fun ReadingRulerOverlay(
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
         val maxOffsetPx = with(density) { (maxHeight - bandHeight).coerceAtLeast(0.dp).toPx() }
-        var bandOffsetPx by remember { mutableFloatStateOf(with(density) { initialBandOffset.toPx() }) }
+        // Why: the band sits below the top bar, which is measured after the first frame, until the person drags it.
+        var draggedOffsetPx by remember { mutableStateOf<Float?>(null) }
+        val bandOffsetPx = draggedOffsetPx ?: with(density) { initialBandOffset().toPx() }
         val bandOffset = with(density) { bandOffsetPx.coerceIn(0f, maxOffsetPx).toDp() }
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -73,7 +75,10 @@ internal fun ReadingRulerOverlay(
             )
             RulerBandBox(
                 height = bandHeight,
-                onDrag = { delta -> bandOffsetPx = (bandOffsetPx + delta).coerceIn(0f, maxOffsetPx) },
+                onDrag = { delta ->
+                    val startPx = draggedOffsetPx ?: with(density) { initialBandOffset().toPx() }
+                    draggedOffsetPx = (startPx + delta).coerceIn(0f, maxOffsetPx)
+                },
                 onDismiss = onDismiss,
             )
             Box(
@@ -150,7 +155,10 @@ private fun DragHandle(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(3.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(
+                space = 3.dp,
+                alignment = Alignment.CenterVertically,
+            ),
         ) {
             repeat(2) {
                 Box(

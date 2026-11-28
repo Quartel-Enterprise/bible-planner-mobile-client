@@ -164,4 +164,5 @@ fun getChapterStartIndices(
     }
 }
 
-private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside
+// Why: public so the native reader lists the same items getChapterStartIndices counts.
+fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside

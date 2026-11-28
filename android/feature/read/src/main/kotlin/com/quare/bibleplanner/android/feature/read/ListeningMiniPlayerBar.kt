@@ -94,11 +94,31 @@ internal fun ListeningMiniPlayerBar(
         ) {
             val unavailableCopy = player.status.toUnavailableCopy()
             when {
-                unavailableCopy != null -> UnavailableContent(player, unavailableCopy, onEvent)
-                player.status == ListeningStatusModel.PREPARING -> PreparingContent(player, onEvent)
-                player.status == ListeningStatusModel.INTERRUPTED -> InterruptedContent(player, onEvent)
-                player.status == ListeningStatusModel.NEXT_LOCKED -> LockedContent(player, onEvent)
-                else -> PlaybackContent(player, onEvent)
+                unavailableCopy != null -> UnavailableContent(
+                    player = player,
+                    copy = unavailableCopy,
+                    onEvent = onEvent,
+                )
+
+                player.status == ListeningStatusModel.PREPARING -> PreparingContent(
+                    player = player,
+                    onEvent = onEvent,
+                )
+
+                player.status == ListeningStatusModel.INTERRUPTED -> InterruptedContent(
+                    player = player,
+                    onEvent = onEvent,
+                )
+
+                player.status == ListeningStatusModel.NEXT_LOCKED -> LockedContent(
+                    player = player,
+                    onEvent = onEvent,
+                )
+
+                else -> PlaybackContent(
+                    player = player,
+                    onEvent = onEvent,
+                )
             }
             IconButton(onClick = { onEvent(ReadListeningUiEvent.OnCloseClick) }) {
                 Icon(

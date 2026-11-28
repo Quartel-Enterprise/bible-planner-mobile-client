@@ -22,12 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -60,6 +61,15 @@ internal fun ReadNarrowScreen(
     onListeningEvent: (ReadListeningUiEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    // Why: the chapter skeletons pulse only while a neighbouring chapter is loading.
+    val skeletonPulse = if (state.isLoadingPreviousChapter ||
+        state.isLoadingNextChapter
+    ) {
+        rememberSkeletonPulse()
+    } else {
+        null
+    }
+    val density = LocalDensity.current
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var bottomOverlayHeightPx by remember { mutableFloatStateOf(0f) }
@@ -73,11 +83,21 @@ internal fun ReadNarrowScreen(
         listState = listState,
         onEvent = onEvent,
     )
+    // Why: vertical reading drops the bottom bar, so its last measured height must not count anymore.
+    val isBottomBarShown = !state.settings.isVerticalReadingEnabled
+    val hasPlayer = listening.player != null
+    // Why: the effect keeps its first lambda, so the values that change later are read through state.
+    val currentIsBottomBarShown by rememberUpdatedState(isBottomBarShown)
+    val currentHasPlayer by rememberUpdatedState(hasPlayer)
     ReserveBottomOverlayHeightEffect {
-        val bottomBarHeight = (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
-        bottomBarHeight + if (listening.player == null) 0f else miniPlayerHeightPx
+        val bottomBarHeight = if (currentIsBottomBarShown) {
+            (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
+        } else {
+            0f
+        }
+        bottomBarHeight + if (currentHasPlayer) miniPlayerHeightPx else 0f
     }
-    var contentTopOffset by remember { mutableStateOf(0.dp) }
+    var contentTopOffsetPx by remember { mutableFloatStateOf(0f) }
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier
@@ -134,7 +154,6 @@ internal fun ReadNarrowScreen(
             },
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
         ) { paddingValues ->
-            contentTopOffset = paddingValues.calculateTopPadding()
             /*
              * Why: scaffold padding shrinks to zero as the bars auto-hide; consuming it and
              * re-applying the remaining system-bar insets keeps text clear without double padding.
@@ -142,7 +161,17 @@ internal fun ReadNarrowScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .layout { measurable, constraints ->
+                        // Why: read while laying out, so a collapsing top bar doesn't recompose the screen.
+                        contentTopOffsetPx = paddingValues.calculateTopPadding().toPx()
+                        val placeable = measurable.measure(constraints)
+                        layout(placeable.width, placeable.height) {
+                            placeable.place(
+                                x = 0,
+                                y = 0,
+                            )
+                        }
+                    }.padding(paddingValues)
                     .consumeWindowInsets(paddingValues)
                     .windowInsetsPadding(WindowInsets.systemBars.asStable()),
             ) {
@@ -173,7 +202,10 @@ internal fun ReadNarrowScreen(
                             contentPadding = PaddingValues(bottom = 16.dp),
                         ) {
                             if (state.isLoadingPreviousChapter) {
-                                chapterSkeletonContent(ChapterSkeletonPosition.LEADING)
+                                chapterSkeletonContent(
+                                    position = ChapterSkeletonPosition.LEADING,
+                                    pulse = { skeletonPulse?.value ?: 1f },
+                                )
                             }
                             content.chapters.forEach { chapter ->
                                 chapterContent(
@@ -191,7 +223,10 @@ internal fun ReadNarrowScreen(
                                 )
                             }
                             if (state.isLoadingNextChapter) {
-                                chapterSkeletonContent(ChapterSkeletonPosition.TRAILING)
+                                chapterSkeletonContent(
+                                    position = ChapterSkeletonPosition.TRAILING,
+                                    pulse = { skeletonPulse?.value ?: 1f },
+                                )
                             }
                         }
                     }
@@ -213,13 +248,16 @@ internal fun ReadNarrowScreen(
             ReadingRulerOverlay(
                 lineHeight = (state.settings.fontSizeSp * LINE_HEIGHT_RATIO).dp,
                 lines = state.settings.rulerLines,
-                initialBandOffset = contentTopOffset + bandOffsetBelowTopBar,
+                initialBandOffset = {
+                    with(density) { contentTopOffsetPx.toDp() } + bandOffsetBelowTopBar
+                },
                 onDismiss = { onEvent(ReadUiEvent.OnRulerDismissClick) },
             )
         }
         state.dayCompletionBanner?.let { day ->
-            val bottomBarHeight = with(LocalDensity.current) {
-                (bottomOverlayHeightPx + if (listening.player == null) 0f else miniPlayerHeightPx).toDp()
+            val bottomBarHeight = with(density) {
+                val shownBarHeightPx = if (isBottomBarShown) bottomOverlayHeightPx else 0f
+                (shownBarHeightPx + if (hasPlayer) miniPlayerHeightPx else 0f).toDp()
             }
             val navigationBarPadding = WindowInsets.navigationBars
                 .asPaddingValues()
