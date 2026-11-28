@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.feature.donation.presentation.factory.DonationUiStateFactory
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DonationViewModel(
+class DonationViewModel internal constructor(
     private val navigator: Navigator,
     factory: DonationUiStateFactory,
     trackEvent: TrackEvent,
@@ -36,13 +35,7 @@ class DonationViewModel(
                     if (uiState.value.copiedType == event.type) {
                         uiState.update { it.copy(copiedType = null) }
                     } else {
-                        val text = when (event.type) {
-                            DonationType.BTC_ONCHAIN -> DonationBuildKonfig.BTC_ONCHAIN
-                            DonationType.BTC_LIGHTNING -> DonationBuildKonfig.BTC_LIGHTNING
-                            DonationType.USDT_ERC20 -> DonationBuildKonfig.USDT_ERC20
-                            DonationType.USDT_TRC20 -> DonationBuildKonfig.USDT_TRC20
-                            DonationType.PIX -> DonationBuildKonfig.PIX_KEY
-                        }
+                        val text = event.type.address
                         uiState.update { it.copy(copiedType = event.type) }
                         uiAction.emit(DonationUiAction.Copy(text))
                         trackEvent(

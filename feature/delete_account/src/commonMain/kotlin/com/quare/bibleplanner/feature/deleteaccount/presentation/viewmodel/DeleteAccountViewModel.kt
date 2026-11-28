@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class DeleteAccountViewModel(
+class DeleteAccountViewModel internal constructor(
     private val deleteAccount: DeleteAccount,
     private val navigator: Navigator,
     getConfirmationKeyword: GetConfirmationKeyword,
@@ -50,6 +50,7 @@ internal class DeleteAccountViewModel(
                 isConfirmEnabled = false,
                 isProUser = false,
                 subscriptionStore = null,
+                confirmationKeyword = null,
             ),
         )
 
@@ -58,8 +59,14 @@ internal class DeleteAccountViewModel(
 
     init {
         viewModelScope.launch {
-            confirmationKeyword = getConfirmationKeyword()
-            uiState.update { it.copy(isConfirmEnabled = it.confirmationText.matchesKeyword()) }
+            val keyword = getConfirmationKeyword()
+            confirmationKeyword = keyword
+            uiState.update {
+                it.copy(
+                    confirmationKeyword = keyword,
+                    isConfirmEnabled = it.confirmationText.matchesKeyword(),
+                )
+            }
         }
         getSubscriptionStatusFlow()
             .onEach { status -> uiState.update { it.withSubscription(status) } }
@@ -70,7 +77,7 @@ internal class DeleteAccountViewModel(
         when (event) {
             is DeleteAccountUiEvent.OnConfirmationTextChange -> updateConfirmationText(event.text)
             DeleteAccountUiEvent.OnConfirmDelete -> performDeletion()
-            DeleteAccountUiEvent.OnCancel -> navigator.navigateBack()
+            DeleteAccountUiEvent.OnCancel -> if (isIdle) navigator.navigateBack()
             DeleteAccountUiEvent.OnDismiss -> if (isIdle) navigator.navigateBack()
         }
     }
