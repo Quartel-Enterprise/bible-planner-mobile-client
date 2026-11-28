@@ -26,7 +26,8 @@ private const val TIME_SKELETON_12_HOURS = "hm"
 @Composable
 internal fun rememberLastLoginLabel(instant: Instant): String {
     val dateTime = remember(instant) { instant.toLocalDateTime(TimeZone.currentSystemDefault()) }
-    val dateLabel = dateRepresentationLabel(remember(dateTime) { dateTime.date.toDateRepresentation() })
+    // Why: the representation is relative to today, so caching it per instant would keep "Today" past midnight.
+    val dateLabel = dateRepresentationLabel(dateTime.date.toDateRepresentation())
     val locale = currentLocale()
     // Why: the locale alone picks 12 or 24 hours, while the user's clock setting must win.
     val is24Hour = DateFormat.is24HourFormat(LocalContext.current)

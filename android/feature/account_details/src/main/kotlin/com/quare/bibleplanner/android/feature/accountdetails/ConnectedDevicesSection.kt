@@ -16,6 +16,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
@@ -46,11 +47,14 @@ internal fun ConnectedDevicesSection(
 
                 is Loadable.Loaded -> Column {
                     devices.value.forEach { device ->
-                        DeviceRow(
-                            device = device,
-                            onRenameClick = { onRenameClick(device) },
-                            onSignOutClick = { onSignOutClick(device) },
-                        )
+                        // Why: an open row menu must stay with its device when a signed out one leaves the list.
+                        key(device.id) {
+                            DeviceRow(
+                                device = device,
+                                onRenameClick = { onRenameClick(device) },
+                                onSignOutClick = { onSignOutClick(device) },
+                            )
+                        }
                     }
                 }
             }
