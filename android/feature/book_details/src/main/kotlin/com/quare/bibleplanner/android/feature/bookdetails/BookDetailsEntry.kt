@@ -2,6 +2,7 @@ package com.quare.bibleplanner.android.feature.bookdetails
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -16,10 +17,14 @@ internal fun BookDetailsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(key =
     val viewModel = koinViewModel<BookDetailsViewModel> { parametersOf(this) }
     val uiState by viewModel.uiState.collectAsState()
     val transitionScopes = LocalSharedTransitionScope.current?.let { sharedTransitionScope ->
-        BookDetailsTransitionScopes(
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-        )
+        val animatedVisibilityScope = LocalNavAnimatedContentScope.current
+        // Why: a new instance on every state change would keep every chapter item from skipping recomposition.
+        remember(sharedTransitionScope, animatedVisibilityScope) {
+            BookDetailsTransitionScopes(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+            )
+        }
     }
     ExpressiveTheme {
         BookDetailsContent(

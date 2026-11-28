@@ -36,7 +36,7 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
-import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayout
+import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import androidx.compose.ui.res.stringResource as androidStringResource
 import org.jetbrains.compose.resources.stringResource as sharedStringResource
 
@@ -102,10 +102,10 @@ private fun BookDetailsTopBar(
                     modifier = if (transitionScopes == null) {
                         Modifier
                     } else {
-                        Modifier.sharedElementWithRelayout(
+                        SharedTransitionModifierFactory.getTopBarBookNameSharedTransitionModifier(
                             sharedTransitionScope = transitionScopes.sharedTransitionScope,
                             animatedVisibilityScope = transitionScopes.animatedVisibilityScope,
-                            key = "title-$bookName",
+                            bookName = bookName,
                         )
                     },
                 )
