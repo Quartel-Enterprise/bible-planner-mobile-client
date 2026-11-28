@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.logout.presentation.model
 
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
 
-internal sealed interface LogoutUiState {
+sealed interface LogoutUiState {
     data object Idle : LogoutUiState
 
     data class Loading(

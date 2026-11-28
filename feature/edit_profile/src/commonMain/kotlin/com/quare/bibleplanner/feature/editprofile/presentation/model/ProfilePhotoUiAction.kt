@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.editprofile.presentation.model
 
 import androidx.navigation3.runtime.NavKey
 
-internal sealed interface ProfilePhotoUiAction {
+sealed interface ProfilePhotoUiAction {
     data class OpenCrop(
         val route: NavKey,
     ) : ProfilePhotoUiAction

@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface EditNameUiEvent : UiEvent {
+sealed interface EditNameUiEvent : UiEvent {
     data class OnSaveClick(
         val name: String,
     ) : EditNameUiEvent {

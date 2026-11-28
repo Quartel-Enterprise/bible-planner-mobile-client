@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytic
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 import io.github.vinceglb.filekit.PlatformFile
 
-internal sealed interface ProfilePhotoUiEvent : UiEvent {
+sealed interface ProfilePhotoUiEvent : UiEvent {
     data object OnUseProviderPhotoClick : ProfilePhotoUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.PROFILE_PHOTO_SOURCE_SELECTED,
