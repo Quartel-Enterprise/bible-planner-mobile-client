@@ -24,6 +24,7 @@ import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import com.quare.bibleplanner.ui.utils.toClipEntry
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -85,11 +86,15 @@ private fun ProfileMessage.toStringRes(): Int = when (this) {
 }
 
 @Composable
-private fun rememberProfileTransitionScopes(): ProfileTransitionScopes? {
+private fun rememberProfileTransitionScopes(): TransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
     val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
+    /*
+     * Why: these keys must match the paywall and release notes screens (native or Compose Multiplatform) for the shared
+     * element transitions between the profile tab and them to keep running.
+     */
     return remember(sharedTransitionScope, animatedVisibilityScope) {
-        ProfileTransitionScopes(
+        TransitionScopes(
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
         )

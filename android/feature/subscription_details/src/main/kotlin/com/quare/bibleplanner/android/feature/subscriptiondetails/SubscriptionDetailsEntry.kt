@@ -31,8 +31,8 @@ internal fun SubscriptionDetailsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEnt
         SubscriptionDetailsUiState.Loading -> Unit
 
         /*
-         * Why: without an active subscription there is nothing to show, and an empty dialog window would block
-         * the screen.
+         * Why: without an active subscription there is nothing to show, and an empty dialog window would block the
+         * screen.
          */
         SubscriptionDetailsUiState.Error -> LaunchedEffect(Unit) { closeGuard.resolve(navigator::navigateBack) }
 

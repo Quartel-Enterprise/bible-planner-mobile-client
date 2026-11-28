@@ -26,6 +26,7 @@ import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import software.quare.loadable.valueOrNull
 
 // Why: the same breakpoint, width cap and spacing as the shared screen's ResponsiveColumn.
@@ -37,7 +38,7 @@ private val sectionSpacing = 16.dp
 @Composable
 internal fun ProfileContent(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     hostedTabBarHeight: Dp,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
@@ -92,7 +93,7 @@ internal fun ProfileContent(
 
 private fun LazyListScope.profileTopItems(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     item(key = "account") {
@@ -118,7 +119,7 @@ private fun LazyListScope.profileTopItems(
 
 private fun LazyListScope.profileSingleColumnItems(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     val isLoggedIn = state.accountStatusModel is AccountStatusModel.LoggedIn
@@ -158,7 +159,7 @@ private fun LazyListScope.profileSingleColumnItems(
 
 private fun LazyListScope.profileTwoColumnItems(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     val isLoggedIn = state.accountStatusModel is AccountStatusModel.LoggedIn

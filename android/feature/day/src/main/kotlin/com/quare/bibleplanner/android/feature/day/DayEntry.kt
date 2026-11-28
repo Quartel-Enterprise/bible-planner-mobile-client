@@ -23,6 +23,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudySe
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -40,9 +41,15 @@ internal fun DayNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val focusManager = LocalFocusManager.current
     val transitionScopes = LocalSharedTransitionScope.current?.let { sharedTransitionScope ->
         val animatedVisibilityScope = LocalNavAnimatedContentScope.current
-        // Why: a new instance on every state change would keep the header and the date from skipping recomposition.
+        /*
+         * Why: the plans tab (native or Compose Multiplatform) declares the same keys (SharedTransitionAnimationUtils),
+         * so the week title, the day title and the planned date keep flying between it and this native screen.
+         *
+         * It is remembered: a new instance on every state change would keep the header and the date from skipping
+         * recomposition.
+         */
         remember(sharedTransitionScope, animatedVisibilityScope) {
-            DayTransitionScopes(
+            TransitionScopes(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
             )

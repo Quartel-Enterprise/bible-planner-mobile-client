@@ -44,6 +44,8 @@ import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 
 private const val PROGRESS_ANIMATION_MILLIS = 400
 private const val EXPANDED_ARROW_ROTATION = 180f
@@ -53,7 +55,7 @@ private const val COLLAPSED_ARROW_ROTATION = 0f
 internal fun ReadingPlanWeekCard(
     week: WeekPlanPresentationModel,
     flashTargetGlobalIndex: Int,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ReadingPlanUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -104,7 +106,7 @@ internal fun ReadingPlanWeekCard(
 @Composable
 private fun WeekHeaderRow(
     week: WeekPlanPresentationModel,
-    transitionScopes: ReadingPlanTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val weekNumber = week.weekPlan.number

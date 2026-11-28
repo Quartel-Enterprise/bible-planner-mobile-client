@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 
 // Why: 50dp fits six chapters per row with the spacing.
 private val chapterItemWidth = 50.dp
@@ -48,7 +49,7 @@ internal fun BookDetailsChaptersGrid(
     bookName: String,
     chapters: List<BookChapterModel>,
     areAllChaptersRead: Boolean,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onChapterClick: (Int) -> Unit,
     onToggleAllClick: () -> Unit,
 ) {
@@ -97,7 +98,7 @@ internal fun BookDetailsChaptersGrid(
 private fun ChapterItem(
     bookName: String,
     chapter: BookChapterModel,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onClick: () -> Unit,
 ) {
     val backgroundColor by animateColorAsState(

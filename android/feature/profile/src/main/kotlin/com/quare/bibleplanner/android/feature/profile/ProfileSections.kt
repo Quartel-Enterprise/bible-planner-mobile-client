@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 import software.quare.loadable.isLoading
 
 private const val LEGAL_SEPARATOR = "•"
@@ -115,7 +117,7 @@ internal fun ProfileSupportSection(onEvent: (ProfileUiEvent) -> Unit) {
 @Composable
 internal fun ProfileAppSection(
     state: ProfileUiState,
-    transitionScopes: ProfileTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     ProfileMenuSection(title = stringResource(R.string.profile_app_section)) {

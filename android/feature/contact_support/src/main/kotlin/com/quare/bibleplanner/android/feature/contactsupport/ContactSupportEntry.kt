@@ -36,8 +36,8 @@ internal fun ContactSupportNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val clipboard = LocalClipboard.current
     val snackbarHostState = remember { SnackbarHostState() }
     /*
-     * Why: a second tap before the email app shows up would open it twice. The guard lifts when the user
-     * comes back to the app, or at once when the launch fails, so it never depends on how fast the app starts.
+     * Why: a second tap before the email app shows up would open it twice. The guard lifts when the user comes back to
+     * the app, or at once when the launch fails, so it never depends on how fast the app starts.
      */
     var isOpeningEmail by remember { mutableStateOf(false) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { isOpeningEmail = false }
@@ -50,8 +50,8 @@ internal fun ContactSupportNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
             is ContactSupportUiAction.Copy -> clipboard.setClipEntry(uiAction.text.toClipEntry())
 
             /*
-             * Why: from Android 13 the system confirms every copy itself, and Android asks apps not to
-             * show a second confirmation on top of it.
+             * Why: from Android 13 the system confirms every copy itself, and Android asks apps not to show a second
+             * confirmation on top of it.
              */
             ContactSupportUiAction.NotifyEmailCopied -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 snackbarHostState.showSnackbar(context.getString(R.string.contact_support_email_copied))

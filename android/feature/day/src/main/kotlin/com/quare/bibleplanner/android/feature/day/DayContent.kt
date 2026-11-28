@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.utils.asStable
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 
 // Why: the same width caps as the shared screen's ResponsiveColumn and landscape column.
 private val narrowContentMaxWidth = 800.dp
@@ -50,7 +51,7 @@ internal fun DayContent(
     state: DayUiState,
     isWide: Boolean,
     snackbarHostState: SnackbarHostState,
-    transitionScopes: DayTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     studySection: @Composable (DayUiState.Loaded, Modifier) -> Unit,
 ) {
@@ -123,7 +124,7 @@ internal fun DayContent(
 @Composable
 private fun DayTopBar(
     state: DayUiState,
-    transitionScopes: DayTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: (DayUiEvent) -> Unit,
 ) {
@@ -159,7 +160,7 @@ internal fun DayBackButton(onClick: () -> Unit) {
 @Composable
 private fun DayNarrowContent(
     state: DayUiState.Loaded,
-    transitionScopes: DayTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     studySection: @Composable (DayUiState.Loaded, Modifier) -> Unit,
     modifier: Modifier = Modifier,
@@ -255,7 +256,7 @@ private fun LazyListScope.centeredItem(
 @Composable
 private fun DayWideContent(
     state: DayUiState.Loaded,
-    transitionScopes: DayTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

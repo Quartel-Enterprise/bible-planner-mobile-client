@@ -67,8 +67,8 @@ internal fun LoginNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
             onEvent = viewModel::onEvent,
             onProviderClick = { provider ->
                 /*
-                 * Why: the ViewModel marks the provider as loading as soon as it gets the click, while the
-                 * collected state only disables its button a frame later, so a double tap would start sign-in twice.
+                 * Why: the ViewModel marks the provider as loading as soon as it gets the click, while the collected
+                 * state only disables its button a frame later, so a double tap would start sign-in twice.
                  */
                 val isAlreadyStarting = viewModel.state.value.loadingProvider == provider
                 if (!isAlreadyStarting) {

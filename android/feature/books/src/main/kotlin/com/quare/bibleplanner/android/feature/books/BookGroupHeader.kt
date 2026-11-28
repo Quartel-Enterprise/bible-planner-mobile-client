@@ -16,12 +16,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.titleRes
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 import org.jetbrains.compose.resources.stringResource as sharedStringResource
 
 @Composable
 internal fun BookGroupHeader(
     group: BookGroup,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

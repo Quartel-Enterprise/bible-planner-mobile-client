@@ -30,6 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedBoundsOf
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 
 private const val COUNT_ANIMATION_MILLIS = 300
 
@@ -39,7 +42,7 @@ internal fun BookDetailsProgressCard(
     readChaptersCount: Int,
     totalChaptersCount: Int,
     bookIdName: String,
-    transitionScopes: BookDetailsTransitionScopes?,
+    transitionScopes: TransitionScopes?,
 ) {
     val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
     Card(

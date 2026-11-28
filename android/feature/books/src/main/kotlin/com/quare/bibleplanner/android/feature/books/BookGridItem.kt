@@ -18,12 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 
 @Composable
 internal fun BookGridItem(
     book: BookPresentationModel,
     searchQuery: String,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     BookCard(

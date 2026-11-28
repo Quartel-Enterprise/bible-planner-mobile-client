@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.date.rememberMediumDateLabel
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.ui.utils.toStringResource
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
+import com.quare.bibleplanner.ui.utils.transition.sharedElementOf
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource as sharedStringResource
 
@@ -26,7 +28,7 @@ internal fun DayPlannedReadDateText(
     plannedReadDate: LocalDate,
     weekNumber: Int,
     dayNumber: Int,
-    transitionScopes: DayTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     modifier: Modifier = Modifier,
 ) {
     val label = stringResource(R.string.day_planned_read_date)

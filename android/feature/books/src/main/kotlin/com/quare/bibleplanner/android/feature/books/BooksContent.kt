@@ -31,6 +31,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.ui.utils.transition.TransitionScopes
 
 // Why: the same breakpoint and width cap as the shared screen's ResponsiveGrid.
 private val threeColumnsMinWidth = 600.dp
@@ -44,7 +45,7 @@ internal fun BooksContent(
     state: BooksUiState,
     isScrolled: Boolean,
     lazyGridState: LazyGridState,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     hostedTabBarHeight: Dp,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
@@ -93,7 +94,7 @@ private fun BooksGrid(
     state: BooksUiState.Success,
     lazyGridState: LazyGridState,
     bottomPadding: Dp,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BooksUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,7 +133,7 @@ private fun BooksGrid(
 private fun LazyGridScope.booksGridItems(
     state: BooksUiState.Success,
     totalColumns: Int,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     if (!state.shouldShowTestamentToggle) {
@@ -180,7 +181,7 @@ private fun LazyGridScope.bookItems(
     books: List<BookPresentationModel>,
     state: BooksUiState.Success,
     totalColumns: Int,
-    transitionScopes: BooksTransitionScopes?,
+    transitionScopes: TransitionScopes?,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     val isGrid = state.layoutFormat == BookLayoutFormat.Grid
