@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ShareVerseViewModel(
+class ShareVerseViewModel internal constructor(
     private val getVersesShareContent: GetVersesShareContent,
     private val getReadingStreak: GetReadingStreak,
     private val decodeImageBitmap: DecodeImageBitmap,

@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.verse.annotations.presentation.model
 
 import software.quare.loadable.Loadable
 
-internal data class AnnotationsUiState(
+data class AnnotationsUiState(
     val content: Loadable<AnnotationsContentUiModel>,
     val openMenuItemKey: String?,
     val openFilterMenu: AnnotationFilterMenu?,

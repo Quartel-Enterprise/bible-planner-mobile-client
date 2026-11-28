@@ -50,7 +50,7 @@ import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import kotlin.time.Instant
 
-internal class AnnotationsViewModel(
+class AnnotationsViewModel internal constructor(
     private val removePassageAnnotations: RemovePassageAnnotations,
     private val isWholeChapterRead: IsWholeChapterRead,
     private val setSelectedVersion: SetSelectedVersion,
