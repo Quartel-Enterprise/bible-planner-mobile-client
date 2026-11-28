@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 
-internal class ProfilePhotoViewModel(
+class ProfilePhotoViewModel internal constructor(
     private val removeProfilePhoto: RemoveProfilePhoto,
     private val useProviderPhoto: UseProviderPhoto,
     observeUserProfile: ObserveUserProfile,

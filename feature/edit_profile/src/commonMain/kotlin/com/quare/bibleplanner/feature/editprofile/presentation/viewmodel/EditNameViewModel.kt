@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import software.quare.loadable.Loadable
 
-internal class EditNameViewModel(
+class EditNameViewModel internal constructor(
     private val observeUserProfile: ObserveUserProfile,
     private val updateDisplayName: UpdateDisplayName,
     private val navigator: Navigator,

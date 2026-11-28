@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.logout.presentation.model
 
-internal sealed interface LogoutUiAction {
+sealed interface LogoutUiAction {
     data class ShowError(
         val error: LogoutError,
     ) : LogoutUiAction
