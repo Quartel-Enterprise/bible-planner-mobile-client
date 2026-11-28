@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface CropPhotoUiEvent : UiEvent {
+sealed interface CropPhotoUiEvent : UiEvent {
     data class OnViewportMeasured(
         val areaWidth: Float,
         val areaHeight: Float,

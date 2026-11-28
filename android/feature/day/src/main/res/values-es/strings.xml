@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_week_title">Semana %1$d</string>
+    <string name="day_day_title">Día %1$d</string>
+    <string name="day_passages_completed">pasajes completados</string>
+    <string name="day_no_date_set">No hay fecha establecida</string>
+    <string name="day_mark_as_unread">Marcar como no leído</string>
+    <string name="day_mark_as_read">Marcar como leído</string>
+    <string name="day_completed_date">Fecha de finalización</string>
+    <string name="day_next">Siguiente</string>
+    <string name="day_ok">Aceptar</string>
+    <string name="day_cancel">Cancelar</string>
+    <string name="day_select_time">Seleccionar hora</string>
+    <string name="day_calendar">Calendario</string>
+    <string name="day_verses">Versos</string>
+    <string name="day_planned_read_date">Fecha de lectura programada:</string>
+    <string name="day_notes">Notas</string>
+    <string name="day_notes_placeholder">Escribe tus notas personales sobre los pasajes del día…</string>
+    <string name="day_clear_notes">Limpiar notas</string>
+    <string name="day_nothing_to_delete">No hay nada que eliminar todavía</string>
+    <string name="day_failed_to_toggle_chapter">No se pudo alternar el estado de lectura del capítulo</string>
+    <string name="day_ask_ai">Pregúntale a la IA</string>
+    <string name="day_back">Volver</string>
+    <string name="day_edit">Editar</string>
+</resources>

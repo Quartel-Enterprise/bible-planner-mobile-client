@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 
 @Composable
-internal fun rememberNavTabState(): NavTabState {
+public fun rememberNavTabState(): NavTabState {
     val tabs: List<MainNavRouteDestination> = listOf(
         MainNavRouteDestination.Plans,
         MainNavRouteDestination.Books,

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paywall_already_subscribed">Already subscribed?</string>
+    <string name="paywall_restore_purchase">Restore your purchase.</string>
+    <string name="paywall_error_message">Unable to load subscription options. Please try again later.</string>
+    <string name="paywall_title_part_1">Become</string>
+    <string name="paywall_title_part_2">Pro</string>
+    <string name="paywall_subtitle">Deepen your study without limits.</string>
+    <string name="paywall_choose_your_plan">Choose your plan</string>
+    <string name="paywall_what_you_unlock">WHAT YOU UNLOCK</string>
+    <string name="paywall_feature_ai_day_study">Unlimited AI daily study</string>
+    <string name="paywall_feature_ai_day_study_subtext">Overview, historical context, and guided questions for every reading.</string>
+    <string name="paywall_feature_ai_chapter_study">Unlimited AI chapter study</string>
+    <string name="paywall_feature_ai_chapter_study_subtext">Study any chapter of the Bible with AI, as many times as you want.</string>
+    <string name="paywall_feature_ai_chat">Unlimited AI chat</string>
+    <string name="paywall_feature_ai_chat_subtext">Ask anything about the Bible and keep the conversation going.</string>
+    <string name="paywall_feature_chapter_listening">Unlimited chapter listening</string>
+    <string name="paywall_feature_chapter_listening_subtext">Hear the chapters narrated by natural voices, with no daily limit.</string>
+    <string name="paywall_feature_ad_free">Ad-free</string>
+    <string name="paywall_feature_ad_free_subtext">Read and study without interruptions.</string>
+    <string name="paywall_feature_unlimited_notes">Create Unlimited Notes</string>
+    <string name="paywall_feature_unlimited_notes_subtext">Free plan limited to %1$d notes.</string>
+    <string name="paywall_feature_highlight_colors">Full highlight palette</string>
+    <string name="paywall_feature_highlight_colors_subtext">Unlock every preset color and create your own.</string>
+    <string name="paywall_feature_share_image_style">Verse cards your way</string>
+    <string name="paywall_feature_share_image_style_subtext">Pick any color, use your own photos and share without the Bible Planner mark.</string>
+    <string name="paywall_plan_monthly">Monthly</string>
+    <string name="paywall_plan_monthly_description">Flexible, cancel anytime</string>
+    <string name="paywall_plan_annual">Annual</string>
+    <string name="paywall_plan_annual_description">Billed annually</string>
+    <string name="paywall_month">month</string>
+    <string name="paywall_year">year</string>
+    <string name="paywall_per_month">per month</string>
+    <string name="paywall_per_year">per year</string>
+    <string name="paywall_save_percent">SAVE %1$d%%</string>
+    <string name="paywall_subscribe">Subscribe</string>
+    <string name="paywall_footer_payment_info">Secure payment via %1$s. Cancel anytime.</string>
+    <string name="paywall_error_unknown">Something went wrong. Please try again.</string>
+    <string name="paywall_error_purchase_cancelled">Purchase was cancelled.</string>
+    <string name="paywall_error_network">Network error. Please try again.</string>
+    <string name="paywall_error_payment_pending">Payment is pending approval.</string>
+    <string name="paywall_error_browser_checkout_not_confirmed">Purchase not confirmed yet. Finish the checkout in your browser — Pro unlocks automatically.</string>
+    <string name="paywall_error_restore_purchase">No active subscription found in the %1$s.</string>
+    <string name="paywall_back">Back</string>
+</resources>
