@@ -19,7 +19,6 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.mod
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeState
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeTag
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.isUpcoming
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagBackgroundColor
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagContentColor
 import com.quare.bibleplanner.ui.utils.format
@@ -71,7 +70,7 @@ private fun VisibleReleaseNote.toNativeNote(): ReleaseNotesNativeNote = ReleaseN
             contentArgb = type.tagContentColor().toArgb(),
         )
     },
-    isUpcoming = type.isUpcoming(),
+    isClickable = type.isClickable,
 )
 
 @Composable

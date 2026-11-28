@@ -9,9 +9,8 @@ sealed interface ReleaseNotesUiEvent : UiEvent {
     data class OnTabSelected(
         val tab: ReleaseNotesTab,
     ) : ReleaseNotesUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.RELEASE_NOTES_TAB_SELECTED,
-            params = mapOf(AnalyticsParams.TAB to tab.name.lowercase()),
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.RELEASE_NOTES_TAB_SELECTED,
         )
     }
 

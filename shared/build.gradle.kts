@@ -81,7 +81,6 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
-            api(projects.feature.releaseNotes)
         }
 
         jvmMain.dependencies {
@@ -101,6 +100,7 @@ kotlin {
             api(projects.feature.main)
             api(projects.core.profile)
             api(projects.feature.day)
+            api(projects.feature.releaseNotes)
             api(projects.feature.deleteProgress)
             api(projects.feature.deleteAccount)
             api(projects.feature.login)

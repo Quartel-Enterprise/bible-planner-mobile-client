@@ -1,4 +1,3 @@
-import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
@@ -18,33 +17,6 @@ kotlin {
     jvm()
 
     sourceSets {
-        // Why: only iOS draws the native SwiftUI screen, so the other targets share the Compose root.
-        val nonIosMain = create("nonIosMain") {
-            dependsOn(commonMain.get())
-        }
-
-        androidMain {
-            dependsOn(nonIosMain)
-        }
-
-        jvmMain {
-            dependsOn(nonIosMain)
-        }
-
-        webMain {
-            dependsOn(nonIosMain)
-        }
-
-        iosMain {
-            dependsOn(commonMain.get())
-        }
-        iosArm64Main {
-            dependsOn(iosMain.get())
-        }
-        iosSimulatorArm64Main {
-            dependsOn(iosMain.get())
-        }
-
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
@@ -103,9 +75,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinxJson)
         }
     }
-
-    // Why: the dependsOn edges above turn off the default hierarchy.
-    dependWebTargetsOnWebMain()
 }
 
 buildkonfig {

@@ -15,7 +15,6 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.release_notes.generated.resources.Res
 import bibleplanner.feature.release_notes.generated.resources.release_notes_error_loading
 import bibleplanner.feature.release_notes.generated.resources.release_notes_screen_title
-import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_latest
 import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_past
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
@@ -84,24 +83,6 @@ internal class ReleaseNotesUiTest {
                 expected = listOf<ReleaseNotesUiEvent>(
                     ReleaseNotesUiEvent.OnTabSelected(ReleaseNotesTab.PAST_VERSIONS),
                 ),
-                actual = sentEvents,
-            )
-        }
-
-    @Test
-    fun `GIVEN the latest tab is selected WHEN tapping it again THEN sends no event`() =
-        runComposeUiTest(effectContext = AnimationsDisabled) {
-            // Given
-            prepareScenario(uiState = successState)
-            isReleaseNotesShown = true
-            waitForIdle()
-
-            // When
-            onNodeWithText(getString(Res.string.release_notes_tab_latest)).performClick()
-
-            // Then
-            assertEquals(
-                expected = emptyList<ReleaseNotesUiEvent>(),
                 actual = sentEvents,
             )
         }

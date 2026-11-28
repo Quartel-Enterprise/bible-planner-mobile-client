@@ -30,7 +30,7 @@ fun ReleaseNoteCard(
 ) {
     ElevatedCard(
         onClick = { onGithubClick(note.version) },
-        enabled = type != ReleaseVersionType.UPCOMING,
+        enabled = type.isClickable,
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
     ) {

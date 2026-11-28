@@ -7,12 +7,11 @@ struct ReleaseNoteCard: View {
     let onOpen: () -> Void
 
     var body: some View {
-        // Upcoming versions have no GitHub release page yet, so their card is not tappable.
-        if note.isUpcoming {
-            card
-        } else {
+        if note.isClickable {
             Button(action: onOpen) { card }
                 .buttonStyle(.plain)
+        } else {
+            card
         }
     }
 

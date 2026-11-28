@@ -5,5 +5,5 @@ data class ReleaseNotesNativeNote(
     val dateText: String?,
     val changes: List<String>,
     val tag: ReleaseNotesNativeTag?,
-    val isUpcoming: Boolean,
+    val isClickable: Boolean,
 )
