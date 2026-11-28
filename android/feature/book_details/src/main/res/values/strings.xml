@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="book_details_synopsis">Synopsis</string>
+    <string name="book_details_chapters">Chapters</string>
+    <string name="book_details_reading_progress">Reading Progress</string>
+    <string name="book_details_mark_all_as_read">Mark all as read</string>
+    <string name="book_details_mark_all_as_unread">Mark all as unread</string>
+    <string name="book_details_read_count_suffix">read</string>
+    <string name="book_details_back">Back</string>
+    <string name="book_details_favorite">Favorite</string>
+    <string name="book_details_show_more">Show more</string>
+    <string name="book_details_show_less">Show less</string>
+</resources>
