@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="read_open_verse_note">Abrir nota</string>
+    <string name="read_listening_listen_today">Escuchar la lectura de hoy · %1$d de %2$d</string>
+    <string name="read_listening_listen_chapter">Escuchar capítulo · %1$d min</string>
+    <string name="read_listening_preparing">Preparando la voz…</string>
+    <string name="read_listening_listening_remaining">Escuchando · quedan %1$s</string>
+    <string name="read_listening_paused_at">En pausa en %1$s</string>
+    <string name="read_chapter_study_card_title">Estudiar este capítulo</string>
+    <string name="read_chapter_study_card_subtitle">Resumen, contexto y reflexiones · IA</string>
+    <string name="read_chapter_study_card_subtitle_with_chapter">%1$s · Resumen, contexto y reflexiones · IA</string>
+    <string name="read_next_chapter">Siguiente</string>
+    <string name="read_previous_chapter">Anterior</string>
+    <string name="read_status_read">Leído</string>
+    <string name="read_mark_as_read">Marcar como Leído</string>
+    <string name="read_unknown_error_occurred">Ocurrió un error desconocido.</string>
+    <string name="read_retry">Reintentar</string>
+    <string name="read_chapter_not_downloaded_error">Aún no has descargado "%1$s %2$d" en la versión "%3$s".</string>
+    <string name="read_downloading_progress">Descargando %1$s%%</string>
+    <string name="read_paused_progress">Pausado %1$s%%</string>
+    <string name="read_resume_download">Reanudar descarga</string>
+    <string name="read_download_version_with_size">Descargar (%1$s)</string>
+    <string name="read_download_version">Descargar</string>
+    <string name="read_manage_bible_versions">Administrar Versiones de la Biblia</string>
+    <string name="read_status_with_size">%1$s · %2$s</string>
+    <string name="read_size_progress">%1$s de %2$s</string>
+    <string name="read_megabytes_size">%1$d,%2$d MB</string>
+</resources>
