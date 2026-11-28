@@ -1,0 +1,88 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/*
+ * The shadcn/ui tokens, filled with the app's Material color scheme (ui/theme's Color.kt) so the web keeps the
+ * brand. Dark mode follows the system through prefers-color-scheme, like the apps' default theme.
+ */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+:root {
+  color-scheme: light dark;
+  --radius: 0.75rem;
+  --background: #faf8ff;
+  --foreground: #1a1b21;
+  --card: #f4f3fa;
+  --card-foreground: #1a1b21;
+  --popover: #eeedf4;
+  --popover-foreground: #1a1b21;
+  --primary: #4c5c92;
+  --primary-foreground: #ffffff;
+  --secondary: #dee1f9;
+  --secondary-foreground: #414659;
+  --muted: #e2e1ec;
+  --muted-foreground: #45464f;
+  --accent: #dee1f9;
+  --accent-foreground: #414659;
+  --destructive: #ba1a1a;
+  --border: #c6c6d0;
+  --input: #c6c6d0;
+  --ring: #4c5c92;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121318;
+    --foreground: #e3e1e9;
+    --card: #1a1b21;
+    --card-foreground: #e3e1e9;
+    --popover: #1e1f25;
+    --popover-foreground: #e3e1e9;
+    --primary: #b6c4ff;
+    --primary-foreground: #1d2d61;
+    --secondary: #414659;
+    --secondary-foreground: #dee1f9;
+    --muted: #45464f;
+    --muted-foreground: #c6c6d0;
+    --accent: #414659;
+    --accent-foreground: #dee1f9;
+    --destructive: #ffb4ab;
+    --border: #45464f;
+    --input: #45464f;
+    --ring: #b6c4ff;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}

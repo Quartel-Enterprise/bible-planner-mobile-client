@@ -6,7 +6,7 @@
 - Android Studio or IntelliJ IDEA
 - Android SDK, for Android development
 - Xcode (macOS only), for iOS development
-- Node.js 18 or higher, for the copied-code check (`./scripts/cpd.sh`)
+- Node.js 18 or higher, for the copied-code check (`./scripts/cpd.sh`); 22.12 or higher for the React web app
 
 ## Local configuration
 
@@ -99,6 +99,26 @@ Then open http://localhost:8080. Swap `Development` for `Production` (`wasmJsBro
 to run the optimized build, which loads much faster. The local database lives in the browser's
 storage for that origin, and only one tab can hold it at a time: keep a single tab open, and clear
 it from DevTools → Application → Storage → Clear site data to start over.
+
+## Build and run the React web app
+
+The React app in [/web](../web) is the web UI that replaces the Compose one screen by screen (see
+[native UI migration](architecture/native-ui-migration.md#the-react-web-app)). It only shows a
+placeholder for now. It imports the shared Kotlin code as a JS library, so build that first, then
+install and start Vite:
+
+```shell
+./gradlew :shared:jsBrowserProductionLibraryDistribution   # or: npm run shared, from web/
+cd web
+npm ci
+npm run dev
+```
+
+Then open the address Vite prints (http://localhost:5173). Rebuild the library after a Kotlin
+change and restart `npm run dev`; `npm install` isn't needed again, since `node_modules` links to
+the library's build folder. The other scripts are the checks CI runs: `npm run lint`,
+`npm run typecheck`, `npm test` (Vitest) and `npm run build` (CI runs its `vite build` half on its
+own, since the typecheck already ran).
 
 ## Build and run the iOS app
 
