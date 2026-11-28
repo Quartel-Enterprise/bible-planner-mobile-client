@@ -23,4 +23,10 @@ describe('MainTabList', () => {
 
     expect(screen.getByRole('button').textContent).toBe('Profile')
   })
+
+  it('labels the profile tab Profile when the signed in name is blank', () => {
+    render(<MainTabList tabs={[{ key: 'profile', profileName: '  ' }]} />)
+
+    expect(screen.getByRole('button').textContent).toBe('Profile')
+  })
 })

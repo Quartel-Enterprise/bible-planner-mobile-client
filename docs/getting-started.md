@@ -116,8 +116,9 @@ npm run dev
 
 Then open the address Vite prints (http://localhost:5173). Rebuild the library after a Kotlin
 change and restart `npm run dev`; `npm install` isn't needed again, since `node_modules` links to
-the library's build folder. The other scripts are the ones CI runs: `npm run lint`,
-`npm run typecheck`, `npm test` (Vitest) and `npm run build`.
+the library's build folder. The other scripts are the checks CI runs: `npm run lint`,
+`npm run typecheck`, `npm test` (Vitest) and `npm run build` (CI runs its `vite build` half on its
+own, since the typecheck already ran).
 
 ## Build and run the iOS app
 
