@@ -51,6 +51,7 @@ import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
+import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.getKoin
@@ -84,12 +85,13 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         onForwardCompleted = appBackStack::navigateForward,
     )
     ActionCollector(appSnackbarController.messages) { message ->
-        message.run {
-            snackbarHostState.showSnackbar(
-                message = getString(stringResource),
-                withDismissAction = isDismissible,
-            )
-        }
+        snackbarHostState.showSnackbar(
+            message = when (message) {
+                is AppSnackbarMessage.Resource -> getString(message.stringResource)
+                is AppSnackbarMessage.Text -> message.text
+            },
+            withDismissAction = message.isDismissible,
+        )
     }
     BoxWithConstraints(
         modifier = modifier

@@ -44,7 +44,7 @@ private fun DayReadingCompleteUiActionCollector(uiActionFlow: Flow<DayReadingCom
         when (action) {
             is DayReadingCompleteUiAction.ShowSnackBar -> {
                 appSnackbarController.show(
-                    AppSnackbarMessage(
+                    AppSnackbarMessage.Resource(
                         stringResource = action.message.toStringResource(),
                         isDismissible = true,
                     ),
