@@ -43,11 +43,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.sheet.AppModalBottomSheet
 import com.quare.bibleplanner.core.image.encodeToPng
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
 import com.quare.bibleplanner.ui.theme.font.ShareCardFont
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val cardWidth = 242.dp
 private val wideCardSlotWidth = 300.dp
@@ -64,13 +67,14 @@ internal fun ShareVerseImageContent(
     snackbarHostState: SnackbarHostState,
     onEvent: (ShareVerseUiEvent) -> Unit,
 ) {
-    val graphicsLayer = rememberGraphicsLayer()
     AppModalBottomSheet(
         title = stringResource(R.string.share_verse_image_title),
         onDismiss = { onEvent(ShareVerseUiEvent.OnDismiss) },
         sheetMaxWidth = if (isWideLayout) wideSheetMaxWidth else BottomSheetDefaults.SheetMaxWidth,
         snackbarHostState = snackbarHostState,
     ) {
+        // Why: the sheet is its own window, so the layer must come from the context of the window that draws the card.
+        val graphicsLayer = rememberGraphicsLayer()
         if (isWideLayout) {
             ShareImageWideLayout(
                 uiState = uiState,
@@ -305,10 +309,20 @@ private fun ShareActionsRow(
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    /*
+     * Why: PNG compression of a full card takes long enough to drop frames on the main thread, and a failed
+     * capture must lift the guard, or Share and Save would stay dead for the rest of the screen.
+     */
     val captureCard: ((ByteArray) -> ShareVerseUiEvent) -> Unit = { toEvent ->
         coroutineScope.launch {
-            val imageBytes = graphicsLayer.toImageBitmap().encodeToPng()
-            onEvent(toEvent(imageBytes))
+            suspendRunCatching {
+                val imageBitmap = graphicsLayer.toImageBitmap()
+                withContext(Dispatchers.Default) { imageBitmap.encodeToPng() }
+            }.onSuccess { imageBytes -> onEvent(toEvent(imageBytes)) }
+                .onFailure {
+                    actionGuard.isSharing = false
+                    actionGuard.isSaving = false
+                }
         }
     }
     Row(

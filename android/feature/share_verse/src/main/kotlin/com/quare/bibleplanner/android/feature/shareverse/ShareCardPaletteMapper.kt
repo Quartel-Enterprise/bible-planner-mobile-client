@@ -3,6 +3,7 @@ package com.quare.bibleplanner.android.feature.shareverse
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackgroundUiModel
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardCustomColor
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardPalette
 
 private const val PERCENT = 100f
 private const val FULL_TURN = 360
@@ -18,13 +19,6 @@ private const val LIGHT_SUBTITLE_ALPHA = 0.72f
 private const val DARK_SUBTITLE_ALPHA = 0.65f
 private val photoScrimTop = Color(0x33000000)
 private val photoScrimBottom = Color(0xA6000000)
-
-internal data class ShareCardPalette(
-    val startColor: Color,
-    val endColor: Color,
-    val textColor: Color,
-    val subtitleColor: Color,
-)
 
 /*
  * Why: a copy of the shared mapper, which stays internal because it returns Compose colors; the shared

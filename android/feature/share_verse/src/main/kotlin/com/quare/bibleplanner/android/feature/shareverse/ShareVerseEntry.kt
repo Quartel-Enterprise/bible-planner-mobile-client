@@ -32,6 +32,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.io.IOException
 
 internal fun ShareVerseNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
@@ -156,6 +157,9 @@ private fun launchShare(
 } catch (_: ActivityNotFoundException) {
     false
 } catch (_: SecurityException) {
+    false
+} catch (_: IOException) {
+    // Why: the image is staged in the cache before the share sheet opens, and a full disk must not crash the app.
     false
 }
 

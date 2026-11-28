@@ -196,15 +196,22 @@ private fun SwatchButton(
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    // Why: a 0.dp border is Dp.Hairline, which still draws a 1px ring, so unselected swatches get no border at all.
+    val selectionBorder = if (isSelected) {
+        Modifier.border(
+            width = 2.dp,
+            color = MaterialTheme.colorScheme.primary,
+            shape = CircleShape,
+        )
+    } else {
+        Modifier
+    }
     Box(
         modifier = Modifier
             .size(swatchSize)
             .clip(CircleShape)
-            .border(
-                width = if (isSelected) 2.dp else 0.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = CircleShape,
-            ).clickable(
+            .then(selectionBorder)
+            .clickable(
                 role = Role.Button,
                 onClick = onClick,
             ).semantics {

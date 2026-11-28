@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackgroundUiModel
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardPalette
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 
