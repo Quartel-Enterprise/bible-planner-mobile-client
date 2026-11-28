@@ -51,6 +51,8 @@ kotlin {
     js {
         outputModuleName = "shared"
         browser()
+        // Why: ES modules give the React app plain named exports and keep import.meta.url (the Room worker).
+        useEsModules()
         binaries.library()
         generateTypeScriptDefinitions()
     }
@@ -81,6 +83,11 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
+        }
+
+        // Why: the bridge package exports the presenters React uses, see docs/architecture/native-ui-migration.md.
+        jsMain {
+            languageSettings.optIn("kotlin.js.ExperimentalJsExport")
         }
 
         jvmMain.dependencies {

@@ -70,7 +70,8 @@ platform after each one.
      still duplicate the Compose Multiplatform ones they replace.
 3. **SwiftUI and React**, one feature at a time, starting with the reading flow (main, reading plan, day, read,
    books). Until a screen is migrated, iOS shows its Compose version. The web switches over once every screen is
-   native.
+   native: until then the React app lives in `web/`, next to the Compose one in `webApp/`, which keeps serving
+   the site (see [The React web app](#the-react-web-app)).
 4. **Removing the old UI.** Compose Multiplatform leaves iOS and the web, and the JVM desktop app is deleted in
    favor of the macOS target.
 
@@ -90,3 +91,51 @@ A screen is ready for its SwiftUI version once Swift can create its ViewModel an
 
 Swift then keeps the holder for the screen's lifetime, calls `onEvent` on its ViewModel, and calls `clear()` when the
 screen goes away.
+
+### Making a screen reachable from React
+
+Members of a Kotlin class that isn't `@JsExport`ed get mangled names in the JS output, and a feature module can't
+export its types from `commonMain`, since Kotlin/Wasm only exports functions. So React doesn't reach the ViewModel
+itself, as Swift does, but a presenter in `:shared`'s `jsMain` (`com.quare.bibleplanner.bridge`, files marked
+`@file:JsExport`), like Blitz Split's:
+
+1. The ViewModel is ready for Swift (above): `public` with an `internal constructor`, and a `stateWatcher`.
+2. The presenter (`MainPresenter`) builds the screen's `ViewModelHolder` from Koin, the JS analogue of
+   `NativeViewModels.create<Screen>()`.
+3. It maps the state to small exported classes of plain values (`JsMainTab`): strings, booleans, numbers, arrays
+   and nullable values, with enums and routes as string keys. A sealed type, a `List`, a `Long` or a `Flow` never
+   crosses into TypeScript.
+4. `observe<Something>(onChange)` watches the `stateWatcher` (or `actionWatcher`) and returns a `JsWatch`, since
+   `:core:presentation`'s `Watch` is a common `fun interface`. Each `UiEvent` the web sends becomes a method that
+   calls `onEvent`, and `dispose()` clears the holder.
+
+`startBiblePlanner()` starts Koin with the web graph (`initializeKoinForWeb()` in `:shared`'s `webMain`, which the
+Compose web app's `main()` calls too) before any presenter is created.
+
+### The React web app
+
+`web/` holds the React app: Vite, React and TypeScript (strict), Tailwind with the shadcn/ui tokens filled with the
+app's color scheme (light and dark follow `prefers-color-scheme`), shadcn/ui components in `src/components/ui`
+(`components.json`, so `npx shadcn add` works), ESLint and Vitest. It depends on the library
+`./gradlew :shared:jsBrowserProductionLibraryDistribution` builds in `shared/build/dist/js/productionLibrary`, as
+the local package `bibleplanner-shared` (`file:`), with its TypeScript definitions.
+Two things in `vite.config.ts` let Vite bundle it: a plugin that points the Room worker URL
+(`bibleplanner-sqlite-worker/worker.js`, a local npm package webpack resolves for `webApp`) at
+`core/provider/room/web-worker/worker.js`, and an alias of Ktor's Node-only `ws` import to the browser's `WebSocket`.
+The app installs `@js-joda/core` and `@sqlite.org/sqlite-wasm` itself, at the versions the library and the worker
+use, since npm doesn't install the dependencies of a linked build folder.
+
+A screen holds its presenter with the hooks of `src/bridge/usePresenter.ts`:
+
+```tsx
+const presenter = usePresenter(() => new MainPresenter())
+const tabs = useWatch(presenter, (p, onChange: (tabs: JsMainTab[]) => void) => p.observeTabs(onChange))
+```
+
+`usePresenter` creates the presenter in an effect and disposes it on unmount, so StrictMode's second mount never
+reuses a cleared ViewModel; `useWatch` mirrors a flow into React state (`null` until the first value) and cancels
+its watch on unmount. The hooks are tested with a fake presenter; the Kotlin side is exercised by the app.
+
+For now the app is a placeholder that lists the main screen's tabs; the screens come feature by feature. See
+[getting started](../getting-started.md#build-and-run-the-react-web-app) to run it and [CI](../ci.md#react-web-app)
+for its checks.

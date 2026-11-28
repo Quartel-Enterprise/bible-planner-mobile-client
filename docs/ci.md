@@ -269,12 +269,12 @@ time. Now the review fixes what it found, and the checks wait for it:
   review: the push is never forced. The review then lists the fixed findings at the end of its body,
   under the fix commit, so they open no thread, and only the others as inline comments. Without a
   push, every finding is an inline comment, as before.
-- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
-  `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
+- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis`,
+  `module-graph` and `web` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
   pull request opened with, or a draft was marked ready for review on (those workflows add
   `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
   by `claude[bot]`), it waits for the `ai-review` run of the reviewed commit to end, checking
-  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  once a minute: six workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
   commit), it skips the other jobs: that push started them again on the new commit, and cancels this
@@ -454,6 +454,16 @@ What would shorten it, each at a price that is not the build's to pay on its own
 
 Xcode buffers the output of the build phase that runs Gradle, so the release's log cannot tell
 compiling from linking. To measure the link again, run the task on its own with `--profile`.
+
+## React web app
+
+`web.yml` checks the React app in `web/` (see
+[native UI migration](architecture/native-ui-migration.md#the-react-web-app)): it builds the shared JS
+library with `./gradlew :shared:jsBrowserProductionLibraryDistribution`, then runs `npm ci`, lint,
+the typecheck, the Vitest tests and `vite build`. `web/package.json` depends on the library's build
+folder (`file:`), so the Gradle build has to come first. Any Kotlin change can change the library or
+its TypeScript definitions, so it runs on changes to the shared modules and the build as well as
+`web/`, and skips Markdown-only ones. It is not a required check; `merge-when-green` waits for it.
 
 ## Adding a workflow
 
