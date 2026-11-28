@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface StudyUnlockUiEvent : UiEvent {
+sealed interface StudyUnlockUiEvent : UiEvent {
     data object OnSubscribeClick : StudyUnlockUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.UNLOCK_SUBSCRIBE_CLICKED,
