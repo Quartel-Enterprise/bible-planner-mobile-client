@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-internal class InAppUpdateViewModel(
+class InAppUpdateViewModel internal constructor(
     private val startUpdate: StartUpdate,
     private val navigator: Navigator,
     route: InAppUpdateNavRoute,
