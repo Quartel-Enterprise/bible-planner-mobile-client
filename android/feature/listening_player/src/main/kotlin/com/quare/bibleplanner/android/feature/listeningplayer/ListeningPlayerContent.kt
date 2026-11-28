@@ -40,6 +40,9 @@ internal fun ListeningPlayerContent(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val sheetCloseGuard = rememberSheetCloseGuard()
+    val lastPlayer = remember { LastPlayer() }
+    // Why: the session ends before the sheet slides out, and an emptied sheet would collapse while it leaves.
+    val shownPlayer = uiState.player?.also { player -> lastPlayer.player = player } ?: lastPlayer.player
     SheetExitAnimationEffect(
         animateOut = sheetState::hide,
         animateBackIn = sheetState::show,
@@ -60,7 +63,7 @@ internal fun ListeningPlayerContent(
                 ),
             verticalArrangement = Arrangement.spacedBy(sectionSpacing),
         ) {
-            uiState.player?.let { player ->
+            shownPlayer?.let { player ->
                 ListeningPlayerHeader(player = player)
                 ListeningPlayerBodyContent(
                     uiState = uiState,
@@ -158,4 +161,9 @@ private fun ListeningPlayerBodyContent(
         onEvent = onEvent,
     )
     AiVoiceLabel()
+}
+
+// Why: a plain holder, since the kept player only feeds the exit animation and must not trigger a composition.
+private class LastPlayer {
+    var player: ListeningPlayerUiModel? = null
 }

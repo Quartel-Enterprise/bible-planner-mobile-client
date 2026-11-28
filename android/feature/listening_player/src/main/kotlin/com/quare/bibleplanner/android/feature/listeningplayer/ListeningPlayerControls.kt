@@ -110,7 +110,7 @@ private fun FollowedVerseText(
     // Why: the pause after the verse's last word has no word, and the card must not jump back to its top then.
     val lastWordLine = remember(text) { LastWordLine() }
     val wordLine = highlightedWord
-        ?.takeIf { word -> word.first < text.length }
+        ?.takeIf { word -> word.first in text.indices }
         ?.let { word -> currentLayout?.getLineForOffset(word.first) }
         ?: lastWordLine.line
     lastWordLine.line = wordLine
@@ -218,7 +218,10 @@ internal fun ControlsRow(
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 6.dp,
+            alignment = Alignment.CenterHorizontally,
+        ),
     ) {
         ChapterJumpButton(
             imageVector = Icons.Rounded.KeyboardDoubleArrowLeft,
@@ -280,6 +283,7 @@ private fun ChapterJumpButton(
     label: String?,
     onClick: () -> Unit,
 ) {
+    val iconAlpha = if (label == null) DISABLED_ICON_ALPHA else 1f
     Column(
         modifier = Modifier
             .width(chapterButtonWidth)
@@ -293,15 +297,7 @@ private fun ChapterJumpButton(
             modifier = Modifier.size(26.dp),
             imageVector = imageVector,
             contentDescription = label,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                alpha = if (label ==
-                    null
-                ) {
-                    DISABLED_ICON_ALPHA
-                } else {
-                    1f
-                },
-            ),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = iconAlpha),
         )
         Text(
             text = label.orEmpty(),

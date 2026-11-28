@@ -381,7 +381,10 @@ internal fun AiVoiceLabel() {
     Row(
         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 6.dp,
+            alignment = Alignment.CenterHorizontally,
+        ),
     ) {
         Icon(
             modifier = Modifier.size(16.dp),
