@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -31,6 +32,7 @@ internal class InAppUpdateViewModelTest {
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var commands: MutableList<NavigationCommand>
     private var startUpdateCalls = 0
+    private var pendingUpdateStart: CompletableDeferred<Unit>? = null
 
     @BeforeTest
     fun setUp() {
@@ -138,9 +140,46 @@ internal class InAppUpdateViewModelTest {
         assertTrue(trackedEvents.first().first == AnalyticsEventNames.UPDATE_PROMPT_SHOWN)
     }
 
+    @Test
+    fun `GIVEN an update starting WHEN tapping update again THEN starts the update once and closes the prompt once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pendingUpdateStart = CompletableDeferred())
+            openPrompt(versionName = VERSION_NAME)
+            viewModel.onEvent(InAppUpdateUiEvent.OnUpdateClick)
+
+            // When
+            viewModel.onEvent(InAppUpdateUiEvent.OnUpdateClick)
+            pendingUpdateStart?.complete(Unit)
+
+            // Then
+            assertEquals(1, startUpdateCalls)
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+        }
+
+    @Test
+    fun `GIVEN an update starting WHEN dismissing THEN closes the prompt once and does not track a dismissal`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pendingUpdateStart = CompletableDeferred())
+            openPrompt(versionName = VERSION_NAME)
+            viewModel.onEvent(InAppUpdateUiEvent.OnUpdateClick)
+
+            // When
+            viewModel.onEvent(InAppUpdateUiEvent.OnDismiss)
+            pendingUpdateStart?.complete(Unit)
+
+            // Then
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+            assertFalse(trackedEvents.any { (name, _) -> name == AnalyticsEventNames.UPDATE_DISMISSED })
+        }
+
     private fun openPrompt(versionName: String?) {
         viewModel = InAppUpdateViewModel(
-            startUpdate = { startUpdateCalls++ },
+            startUpdate = {
+                startUpdateCalls++
+                pendingUpdateStart?.await()
+            },
             navigator = navigator,
             route = InAppUpdateNavRoute(
                 versionName = versionName,
@@ -150,7 +189,8 @@ internal class InAppUpdateViewModelTest {
         )
     }
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.prepareScenario(pendingUpdateStart: CompletableDeferred<Unit>? = null) {
+        this@InAppUpdateViewModelTest.pendingUpdateStart = pendingUpdateStart
         navigator = Navigator()
         trackedEvents = mutableListOf()
         commands = mutableListOf()
