@@ -90,6 +90,21 @@ internal class ReleaseNotesViewModelTest {
         }
 
     @Test
+    fun `GIVEN the latest tab WHEN selecting it again THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ReleaseNotesUiEvent.OnTabSelected(ReleaseNotesTab.LATEST))
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = trackedEvents,
+        )
+    }
+
+    @Test
     fun `GIVEN the error state WHEN selecting a tab THEN keeps the error state`() = runTest(testDispatcher) {
         // Given
         prepareScenario(result = Result.failure(IllegalStateException("boom")))

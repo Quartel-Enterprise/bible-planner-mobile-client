@@ -6,7 +6,7 @@ Captures which tab the user opens on the release-notes screen. Shows whether use
 
 ## When it fires
 
-User taps one of the three tabs on the release-notes screen.
+User switches to another tab on the release-notes screen. The ViewModel tracks it only when the tab changes, so tapping the selected tab doesn't fire it; app versions before the native iOS release notes also counted those re-taps.
 
 ## Trigger source
 

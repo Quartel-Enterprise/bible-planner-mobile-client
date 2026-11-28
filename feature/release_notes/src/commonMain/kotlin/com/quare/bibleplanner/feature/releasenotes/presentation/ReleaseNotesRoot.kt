@@ -3,11 +3,7 @@ package com.quare.bibleplanner.feature.releasenotes.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiAction
 import com.quare.bibleplanner.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
-import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -17,19 +13,16 @@ fun ReleaseNotesRoot(
     animatedContentScope: AnimatedContentScope,
     viewModel: ReleaseNotesViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    ActionCollector(viewModel.uiAction) { action ->
-        when (action) {
-            is ReleaseNotesUiAction.OpenUrl -> openUrl(action.url)
-        }
+    ReleaseNotesStateLayout(
+        viewModel = viewModel,
+        openUrl = openUrl,
+    ) { uiState ->
+        ReleaseNotesScreen(
+            platform = viewModel.platform,
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
     }
-
-    ReleaseNotesScreen(
-        platform = viewModel.platform,
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
-    )
 }

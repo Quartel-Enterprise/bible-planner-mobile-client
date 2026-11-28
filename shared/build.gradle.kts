@@ -41,6 +41,7 @@ kotlin {
             export(projects.core.profile)
             export(projects.core.books)
             export(projects.feature.day)
+            export(projects.feature.releaseNotes)
         }
     }
 
@@ -99,6 +100,7 @@ kotlin {
             api(projects.feature.main)
             api(projects.core.profile)
             api(projects.feature.day)
+            api(projects.feature.releaseNotes)
             api(projects.feature.deleteProgress)
             api(projects.feature.deleteAccount)
             api(projects.feature.login)

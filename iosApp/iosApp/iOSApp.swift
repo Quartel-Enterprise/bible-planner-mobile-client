@@ -13,6 +13,7 @@ struct iOSApp: App {
     let reviewRequester: StoreKitReviewRequester
     let rewardedAdDataSource: IosRewardedAdDataSource
     let adsConsentDataSource: IosAdsConsentDataSource
+    let releaseNotesScreenFactory: SwiftUIReleaseNotesScreenFactory
 
     init() {
         FirebaseApp.configure()
@@ -22,6 +23,7 @@ struct iOSApp: App {
         reviewRequester = StoreKitReviewRequester()
         rewardedAdDataSource = IosRewardedAdDataSource()
         adsConsentDataSource = IosAdsConsentDataSource()
+        releaseNotesScreenFactory = SwiftUIReleaseNotesScreenFactory()
         downloadLiveActivity = BibleDownloadLiveActivity()
         LegacyBibleDownloadSession.cancelLeftoverTasks()
 
@@ -33,7 +35,8 @@ struct iOSApp: App {
             downloadLiveActivity: downloadLiveActivity,
             reviewRequester: reviewRequester,
             rewardedAdDataSource: rewardedAdDataSource,
-            adsConsentDataSource: adsConsentDataSource
+            adsConsentDataSource: adsConsentDataSource,
+            releaseNotesScreenFactory: releaseNotesScreenFactory
         )
 
         dlog("Koin initialized", tag: "INIT")
@@ -51,7 +54,8 @@ struct iOSApp: App {
                 downloadLiveActivity: downloadLiveActivity,
                 reviewRequester: reviewRequester,
                 rewardedAdDataSource: rewardedAdDataSource,
-                adsConsentDataSource: adsConsentDataSource
+                adsConsentDataSource: adsConsentDataSource,
+                releaseNotesScreenFactory: releaseNotesScreenFactory
             )
             .onOpenURL { url in
                 guard url.scheme == "bibleplanner" else { return }
