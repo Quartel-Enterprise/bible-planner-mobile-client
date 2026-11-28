@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
@@ -102,8 +103,8 @@ private fun VerseNoteEditorContent(
         )
         Button(
             modifier = Modifier.fillMaxWidth(),
-            // Why: the typed text reaches the view model a frame later, so a field just cleared must not save.
-            enabled = uiState.isSaveEnabled && synced.textFieldState.text.isNotBlank(),
+            // Why: the typed text reaches the view model a frame later, so the field decides; the click sends it.
+            enabled = synced.textFieldState.text.isNotBlank(),
             onClick = {
                 sheetCloseGuard.close {
                     synced.sendLatest()
@@ -146,10 +147,8 @@ private fun VerseNoteQuoteCard(quote: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = fieldShape,
-            ),
+            .clip(fieldShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
     ) {
         Box(
             modifier = Modifier

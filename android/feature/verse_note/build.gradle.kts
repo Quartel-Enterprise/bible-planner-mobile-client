@@ -9,6 +9,4 @@ dependencies {
     implementation(projects.ui.theme)
     implementation(projects.ui.utils)
     implementation(libs.compose.materialIconsExtended)
-    // Book names stay in the shared Compose resources instead of being duplicated.
-    implementation(libs.compose.components.resources)
 }
