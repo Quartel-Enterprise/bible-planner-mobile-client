@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="listening_player_sheet_subtitle">Versão %1$s · %2$d versículos · %3$s</string>
+    <string name="listening_player_ai_voice">Narrado por vozes geradas por IA</string>
+    <string name="listening_player_auto_next">Continuar no próximo capítulo automaticamente</string>
+    <string name="listening_player_auto_next_day">Na leitura de hoje, os capítulos do dia tocam em sequência</string>
+    <string name="listening_player_auto_next_on">Ao terminar, segue para %1$s</string>
+    <string name="listening_player_auto_next_off">Para ao fim deste capítulo</string>
+    <string name="listening_player_previous_verse">Versículo anterior</string>
+    <string name="listening_player_next_verse">Próximo versículo</string>
+    <string name="listening_player_pause">Pausar</string>
+    <string name="listening_player_play">Tocar</string>
+    <string name="listening_player_day_title">Leitura de hoje</string>
+    <string name="listening_player_day_progress">%1$d de %2$d capítulos</string>
+    <string name="listening_player_locked_sheet">Libere %1$s para continuar ouvindo</string>
+    <string name="listening_player_unlock">Liberar</string>
+    <string name="listening_player_verse_of">Versículo %1$d de %2$d</string>
+    <string name="listening_player_time_remaining">%1$s · %2$s restantes</string>
+    <string name="listening_player_sleep_timer">Timer para dormir</string>
+    <string name="listening_player_sleep_timer_pauses_in">Pausa em %1$s</string>
+    <string name="listening_player_sleep_timer_stops_at_end">Para ao terminar este capítulo</string>
+    <string name="listening_player_sleep_timer_off">Desligado</string>
+    <string name="listening_player_sleep_timer_minutes">%1$d min</string>
+    <string name="listening_player_sleep_timer_end">Fim do capítulo</string>
+    <string name="listening_player_speed">Velocidade</string>
+    <string name="listening_player_word_highlight">Destacar a palavra lida</string>
+    <string name="listening_player_word_highlight_on">Acompanhe no texto enquanto ouve</string>
+    <string name="listening_player_word_highlight_off">Só o versículo lido fica marcado</string>
+    <string name="listening_player_no_connection_title">Sem conexão</string>
+    <string name="listening_player_no_connection_body">Conecte-se à internet para ouvir este capítulo</string>
+    <string name="listening_player_retry">Tentar de novo</string>
+    <string name="listening_player_sign_in_title">Entre para ouvir</string>
+    <string name="listening_player_sign_in_body">Os capítulos narrados precisam de uma conta</string>
+    <string name="listening_player_sign_in">Entrar</string>
+    <string name="listening_player_version_unavailable_title">Sem narração para a %1$s</string>
+    <string name="listening_player_version_unavailable_body">Escolha outra versão da Bíblia para ouvir</string>
+    <string name="listening_player_audio_unavailable_title">Áudio indisponível</string>
+    <string name="listening_player_audio_unavailable_body">Não foi possível carregar este capítulo agora</string>
+    <string name="listening_player_narration_paused_title">Narração pausada por enquanto</string>
+    <string name="listening_player_narration_paused_body">Novos capítulos voltam no mês que vem. Os já narrados continuam tocando.</string>
+</resources>

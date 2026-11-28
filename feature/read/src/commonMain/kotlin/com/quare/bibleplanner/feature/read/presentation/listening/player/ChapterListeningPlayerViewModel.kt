@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-internal class ChapterListeningPlayerViewModel(
+class ChapterListeningPlayerViewModel internal constructor(
     private val controller: ChapterListeningController,
     private val gate: ChapterListeningGate,
     private val playbackActions: ListeningPlaybackActions,

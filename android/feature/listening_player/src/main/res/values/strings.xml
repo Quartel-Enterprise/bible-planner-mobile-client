@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="listening_player_sheet_subtitle">%1$s version · %2$d verses · %3$s</string>
+    <string name="listening_player_ai_voice">Narrated by AI-generated voices</string>
+    <string name="listening_player_auto_next">Continue to the next chapter automatically</string>
+    <string name="listening_player_auto_next_day">In today\'s reading, the chapters of the day play in sequence</string>
+    <string name="listening_player_auto_next_on">When it ends, moves on to %1$s</string>
+    <string name="listening_player_auto_next_off">Stops at the end of this chapter</string>
+    <string name="listening_player_previous_verse">Previous verse</string>
+    <string name="listening_player_next_verse">Next verse</string>
+    <string name="listening_player_pause">Pause</string>
+    <string name="listening_player_play">Play</string>
+    <string name="listening_player_day_title">Today\'s reading</string>
+    <string name="listening_player_day_progress">%1$d of %2$d chapters</string>
+    <string name="listening_player_locked_sheet">Unlock %1$s to keep listening</string>
+    <string name="listening_player_unlock">Unlock</string>
+    <string name="listening_player_verse_of">Verse %1$d of %2$d</string>
+    <string name="listening_player_time_remaining">%1$s · %2$s left</string>
+    <string name="listening_player_sleep_timer">Sleep timer</string>
+    <string name="listening_player_sleep_timer_pauses_in">Pauses in %1$s</string>
+    <string name="listening_player_sleep_timer_stops_at_end">Stops at the end of this chapter</string>
+    <string name="listening_player_sleep_timer_off">Off</string>
+    <string name="listening_player_sleep_timer_minutes">%1$d min</string>
+    <string name="listening_player_sleep_timer_end">End of chapter</string>
+    <string name="listening_player_speed">Speed</string>
+    <string name="listening_player_word_highlight">Highlight the word being read</string>
+    <string name="listening_player_word_highlight_on">Follow the text while you listen</string>
+    <string name="listening_player_word_highlight_off">Only the verse being read is marked</string>
+    <string name="listening_player_no_connection_title">No connection</string>
+    <string name="listening_player_no_connection_body">Connect to the internet to listen to this chapter</string>
+    <string name="listening_player_retry">Try again</string>
+    <string name="listening_player_sign_in_title">Sign in to listen</string>
+    <string name="listening_player_sign_in_body">Narrated chapters need an account</string>
+    <string name="listening_player_sign_in">Sign in</string>
+    <string name="listening_player_version_unavailable_title">No narration for %1$s</string>
+    <string name="listening_player_version_unavailable_body">Pick another Bible version to listen</string>
+    <string name="listening_player_audio_unavailable_title">Audio unavailable</string>
+    <string name="listening_player_audio_unavailable_body">This chapter couldn\'t be loaded right now</string>
+    <string name="listening_player_narration_paused_title">Narration paused for now</string>
+    <string name="listening_player_narration_paused_body">New chapters come back next month. Chapters already narrated still play.</string>
+</resources>
