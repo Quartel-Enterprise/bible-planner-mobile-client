@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
-internal class EditProfileViewModel(
+class EditProfileViewModel internal constructor(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditProfileUiEvent>(trackEvent) {
     val uiAction: SharedFlow<EditProfileUiAction>

@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /*
- * Why: the books list and the reader are still Compose Multiplatform screens, and these keys must match theirs
- * for the shared element transitions to keep running between them and this native screen.
+ * Why: these keys must match the books tab's and the reader's (native or Compose Multiplatform) for the shared
+ * element transitions to keep running between them and this native screen.
  */
 internal class BookDetailsTransitionScopes(
     val sharedTransitionScope: SharedTransitionScope,

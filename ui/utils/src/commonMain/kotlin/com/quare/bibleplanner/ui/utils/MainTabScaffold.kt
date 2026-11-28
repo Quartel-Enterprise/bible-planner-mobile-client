@@ -46,6 +46,14 @@ fun MainTabScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    if (LocalHostedTabBarHeight.current != null) {
+        HostedTabScaffold(
+            floatingActionButton = floatingActionButton,
+            content = content,
+            modifier = modifier,
+        )
+        return
+    }
     BoxWithConstraints(modifier = modifier) {
         if (maxWidth > WIDE_SCREEN_WIDTH.dp && !isNativeNavigationBar) {
             WideTabScaffold(
@@ -99,6 +107,37 @@ private fun WideTabScaffold(
     }
 }
 
+@Composable
+private fun HostedTabScaffold(
+    floatingActionButton: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier,
+) {
+    var fabAreaHeight by remember { mutableStateOf(0.dp) }
+    val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
+    ReserveHostedTabBarHeightEffect(extraHeight = reservedFabHeight.toFabClearance())
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            MeasuredFabBox(
+                fabAreaHeight = fabAreaHeight,
+                onFabAreaHeightChange = { fabAreaHeight = it },
+                content = floatingActionButton,
+            )
+        },
+        content = { paddingValues ->
+            CompositionLocalProvider(
+                value = LocalMainPadding provides paddingValues.withFabClearance(
+                    fabAreaHeight = reservedFabHeight,
+                    bottomUnderFab = paddingValues.calculateBottomPadding(),
+                ),
+                content = content,
+            )
+        },
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NarrowTabScaffold(
@@ -150,7 +189,7 @@ private fun NarrowTabScaffold(
             CompositionLocalProvider(
                 value = LocalMainPadding provides paddingValues.withFabClearance(
                     fabAreaHeight = reservedFabHeight,
-                    navigationBarInsets = navigationBarInsets,
+                    bottomUnderFab = with(density) { navigationBarInsets.getBottom(this).toDp() },
                 ),
                 content = content,
             )
@@ -198,17 +237,15 @@ private fun MeasuredFabBox(
 @Composable
 private fun PaddingValues.withFabClearance(
     fabAreaHeight: Dp,
-    navigationBarInsets: WindowInsets,
+    bottomUnderFab: Dp,
 ): PaddingValues {
     if (fabAreaHeight <= 0.dp) return this
     val layoutDirection = LocalLayoutDirection.current
-    val density = LocalDensity.current
-    val navigationBarBottom = with(density) { navigationBarInsets.getBottom(this).toDp() }
     return PaddingValues(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = navigationBarBottom + fabAreaHeight.toFabClearance(),
+        bottom = bottomUnderFab + fabAreaHeight.toFabClearance(),
     )
 }
 

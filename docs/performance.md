@@ -42,7 +42,7 @@ every build type, so UiAutomator sees the tags as resource ids. The tags are:
 | `plans_tab`, `books_tab`, `profile_tab` | The bottom bar's tabs (`feature/main`) |
 | `day_content`, `day_passages` | The day screen and its card of chapters (`feature/day`) |
 | `read_chapters` | The reader's list of chapters, narrow and wide (`feature/read`) |
-| `books_content` | The Books tab's content (`feature/books`) |
+| `books_content` | The Books tab's content (`feature/books`, and `android/feature/books` on Android) |
 
 The benchmark module keeps its own copy of each, so the features' UI tests and
 `MainScreenViewModelTest` assert the same strings: renaming a tag fails those tests on CI instead of

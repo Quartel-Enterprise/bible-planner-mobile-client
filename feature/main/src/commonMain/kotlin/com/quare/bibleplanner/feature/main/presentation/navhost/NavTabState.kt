@@ -12,7 +12,8 @@ import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 
-internal class NavTabState(
+// Why: public so the native Android main host reuses the same per tab back stacks instead of a copy.
+public class NavTabState internal constructor(
     private val tabs: List<MainNavRouteDestination>,
     private val backStacks: Map<MainNavRouteDestination, NavBackStack<NavKey>>,
     selectedIndexState: MutableState<Int>,
@@ -20,15 +21,15 @@ internal class NavTabState(
     private var selectedIndex by selectedIndexState
     private val startTab = tabs.first()
     private val forwardStack = mutableStateListOf<TabBackStep>()
-    val selectedTab: MainNavRouteDestination get() = tabs[selectedIndex]
-    val canGoForward: Boolean get() = forwardStack.isNotEmpty()
+    public val selectedTab: MainNavRouteDestination get() = tabs[selectedIndex]
+    public val canGoForward: Boolean get() = forwardStack.isNotEmpty()
 
-    fun switchTo(tab: MainNavRouteDestination) {
+    public fun switchTo(tab: MainNavRouteDestination) {
         selectedIndex = tabs.indexOf(tab)
         forwardStack.clear()
     }
 
-    fun goBack() {
+    public fun goBack() {
         val currentStack = backStacks.getValue(selectedTab)
         if (currentStack.size > 1) {
             currentStack.removeLastOrNull()?.let { route ->
@@ -50,7 +51,7 @@ internal class NavTabState(
         }
     }
 
-    fun goForward() {
+    public fun goForward() {
         val step = forwardStack.removeLastOrNull() ?: return
         if (step.poppedRoute != null) {
             backStacks.getValue(step.tab).add(step.poppedRoute)
@@ -60,7 +61,7 @@ internal class NavTabState(
     }
 
     @Composable
-    fun toDecoratedEntries(entryProvider: (NavKey) -> NavEntry<NavKey>): List<NavEntry<NavKey>> {
+    public fun toDecoratedEntries(entryProvider: (NavKey) -> NavEntry<NavKey>): List<NavEntry<NavKey>> {
         val decoratedEntries = backStacks.mapValues { (_, stack) ->
             rememberDecoratedNavEntries(
                 backStack = stack,

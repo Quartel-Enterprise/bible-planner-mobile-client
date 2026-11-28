@@ -537,6 +537,46 @@ internal class DayViewModelTest {
     }
 
     @Test
+    fun `GIVEN notes typed within the debounce WHEN the stored day emits its older notes THEN keeps the typed notes`() =
+        viewModelStore.runTest {
+            // Given
+            prepareScenario(storedNotes = "abc")
+            awaitLoaded()
+            viewModel.onEvent(DayUiEvent.OnNotesChanged("abcd"))
+            runCurrent()
+
+            // When
+            viewModel.onEvent(DayUiEvent.OnDayReadToggle)
+            runCurrent()
+
+            // Then
+            assertTrue(loadedState().day.isRead)
+            assertEquals("abcd", loadedState().day.notes)
+        }
+
+    @Test
+    fun `GIVEN notes typed before the limit check WHEN the debounce elapses THEN keeps them deleted`() =
+        viewModelStore.runTest {
+            // Given
+            prepareScenario(
+                isFreeUser = true,
+                daysWithNotes = 3,
+            )
+            awaitLoaded()
+            viewModel.onEvent(DayUiEvent.OnNotesFocus)
+            runCurrent()
+
+            // When
+            viewModel.onEvent(DayUiEvent.OnNotesChanged("x"))
+            runCurrent()
+            advanceTimeBy(notesDebounce + 1.milliseconds)
+
+            // Then
+            assertEquals(listOf<String?>(null), dayRepository.notesUpdates.map(NotesUpdate::notes))
+            assertNull(loadedState().day.notes)
+        }
+
+    @Test
     fun `GIVEN a day with notes WHEN clearing them THEN opens the delete confirmation`() = viewModelStore.runTest {
         // Given
         prepareScenario(storedNotes = "Remember this")
@@ -560,6 +600,32 @@ internal class DayViewModelTest {
             commands.value,
         )
     }
+
+    @Test
+    fun `GIVEN notes typed within the debounce WHEN the delete confirmation deletes them THEN shows no notes`() =
+        viewModelStore.runTest {
+            // Given
+            prepareScenario(storedNotes = "abc")
+            awaitLoaded()
+            viewModel.onEvent(DayUiEvent.OnNotesChanged("abcd"))
+            runCurrent()
+
+            // When
+            viewModel.onEvent(DayUiEvent.OnNotesClear)
+            runCurrent()
+            dayRepository.updateDayNotes(
+                weekNumber = 1,
+                dayNumber = 1,
+                readingPlanType = ReadingPlanType.BOOKS,
+                notes = null,
+            )
+            runCurrent()
+            advanceTimeBy(notesDebounce + 1.milliseconds)
+
+            // Then
+            assertEquals(listOf("abcd", null), dayRepository.notesUpdates.map(NotesUpdate::notes))
+            assertNull(loadedState().day.notes)
+        }
 
     @Test
     fun `GIVEN a day without notes WHEN clearing them THEN says there is nothing to delete`() = viewModelStore.runTest {
