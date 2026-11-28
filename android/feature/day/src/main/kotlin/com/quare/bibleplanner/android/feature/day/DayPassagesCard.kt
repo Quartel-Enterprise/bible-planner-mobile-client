@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
-import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
@@ -60,14 +59,6 @@ internal fun DayPassagesCard(
         }
     }
 }
-
-private data class PassageRowModel(
-    val passage: PassageModel,
-    val chapter: ChapterModel?,
-    val isRead: Boolean,
-    val clickStrategy: ChapterClickStrategy,
-    val toggleStrategy: UpdateReadStatusOfPassageStrategy,
-)
 
 // Why: a passage without chapters is a whole book, read and toggled as one row.
 private fun List<PassageModel>.toRows(chapterReadStatus: Map<Pair<Int, Int>, Boolean>): List<PassageRowModel> =

@@ -16,18 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Card
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,41 +28,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
-import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
-import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
-import com.quare.bibleplanner.feature.day.presentation.model.PickerType
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
-import kotlinx.datetime.toJavaLocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 private const val TIME_SKELETON_24_HOURS = "Hm"
 private const val TIME_SKELETON_12_HOURS = "hma"
-
-@Composable
-internal fun DayPlannedReadDateText(
-    plannedReadDate: LocalDate,
-    modifier: Modifier = Modifier,
-) {
-    // Why: the app language can differ from the system's, and the configuration carries the one the app shows.
-    val locale = LocalConfiguration.current.locales[0]
-    val formattedDate = remember(plannedReadDate, locale) {
-        DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.MEDIUM)
-            .withLocale(locale)
-            .format(plannedReadDate.toJavaLocalDate())
-    }
-    Text(
-        text = "${stringResource(R.string.day_planned_read_date)} $formattedDate",
-        modifier = modifier,
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-    )
-}
 
 @Composable
 internal fun DayCompletedDateSection(
@@ -145,81 +110,4 @@ private fun rememberFormattedReadDate(date: DatePresentationModel): String {
             .format(dateTime)
         "$datePart, $timePart"
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun DayReadDatePicker(
-    picker: PickerType,
-    datePickerUiState: DatePickerUiState,
-    onEvent: (DayUiEvent) -> Unit,
-) {
-    val onDismiss = { onEvent(DayUiEvent.OnDismissPicker) }
-    val dismissButton: @Composable () -> Unit = {
-        TextButton(onClick = onDismiss) {
-            Text(text = stringResource(R.string.day_cancel))
-        }
-    }
-    when (picker) {
-        PickerType.DATE -> {
-            val selectableDates = datePickerUiState.selectableDates
-            val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = datePickerUiState.initialTimestamp,
-                selectableDates = remember(selectableDates) { selectableDates.toSelectableDates() },
-            )
-            DatePickerDialog(
-                onDismissRequest = onDismiss,
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let { utcDateMillis ->
-                                onEvent(DayUiEvent.OnDateSelected(utcDateMillis))
-                            }
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.day_next))
-                    }
-                },
-                dismissButton = dismissButton,
-            ) {
-                DatePicker(state = datePickerState)
-            }
-        }
-
-        PickerType.TIME -> {
-            val timePickerState = rememberTimePickerState(
-                initialHour = datePickerUiState.initialHour,
-                initialMinute = datePickerUiState.initialMinute,
-                is24Hour = DateFormat.is24HourFormat(LocalContext.current),
-            )
-            TimePickerDialog(
-                onDismissRequest = onDismiss,
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            onEvent(
-                                DayUiEvent.OnEditReadDate(
-                                    hour = timePickerState.hour,
-                                    minute = timePickerState.minute,
-                                ),
-                            )
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.day_ok))
-                    }
-                },
-                title = { Text(text = stringResource(R.string.day_select_time)) },
-                dismissButton = dismissButton,
-            ) {
-                TimePicker(state = timePickerState)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-private fun EditDaySelectableDates.toSelectableDates(): SelectableDates = object : SelectableDates {
-    override fun isSelectableDate(utcTimeMillis: Long): Boolean = this@toSelectableDates.isSelectableDate(utcTimeMillis)
-
-    override fun isSelectableYear(year: Int): Boolean = this@toSelectableDates.isSelectableYear(year)
 }

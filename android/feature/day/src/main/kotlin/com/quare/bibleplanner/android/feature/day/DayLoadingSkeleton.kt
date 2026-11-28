@@ -24,7 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -46,18 +46,26 @@ internal fun DayLoadingSkeleton(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val pulse = rememberDaySkeletonPulse()
     if (isWide) {
         WideSkeleton(
+            pulse = pulse,
             onBackClick = onBackClick,
             modifier = modifier,
         )
     } else {
-        NarrowSkeleton(modifier = modifier)
+        NarrowSkeleton(
+            pulse = pulse,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
-private fun NarrowSkeleton(modifier: Modifier) {
+private fun NarrowSkeleton(
+    pulse: () -> Float,
+    modifier: Modifier,
+) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.TopCenter,
@@ -73,14 +81,15 @@ private fun NarrowSkeleton(modifier: Modifier) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             DaySkeletonBox(
+                pulse = pulse,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(88.dp),
                 shape = RoundedCornerShape(18.dp),
             )
-            ButtonSkeleton()
-            PassagesCardSkeleton()
-            NotesSkeleton()
+            ButtonSkeleton(pulse = pulse)
+            PassagesCardSkeleton(pulse = pulse)
+            NotesSkeleton(pulse = pulse)
         }
     }
 }
@@ -88,6 +97,7 @@ private fun NarrowSkeleton(modifier: Modifier) {
 // Why: the day study panel opens beside the day only once it loads, so its place is held meanwhile.
 @Composable
 private fun WideSkeleton(
+    pulse: () -> Float,
     onBackClick: () -> Unit,
     modifier: Modifier,
 ) {
@@ -100,7 +110,10 @@ private fun WideSkeleton(
                     .fillMaxHeight(),
             ) {
                 DayWideHeader(onBackClick = onBackClick) {
-                    DayHeaderTitleSkeleton(horizontalAlignment = Alignment.Start)
+                    DayHeaderTitleSkeleton(
+                        pulse = pulse,
+                        horizontalAlignment = Alignment.Start,
+                    )
                 }
                 Column(
                     modifier = Modifier.padding(
@@ -111,9 +124,9 @@ private fun WideSkeleton(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    PassagesCardSkeleton()
-                    ButtonSkeleton()
-                    NotesSkeleton()
+                    PassagesCardSkeleton(pulse = pulse)
+                    ButtonSkeleton(pulse = pulse)
+                    NotesSkeleton(pulse = pulse)
                 }
             }
         }
@@ -126,7 +139,7 @@ private fun WideSkeleton(
                     .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                StudyPaneSkeleton()
+                StudyPaneSkeleton(pulse = pulse)
             }
         }
     }
@@ -148,8 +161,9 @@ private fun RowScope.SkeletonPane(
 }
 
 @Composable
-private fun ButtonSkeleton() {
+private fun ButtonSkeleton(pulse: () -> Float) {
     DaySkeletonBox(
+        pulse = pulse,
         modifier = Modifier
             .fillMaxWidth()
             .height(44.dp),
@@ -158,7 +172,7 @@ private fun ButtonSkeleton() {
 }
 
 @Composable
-private fun PassagesCardSkeleton() {
+private fun PassagesCardSkeleton(pulse: () -> Float) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -172,11 +186,13 @@ private fun PassagesCardSkeleton() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 DaySkeletonBox(
+                    pulse = pulse,
                     modifier = Modifier
                         .width(120.dp)
                         .height(18.dp),
                 )
                 DaySkeletonBox(
+                    pulse = pulse,
                     modifier = Modifier.size(24.dp),
                     shape = RoundedCornerShape(6.dp),
                 )
@@ -189,14 +205,16 @@ private fun PassagesCardSkeleton() {
 }
 
 @Composable
-private fun NotesSkeleton() {
+private fun NotesSkeleton(pulse: () -> Float) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         DaySkeletonBox(
+            pulse = pulse,
             modifier = Modifier
                 .width(80.dp)
                 .height(20.dp),
         )
         DaySkeletonBox(
+            pulse = pulse,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp),
@@ -206,18 +224,21 @@ private fun NotesSkeleton() {
 }
 
 @Composable
-private fun StudyPaneSkeleton() {
+private fun StudyPaneSkeleton(pulse: () -> Float) {
     DaySkeletonBox(
+        pulse = pulse,
         modifier = Modifier
             .width(160.dp)
             .height(24.dp),
     )
     DaySkeletonBox(
+        pulse = pulse,
         modifier = Modifier
             .width(100.dp)
             .height(16.dp),
     )
     DaySkeletonBox(
+        pulse = pulse,
         modifier = Modifier
             .fillMaxWidth()
             .height(36.dp),
@@ -225,12 +246,14 @@ private fun StudyPaneSkeleton() {
     )
     repeat(PANE_LINE_COUNT) {
         DaySkeletonBox(
+            pulse = pulse,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(14.dp),
         )
     }
     DaySkeletonBox(
+        pulse = pulse,
         modifier = Modifier
             .fillMaxWidth(PANE_LAST_LINE_FRACTION)
             .height(14.dp),
@@ -239,10 +262,24 @@ private fun StudyPaneSkeleton() {
 
 @Composable
 internal fun DaySkeletonBox(
+    pulse: () -> Float,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
 ) {
-    val pulse by rememberInfiniteTransition(label = "day_skeleton").animateFloat(
+    Box(
+        modifier = modifier
+            .graphicsLayer { alpha = pulse() }
+            .background(
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = shape,
+            ),
+    )
+}
+
+// Why: one transition drives every box of a skeleton, instead of one animation per box drawing the same pulse.
+@Composable
+internal fun rememberDaySkeletonPulse(): () -> Float {
+    val pulse = rememberInfiniteTransition(label = "day_skeleton").animateFloat(
         initialValue = 1f,
         targetValue = PULSE_MIN_ALPHA,
         animationSpec = infiniteRepeatable(
@@ -251,12 +288,5 @@ internal fun DaySkeletonBox(
         ),
         label = "day_skeleton_alpha",
     )
-    Box(
-        modifier = modifier
-            .graphicsLayer { alpha = pulse }
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                shape = shape,
-            ),
-    )
+    return remember(pulse) { { pulse.value } }
 }

@@ -98,15 +98,20 @@ private fun countTransition(isIncreasing: Boolean): ContentTransform {
 }
 
 @Composable
-internal fun DayHeaderTitleSkeleton(horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally) {
+internal fun DayHeaderTitleSkeleton(
+    pulse: () -> Float,
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+) {
     Column(horizontalAlignment = horizontalAlignment) {
         DaySkeletonBox(
+            pulse = pulse,
             modifier = Modifier
                 .width(140.dp)
                 .height(22.dp),
         )
         Spacer(modifier = Modifier.height(6.dp))
         DaySkeletonBox(
+            pulse = pulse,
             modifier = Modifier
                 .width(90.dp)
                 .height(14.dp),

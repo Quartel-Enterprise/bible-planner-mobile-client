@@ -42,8 +42,7 @@ import com.quare.bibleplanner.ui.utils.asStable
 private val narrowContentMaxWidth = 800.dp
 internal val wideReadingMaxWidth = 560.dp
 private val askAiFabClearance = 88.dp
-// Why: the baseline profile journeys (tools/baseline-profile Journeys.kt) find the day by this tag.
-private const val DAY_CONTENT_TAG = "day_content"
+private const val DAY_CONTENT_TAG = "day_content" // Why: the baseline profile journeys find the day by this tag.
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,7 +126,7 @@ private fun DayTopBar(
         title = {
             when (state) {
                 is DayUiState.Loaded -> DayHeaderTitle(state = state)
-                DayUiState.Loading -> DayHeaderTitleSkeleton()
+                DayUiState.Loading -> DayHeaderTitleSkeleton(pulse = rememberDaySkeletonPulse())
             }
         },
         navigationIcon = {
