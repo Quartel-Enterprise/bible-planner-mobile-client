@@ -112,6 +112,40 @@ class CropPhotoViewModelTest {
     }
 
     @Test
+    fun `GIVEN the crop screen WHEN cancelling twice THEN navigates back once`() = runTest {
+        // Given
+        val viewModel = viewModel()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { navigator.commands.collect(commands::add) }
+
+        // When
+        viewModel.onEvent(CropPhotoUiEvent.OnCancelClick)
+        viewModel.onEvent(CropPhotoUiEvent.OnCancelClick)
+        advanceUntilIdle()
+
+        // Then
+        // A second pop would also close the screen below the crop screen
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+    }
+
+    @Test
+    fun `GIVEN an unreadable image that already closed the screen WHEN cancelling THEN does not navigate back again`() =
+        runTest {
+            // Given
+            val viewModel = viewModel(decode = { Result.failure(IllegalStateException("boom")) })
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                navigator.commands.collect(commands::add)
+            }
+            advanceUntilIdle()
+
+            // When
+            viewModel.onEvent(CropPhotoUiEvent.OnCancelClick)
+            advanceUntilIdle()
+
+            // Then
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+        }
+
+    @Test
     fun `GIVEN an image that cannot be decoded WHEN loading it THEN navigates back and warns`() = runTest {
         // Given
         // A decoder that returns null (unreadable image)

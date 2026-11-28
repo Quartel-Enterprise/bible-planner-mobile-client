@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import software.quare.connectivity.IsConnected
 
-internal class DayReadingCompleteViewModel(
+class DayReadingCompleteViewModel internal constructor(
     private val route: DayReadingCompleteNavRoute,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val isConnected: IsConnected,
