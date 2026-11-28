@@ -56,8 +56,11 @@ platform after each one.
    - The tabs follow the same rule one level down: `android/feature/main` draws the tab bar or rail and runs the
      inner `NavDisplay`, which asks the `NativeEntryProvider` for each tab key and falls back to the shared tab
      from `LocalMainTabEntries` (provided by `RootAppNavDisplay` with the root's shared transition scope). It
-     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there. A native
-     tab draws only its body too, reserves the same bottom height, and keeps its shared elements toward root screens
+     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there. On narrow
+     screens the bar hides on scroll like the shared one: the tabs draw under it and pad their scrolling content's
+     end by `LocalHostedTabBarHeight`, while `LocalHostedTabBarHeightOffset` says how far it slid away, so
+     `ReserveHostedTabBarHeightEffect` keeps snackbars and FABs on its visible top. A native
+     tab draws only its body too, does the same, and keeps its shared elements toward root screens
      with `LocalSharedTransitionScope` and `LocalMainEntryAnimatedContentScope` (`android/navigation`), the root
      entry's scope that the main screen provides, since the factory only gets the tab's key.
    - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never

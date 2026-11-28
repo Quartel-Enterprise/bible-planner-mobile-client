@@ -115,6 +115,9 @@ private fun HostedTabScaffold(
 ) {
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
+    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
+    val visibleHostedTabBarHeightPx = rememberVisibleHostedTabBarHeightPx()
+    val navigationBarInsets = WindowInsets.navigationBars
     ReserveHostedTabBarHeightEffect(extraHeight = reservedFabHeight.toFabClearance())
 
     Scaffold(
@@ -123,14 +126,27 @@ private fun HostedTabScaffold(
             MeasuredFabBox(
                 fabAreaHeight = fabAreaHeight,
                 onFabAreaHeightChange = { fabAreaHeight = it },
+                /*
+                 * Why: the body reaches under the host's bar, which consumes the gesture bar inset, so the FAB rides
+                 * on the bar's visible top like NarrowTabScaffold's and rests above the gesture bar once it hides.
+                 */
+                modifier = Modifier.graphicsLayer {
+                    if (hostedTabBarHeight > 0.dp) {
+                        translationY = -maxOf(
+                            visibleHostedTabBarHeightPx(),
+                            navigationBarInsets.getBottom(this).toFloat(),
+                        )
+                    }
+                },
                 content = floatingActionButton,
             )
         },
         content = { paddingValues ->
             CompositionLocalProvider(
-                value = LocalMainPadding provides paddingValues.withFabClearance(
-                    fabAreaHeight = reservedFabHeight,
-                    bottomUnderFab = paddingValues.calculateBottomPadding(),
+                value = LocalMainPadding provides paddingValues.withBottom(
+                    bottom = paddingValues.calculateBottomPadding() +
+                        hostedTabBarHeight +
+                        reservedFabHeight.toFabClearance(),
                 ),
                 content = content,
             )
@@ -240,12 +256,17 @@ private fun PaddingValues.withFabClearance(
     bottomUnderFab: Dp,
 ): PaddingValues {
     if (fabAreaHeight <= 0.dp) return this
+    return withBottom(bottom = bottomUnderFab + fabAreaHeight.toFabClearance())
+}
+
+@Composable
+private fun PaddingValues.withBottom(bottom: Dp): PaddingValues {
     val layoutDirection = LocalLayoutDirection.current
     return PaddingValues(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = bottomUnderFab + fabAreaHeight.toFabClearance(),
+        bottom = bottom,
     )
 }
 

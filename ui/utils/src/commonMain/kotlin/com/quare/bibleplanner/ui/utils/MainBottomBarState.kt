@@ -48,20 +48,30 @@ fun ReserveBottomOverlayHeightEffect(heightPx: () -> Float) {
 }
 
 /*
- * Why: a tab the native main screen hosts keeps snackbars and the bottom overlays above the host's navigation bar,
- * which LocalHostedTabBarHeight measures (zero beside a rail), plus whatever the tab draws over it, such as a FAB.
+ * Why: a tab the native main screen hosts keeps snackbars and the bottom overlays above the visible part of the
+ * host's navigation bar (zero beside a rail), which hides on scroll, plus whatever the tab draws over it, such as a
+ * FAB.
  */
 @Composable
 fun ReserveHostedTabBarHeightEffect(extraHeight: Dp) {
-    val hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp
+    val visibleHostedTabBarHeightPx = rememberVisibleHostedTabBarHeightPx()
     val navigationBarInsets = WindowInsets.navigationBars
     val density = LocalDensity.current
     ReserveBottomOverlayHeightEffect {
         maxOf(
             navigationBarInsets.getBottom(density).toFloat(),
-            with(density) { hostedTabBarHeight.toPx() },
+            visibleHostedTabBarHeightPx(),
         ) + with(density) { extraHeight.toPx() }
     }
+}
+
+// Why: read inside a layout, draw or snapshotFlow lambda, so the bar sliding away doesn't recompose the caller.
+@Composable
+internal fun rememberVisibleHostedTabBarHeightPx(): () -> Float {
+    val hostedTabBarHeightPx = with(LocalDensity.current) { (LocalHostedTabBarHeight.current ?: 0.dp).toPx() }
+    val heightOffset = LocalHostedTabBarHeightOffset.current
+    val currentHeightPx by rememberUpdatedState(hostedTabBarHeightPx)
+    return remember(heightOffset) { { (currentHeightPx + heightOffset()).coerceAtLeast(0f) } }
 }
 
 @Composable

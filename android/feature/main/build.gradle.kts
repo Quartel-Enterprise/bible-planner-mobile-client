@@ -10,5 +10,4 @@ dependencies {
     implementation(projects.core.provider.analytics)
     implementation(projects.ui.utils)
     implementation(libs.compose.materialIconsExtended)
-    implementation(libs.coil.compose)
 }
