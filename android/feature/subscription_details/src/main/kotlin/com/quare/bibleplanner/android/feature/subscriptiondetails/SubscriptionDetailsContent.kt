@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.android.feature.subscriptiondetails
 
+import android.text.format.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.dialog.AppAlertDialog
@@ -33,6 +35,9 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+
+private const val TIME_SKELETON_24_HOURS = "Hm"
+private const val TIME_SKELETON_12_HOURS = "hm"
 
 @Composable
 internal fun SubscriptionDetailsContent(
@@ -117,11 +122,15 @@ private fun DetailItem(
 private fun rememberFormattedDate(date: LocalDateTime): String {
     // Why: the app language can differ from the system's, and the configuration carries the one the app shows.
     val locale = LocalConfiguration.current.locales[0]
-    return remember(date, locale) {
-        DateTimeFormatter
-            .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-            .withLocale(locale)
-            .format(date.toJavaLocalDateTime())
+    // Why: the locale alone picks 12 or 24 hours, while the user's clock setting must win.
+    val is24Hour = DateFormat.is24HourFormat(LocalContext.current)
+    return remember(date, locale, is24Hour) {
+        val javaDate = date.toJavaLocalDateTime()
+        val datePart = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(javaDate)
+        val timeSkeleton = if (is24Hour) TIME_SKELETON_24_HOURS else TIME_SKELETON_12_HOURS
+        val timePattern = DateFormat.getBestDateTimePattern(locale, timeSkeleton)
+        val timePart = DateTimeFormatter.ofPattern(timePattern, locale).format(javaDate)
+        "$datePart · $timePart"
     }
 }
 
