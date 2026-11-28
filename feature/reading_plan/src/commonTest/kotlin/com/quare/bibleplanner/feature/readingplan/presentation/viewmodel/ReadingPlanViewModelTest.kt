@@ -858,6 +858,42 @@ internal class ReadingPlanViewModelTest {
         }
 
     @Test
+    fun `GIVEN loaded plans WHEN a native UI watches the state THEN receives the current state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(initialPlans = plans(readDays = 1))
+            val states = mutableListOf<ReadingPlanUiState>()
+
+            // When
+            viewModel.stateWatcher.observe { states += it }
+
+            // Then
+            assertEquals(
+                expected = listOf(viewModel.uiState.value),
+                actual = states,
+            )
+            assertIs<ReadingPlanUiState.Loaded>(states.single())
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the actions WHEN nothing can be deleted THEN receives the action`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(initialPlans = plans(readDays = 0))
+            val watchedActions = mutableListOf<ReadingPlanUiAction>()
+            viewModel.actionWatcher.observe { watchedActions += it }
+
+            // When
+            viewModel.onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(OverflowOption.DELETE_PROGRESS))
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadingPlanUiAction>(ReadingPlanUiAction.ShowNoProgressToDelete),
+                actual = watchedActions,
+            )
+        }
+
+    @Test
     fun `GIVEN the plans are loading WHEN picking delete progress THEN does nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(initialPlans = null)

@@ -102,9 +102,9 @@ private fun ThemeOptionLabel(
         ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val title = stringResource(model.title)
+        val title = stringResource(model.preference.toTitle())
         Icon(
-            imageVector = model.icon,
+            imageVector = model.preference.toIcon(),
             contentDescription = title,
             tint = contentColor,
             modifier = Modifier.size(16.dp),

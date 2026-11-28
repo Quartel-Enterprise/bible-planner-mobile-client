@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.deleteaccount.presentation.viewmodel
 
-import bibleplanner.feature.delete_account.generated.resources.Res
-import bibleplanner.feature.delete_account.generated.resources.delete_account_store_google_play
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -11,7 +9,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountPhase
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountProgress
-import com.quare.bibleplanner.feature.deleteaccount.presentation.mapper.StoreNameMapper
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiAction
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiState
@@ -180,7 +177,7 @@ internal class DeleteAccountViewModelTest {
 
             // Then
             assertEquals(DeleteAccountUiStatus.Idle, viewModel.uiState.value.status)
-            assertIs<DeleteAccountUiAction.ShowSnackbar>(actions.single())
+            assertEquals(DeleteAccountUiAction.ShowError, actions.single())
             assertEquals(
                 AnalyticsEventNames.ACCOUNT_DELETE_FAILED to
                     mapOf<String, Any>(AnalyticsParams.REASON to "delete_request"),
@@ -239,7 +236,7 @@ internal class DeleteAccountViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(Res.string.delete_account_store_google_play, state.storeNameRes)
+        assertEquals(PurchaseStore.PLAY_STORE, state.subscriptionStore)
     }
 
     @Test
@@ -252,7 +249,7 @@ internal class DeleteAccountViewModelTest {
 
         // Then
         assertTrue(state.isProUser)
-        assertNull(state.storeNameRes)
+        assertNull(state.subscriptionStore)
     }
 
     @Test
@@ -265,7 +262,7 @@ internal class DeleteAccountViewModelTest {
 
         // Then
         assertFalse(state.isProUser)
-        assertNull(state.storeNameRes)
+        assertNull(state.subscriptionStore)
     }
 
     private fun proSubscription(store: PurchaseStore?): SubscriptionStatus.Pro = SubscriptionStatus.Pro(
@@ -305,7 +302,6 @@ internal class DeleteAccountViewModelTest {
             deleteAccount = { fakeDeleteAccount(failingPhase) },
             getConfirmationKeyword = { CONFIRMATION_KEYWORD },
             getSubscriptionStatusFlow = { flowOf(subscriptionStatus) },
-            storeNameMapper = StoreNameMapper(),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )

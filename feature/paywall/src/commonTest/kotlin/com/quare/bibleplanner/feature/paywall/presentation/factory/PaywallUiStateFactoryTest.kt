@@ -1,14 +1,5 @@
 package com.quare.bibleplanner.feature.paywall.presentation.factory
 
-import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.month
-import bibleplanner.feature.paywall.generated.resources.per_month
-import bibleplanner.feature.paywall.generated.resources.per_year
-import bibleplanner.feature.paywall.generated.resources.plan_annual
-import bibleplanner.feature.paywall.generated.resources.plan_annual_description
-import bibleplanner.feature.paywall.generated.resources.plan_monthly
-import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
-import bibleplanner.feature.paywall.generated.resources.year
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
@@ -63,20 +54,12 @@ internal class PaywallUiStateFactoryTest {
                 uiState = PaywallUiState.Success(
                     subscriptionPlans = listOf(
                         SubscriptionPlanPresentationModel(
-                            title = Res.string.plan_monthly,
-                            description = Res.string.plan_monthly_description,
-                            period = Res.string.per_month,
-                            periodUnit = Res.string.month,
                             savePercentage = null,
                             isSelected = false,
                             priceDescription = "$10.00",
                             type = SubscriptionPlanType.Monthly,
                         ),
                         SubscriptionPlanPresentationModel(
-                            title = Res.string.plan_annual,
-                            description = Res.string.plan_annual_description,
-                            period = Res.string.per_year,
-                            periodUnit = Res.string.year,
                             savePercentage = 50,
                             isSelected = true,
                             priceDescription = "$60.00",

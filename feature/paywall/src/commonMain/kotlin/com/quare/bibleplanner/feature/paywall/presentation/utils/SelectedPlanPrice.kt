@@ -7,5 +7,5 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PaywallUiState.Success.selectedPlanPriceDescription(): String? =
     subscriptionPlans.firstOrNull { plan -> plan.isSelected }?.let { plan ->
-        "${plan.priceDescription}/${stringResource(plan.periodUnit)}"
+        "${plan.priceDescription}/${stringResource(plan.type.toPeriodUnitResource())}"
     }

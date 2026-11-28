@@ -5,7 +5,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.fixture.bookDetailsUiState
@@ -18,7 +17,6 @@ import dev.lucianosantos.storescreenshots.MockupOrientation
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
-import org.jetbrains.compose.resources.stringResource
 import org.junit.Test
 
 private const val BACKGROUND = 0xFF141C3D
@@ -80,7 +78,7 @@ private fun BookDetailsContent() {
         AnimatedVisibility(visible = true) {
             BookDetailsScreen(
                 platform = Platform.Android,
-                state = bookDetailsUiState(bookCategoryName = stringResource(BookGroup.WisdomBooks.titleRes)),
+                state = bookDetailsUiState(),
                 sharedTransitionScope = this@SharedTransitionLayout,
                 animatedVisibilityScope = this@AnimatedVisibility,
                 onEvent = {},

@@ -55,6 +55,15 @@ The `static-analysis` workflow runs the same script, through the ktlint-rules ac
 request — and on every push to `main` — that touches a `.kt` or `.kts` file, the version catalog, the
 ktlint script or `.editorconfig`.
 
+## Copied code
+
+`./scripts/cpd.sh` runs [jscpd](https://github.com/kucherenko/jscpd) on the production Kotlin and Swift and fails on
+copied code `.jscpd-baseline.json` doesn't list, and on copied code it still lists after it was removed. The
+`duplication` workflow runs it on every pull request and every push to `main`, with no paths filter, since `main`'s
+ruleset requires it. The check is shared with the other Quare apps
+([copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check)). What it counts, the baseline and when to take a copy in are in
+[DRY](architecture/dry.md#enforcement).
+
 ## Test coverage
 
 [Kover](https://github.com/Kotlin/kotlinx-kover) measures the line coverage of the tests that run on

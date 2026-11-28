@@ -8,6 +8,7 @@ import bibleplanner.feature.logout.generated.resources.logout_ending_session
 import bibleplanner.feature.logout.generated.resources.logout_message
 import bibleplanner.feature.logout.generated.resources.logout_pending_changes_error_message
 import bibleplanner.feature.logout.generated.resources.logout_pending_changes_error_title
+import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
 import bibleplanner.feature.logout.generated.resources.logout_sign_out_anyway
 import bibleplanner.feature.logout.generated.resources.logout_syncing_progress
 import bibleplanner.feature.logout.generated.resources.logout_title
@@ -38,11 +39,11 @@ internal fun LogoutDialog(
             onEvent = onEvent,
         )
 
-        is LogoutUiState.PendingChangesError -> LogoutConfirmationDialog(
+        LogoutUiState.PendingChangesError -> LogoutConfirmationDialog(
             title = stringResource(Res.string.logout_pending_changes_error_title),
             text = stringResource(
                 Res.string.logout_pending_changes_error_message,
-                stringResource(uiState.pendingResource),
+                stringResource(Res.string.logout_pending_favorites),
             ),
             confirmAction = AppAlertDialogAction(
                 text = stringResource(Res.string.logout_sign_out_anyway),

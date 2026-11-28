@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.books.presentation.mapper
 
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.isNewTestament
 import kotlin.test.Test

@@ -44,7 +44,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.review.generated"
     objectName = "ReviewBuildKonfig"
-    exposeObjectWithName = "ReviewBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())

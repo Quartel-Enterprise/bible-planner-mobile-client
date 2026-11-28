@@ -1,15 +1,14 @@
 package com.quare.bibleplanner.feature.day.fixture
 
-import androidx.compose.material3.SelectableDates
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
+import com.quare.bibleplanner.feature.day.presentation.model.DatePresentationModel
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-import com.quare.bibleplanner.ui.component.date.DatePresentationModel
-import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 
@@ -54,7 +53,7 @@ private fun datePickerUiState(): DatePickerUiState = DatePickerUiState(
     visiblePicker = null,
     selectedDateMillis = null,
     selectedLocalDate = readDate,
-    selectableDates = object : SelectableDates {},
+    selectableDates = EditDaySelectableDates(latestSelectableDate = readDate),
     initialTimestamp = 0L,
     initialHour = 7,
     initialMinute = 12,
@@ -81,7 +80,7 @@ internal fun dayUiState(locale: String): DayUiState.Loaded = DayUiState.Loaded(
     datePickerUiState = datePickerUiState(),
     formattedReadDate = DatePresentationModel(
         day = readDate.day,
-        month = Month.JULY.toStringResource(),
+        month = Month.JULY,
         year = readDate.year,
         minute = "12",
         hour = "07",

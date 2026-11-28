@@ -7,7 +7,7 @@ import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface DayUiEvent : UiEvent {
+sealed interface DayUiEvent : UiEvent {
     data class OnChapterCheckboxClick(
         val strategy: UpdateReadStatusOfPassageStrategy,
     ) : DayUiEvent {

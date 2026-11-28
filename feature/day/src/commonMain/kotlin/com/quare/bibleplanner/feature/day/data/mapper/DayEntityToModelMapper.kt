@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.day.data.mapper
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 
-class DayEntityToModelMapper {
+internal class DayEntityToModelMapper {
     fun map(
         entity: DayEntity?,
         dayModel: DayModel,

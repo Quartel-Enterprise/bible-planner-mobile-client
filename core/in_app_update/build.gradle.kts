@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
@@ -15,6 +16,28 @@ kotlin {
     jvm()
 
     sourceSets {
+        val nonMobileMain = create("nonMobileMain") {
+            dependsOn(commonMain.get())
+        }
+
+        jvmMain {
+            dependsOn(nonMobileMain)
+        }
+
+        webMain {
+            dependsOn(nonMobileMain)
+        }
+
+        iosMain {
+            dependsOn(commonMain.get())
+        }
+        iosArm64Main {
+            dependsOn(iosMain.get())
+        }
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
+        }
+
         commonMain.dependencies {
             // Core
             implementation(projects.core.date)
@@ -58,12 +81,14 @@ kotlin {
             implementation(libs.play.app.update.ktx)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
 
 buildkonfig {
     packageName = "com.quare.bibleplanner.core.inappupdate.generated"
     objectName = "InAppUpdateBuildKonfig"
-    exposeObjectWithName = "InAppUpdateBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())

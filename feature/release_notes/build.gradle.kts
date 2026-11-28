@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
@@ -26,6 +27,10 @@ kotlin {
         }
 
         jvmMain {
+            dependsOn(nonIosMain)
+        }
+
+        jsMain {
             dependsOn(nonIosMain)
         }
 
@@ -101,12 +106,14 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinxJson)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
 
 buildkonfig {
     packageName = "com.quare.bibleplanner.feature.releasenotes.generated"
     objectName = "ReleaseNotesBuildKonfig"
-    exposeObjectWithName = "ReleaseNotesBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()

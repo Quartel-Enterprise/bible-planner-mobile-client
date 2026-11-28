@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.day.generated.resources.Res
-import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
@@ -20,6 +17,7 @@ import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
+import com.quare.bibleplanner.core.presentation.bridge.FlowWatcher
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
@@ -32,6 +30,7 @@ import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassage
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
+import com.quare.bibleplanner.feature.day.presentation.model.DayMessage
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -52,7 +51,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-internal class DayViewModel(
+class DayViewModel internal constructor(
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
@@ -60,7 +59,7 @@ internal class DayViewModel(
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val navigator: Navigator,
-    val platform: Platform,
+    internal val platform: Platform,
     route: DayNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -70,6 +69,12 @@ internal class DayViewModel(
 
     val uiAction: SharedFlow<DayUiAction>
         field = MutableSharedFlow<DayUiAction>()
+
+    // Why: SwiftUI can't collect a Flow; it observes the state and actions through these, built only when it asks.
+    val stateWatcher: FlowWatcher<DayUiState> by lazy { FlowWatcher(uiState, viewModelScope) }
+
+    val actionWatcher: FlowWatcher<DayUiAction> by lazy { FlowWatcher(uiAction, viewModelScope) }
+
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
@@ -297,7 +302,7 @@ internal class DayViewModel(
                         isRead = isRead,
                     )
                 }.onFailure {
-                    uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
+                    uiAction.emit(DayUiAction.ShowSnackBar(DayMessage.FAILED_TO_TOGGLE_CHAPTER))
                 }
         }
     }
@@ -386,7 +391,7 @@ internal class DayViewModel(
             return
         }
         viewModelScope.launch {
-            uiAction.emit(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message))
+            uiAction.emit(DayUiAction.ShowSnackBar(DayMessage.NOTHING_TO_DELETE))
         }
     }
 

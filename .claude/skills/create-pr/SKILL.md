@@ -213,6 +213,21 @@ or a rule fails, stop and report it: write the missing tests rather than pushing
 the `write-tests` skill when the "Who writes the unit tests" table of
 [docs/ai_agents.md](../../../docs/ai_agents.md#who-writes-the-unit-tests) says so.
 
+When the branch changes a `.kt` or `.swift` file, `.jscpd.json`, `.jscpd-baseline.json`,
+`scripts/cpd.sh` or a workflow that uses `Quartel-Enterprise/copied-code-check`, also run the check of the `duplication` workflow:
+
+```bash
+./scripts/cpd.sh
+```
+
+It fails on copied code `.jscpd-baseline.json` doesn't list, and lists both copies with their
+lines: extract the copied code into one place the callers share (see "Enforcement" in
+[docs/architecture/dry.md](../../../docs/architecture/dry.md#enforcement)). When it fails because the
+branch removed copied code, or moved a file that has some, run `./scripts/cpd.sh --update-baseline`
+and commit the baseline. A file renamed with its copied code counts as new copied code: extract it
+before renaming, or ask the user. Never pass `--allow-new` to get past the check without asking the
+user.
+
 ### 11. Commit all uncommitted changes
 
 If the `release-notes-updater` skill was run in step 6, show the user what was written and ask:
@@ -359,17 +374,20 @@ for _ in $(seq 20); do
   sleep 3
 done
 [ -z "$run" ] || gh run watch "$run" --interval 30 > /dev/null || true
-for _ in $(seq 20); do gh pr checks --required 2>/dev/null | grep -q . && break; sleep 3; done
+for _ in $(seq 40); do
+  [ "$(gh pr checks --required --json name -q '[.[].name | select(. == "check-translations" or . == "duplication")] | unique | length' 2>/dev/null)" = 2 ] && break
+  sleep 3
+done
 gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
 
-A ruleset on `main` requires the `check-translations` status check and every review conversation
-resolved, so `gh pr merge` refuses to merge until both hold ("the base branch policy prohibits the
-merge"). An unresolved `claude-review` finding has to be fixed or answered, then resolved, before
-the merge goes through. The check takes a few seconds. Right
-after the push, GitHub hasn't registered the check yet and `gh pr checks` fails with "no checks
-reported", so the loop first waits up to a minute for it to show up. If it never does, check the
+A ruleset on `main` requires the `check-translations` and `duplication` status checks and every
+review conversation resolved, so `gh pr merge` refuses to merge until all of them hold ("the base
+branch policy prohibits the merge"). An unresolved `claude-review` finding has to be fixed or
+answered, then resolved, before the merge goes through. The checks take a minute or two. Right
+after the push, GitHub hasn't registered them yet and `gh pr checks` fails with "no checks
+reported", so the loop first waits up to two minutes for both to show up. If they never do, check the
 workflow runs with `gh run list --branch <branch>` and tell the user instead of merging. Never
 bypass it with `--admin`. If a required check fails, report it and stop. If the merge fails for
 another reason (e.g. a conflict with `main`), notify the user and stop.

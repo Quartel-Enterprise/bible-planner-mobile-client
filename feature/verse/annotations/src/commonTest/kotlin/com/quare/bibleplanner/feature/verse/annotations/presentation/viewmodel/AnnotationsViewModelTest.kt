@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.verse.annotations.presentation.viewmodel
 
-import bibleplanner.feature.verse.annotations.generated.resources.Res
-import bibleplanner.feature.verse.annotations.generated.resources.annotation_removed
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -691,7 +689,7 @@ internal class AnnotationsViewModelTest {
             actual = removedPassages,
         )
         assertEquals(
-            expected = listOf(AnnotationsUiAction.ShowMessage(Res.string.annotation_removed)),
+            expected = listOf(AnnotationsUiAction.NotifyAnnotationRemoved),
             actual = actions,
         )
     }

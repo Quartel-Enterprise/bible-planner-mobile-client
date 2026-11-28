@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -11,6 +13,30 @@ kotlin {
     jvm()
 
     sourceSets {
+        // Why: iOS, the JVM and wasm all draw with Skia, so they share its PNG encoder.
+        val skikoMain = create("skikoMain") {
+            dependsOn(commonMain.get())
+        }
+
+        iosMain {
+            dependsOn(skikoMain)
+        }
+
+        jvmMain {
+            dependsOn(skikoMain)
+        }
+
+        webMain {
+            dependsOn(skikoMain)
+        }
+
+        iosArm64Main {
+            dependsOn(iosMain.get())
+        }
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
+        }
+
         commonMain.dependencies {
             // Core
             implementation(projects.core.utils)
@@ -48,4 +74,7 @@ kotlin {
             implementation(kotlin("test"))
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }

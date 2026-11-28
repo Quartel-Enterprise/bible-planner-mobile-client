@@ -3,6 +3,7 @@ package com.quare.bibleplanner
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import androidx.work.Configuration
+import com.quare.bibleplanner.core.navigation.NativeEntryProvider
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
@@ -13,6 +14,7 @@ import com.quare.bibleplanner.di.androidModule
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.androidAppLanguageModule
 import com.quare.bibleplanner.feature.login.di.androidLoginModule
+import com.quare.bibleplanner.nativeui.AndroidNativeEntryProvider
 import com.quare.bibleplanner.notification.AndroidNotificationStringProvider
 import com.quare.bibleplanner.notification.NotificationStringProvider
 import org.koin.android.ext.koin.androidContext
@@ -26,6 +28,7 @@ class MainApplication :
     Configuration.Provider {
     private val mainApplicationModule = module {
         singleOf(::AndroidNotificationStringProvider).bind<NotificationStringProvider>()
+        singleOf(::AndroidNativeEntryProvider).bind<NativeEntryProvider>()
     }
 
     override val workManagerConfiguration: Configuration = Configuration.Builder().build()

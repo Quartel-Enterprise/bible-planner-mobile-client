@@ -243,3 +243,42 @@ fun buildErrorNotification(...): Notification { ... }
 ```
 
 The rule: extract when the duplication is **structural and intentional**. Leave it when the similarity is **accidental or temporary**.
+
+---
+
+## Enforcement
+
+[jscpd](https://github.com/kucherenko/jscpd) looks for copied code in the production Kotlin and Swift of the apps:
+clones of 70 tokens or more with at least 5 lines of code once the package, imports and comments are left out.
+
+```bash
+./scripts/cpd.sh                                # check (what CI runs)
+./scripts/cpd.sh --update-baseline              # write the copied code found now to .jscpd-baseline.json
+./scripts/cpd.sh --update-baseline --allow-new  # also take more copied code in, only when the copy is on purpose
+```
+
+`.jscpd.json` says what it scans: no test source sets, `:testing` modules, Gradle scripts nor build outputs. jscpd only
+compares files of the same language, so a screen drawn by Compose and by SwiftUI is never a clone. The check itself is
+shared with the other Quare apps in [copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check):
+`scripts/cpd.sh` is its wrapper, which never changes, and runs the release that the
+`Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml` pins (every workflow that uses the action has to
+pin the same one), with the jscpd release it locks. It needs Node.js 18 or later, plus `curl`, `tar` and access to
+github.com the first time it runs a release. A change to how the check counts goes to that repository, then a bump of
+the line here (Dependabot proposes it).
+
+`.jscpd-baseline.json` holds how many lines of code of each file are copied today. Lines of a file, not clones: with the
+same code in three files, which pairs jscpd reports depends on the order it reads them, and an edit inside a long clone
+can split it in two. A file with more lines than the baseline lists fails the check: extract the copied code into one
+place the callers share, following the sections above (a use case or coordinator under the ViewModels, a mapper, a
+component of `:ui:component`). A file with fewer fails too, until `--update-baseline` writes the new numbers, so the
+baseline only shrinks and removed copies can't come back unnoticed. Without `--allow-new` it refuses any file whose
+copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved file: a new path with
+the name (the part before the first dot plus the extension, so `Foo.android.kt` moved to `Foo.nonIos.kt` counts and
+`Foo.kt` to `Foo.swift` doesn't) and copied lines of a listed path that is gone. A file renamed with its copied code
+needs `--allow-new`, like any new copy.
+
+`--allow-new` is for a copy on purpose, the last section's coincidental similarity, or an `actual` per platform that
+happens to match: say why in the pull request. The `duplication` workflow, a required check of `main`'s ruleset, runs
+the same check on every pull request and every push to `main`, and shows each file whose copied lines grew against the
+base branch (`main`, for most pull requests) in the job summary, behind one warning, so the reviewer sees what the
+baseline took in.

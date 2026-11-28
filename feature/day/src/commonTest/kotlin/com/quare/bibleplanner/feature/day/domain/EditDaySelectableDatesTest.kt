@@ -151,11 +151,12 @@ internal class EditDaySelectableDatesTest {
         timeZone: TimeZone,
         now: LocalDateTime,
     ) {
-        selectableDates = EditDaySelectableDates(
+        val getLatestSelectableDate = GetLatestSelectableDateUseCase(
             currentTimestampProvider = { now.toInstant(timeZone).toEpochMilliseconds() },
             localDateTimeProvider = { timestamp ->
                 Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(timeZone)
             },
         )
+        selectableDates = EditDaySelectableDates(latestSelectableDate = getLatestSelectableDate())
     }
 }

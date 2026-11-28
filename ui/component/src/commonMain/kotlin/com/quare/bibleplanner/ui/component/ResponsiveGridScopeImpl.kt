@@ -76,13 +76,8 @@ internal class ResponsiveGridScopeImpl(
             span = span,
             contentType = contentType,
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(this@ResponsiveGridScopeImpl.contentMaxWidth)) {
-                    content()
-                }
+            ResponsiveBox {
+                content()
             }
         }
     }
@@ -100,13 +95,20 @@ internal class ResponsiveGridScopeImpl(
             span = span,
             contentType = contentType,
         ) { item ->
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(this@ResponsiveGridScopeImpl.contentMaxWidth)) {
-                    itemContent(item)
-                }
+            ResponsiveBox {
+                itemContent(item)
+            }
+        }
+    }
+
+    @Composable
+    private fun ResponsiveBox(content: @Composable () -> Unit) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
+                content()
             }
         }
     }

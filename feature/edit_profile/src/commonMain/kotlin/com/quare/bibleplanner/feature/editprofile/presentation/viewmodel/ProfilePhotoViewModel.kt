@@ -1,11 +1,6 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.edit_profile.generated.resources.Res
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_removed
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_synced
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_too_large
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_unreadable
 import com.quare.bibleplanner.core.image.MAX_AVATAR_SOURCE_BYTES
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
@@ -14,6 +9,7 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.RemoveProfilePhoto
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.UseProviderPhoto
+import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiState
@@ -28,7 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 
@@ -71,11 +66,11 @@ internal class ProfilePhotoViewModel(
         if (file == null) return
         viewModelScope.launch {
             val size = suspendRunCatching { file.size() }.getOrElse {
-                showSnackbar(Res.string.edit_profile_photo_unreadable)
+                showSnackbar(EditProfileMessage.PHOTO_UNREADABLE)
                 return@launch
             }
             if (size > MAX_AVATAR_SOURCE_BYTES) {
-                showSnackbar(Res.string.edit_profile_photo_too_large)
+                showSnackbar(EditProfileMessage.PHOTO_TOO_LARGE)
                 return@launch
             }
             uiAction.emit(ProfilePhotoUiAction.OpenCrop(CropPhotoNavRoute(file)))
@@ -85,23 +80,23 @@ internal class ProfilePhotoViewModel(
     private fun fallBackToProviderPhoto() {
         viewModelScope.launch {
             useProviderPhoto()
-            finishWith(Res.string.edit_profile_photo_synced)
+            finishWith(EditProfileMessage.PHOTO_SYNCED)
         }
     }
 
     private fun removePhoto() {
         viewModelScope.launch {
             removeProfilePhoto()
-            finishWith(Res.string.edit_profile_photo_removed)
+            finishWith(EditProfileMessage.PHOTO_REMOVED)
         }
     }
 
-    private suspend fun finishWith(message: StringResource) {
+    private suspend fun finishWith(message: EditProfileMessage) {
         uiAction.emit(ProfilePhotoUiAction.PhotoChanged)
         uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
     }
 
-    private suspend fun showSnackbar(message: StringResource) {
+    private suspend fun showSnackbar(message: EditProfileMessage) {
         uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
     }
 

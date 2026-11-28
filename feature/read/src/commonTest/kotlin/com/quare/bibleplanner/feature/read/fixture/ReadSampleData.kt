@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.read.fixture
 
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
@@ -113,65 +112,60 @@ private val versesByLocale = mapOf(
 internal fun readUiState(
     locale: String,
     areVersesHighlighted: Boolean = false,
-): ReadUiState {
-    val bookStringResource = BookId.GEN.toBookNameResource()
-    return ReadUiState(
-        header = ReadHeaderUiModel(
-            bookId = BookId.GEN,
-            bookStringResource = bookStringResource,
-            chapterNumber = CHAPTER,
-            isChapterRead = false,
-            navigationSuggestions = ReadNavigationSuggestionsModel(
-                // Genesis 1 is where the Bible starts, so there is nothing to go back to.
-                previous = null,
-                next = ReadNavigationSuggestionModel(
+): ReadUiState = ReadUiState(
+    header = ReadHeaderUiModel(
+        bookId = BookId.GEN,
+        chapterNumber = CHAPTER,
+        isChapterRead = false,
+        navigationSuggestions = ReadNavigationSuggestionsModel(
+            // Genesis 1 is where the Bible starts, so there is nothing to go back to.
+            previous = null,
+            next = ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = CHAPTER + 1,
+            ),
+        ),
+        versionAbbreviation = Loadable.Loaded(versionByLocale.getValue(locale)),
+    ),
+    content = ReadContentUiState.Success(
+        chapters = listOf(
+            ReadChapterUiModel(
+                chapter = ChapterRef(
+                    bibleVersionId = versionByLocale.getValue(locale),
                     bookId = BookId.GEN,
-                    chapterNumber = CHAPTER + 1,
+                    chapterNumber = CHAPTER,
                 ),
-            ),
-            versionAbbreviation = Loadable.Loaded(versionByLocale.getValue(locale)),
-        ),
-        content = ReadContentUiState.Success(
-            chapters = listOf(
-                ReadChapterUiModel(
-                    chapter = ChapterRef(
-                        bibleVersionId = versionByLocale.getValue(locale),
-                        bookId = BookId.GEN,
-                        chapterNumber = CHAPTER,
-                    ),
-                    bookStringResource = bookStringResource,
-                    isRead = false,
-                    verses = versesByLocale.getValue(locale).mapIndexed { index, text ->
-                        VerseUiModel(
-                            number = index + 1,
-                            heading = null,
-                            text = text,
-                            isSelected = false,
-                            highlightColor = highlightsByVerse[index + 1].takeIf { areVersesHighlighted },
-                            isSaved = false,
-                            noteMark = null,
-                        )
-                    },
-                ),
+                isRead = false,
+                verses = versesByLocale.getValue(locale).mapIndexed { index, text ->
+                    VerseUiModel(
+                        number = index + 1,
+                        heading = null,
+                        text = text,
+                        isSelected = false,
+                        highlightColor = highlightsByVerse[index + 1].takeIf { areVersesHighlighted },
+                        isSaved = false,
+                        noteMark = null,
+                    )
+                },
             ),
         ),
-        settings = ReaderSettingsModel(
-            fontSizeSp = ReaderFontSize.DEFAULT,
-            font = ReaderFont.LORA,
-            isRulerEnabled = false,
-            rulerLines = ReaderRulerLines.DEFAULT,
-            isFocusedVerseEnabled = false,
-            isVerticalReadingEnabled = false,
-            isNoteIconEnabled = true,
-        ),
-        isLoadingPreviousChapter = false,
-        isLoadingNextChapter = false,
-        dayCompletionBanner = null,
-        verseFocus = null,
-        isOpeningChapterStudy = false,
-        isChapterStudyBeside = false,
-    )
-}
+    ),
+    settings = ReaderSettingsModel(
+        fontSizeSp = ReaderFontSize.DEFAULT,
+        font = ReaderFont.LORA,
+        isRulerEnabled = false,
+        rulerLines = ReaderRulerLines.DEFAULT,
+        isFocusedVerseEnabled = false,
+        isVerticalReadingEnabled = false,
+        isNoteIconEnabled = true,
+    ),
+    isLoadingPreviousChapter = false,
+    isLoadingNextChapter = false,
+    dayCompletionBanner = null,
+    verseFocus = null,
+    isOpeningChapterStudy = false,
+    isChapterStudyBeside = false,
+)
 
 /**
  * The listen entry as the app shows it for the version [locale]'s reader chip names: the app offers

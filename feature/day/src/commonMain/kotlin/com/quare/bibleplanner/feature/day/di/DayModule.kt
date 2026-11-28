@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCas
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
 import com.quare.bibleplanner.feature.day.data.repository.DayRepositoryImpl
-import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.GetLatestSelectableDateUseCase
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
@@ -21,7 +21,6 @@ import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFac
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
-import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -42,7 +41,7 @@ val dayModule = module {
     factoryOf(::CalculateAllChaptersReadStatusUseCase)
     factoryOf(::ToggleChapterReadStatusUseCase)
     factoryOf(::UpdateDayReadTimestampWithDateAndTimeUseCase)
-    factoryOf(::EditDaySelectableDates)
+    factoryOf(::GetLatestSelectableDateUseCase)
     factoryOf(::LocalDateTimeToDateMapper)
     factoryOf(::ShouldBlockAddNotesUseCase)
 
@@ -50,7 +49,6 @@ val dayModule = module {
 
     factoryOf(::DayUiStateFlowFactory)
     factoryOf(::ReadDateFormatter)
-    factoryOf(::MonthPresentationMapper)
     factoryOf(::DeleteRouteNotesMapper)
 
     viewModelOf(::DayViewModel)

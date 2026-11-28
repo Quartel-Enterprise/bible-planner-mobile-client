@@ -27,10 +27,10 @@ internal class ShareCardPaletteMapperTest {
         assertEquals(
             expected = presets.map {
                 ShareCardPalette(
-                    startColor = it.startColor,
-                    endColor = it.endColor,
-                    textColor = it.textColor,
-                    subtitleColor = it.subtitleColor,
+                    startColor = Color(it.startArgb),
+                    endColor = Color(it.endArgb),
+                    textColor = Color(it.textArgb),
+                    subtitleColor = Color(it.subtitleArgb),
                 )
             },
             actual = palettes,

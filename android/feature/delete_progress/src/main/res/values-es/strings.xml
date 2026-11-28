@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_all_progress_title">¿Eliminar todo el progreso?</string>
+    <string name="delete_all_progress_message">Se elimina de todos tus dispositivos y de la nube:</string>
+    <string name="delete_all_progress_removes_chapters">Capítulos leídos y racha de lectura</string>
+    <string name="delete_all_progress_removes_plans">Planes en curso y completados</string>
+    <string name="delete_all_progress_keeps_account">Tu cuenta, suscripción y preferencias se mantienen</string>
+    <string name="delete_all_progress_deleting">Eliminando tu progreso…</string>
+    <string name="delete_all_progress_deleted">Progreso eliminado</string>
+    <string name="delete_all_progress_cancel">Cancelar</string>
+    <string name="delete_all_progress_confirm">Eliminar</string>
+</resources>

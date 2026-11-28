@@ -1,13 +1,7 @@
 package com.quare.bibleplanner.feature.paywall.presentation.mapper
 
-import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.error_browser_checkout_not_confirmed
-import bibleplanner.feature.paywall.generated.resources.error_network
-import bibleplanner.feature.paywall.generated.resources.error_payment_pending
-import bibleplanner.feature.paywall.generated.resources.error_purchase_cancelled
-import bibleplanner.feature.paywall.generated.resources.error_restore_purchase
-import bibleplanner.feature.paywall.generated.resources.error_unknown
 import com.quare.bibleplanner.core.provider.billing.domain.model.BillingException
+import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallError
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,7 +20,7 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(BillingException.UserCancelled())
 
         // Then
-        assertEquals(Res.string.error_purchase_cancelled, message)
+        assertEquals(PaywallError.PURCHASE_CANCELLED, message)
     }
 
     @Test
@@ -35,7 +29,7 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(BillingException.NetworkError())
 
         // Then
-        assertEquals(Res.string.error_network, message)
+        assertEquals(PaywallError.NETWORK, message)
     }
 
     @Test
@@ -44,7 +38,7 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(BillingException.PaymentPending())
 
         // Then
-        assertEquals(Res.string.error_payment_pending, message)
+        assertEquals(PaywallError.PAYMENT_PENDING, message)
     }
 
     @Test
@@ -53,7 +47,7 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(BillingException.RestorePurchaseFailed())
 
         // Then
-        assertEquals(Res.string.error_restore_purchase, message)
+        assertEquals(PaywallError.RESTORE_PURCHASE_FAILED, message)
     }
 
     @Test
@@ -62,7 +56,7 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(BillingException.BrowserCheckoutNotConfirmed())
 
         // Then
-        assertEquals(Res.string.error_browser_checkout_not_confirmed, message)
+        assertEquals(PaywallError.BROWSER_CHECKOUT_NOT_CONFIRMED, message)
     }
 
     @Test
@@ -71,6 +65,6 @@ internal class PaywallExceptionMapperTest {
         val message = mapper.map(IllegalStateException("boom"))
 
         // Then
-        assertEquals(Res.string.error_unknown, message)
+        assertEquals(PaywallError.UNKNOWN, message)
     }
 }

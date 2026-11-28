@@ -7,7 +7,6 @@ import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.CloseDeletedA
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.CloseDeletedAccountSessionUseCase
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccount
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountUseCase
-import com.quare.bibleplanner.feature.deleteaccount.presentation.mapper.StoreNameMapper
 import com.quare.bibleplanner.feature.deleteaccount.presentation.provider.GetConfirmationKeyword
 import com.quare.bibleplanner.feature.deleteaccount.presentation.provider.GetConfirmationKeywordImpl
 import com.quare.bibleplanner.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
@@ -22,7 +21,6 @@ val deleteAccountModule = module {
     singleOf(::DeleteAccountRepositoryImpl).bind<DeleteAccountRepository>()
     factoryOf(::CloseDeletedAccountSessionUseCase).bind<CloseDeletedAccountSession>()
     factoryOf(::DeleteAccountUseCase).bind<DeleteAccount>()
-    factoryOf(::StoreNameMapper)
     factoryOf(::GetConfirmationKeywordImpl).bind<GetConfirmationKeyword>()
     viewModelOf(::DeleteAccountViewModel)
 }

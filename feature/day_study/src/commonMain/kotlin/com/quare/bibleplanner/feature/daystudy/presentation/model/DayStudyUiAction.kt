@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.model
 
-import org.jetbrains.compose.resources.PluralStringResource
-import org.jetbrains.compose.resources.StringResource
-
 internal sealed interface DayStudyUiAction {
     data object NavigateToStudy : DayStudyUiAction
 
@@ -10,12 +7,9 @@ internal sealed interface DayStudyUiAction {
 
     data object NavigateToLoginWarning : DayStudyUiAction
 
-    data class ShowSnackBar(
-        val message: StringResource,
-    ) : DayStudyUiAction
+    data object ShowOffline : DayStudyUiAction
 
-    data class ShowSnackBarPlural(
-        val resource: PluralStringResource,
+    data class ShowWaitForGenerations(
         val count: Int,
     ) : DayStudyUiAction
 }

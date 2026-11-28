@@ -52,9 +52,10 @@ jobs:
         run: ./gradlew screenshotTests -PscreenshotTests=record --continue
 
       # A push made with GITHUB_TOKEN starts no workflow, and main's ruleset waits for
-      # check-translations on the head commit, so the commit is pushed with the repository's
-      # fine-grained token (Contents and Pull requests read and write), the one merge-when-green
-      # merges with. It is only handed to this step, after the pull request's code has run.
+      # check-translations and duplication on the head commit, so the commit is pushed with
+      # the repository's fine-grained token (Contents and Pull requests read and write), the
+      # one merge-when-green merges with. It is only handed to this step, after the pull
+      # request's code has run.
       - name: Commit the new references
         env:
           PUSH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}

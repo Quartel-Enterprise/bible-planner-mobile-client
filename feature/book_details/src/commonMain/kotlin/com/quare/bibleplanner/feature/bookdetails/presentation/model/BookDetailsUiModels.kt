@@ -7,15 +7,12 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
-import org.jetbrains.compose.resources.StringResource
 
 sealed interface BookDetailsUiState {
     data object Loading : BookDetailsUiState
 
     data class Success(
         val id: BookId,
-        val nameStringResource: StringResource,
-        val synopsisStringResource: StringResource,
         val chapters: List<BookChapterModel>,
         val progress: Float,
         val readChaptersCount: Int,
@@ -23,7 +20,6 @@ sealed interface BookDetailsUiState {
         val areAllChaptersRead: Boolean,
         val isFavorite: Boolean,
         val bookGroup: BookGroup,
-        val bookCategoryName: String,
         val isSynopsisExpanded: Boolean,
     ) : BookDetailsUiState
 }

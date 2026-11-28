@@ -1,15 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.factory
 
-import bibleplanner.feature.profile.generated.resources.Res
-import bibleplanner.feature.profile.generated.resources.contrast_high
-import bibleplanner.feature.profile.generated.resources.contrast_medium
-import bibleplanner.feature.profile.generated.resources.contrast_standard
-import bibleplanner.feature.profile.generated.resources.dynamic_colors
-import bibleplanner.feature.profile.generated.resources.pro_and_support
-import bibleplanner.feature.profile.generated.resources.pro_section
-import bibleplanner.feature.profile.generated.resources.theme_dark
-import bibleplanner.feature.profile.generated.resources.theme_light
-import bibleplanner.feature.profile.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
@@ -39,6 +29,7 @@ import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOp
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileColorScheme
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +44,6 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import kotlin.time.Clock
@@ -87,10 +77,9 @@ internal class ProfileUiStateFactory(
         subscriptionStatus = Loadable.Loading,
         isProCardVisible = true.toLoaded(),
         shouldShowDonateOption = Loadable.Loading,
-        headerRes = Loadable.Loading,
         isInstagramLinkVisible = Loadable.Loading,
-        themeRes = Loadable.Loading,
-        contrastRes = Loadable.Loading,
+        theme = Loadable.Loading,
+        colorScheme = Loadable.Loading,
         selectedLanguage = Loadable.Loading,
         bibleVersionName = Loadable.Loading,
         bibleDownloadProgress = Loadable.Loading,
@@ -110,15 +99,14 @@ internal class ProfileUiStateFactory(
                 state.copy(
                     shouldShowDonateOption = remoteConfigs.shouldShowDonate.toLoaded(),
                     isInstagramLinkVisible = remoteConfigs.isInstagramVisible.toLoaded(),
-                    headerRes = remoteConfigs.toHeaderRes().toLoaded(),
                 )
             }
         },
         getThemeConfigurationFlow().map { themeConfiguration ->
             { state: ProfileUiState ->
                 state.copy(
-                    themeRes = themeConfiguration.theme.toStringResource().toLoaded(),
-                    contrastRes = themeConfiguration.toContrastRes().toLoaded(),
+                    theme = themeConfiguration.theme.toLoaded(),
+                    colorScheme = themeConfiguration.toColorScheme().toLoaded(),
                 )
             }
         },
@@ -242,17 +230,11 @@ internal class ProfileUiStateFactory(
         }
     }
 
-    private fun RemoteConfigs.toHeaderRes(): StringResource = if (shouldShowDonate) {
-        Res.string.pro_and_support
-    } else {
-        Res.string.pro_section
-    }
-
-    private fun ThemeConfiguration.toContrastRes(): StringResource? =
+    private fun ThemeConfiguration.toColorScheme(): ProfileColorScheme =
         if (isDynamicColorsEnabled && isDynamicColorSupported()) {
-            Res.string.dynamic_colors
+            ProfileColorScheme.DYNAMIC_COLORS
         } else {
-            contrast.toStringResource()
+            contrast.toColorScheme()
         }
 
     private data class BibleRow(
@@ -271,15 +253,9 @@ internal class ProfileUiStateFactory(
         val isDynamicColorsEnabled: Boolean,
     )
 
-    private fun Theme.toStringResource(): StringResource = when (this) {
-        Theme.LIGHT -> Res.string.theme_light
-        Theme.DARK -> Res.string.theme_dark
-        Theme.SYSTEM -> Res.string.theme_system
-    }
-
-    private fun ContrastType.toStringResource(): StringResource = when (this) {
-        ContrastType.Standard -> Res.string.contrast_standard
-        ContrastType.Medium -> Res.string.contrast_medium
-        ContrastType.High -> Res.string.contrast_high
+    private fun ContrastType.toColorScheme(): ProfileColorScheme = when (this) {
+        ContrastType.Standard -> ProfileColorScheme.STANDARD_CONTRAST
+        ContrastType.Medium -> ProfileColorScheme.MEDIUM_CONTRAST
+        ContrastType.High -> ProfileColorScheme.HIGH_CONTRAST
     }
 }

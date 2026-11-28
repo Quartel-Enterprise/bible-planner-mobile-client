@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.books.fixture
 
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.favorites
-import bibleplanner.feature.books.generated.resources.read
-import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
@@ -47,17 +43,14 @@ internal val joshua = BookPresentationModel(
 internal val booksFilterOptions = listOf(
     BookFilterOption(
         type = BookFilterType.OnlyRead,
-        label = Res.string.read,
         isSelected = false,
     ),
     BookFilterOption(
         type = BookFilterType.OnlyUnread,
-        label = Res.string.unread,
         isSelected = false,
     ),
     BookFilterOption(
         type = BookFilterType.Favorites,
-        label = Res.string.favorites,
         isSelected = false,
     ),
 )

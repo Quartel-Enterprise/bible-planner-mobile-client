@@ -1,10 +1,7 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,7 +35,6 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_toggle_subtitle_on
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_toggle_title
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_description
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.studysuggestion.presentation.component.StudySuggestionModeCard
@@ -48,6 +43,7 @@ import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySu
 import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.ExpandableText
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
+import com.quare.bibleplanner.ui.component.sync.SyncAcrossDevicesOption
 import org.jetbrains.compose.resources.stringResource
 import software.quare.loadable.valueOrNull
 
@@ -57,7 +53,6 @@ private val sectionLetterSpacing = 0.4.sp
 private val loadingCardHeight = 120.dp
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 private const val DISABLED_MODES_ALPHA = 0.45f
-private const val LOGGED_OUT_SYNC_ALPHA = 0.55f
 private const val DESCRIPTION_COLLAPSED_MAX_LINES = 1
 
 @Composable
@@ -90,11 +85,13 @@ internal fun StudySuggestionContent(
             )
         }
         HorizontalDivider()
-        SyncOption(
+        SyncAcrossDevicesOption(
+            description = stringResource(Res.string.sync_across_devices_description),
             isChecked = uiState.isSyncEnabled,
             isLoggedIn = uiState.isLoggedIn,
             onToggle = { onEvent(StudySuggestionUiEvent.SyncToggleClicked(it)) },
             onBlockedClick = { onEvent(StudySuggestionUiEvent.SyncToggleBlockedClicked) },
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -234,69 +231,3 @@ private fun StudySuggestionSettingsModel.toModeClickEvent(mode: StudySuggestionM
     } else {
         StudySuggestionUiEvent.OnBlockedModeClick
     }
-
-@Composable
-private fun SyncOption(
-    isChecked: Boolean,
-    isLoggedIn: Boolean,
-    onToggle: (Boolean) -> Unit,
-    onBlockedClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .alpha(if (isLoggedIn) 1f else LOGGED_OUT_SYNC_ALPHA),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.sync_across_devices_title),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = stringResource(Res.string.sync_across_devices_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        SyncSwitch(
-            isChecked = isChecked,
-            isLoggedIn = isLoggedIn,
-            onToggle = onToggle,
-            onBlockedClick = onBlockedClick,
-        )
-    }
-}
-
-/*
- * Why: the disabled switch takes no taps, so a transparent overlay over the switch only (not the
- * row) catches them to prompt logged-out users to sign in.
- */
-@Composable
-private fun SyncSwitch(
-    isChecked: Boolean,
-    isLoggedIn: Boolean,
-    onToggle: (Boolean) -> Unit,
-    onBlockedClick: () -> Unit,
-) {
-    Box {
-        AppSwitch(
-            checked = isChecked && isLoggedIn,
-            onCheckedChange = onToggle.takeIf { isLoggedIn },
-            enabled = isLoggedIn,
-        )
-        if (!isLoggedIn) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onBlockedClick,
-                    ),
-            )
-        }
-    }
-}

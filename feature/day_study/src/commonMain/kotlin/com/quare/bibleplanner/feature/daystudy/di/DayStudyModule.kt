@@ -4,6 +4,7 @@ import com.quare.bibleplanner.feature.daystudy.data.repository.DayStudyPanelRati
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyPanelRatioRepository
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.ObserveDayStudyPanelReadingFractionUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.SetDayStudyPanelReadingFractionUseCase
+import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardLoader
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
@@ -21,6 +22,7 @@ val featureDayStudyModule = module {
     factoryOf(::SetDayStudyPanelReadingFractionUseCase)
 
     factoryOf(::DayStudyCardUiModelFactory)
+    factoryOf(::DayStudyCardLoader)
     viewModelOf(::DayStudyViewModel)
     viewModelOf(::DayStudyRouteViewModel)
     viewModelOf(::DayStudyBackgroundGenerationViewModel)

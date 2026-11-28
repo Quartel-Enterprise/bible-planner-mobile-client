@@ -24,5 +24,9 @@ gradlePlugin {
             id = "bibleplanner.kotlin.composeMultiplatform"
             implementationClass = "ComposeMultiplatformConventionPlugin"
         }
+        register("androidCompose") {
+            id = "bibleplanner.android.compose"
+            implementationClass = "AndroidComposeConventionPlugin"
+        }
     }
 }

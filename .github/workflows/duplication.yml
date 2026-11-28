@@ -1,0 +1,33 @@
+name: duplication
+
+# Runs on every pull request, with no paths filter: duplication is a required check of the main
+# ruleset, and a check a paths filter skips never reports, which would hold the merge forever.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Why: no review-gate, unlike the other checks. A gate holding for open threads skips the jobs it guards, and a
+  # skipped required check counts as passed, so a merge after the threads are resolved would skip this check.
+  duplication:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # The same check as ./scripts/cpd.sh locally, which reads its release from this line. It warns when the
+      # baseline takes in copied code against the pull request's base branch.
+      - name: Look for copied code
+        uses: Quartel-Enterprise/copied-code-check@1.0.3

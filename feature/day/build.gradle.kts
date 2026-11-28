@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.model)
+            api(projects.core.presentation)
             implementation(projects.core.dayStudy)
             implementation(projects.core.utils)
             implementation(projects.core.date)

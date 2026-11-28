@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.uikit.LocalUIViewController
-import androidx.navigation3.runtime.NavKey
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
@@ -14,6 +13,7 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.toBitmap
 import com.mohamedrejeb.calf.ui.navigation.UIKitUITabBarItem
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIosIcon
@@ -44,7 +44,7 @@ private const val AVATAR_DECODE_SIZE_PIXELS = 128
 
 @Composable
 internal actual fun NativeTabBarAvatarEffect(
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
     tabBarItems: List<UIKitUITabBarItem>,
 ) {
     val viewController = LocalUIViewController.current

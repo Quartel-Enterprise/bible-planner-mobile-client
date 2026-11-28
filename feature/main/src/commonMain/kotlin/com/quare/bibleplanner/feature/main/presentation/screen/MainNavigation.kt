@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
@@ -30,6 +28,7 @@ import com.mohamedrejeb.calf.ui.navigation.AdaptiveNavigationBar
 import com.mohamedrejeb.calf.ui.navigation.UIKitTabBarConfiguration
 import com.mohamedrejeb.calf.ui.navigation.UIKitUITabBarItem
 import com.mohamedrejeb.calf.ui.uikit.UIKitImage
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -47,7 +46,7 @@ internal fun MainNavigationBar(
     modifier: Modifier,
     isNativeBarVisible: Boolean,
     selectedRoute: NavKey?,
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -101,17 +100,18 @@ internal fun MainNavigationBar(
 }
 
 @Composable
-private fun MainNavigationItemModel<NavKey>.toUIKitUITabBarItem(): UIKitUITabBarItem = UIKitUITabBarItem(
-    title = stringResource(presentationModel.title),
-    image = UIKitImage.SystemName(presentationModel.iosIcon.symbolName),
-    selectedImage = UIKitImage.SystemName(presentationModel.iosIcon.selectedSymbolName),
-)
+private fun MainNavigationItemModel<MainNavRouteDestination>.toUIKitUITabBarItem(): UIKitUITabBarItem =
+    UIKitUITabBarItem(
+        title = stringResource(route.toTabTitle()),
+        image = UIKitImage.SystemName(presentationModel.iosIcon.symbolName),
+        selectedImage = UIKitImage.SystemName(presentationModel.iosIcon.selectedSymbolName),
+    )
 
 @Composable
 internal fun MainNavigationRail(
     modifier: Modifier,
     selectedRoute: NavKey?,
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -136,8 +136,8 @@ internal fun MainNavigationRail(
 
 @Composable
 private fun MainNavigationItemsComponent(
-    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
-    isItemSelected: (MainNavigationItemModel<NavKey>) -> Boolean,
+    mainNavigationModels: List<MainNavigationItemModel<MainNavRouteDestination>>,
+    isItemSelected: (MainNavigationItemModel<MainNavRouteDestination>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
     itemFactory: @Composable (Modifier, Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {
@@ -157,12 +157,13 @@ private fun MainNavigationItemsComponent(
             {
                 MainNavigationItemIcon(
                     icon = presentationItem.icon,
-                    contentDescription = stringResource(presentationItem.title),
+                    route = bottomNavigationItemModel.route,
+                    contentDescription = stringResource(bottomNavigationItemModel.route.toTabTitle()),
                 )
             },
             {
                 Text(
-                    stringResource(presentationItem.title),
+                    stringResource(bottomNavigationItemModel.route.toTabTitle()),
                     textAlign = TextAlign.Center,
                 )
             },
@@ -173,12 +174,13 @@ private fun MainNavigationItemsComponent(
 @Composable
 private fun MainNavigationItemIcon(
     icon: MainNavigationIcon,
+    route: MainNavRouteDestination,
     contentDescription: String,
 ) {
     when (icon) {
-        is MainNavigationIcon.Vector -> {
+        MainNavigationIcon.Default -> {
             Icon(
-                imageVector = icon.imageVector,
+                imageVector = route.toTabIcon(),
                 contentDescription = contentDescription,
             )
         }
@@ -189,7 +191,7 @@ private fun MainNavigationItemIcon(
                 photoBytes = icon.avatar.photoBytes,
                 displayName = icon.displayName,
                 size = profileIconSize,
-                fallbackIcon = Icons.Default.Person,
+                fallbackIcon = route.toTabIcon(),
             )
         }
     }

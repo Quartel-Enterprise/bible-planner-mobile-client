@@ -103,7 +103,6 @@ kotlin {
 buildkonfig {
     packageName = "com.quare.bibleplanner.feature.profile.generated"
     objectName = "ProfileBuildKonfig"
-    exposeObjectWithName = "ProfileBuildKonfig"
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())

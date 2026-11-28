@@ -1,6 +1,13 @@
 package com.quare.bibleplanner.feature.main.presentation.viewmodel
 
-import androidx.navigation3.runtime.NavKey
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Person
+import bibleplanner.feature.main.generated.resources.Res
+import bibleplanner.feature.main.generated.resources.books
+import bibleplanner.feature.main.generated.resources.plans
+import bibleplanner.feature.main.generated.resources.profile
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
@@ -12,6 +19,8 @@ import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
+import com.quare.bibleplanner.feature.main.presentation.screen.toTabIcon
+import com.quare.bibleplanner.feature.main.presentation.screen.toTabTitle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +34,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class MainScreenViewModelTest {
@@ -44,7 +52,7 @@ internal class MainScreenViewModelTest {
     private lateinit var profileFlow: MutableStateFlow<UserProfile?>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var actions: List<MainScreenUiAction>
-    private lateinit var navigationItems: List<List<MainNavigationItemModel<NavKey>>>
+    private lateinit var navigationItems: List<List<MainNavigationItemModel<MainNavRouteDestination>>>
 
     @BeforeTest
     fun setUp() {
@@ -92,7 +100,7 @@ internal class MainScreenViewModelTest {
             // Then
             assertEquals(
                 listOf(MainNavRouteDestination.Plans, MainNavRouteDestination.Books, MainNavRouteDestination.Profile),
-                items.map(MainNavigationItemModel<NavKey>::route),
+                items.map(MainNavigationItemModel<MainNavRouteDestination>::route),
             )
             assertEquals(
                 MainNavigationIcon.Profile(
@@ -104,7 +112,7 @@ internal class MainScreenViewModelTest {
         }
 
     @Test
-    fun `GIVEN a signed out user WHEN collecting the navigation items THEN plans and books use vector icons`() =
+    fun `GIVEN a signed out user WHEN collecting the navigation items THEN plans and books use default icons`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(profile = null)
@@ -113,10 +121,39 @@ internal class MainScreenViewModelTest {
             val items = navigationItems.last()
 
             // Then
-            assertIs<MainNavigationIcon.Vector>(items[0].presentationModel.icon)
-            assertIs<MainNavigationIcon.Vector>(items[1].presentationModel.icon)
+            assertEquals(MainNavigationIcon.Default, items[0].presentationModel.icon)
+            assertEquals(MainNavigationIcon.Default, items[1].presentationModel.icon)
             assertEquals("book", items[1].presentationModel.iosIcon.symbolName)
             assertEquals("book.fill", items[1].presentationModel.iosIcon.selectedSymbolName)
+        }
+
+    @Test
+    fun `GIVEN the navigation items WHEN the Compose UI labels them THEN each tab gets its own title`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = null)
+
+            // When
+            val titles = navigationItems.last().map { item -> item.route.toTabTitle() }
+
+            // Then
+            assertEquals(listOf(Res.string.plans, Res.string.books, Res.string.profile), titles)
+        }
+
+    @Test
+    fun `GIVEN the navigation items WHEN the Compose UI draws their icons THEN each tab gets its own icon`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = null)
+
+            // When
+            val icons = navigationItems.last().map { item -> item.route.toTabIcon() }
+
+            // Then
+            assertEquals(
+                listOf(Icons.Default.DateRange, Icons.AutoMirrored.Filled.MenuBook, Icons.Default.Person),
+                icons,
+            )
         }
 
     @Test
@@ -200,9 +237,55 @@ internal class MainScreenViewModelTest {
         assertEquals(listOf(MainScreenUiAction.NavigateToBottomRoute(ThemeNavRoute)), actions)
     }
 
+    @Test
+    fun `GIVEN a signed in user WHEN a native UI watches the tabs THEN receives the avatar of the profile tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                profile = null,
+                collectInBackground = false,
+            )
+            val watchedItems = mutableListOf<List<MainNavigationItemModel<MainNavRouteDestination>>>()
+            viewModel.stateWatcher.observe { watchedItems += it }
+
+            // When
+            profileFlow.value = profile
+
+            // Then
+            assertEquals(
+                MainNavigationIcon.Profile(
+                    avatar = profile.avatar,
+                    displayName = "Pierre",
+                ),
+                watchedItems
+                    .last()
+                    .last()
+                    .presentationModel.icon,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native UI watches the actions WHEN clicking a tab THEN receives the navigation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val watchedActions = mutableListOf<MainScreenUiAction>()
+            viewModel.actionWatcher.observe { watchedActions += it }
+
+            // When
+            viewModel.onEvent(MainScreenUiEvent.BottomNavItemClicked(MainNavRouteDestination.Books))
+
+            // Then
+            assertEquals(
+                listOf<MainScreenUiAction>(MainScreenUiAction.NavigateToBottomRoute(MainNavRouteDestination.Books)),
+                watchedActions,
+            )
+        }
+
     private fun TestScope.prepareScenario(
         language: Language = Language.ENGLISH,
         profile: UserProfile? = null,
+        collectInBackground: Boolean = true,
     ) {
         profileFlow = MutableStateFlow(profile)
         trackedEvents = mutableListOf()
@@ -211,10 +294,14 @@ internal class MainScreenViewModelTest {
             observeUserProfile = { profileFlow },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        actions = mutableListOf()
+        navigationItems = mutableListOf()
+        // Why: a watcher test must prove the watcher alone starts the WhileSubscribed flows.
+        if (!collectInBackground) return
         actions = mutableListOf<MainScreenUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }
-        navigationItems = mutableListOf<List<MainNavigationItemModel<NavKey>>>().also { collected ->
+        navigationItems = mutableListOf<List<MainNavigationItemModel<MainNavRouteDestination>>>().also { collected ->
             backgroundScope.launch { viewModel.mainNavigationItemModels.collect { collected += it } }
         }
     }

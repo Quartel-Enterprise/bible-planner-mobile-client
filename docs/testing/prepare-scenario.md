@@ -51,7 +51,6 @@ internal class LogoutViewModelTest {
     private fun TestScope.prepareScenario(result: Result<Unit>) {
         viewModel = LogoutViewModel(
             logout = { result },
-            logoutErrorMapper = LogoutErrorMapper(),
         )
         actions = mutableListOf<LogoutUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }

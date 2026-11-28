@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseC
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -24,7 +23,6 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
-import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,8 +100,6 @@ internal class BookDetailsViewModelTest {
         assertEquals(
             BookDetailsUiState.Success(
                 id = BookId.GEN,
-                nameStringResource = BookId.GEN.toBookNameResource(),
-                synopsisStringResource = BookId.GEN.toSynopsisResource(),
                 chapters = genesis.chapters,
                 progress = 0.5f,
                 readChaptersCount = 1,
@@ -111,7 +107,6 @@ internal class BookDetailsViewModelTest {
                 areAllChaptersRead = false,
                 isFavorite = false,
                 bookGroup = BookGroup.Pentateuch,
-                bookCategoryName = "Pentateuch",
                 isSynopsisExpanded = false,
             ),
             state,

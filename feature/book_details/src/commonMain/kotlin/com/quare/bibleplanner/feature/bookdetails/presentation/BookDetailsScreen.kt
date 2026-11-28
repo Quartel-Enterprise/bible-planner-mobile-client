@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
+import com.quare.bibleplanner.core.books.presentation.model.titleRes
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.BookDetailsTopBar
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.ChaptersGrid
@@ -26,6 +28,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.component.Reading
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.SynopsisSection
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
+import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -86,8 +89,8 @@ fun BookDetailsScreen(
                             responsiveItem(key = "mid_spacer_1") { VerticalSpacer(24) }
                             responsiveItem(key = "synopsis") {
                                 SynopsisSection(
-                                    synopsis = stringResource(state.synopsisStringResource),
-                                    bookCategoryName = state.bookCategoryName,
+                                    synopsis = stringResource(state.id.toSynopsisResource()),
+                                    bookCategoryName = stringResource(state.bookGroup.titleRes),
                                     bookGroup = state.bookGroup,
                                     isExpanded = state.isSynopsisExpanded,
                                     onToggleExpanded = { onEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded) },
@@ -100,7 +103,7 @@ fun BookDetailsScreen(
                                 ChaptersGrid(
                                     animatedVisibilityScope = animatedVisibilityScope,
                                     sharedTransitionScope = sharedTransitionScope,
-                                    bookName = stringResource(state.nameStringResource),
+                                    bookName = stringResource(state.id.toBookNameResource()),
                                     chapters = state.chapters,
                                     areAllChaptersRead = state.areAllChaptersRead,
                                     onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
@@ -130,8 +133,8 @@ fun BookDetailsScreen(
                                         )
                                         VerticalSpacer(24)
                                         SynopsisSection(
-                                            synopsis = stringResource(state.synopsisStringResource),
-                                            bookCategoryName = state.bookCategoryName,
+                                            synopsis = stringResource(state.id.toSynopsisResource()),
+                                            bookCategoryName = stringResource(state.bookGroup.titleRes),
                                             bookGroup = state.bookGroup,
                                             isExpanded = state.isSynopsisExpanded,
                                             onToggleExpanded = { onEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded) },
@@ -150,7 +153,7 @@ fun BookDetailsScreen(
                                             areAllChaptersRead = state.areAllChaptersRead,
                                             onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
                                             onToggleAllClick = { onEvent(BookDetailsUiEvent.OnToggleAllChapters) },
-                                            bookName = stringResource(state.nameStringResource),
+                                            bookName = stringResource(state.id.toBookNameResource()),
                                             animatedVisibilityScope = animatedVisibilityScope,
                                             sharedTransitionScope = sharedTransitionScope,
                                         )

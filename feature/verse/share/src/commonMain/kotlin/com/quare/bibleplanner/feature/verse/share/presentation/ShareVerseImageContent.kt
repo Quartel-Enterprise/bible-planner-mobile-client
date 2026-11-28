@@ -67,6 +67,7 @@ import bibleplanner.feature.verse.share.generated.resources.share_typography
 import com.quare.bibleplanner.core.image.encodeToPng
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.share.presentation.component.ShareVerseCard
+import com.quare.bibleplanner.feature.verse.share.presentation.mapper.toPalette
 import com.quare.bibleplanner.feature.verse.share.presentation.mapper.toSwatchColor
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackground
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackgroundUiModel
@@ -321,15 +322,17 @@ private fun BackgroundSection(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             ShareCardBackground.entries.forEach { entry ->
+                val preset = ShareCardBackgroundUiModel.Preset(entry)
+                val palette = preset.toPalette()
                 SwatchButton(
-                    isSelected = background == ShareCardBackgroundUiModel.Preset(entry),
+                    isSelected = background == preset,
                     contentDescription = null,
                     onClick = { onEvent(ShareVerseUiEvent.OnBackgroundClick(entry)) },
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Brush.linearGradient(listOf(entry.startColor, entry.endColor))),
+                            .background(Brush.linearGradient(listOf(palette.startColor, palette.endColor))),
                     )
                 }
             }

@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -12,9 +14,37 @@ kotlin {
     jvm()
 
     sourceSets {
+        // Why: only iOS draws a native tab bar, so the other targets share one no-op.
+        val nonIosMain = create("nonIosMain") {
+            dependsOn(commonMain.get())
+        }
+
+        androidMain {
+            dependsOn(nonIosMain)
+        }
+
+        jvmMain {
+            dependsOn(nonIosMain)
+        }
+
+        webMain {
+            dependsOn(nonIosMain)
+        }
+
+        iosMain {
+            dependsOn(commonMain.get())
+        }
+        iosArm64Main {
+            dependsOn(iosMain.get())
+        }
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
+        }
+
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            api(projects.core.presentation)
             implementation(projects.core.profile)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
@@ -57,4 +87,7 @@ kotlin {
             implementation(libs.coil.compose)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }

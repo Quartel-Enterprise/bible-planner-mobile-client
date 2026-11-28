@@ -1,11 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.viewmodel
 
-import bibleplanner.feature.profile.generated.resources.Res
-import bibleplanner.feature.profile.generated.resources.delete_account_requires_internet
-import bibleplanner.feature.profile.generated.resources.login_requires_internet
-import bibleplanner.feature.profile.generated.resources.logout_requires_internet
-import bibleplanner.feature.profile.generated.resources.up_to_date_message
-import bibleplanner.feature.profile.generated.resources.update_check_failed_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
@@ -56,6 +50,7 @@ import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOp
 import com.quare.bibleplanner.feature.profile.fake.FakeLanguageProvider
 import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfig
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileMessage
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
@@ -348,9 +343,9 @@ internal class ProfileViewModelTest {
             // Then
             assertEquals(
                 expected = listOf(
-                    Res.string.delete_account_requires_internet,
-                    Res.string.login_requires_internet,
-                    Res.string.logout_requires_internet,
+                    ProfileMessage.DELETE_ACCOUNT_REQUIRES_INTERNET,
+                    ProfileMessage.LOGIN_REQUIRES_INTERNET,
+                    ProfileMessage.LOGOUT_REQUIRES_INTERNET,
                 ).map(ProfileUiAction::ShowSnackbar),
                 actual = actions,
             )
@@ -407,7 +402,7 @@ internal class ProfileViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf<ProfileUiAction>(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message)),
+            expected = listOf<ProfileUiAction>(ProfileUiAction.ShowSnackbar(ProfileMessage.UP_TO_DATE)),
             actual = actions,
         )
         assertTrue(shownPrompts.isEmpty())
@@ -426,7 +421,7 @@ internal class ProfileViewModelTest {
             // Then
             assertEquals(
                 expected = listOf<ProfileUiAction>(
-                    ProfileUiAction.ShowSnackbar(Res.string.update_check_failed_message),
+                    ProfileUiAction.ShowSnackbar(ProfileMessage.UPDATE_CHECK_FAILED),
                 ),
                 actual = actions,
             )

@@ -13,7 +13,7 @@ import com.quare.bibleplanner.feature.deletenotes.presentation.model.DeleteNotes
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.launch
 
-internal class DeleteNotesViewModel(
+class DeleteNotesViewModel internal constructor(
     private val deleteDayNotes: DeleteDayNotesUseCase,
     private val navigator: Navigator,
     route: DeleteNotesRoute,

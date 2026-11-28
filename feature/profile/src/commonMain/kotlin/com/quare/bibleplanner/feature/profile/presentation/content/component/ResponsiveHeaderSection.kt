@@ -21,7 +21,9 @@ import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.become_pro_subtitle
 import bibleplanner.feature.profile.generated.resources.donate_option
 import bibleplanner.feature.profile.generated.resources.donate_subtitle
+import bibleplanner.feature.profile.generated.resources.pro_and_support
 import bibleplanner.feature.profile.generated.resources.pro_description_simple
+import bibleplanner.feature.profile.generated.resources.pro_section
 import bibleplanner.feature.profile.generated.resources.you_re_pro
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -41,9 +43,11 @@ internal fun ResponsiveContentScope.headerSection(
     onEvent: (ProfileUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
 ) {
-    state.headerRes.valueOrNull()?.let { headerRes ->
+    state.shouldShowDonateOption.valueOrNull()?.let { shouldShowDonate ->
         responsiveItem {
-            SectionHeaderText(title = stringResource(headerRes))
+            SectionHeaderText(
+                title = stringResource(if (shouldShowDonate) Res.string.pro_and_support else Res.string.pro_section),
+            )
         }
         item { VerticalSpacer() }
     }

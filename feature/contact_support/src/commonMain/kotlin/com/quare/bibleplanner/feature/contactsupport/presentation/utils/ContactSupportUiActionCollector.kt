@@ -4,6 +4,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
+import bibleplanner.feature.contact_support.generated.resources.Res
+import bibleplanner.feature.contact_support.generated.resources.support_email_copied_message
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.toClipEntry
@@ -20,8 +22,12 @@ internal fun ContactSupportUiActionCollector(
     ActionCollector(actionsFlow) { action ->
         when (action) {
             is ContactSupportUiAction.OpenLink -> uriHandler.openUri(action.url)
+
             is ContactSupportUiAction.Copy -> clipboard.setClipEntry(action.text.toClipEntry())
-            is ContactSupportUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(getString(action.message))
+
+            ContactSupportUiAction.NotifyEmailCopied -> snackbarHostState.showSnackbar(
+                getString(Res.string.support_email_copied_message),
+            )
         }
     }
 }

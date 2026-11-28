@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.login.presentation
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.login.generated.resources.Res
-import bibleplanner.feature.login.generated.resources.login_result_error
-import bibleplanner.feature.login.generated.resources.login_result_success
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -14,6 +11,7 @@ import com.quare.bibleplanner.feature.login.domain.usecase.IsNewAccount
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
+import com.quare.bibleplanner.feature.login.presentation.model.LoginResultMessage
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
@@ -184,8 +182,8 @@ internal class LoginViewModel(
 
     private fun notifyLoginResult(result: NativeSignInResult) {
         val message = when {
-            result is NativeSignInResult.Success -> Res.string.login_result_success
-            findLoginErrorOrNull(result) != null -> Res.string.login_result_error
+            result is NativeSignInResult.Success -> LoginResultMessage.SUCCESS
+            findLoginErrorOrNull(result) != null -> LoginResultMessage.ERROR
             else -> null
         } ?: return
         viewModelScope.launch {

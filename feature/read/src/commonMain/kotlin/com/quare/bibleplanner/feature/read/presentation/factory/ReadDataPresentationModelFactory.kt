@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
-import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
@@ -28,7 +27,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import org.jetbrains.compose.resources.StringResource
 import software.quare.loadable.Loadable
 import software.quare.loadable.loadedOrNull
 import software.quare.loadable.toLoaded
@@ -46,7 +44,6 @@ internal class ReadDataPresentationModelFactory(
     override fun invoke(
         bookId: BookId,
         chapterNumber: Int,
-        bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
         prependedChapters: List<ReadNavigationSuggestionModel>,
@@ -74,7 +71,6 @@ internal class ReadDataPresentationModelFactory(
                     ReadDataUiModel(
                         header = ReadHeaderUiModel(
                             bookId = bookId,
-                            bookStringResource = bookStringResource,
                             chapterNumber = chapterNumber,
                             isChapterRead = chapter?.isRead ?: isInitiallyRead,
                             navigationSuggestions = navigationSuggestions,
@@ -175,7 +171,6 @@ internal class ReadDataPresentationModelFactory(
                                 bookId = bookId,
                                 chapterNumber = chapterNumber,
                             ),
-                            bookStringResource = bookId.toBookNameResource(),
                             isRead = versesWithTexts.all { it.verse.isRead },
                             verses = verses,
                         ),

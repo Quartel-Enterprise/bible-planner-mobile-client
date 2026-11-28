@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.verse.share.presentation.utils
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import bibleplanner.feature.verse.share.generated.resources.Res
+import bibleplanner.feature.verse.share.generated.resources.share_photo_load_failed
 import com.quare.bibleplanner.core.utils.shareContent
 import com.quare.bibleplanner.feature.verse.share.presentation.mapper.toMessage
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiAction
@@ -45,7 +47,7 @@ internal fun ShareVerseUiActionCollector(
 
             ShareVerseUiAction.LaunchPhotoPicker -> photoPicker.launch()
 
-            is ShareVerseUiAction.ShowMessage -> showMessage(uiAction.stringResource)
+            ShareVerseUiAction.NotifyPhotoLoadFailed -> showMessage(Res.string.share_photo_load_failed)
         }
     }
 }

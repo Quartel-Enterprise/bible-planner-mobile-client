@@ -7,12 +7,16 @@ shared/              # Kotlin Multiplatform library with the shared code (UI + l
 androidApp/          # Android application module
 desktopApp/          # Desktop (JVM) application module
 iosApp/              # iOS application (Xcode project)
+android/             # Native Android UI on Material 3 Expressive (see native-ui-migration.md, step 2)
+├── designsystem/    # ExpressiveTheme and the components the native screens share
+└── feature/         # One module per migrated screen: <Name>Content, res strings, <Route>.toNavEntry()
 core/
 ├── books/           # Books domain + data + DI
 ├── model/           # Shared data models and nav routes
 ├── navigation/      # RootAppNavDisplay
 ├── plan/            # Plan data (JSON) domain + data
 │   └── testing/     # In-memory fakes of plan's interfaces, for other modules' tests
+├── presentation/    # Bridge that lets SwiftUI and React use the shared ViewModels (FlowWatcher, Watch, ViewModelHolder)
 ├── utils/           # Kotlin extension utilities
 └── provider/
     ├── koin/        # Koin initialization — register new modules here
@@ -42,6 +46,9 @@ ui/
 - Only the composition root — `:core:navigation` and `:core:provider:koin` — depends on features.
 - A `:testing` module (e.g. `:core:books:testing`) is only ever a test dependency: `assertModuleGraph`
   fails on a production edge to one. See [Shared fakes](../testing/fakes-and-coroutines.md#shared-fakes).
+- The native Android modules (`:android:*`) sit on top of the shared ones: nothing in `core`, `feature`,
+  `ui` or `shared` depends on them, an `:android:feature:*` module never depends on another one, and
+  none of them depends on `:shared`. Only `:androidApp` wires them in.
 - Core never depends on `:ui:*`, and `:ui:*` never depends on features. `:ui:*` may depend on core,
   which is why domain types a screen also draws, like `Theme` and `ContrastType`, live in
   `core/model` and not in `ui/theme`.

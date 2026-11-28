@@ -1,14 +1,5 @@
 package com.quare.bibleplanner.feature.paywall.presentation.factory
 
-import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.month
-import bibleplanner.feature.paywall.generated.resources.per_month
-import bibleplanner.feature.paywall.generated.resources.per_year
-import bibleplanner.feature.paywall.generated.resources.plan_annual
-import bibleplanner.feature.paywall.generated.resources.plan_annual_description
-import bibleplanner.feature.paywall.generated.resources.plan_monthly
-import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
-import bibleplanner.feature.paywall.generated.resources.year
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.chapterlistening.domain.usecase.ObserveIsChapterListeningEnabled
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
@@ -134,31 +125,7 @@ class PaywallUiStateFactory(
             StorePackageType.UNKNOWN -> return null
         }
 
-        val titleRes = when (planType) {
-            SubscriptionPlanType.Monthly -> Res.string.plan_monthly
-            SubscriptionPlanType.Annual -> Res.string.plan_annual
-        }
-
-        val descriptionRes = when (planType) {
-            SubscriptionPlanType.Monthly -> Res.string.plan_monthly_description
-            SubscriptionPlanType.Annual -> Res.string.plan_annual_description
-        }
-
-        val periodRes = when (planType) {
-            SubscriptionPlanType.Monthly -> Res.string.per_month
-            SubscriptionPlanType.Annual -> Res.string.per_year
-        }
-
-        val periodUnitRes = when (planType) {
-            SubscriptionPlanType.Monthly -> Res.string.month
-            SubscriptionPlanType.Annual -> Res.string.year
-        }
-
         return SubscriptionPlanPresentationModel(
-            title = titleRes,
-            description = descriptionRes,
-            period = periodRes,
-            periodUnit = periodUnitRes,
             savePercentage = savePercent,
             isSelected = false,
             priceDescription = priceString,

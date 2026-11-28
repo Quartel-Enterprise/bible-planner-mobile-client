@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation.viewmodel
 
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.Res
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_disabled_message
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_enabled_message
-import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_mode_blocked_message
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -11,6 +7,7 @@ import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.studysuggestion.presentation.factory.StudySuggestionUiStateFactory
+import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionMessage
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +92,7 @@ internal class StudySuggestionViewModelTest {
                 actual = enabledCalls,
             )
             assertEquals(
-                expected = StudySuggestionUiAction.ShowSnackbar(Res.string.study_suggestion_disabled_message),
+                expected = StudySuggestionUiAction.ShowSnackbar(StudySuggestionMessage.DISABLED),
                 actual = actions.last(),
             )
         }
@@ -116,7 +113,7 @@ internal class StudySuggestionViewModelTest {
                 actual = enabledCalls,
             )
             assertEquals(
-                expected = StudySuggestionUiAction.ShowSnackbar(Res.string.study_suggestion_enabled_message),
+                expected = StudySuggestionUiAction.ShowSnackbar(StudySuggestionMessage.ENABLED),
                 actual = actions.last(),
             )
         }
@@ -150,7 +147,7 @@ internal class StudySuggestionViewModelTest {
             // Then
             assertTrue(modeCalls.isEmpty())
             assertEquals(
-                expected = StudySuggestionUiAction.ShowSnackbar(Res.string.study_suggestion_mode_blocked_message),
+                expected = StudySuggestionUiAction.ShowSnackbar(StudySuggestionMessage.MODE_BLOCKED),
                 actual = actions.last(),
             )
         }

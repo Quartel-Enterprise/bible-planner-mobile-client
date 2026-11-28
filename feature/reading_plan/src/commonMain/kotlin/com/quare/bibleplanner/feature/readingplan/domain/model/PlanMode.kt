@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.domain.model
 
-internal enum class PlanMode {
+enum class PlanMode {
     New,
     OnTrack,
     CaughtUp,

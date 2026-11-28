@@ -4,7 +4,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.notification_permission.generated.resources.Res
+import bibleplanner.feature.notification_permission.generated.resources.notification_permission_accept
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_decline
+import bibleplanner.feature.notification_permission.generated.resources.notification_permission_explanation
+import bibleplanner.feature.notification_permission.generated.resources.notification_permission_open_settings
+import bibleplanner.feature.notification_permission.generated.resources.notification_permission_settings_message
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_title
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiState
@@ -17,12 +21,17 @@ internal fun NotificationPermissionContent(
     onEvent: (NotificationPermissionUiEvent) -> Unit,
 ) {
     val declineText = stringResource(Res.string.notification_permission_decline)
+    val (textRes, confirmTextRes) = if (uiState.isFirstTime) {
+        Res.string.notification_permission_explanation to Res.string.notification_permission_accept
+    } else {
+        Res.string.notification_permission_settings_message to Res.string.notification_permission_open_settings
+    }
     AppAlertDialog(
         title = stringResource(Res.string.notification_permission_title),
-        text = stringResource(uiState.textRes),
-        confirmText = stringResource(uiState.confirmButtonTextRes),
+        text = stringResource(textRes),
+        confirmText = stringResource(confirmTextRes),
         onConfirm = { onEvent(NotificationPermissionUiEvent.OnConfirm) },
-        dismissText = declineText.takeIf { uiState.shouldShowDismiss },
+        dismissText = declineText.takeIf { uiState.isFirstTime },
         onDismiss = { onEvent(NotificationPermissionUiEvent.OnDecline) },
         icon = Icons.Outlined.Notifications,
     )

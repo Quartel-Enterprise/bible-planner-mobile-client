@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.dependWebTargetsOnWebMain
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -11,20 +13,35 @@ kotlin {
     jvm()
 
     sourceSets {
-        val nonMobileMain = create("nonMobileMain") {
+        // Why: Android and the non-mobile targets draw the Material components where iOS draws native ones.
+        val nonIosMain = create("nonIosMain") {
             dependsOn(commonMain.get())
+        }
+
+        androidMain {
+            dependsOn(nonIosMain)
+        }
+
+        // Why: iOS and the non-mobile targets render with Skia, unlike Android.
+        val skikoMain = create("skikoMain") {
+            dependsOn(commonMain.get())
+        }
+
+        val nonMobileMain = create("nonMobileMain") {
+            dependsOn(nonIosMain)
+            dependsOn(skikoMain)
         }
 
         jvmMain {
             dependsOn(nonMobileMain)
         }
 
-        wasmJsMain {
+        webMain {
             dependsOn(nonMobileMain)
         }
 
         iosMain {
-            dependsOn(commonMain.get())
+            dependsOn(skikoMain)
         }
         iosArm64Main {
             dependsOn(iosMain.get())
@@ -62,6 +79,9 @@ kotlin {
             implementation(libs.coil.network.ktor)
         }
     }
+
+    // Why: the dependsOn edges above turn off the default hierarchy.
+    dependWebTargetsOnWebMain()
 }
 
 compose.resources {

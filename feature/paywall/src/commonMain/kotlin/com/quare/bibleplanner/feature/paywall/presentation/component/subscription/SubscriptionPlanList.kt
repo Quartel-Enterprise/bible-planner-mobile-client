@@ -13,6 +13,9 @@ import com.quare.bibleplanner.feature.paywall.presentation.component.subscriptio
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component.SubscriptionPlanDiscountBadge
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPlanPresentationModel
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toDescriptionResource
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toPeriodResource
+import com.quare.bibleplanner.feature.paywall.presentation.utils.toTitleResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -29,10 +32,10 @@ internal fun SubscriptionPlanList(
         subscriptionPlans.forEach { plan ->
             Box {
                 SubscriptionPlanCard(
-                    title = stringResource(plan.title),
-                    description = stringResource(plan.description),
+                    title = stringResource(plan.type.toTitleResource()),
+                    description = stringResource(plan.type.toDescriptionResource()),
                     price = plan.priceDescription,
-                    period = stringResource(plan.period),
+                    period = stringResource(plan.type.toPeriodResource()),
                     isSelected = plan.isSelected,
                     onClick = { onEvent(PaywallUiEvent.OnPlanSelected(plan.type)) },
                 )

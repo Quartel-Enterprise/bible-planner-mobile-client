@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.readingplan.domain.model
 
 import com.quare.bibleplanner.core.model.book.BookId
 
-internal sealed interface PlanMotivationMessage {
+sealed interface PlanMotivationMessage {
     sealed interface OverallProgress : PlanMotivationMessage {
         data object Zero : OverallProgress
 

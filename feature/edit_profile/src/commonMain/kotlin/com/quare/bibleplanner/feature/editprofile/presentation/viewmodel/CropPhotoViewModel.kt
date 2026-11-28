@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.edit_profile.generated.resources.Res
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_unreadable
-import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_updated
 import com.quare.bibleplanner.core.image.AvatarImageCropper
 import com.quare.bibleplanner.core.image.CropParams
 import com.quare.bibleplanner.core.image.DecodeImageBitmap
@@ -17,6 +14,7 @@ import com.quare.bibleplanner.feature.editprofile.domain.usecase.SetProfilePhoto
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiState
+import com.quare.bibleplanner.feature.editprofile.presentation.model.EditProfileMessage
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ImageResult
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import io.github.vinceglb.filekit.readBytes
@@ -29,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.StringResource
 
 internal class CropPhotoViewModel(
     private val route: CropPhotoNavRoute,
@@ -72,7 +69,7 @@ internal class CropPhotoViewModel(
                     uiState.update { it.copy(image = ImageResult.Loaded(bitmap)).clamp() }
                 }.onFailure {
                     uiState.update { it.copy(image = ImageResult.Failed) }
-                    finishWith(Res.string.edit_profile_photo_unreadable)
+                    finishWith(EditProfileMessage.PHOTO_UNREADABLE)
                 }
         }
     }
@@ -134,15 +131,15 @@ internal class CropPhotoViewModel(
                 }
             }.getOrNull()
             if (encoded == null) {
-                finishWith(Res.string.edit_profile_photo_unreadable)
+                finishWith(EditProfileMessage.PHOTO_UNREADABLE)
                 return@launch
             }
             setProfilePhoto(encoded)
-            finishWith(Res.string.edit_profile_photo_updated)
+            finishWith(EditProfileMessage.PHOTO_UPDATED)
         }
     }
 
-    private suspend fun finishWith(message: StringResource) {
+    private suspend fun finishWith(message: EditProfileMessage) {
         navigator.navigateBack()
         uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }

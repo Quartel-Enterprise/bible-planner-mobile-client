@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.model
 
-import org.jetbrains.compose.resources.StringResource
-
 internal sealed interface ContactSupportUiAction {
     data class OpenLink(
         val url: String,
@@ -11,7 +9,5 @@ internal sealed interface ContactSupportUiAction {
         val text: String,
     ) : ContactSupportUiAction
 
-    data class ShowSnackbar(
-        val message: StringResource,
-    ) : ContactSupportUiAction
+    data object NotifyEmailCopied : ContactSupportUiAction
 }

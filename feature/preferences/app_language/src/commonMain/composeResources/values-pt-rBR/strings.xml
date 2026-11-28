@@ -1,5 +1,4 @@
 <resources>
     <string name="app_language_title">Idioma do Aplicativo</string>
-    <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
     <string name="sync_across_devices_description">Mantenha seu idioma igual em todos os seus dispositivos</string>
 </resources>

@@ -9,7 +9,6 @@ import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLossUseCase
-import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.viewmodel.LogoutViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
@@ -28,6 +27,5 @@ val logoutModule = module {
     factoryOf(::LogoutUseCase).bind<Logout>()
     factoryOf(::ObserveSessionLossUseCase).bind<ObserveSessionLoss>()
     factoryOf(::HandleCurrentDeviceRevokedUseCase).bind<HandleCurrentDeviceRevoked>()
-    factoryOf(::LogoutErrorMapper)
     viewModelOf(::LogoutViewModel)
 }

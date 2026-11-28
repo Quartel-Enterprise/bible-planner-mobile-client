@@ -19,4 +19,5 @@
     <string name="ai_study_retry">Try again</string>
     <string name="ai_study_unlock">Unlock</string>
     <string name="ai_disclaimer">AI-generated content to support understanding. It does not replace reading the full text.</string>
+    <string name="sync_across_devices_title">Sync across devices</string>
 </resources>

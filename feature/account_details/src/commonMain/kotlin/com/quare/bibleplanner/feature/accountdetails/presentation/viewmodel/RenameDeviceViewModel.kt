@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.account_details.generated.resources.Res
-import bibleplanner.feature.account_details.generated.resources.account_details_action_error
 import com.quare.bibleplanner.core.devices.domain.usecase.RenameDevice
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
@@ -50,7 +48,7 @@ internal class RenameDeviceViewModel(
                 deviceRowId = deviceRowId,
                 name = trimmed,
             ).onFailure {
-                uiAction.emit(RenameDeviceUiAction.ShowSnackbar(Res.string.account_details_action_error))
+                uiAction.emit(RenameDeviceUiAction.ShowError)
             }
             navigator.navigateBack()
         }

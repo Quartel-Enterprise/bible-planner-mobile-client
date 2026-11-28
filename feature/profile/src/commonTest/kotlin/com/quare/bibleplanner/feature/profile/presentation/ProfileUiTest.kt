@@ -20,6 +20,7 @@ import bibleplanner.feature.profile.generated.resources.annotations_other_versio
 import bibleplanner.feature.profile.generated.resources.annotations_summary_empty
 import bibleplanner.feature.profile.generated.resources.app_language_option
 import bibleplanner.feature.profile.generated.resources.bible_version_option
+import bibleplanner.feature.profile.generated.resources.contrast_standard
 import bibleplanner.feature.profile.generated.resources.delete_account_option
 import bibleplanner.feature.profile.generated.resources.edit_profile_action
 import bibleplanner.feature.profile.generated.resources.login_card_button
@@ -75,7 +76,9 @@ internal class ProfileUiTest {
             waitForIdle()
 
             // Then
-            onListNodeWithText(getString(Res.string.theme_system)).assertIsDisplayed()
+            onListNodeWithText(
+                "${getString(Res.string.theme_system)} • ${getString(Res.string.contrast_standard)}",
+            ).assertIsDisplayed()
             onListNodeWithText(getString(ComponentRes.string.language_english)).assertIsDisplayed()
             onListNodeWithText(SAMPLE_BIBLE_VERSION_NAME).assertIsDisplayed()
             onListNodeWithText(planStartDateSubtitle).assertIsDisplayed()

@@ -4,9 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.AppViewModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.navigation.BackStackController
-import com.quare.bibleplanner.core.navigation.utils.hasStudyCompanionOnTop
-import com.quare.bibleplanner.core.navigation.utils.syncStudyPanelCompanion
+import com.quare.bibleplanner.core.model.navigation.AppBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.tools.agentcli.catalog.RouteCatalog
 import com.quare.bibleplanner.tools.agentcli.catalog.ScreenCatalog
@@ -26,7 +24,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 /*
- * Why: everything here runs on Dispatchers.Main, like the composition that owns the back stack in
+ * Why: everything here runs on Dispatchers.Main, like the composition that drives AppBackStack in
  * the app, so the ViewModels see the same threading they see on a device.
  */
 class AgentSession(
@@ -42,12 +40,7 @@ class AgentSession(
     private val isWide: Boolean,
 ) {
     private val pollInterval = 20.milliseconds
-    private val backStack = mutableListOf<NavKey>()
-    private val forwardStack = mutableListOf<List<NavKey>>()
-    private val backStackController = BackStackController(
-        backStack = backStack,
-        forwardStack = forwardStack,
-    )
+    private val appBackStack = AppBackStack()
     private val entries = LinkedHashMap<NavKey, HeadlessEntry>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var shownRoute: NavKey? = null
@@ -55,15 +48,15 @@ class AgentSession(
         private set
 
     val stack: List<NavKey>
-        get() = backStack.toList()
+        get() = appBackStack.entries.value
 
     val topEntry: HeadlessEntry
-        get() = entries.getValue(backStack.last())
+        get() = entries.getValue(stack.last())
 
     // Why: on a wide window the study companion shares the screen with the day or chapter under it.
     val visibleViewModels: List<HeadlessViewModel>
         get() {
-            val shown = if (backStack.hasStudyCompanionOnTop()) backStack.takeLast(2) else backStack.takeLast(1)
+            val shown = if (appBackStack.hasStudyCompanionOnTop) stack.takeLast(2) else stack.takeLast(1)
             return shown.flatMap { route -> entries.getValue(route).viewModels }
         }
 
@@ -77,7 +70,12 @@ class AgentSession(
             .map(HeadlessViewModel::viewModel)
             .filterIsInstance<AppViewModel>()
             .forEach(AppViewModel::onAppForegrounded)
-        updateStack { backStack += initialRoute }
+        // Why: the width is set before the first command, since commands such as NavigateBack depend on it.
+        appBackStack.updateLayout(
+            isWide = isWide,
+            isCollapsingCompanion = false,
+        )
+        updateStack { appBackStack.restore(listOf(initialRoute)) }
         scope.launch {
             navigator.commands.collect { command ->
                 runCatching { execute(command) }.onFailure { error ->
@@ -108,11 +106,7 @@ class AgentSession(
     }
 
     fun reset(initialRoute: NavKey) {
-        updateStack {
-            backStack.clear()
-            forwardStack.clear()
-            backStack += initialRoute
-        }
+        updateStack { appBackStack.restore(listOf(initialRoute)) }
     }
 
     suspend fun awaitSettled(
@@ -128,23 +122,7 @@ class AgentSession(
     }
 
     fun execute(command: NavigationCommand) {
-        updateStack {
-            when (command) {
-                is NavigationCommand.Navigate -> backStackController.navigate(command.route)
-
-                is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(
-                    route = command.route,
-                    isWide = isWide,
-                )
-
-                is NavigationCommand.NavigateReplacing -> backStackController.navigateReplacing(
-                    current = command.current,
-                    route = command.route,
-                )
-
-                NavigationCommand.NavigateBack -> backStackController.navigateBack(isWide)
-            }
-        }
+        updateStack { appBackStack.execute(command) }
         log.record(
             kind = LogKind.NAVIGATION,
             source = "Navigator",
@@ -159,7 +137,7 @@ class AgentSession(
                 put(
                     "stack",
                     JsonPrimitive(
-                        backStack.joinToString(
+                        stack.joinToString(
                             separator = " > ",
                             transform = routeCatalog::nameOf,
                         ),
@@ -171,24 +149,21 @@ class AgentSession(
 
     /*
      * Why: a screen opens only once all its ViewModels were built. When one fails, the stack and every
-     * open screen stay as they were, and the error answers the command.
+     * open screen stay as they were (the forward history is dropped), and the error answers the command.
      */
     private fun updateStack(change: () -> Unit) {
-        val previousBackStack = backStack.toList()
-        val previousForwardStack = forwardStack.toList()
+        val previousBackStack = stack
         change()
         // Why: on a wide window the app opens the study beside the day or the chapter on screen.
-        backStack.syncStudyPanelCompanion(
+        appBackStack.updateLayout(
             isWide = isWide,
             isCollapsingCompanion = false,
         )
         runCatching(::createMissingEntries).onFailure { error ->
-            backStack.clear()
-            backStack += previousBackStack
-            forwardStack.clear()
-            forwardStack += previousForwardStack
+            appBackStack.restore(previousBackStack)
             throw error
         }
+        val backStack = stack
         entries.keys
             .filter { route -> route !in backStack }
             .forEach { route -> entries.remove(route)?.close() }
@@ -202,7 +177,7 @@ class AgentSession(
     private fun createMissingEntries() {
         val created = LinkedHashMap<NavKey, HeadlessEntry>()
         runCatching {
-            backStack.filter { route -> route !in entries }.forEach { route ->
+            stack.filter { route -> route !in entries }.forEach { route ->
                 created[route] = entryFactory
                     .create(
                         route = route,

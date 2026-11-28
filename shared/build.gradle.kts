@@ -31,11 +31,29 @@ kotlin {
             export(projects.core.provider.analytics)
             export(projects.core.provider.crashlytics)
             export(projects.core.provider.ads)
+            export(projects.core.model)
+            export(projects.core.presentation)
+            export(projects.feature.readingPlan)
+            export(projects.feature.books)
+            export(projects.feature.read)
+            export(projects.core.verseAnnotations)
+            export(projects.feature.main)
+            export(projects.core.profile)
+            export(projects.core.books)
+            export(projects.feature.day)
             export(projects.feature.releaseNotes)
         }
     }
 
     jvm()
+
+    // Why: the React web app imports the ViewModels from this library, see docs/architecture/native-ui-migration.md.
+    js {
+        outputModuleName = "shared"
+        browser()
+        binaries.library()
+        generateTypeScriptDefinitions()
+    }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -77,6 +95,11 @@ kotlin {
             api(projects.feature.preferences.themeSelection)
             api(projects.feature.preferences.studySuggestion)
             api(projects.feature.readingPlan)
+            api(projects.feature.books)
+            api(projects.feature.read)
+            api(projects.core.verseAnnotations)
+            api(projects.feature.main)
+            api(projects.core.profile)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
             api(projects.feature.deleteAccount)
@@ -106,6 +129,7 @@ kotlin {
             api(projects.core.provider.analytics)
             api(projects.core.provider.crashlytics)
             api(projects.core.provider.ads)
+            api(projects.core.presentation)
             implementation(projects.core.studyUnlock)
             api(projects.core.utils)
             implementation(projects.core.devices)

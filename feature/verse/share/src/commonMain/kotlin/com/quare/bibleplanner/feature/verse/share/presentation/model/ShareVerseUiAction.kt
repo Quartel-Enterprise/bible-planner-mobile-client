@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.verse.share.presentation.model
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
-import org.jetbrains.compose.resources.StringResource
 
 sealed interface ShareVerseUiAction {
     /*
@@ -34,7 +33,5 @@ sealed interface ShareVerseUiAction {
 
     data object LaunchPhotoPicker : ShareVerseUiAction
 
-    data class ShowMessage(
-        val stringResource: StringResource,
-    ) : ShareVerseUiAction
+    data object NotifyPhotoLoadFailed : ShareVerseUiAction
 }

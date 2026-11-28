@@ -29,12 +29,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
+import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
-import com.quare.bibleplanner.feature.read.presentation.component.rememberListeningFollow
-import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
@@ -50,7 +49,6 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.ListenT
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningMiniPlayerBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningOverlay
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadStatusPill
-import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
@@ -75,43 +73,11 @@ internal fun ReadWideScreen(
     dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
-    val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
-    val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
-    val verseFlash = rememberVerseFlash(
-        focus = state.verseFocus,
-        chapters = chapters,
+    val listBindings = observeReadListBindings(
+        state = state,
+        listening = listening,
         listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
-        onShown = { onEvent(ReadUiEvent.OnVerseFocusShown) },
-    )
-    val visibleChapter = rememberVisibleChapter(
-        chapters = chapters,
-        listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
-    )
-    VisibleChapterEffect(
-        visibleChapter = visibleChapter,
-        header = state.header,
         onEvent = onEvent,
-    )
-    ReachedEndEffect(
-        listState = listState,
-        chapters = chapters,
-        onReachedEnd = { onEvent(ReadUiEvent.OnReachedEnd) },
-    )
-    ReachedStartEffect(
-        listState = listState,
-        chapters = chapters,
-        onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
-    )
-    val listeningFollow = rememberListeningFollow(
-        player = listening.player,
-        chapters = chapters,
-        listState = listState,
-        leadingItemCount = leadingItemCount,
-        isChapterStudyBeside = state.isChapterStudyBeside,
     )
     Box(
         modifier = Modifier
@@ -123,7 +89,7 @@ internal fun ReadWideScreen(
                 ReadWideHeader(
                     platform = platform,
                     header = state.header,
-                    visibleChapter = visibleChapter,
+                    visibleChapter = listBindings.visibleChapter,
                     isOpeningChapterStudy = state.isOpeningChapterStudy,
                     isChapterStudyBeside = state.isChapterStudyBeside,
                     listening = listening,
@@ -174,7 +140,7 @@ internal fun ReadWideScreen(
                                         // Why: the header's listen button is always there, in both reading modes.
                                         isListenShortcutShown = false,
                                         focusedVerseNumber = null,
-                                        verseFlash = verseFlash,
+                                        verseFlash = listBindings.verseFlash,
                                         listening = listening,
                                         onEvent = onEvent,
                                         onListeningEvent = onListeningEvent,
@@ -191,7 +157,7 @@ internal fun ReadWideScreen(
                             .align(Alignment.BottomCenter)
                             .widthIn(max = readingColumnMaxWidth),
                         listening = listening,
-                        follow = listeningFollow,
+                        follow = listBindings.listeningFollow,
                         onEvent = onEvent,
                         onListeningEvent = onListeningEvent,
                     )
@@ -233,7 +199,6 @@ private fun ReadWideHeader(
 ) {
     BoxWithConstraints {
         val hasRoomForTitle = maxWidth >= titleMinColumnWidth
-        val bookStringResource = visibleChapter?.bookStringResource ?: header.bookStringResource
         val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
         val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
         Row(
@@ -251,7 +216,7 @@ private fun ReadWideHeader(
             if (hasRoomForTitle) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "${stringResource(bookStringResource)} $chapterNumber",
+                    text = "${bookId.getBookName()} $chapterNumber",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
