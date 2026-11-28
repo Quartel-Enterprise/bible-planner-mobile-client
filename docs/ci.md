@@ -100,7 +100,7 @@ Claude reviews pull requests at three points:
   review. Findings stop the skill until the author fixes them or chooses to go on. It is skipped
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
-- **On GitHub, when it opens**, `claude-review` runs the same `/code-review high`, on Opus, with
+- **On GitHub, when it opens**, `ai-review` runs the same `/code-review high`, on Opus, with
   `--fix`: a second opinion on the code the author pushed, which applies its findings and pushes
   them to the branch as a commit of its own. It then posts the findings as one review: the fixed
   ones in its body, the ones it left for the author as an inline comment each, labelled with its
@@ -109,18 +109,18 @@ Claude reviews pull requests at three points:
   A draft is reviewed when it is marked ready for review instead. Pushes after the pull request
   opens, its own fix commit included, and reopening it, don't review it again, with one exception:
   GitHub starts no pull request workflow while the pull request conflicts with its base, so one
-  opened (or marked ready) with a conflict gets no review on that event. `claude-review` also runs
-  on pushes for that case: on a push, the shared `review` action looks for a `claude-review` run
+  opened (or marked ready) with a conflict gets no review on that event. `ai-review` also runs
+  on pushes for that case: on a push, the shared `review` action looks for a `ai-review` run
   between the pull request's opening (or a draft's last marking as ready) and this one, and with
   none the push that solved the conflict is reviewed. Every other push ends the run in seconds
   without reviewing. Each push runs in a concurrency group of its own, so it neither cancels the
   opening review nor waits behind it.
-- **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
+- **On GitHub, on request**, adding the `ai-review` label runs `ai-review-on-request`, which
   reviews the pull request again the same way, only commenting, then removes the label. Use it
   after new pushes.
   When another review of the pull request is still running, it starts nothing and only removes the
-  label. Since every push starts a short `claude-review` run, it first waits up to two minutes for
-  unfinished `claude-review` runs to end, so a label added right after a push isn't dropped for it.
+  label. Since every push starts a short `ai-review` run, it first waits up to two minutes for
+  unfinished `ai-review` runs to end, so a label added right after a push isn't dropped for it.
 
 The review can't read the earlier reviews on the pull request, so the action hands it the findings
 they left, inline comments and review bodies alike (a draft marked ready a second time, a review on
@@ -134,11 +134,11 @@ when the pull request changes the workflow file that started it: the file has to
 green with a "workflow validation" warning and posts nothing.
 
 The review step they share, the gate and the threads lookups are the `review`, `gate` and `threads`
-actions of [Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review),
-shared with blitz-split-client. Every `uses:` of them (`claude-review.yml`,
-`claude-review-on-request.yml`, `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins
+actions of [Quartel-Enterprise/ai-review](https://github.com/Quartel-Enterprise/ai-review),
+shared with blitz-split-client. Every `uses:` of them (`ai-review.yml`,
+`ai-review-on-request.yml`, `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins
 the same exact release: a fix there ships as a release, then a bump of all of them here, which
-`claude-review-refs.yml` checks on every pull request that touches a workflow. Dependabot opens
+`ai-review-refs.yml` checks on every pull request that touches a workflow. Dependabot opens
 that bump as one pull request the day after a release (`.github/dependabot.yml`), and the review
 skips it. What runs comes from
 that release, never from the pull request under review, so a pull request can't change the review
@@ -147,10 +147,10 @@ of its comments are in that repository's README.
 
 Their findings never fail a check, but each one left for the author is an inline comment, and an
 unresolved comment blocks the merge (see [Unresolved conversations](#unresolved-conversations)).
-Since `claude-review` reviews the head commit the pull request opened with, or a draft was marked
+Since `ai-review` reviews the head commit the pull request opened with, or a draft was marked
 ready on, or the push that solves a conflict it opened with, `merge-when-green` waits for it to
 finish there, and a run that failed (an expired token) holds the merge until it is rerun. On every
-other push the `claude-review` run ends in seconds without reviewing, so the merge no longer waits
+other push the `ai-review` run ends in seconds without reviewing, so the merge no longer waits
 for the review.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
@@ -254,7 +254,7 @@ Until October 2026 the opening review only commented, while every other workflow
 commit. It almost always found something, so the author pushed a fix and every check ran a second
 time. Now the review fixes what it found, and the checks wait for it:
 
-- **The review fixes.** `claude-review` passes `fix: 'true'` to the action, which invokes the skill
+- **The review fixes.** `ai-review` passes `fix: 'true'` to the action, which invokes the skill
   with `--fix` and lets the model edit the files of the checkout, never under `.git`, `.github`,
   `.claude` (settings and hooks a session would pick up) or `.agent-memory`. It can't create a file.
   It is told to fix only what is clear and contained, and to leave what needs the author's call (a
@@ -273,7 +273,7 @@ time. Now the review fixes what it found, and the checks wait for it:
   `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
   pull request opened with, or a draft was marked ready for review on (those workflows add
   `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
-  by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end, checking
+  by `claude[bot]`), it waits for the `ai-review` run of the reviewed commit to end, checking
   once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
@@ -396,7 +396,7 @@ job compares each render with its reference on every push, and uploads the diffe
 `merge-when-green`, which would let a pull request through with nothing verified.
 
 The `record-screenshots` workflow records the references when a pull request gets the
-`record-screenshots` label. It is a workflow of its own, like `claude-review-on-request`, because
+`record-screenshots` label. It is a workflow of its own, like `ai-review-on-request`, because
 every label starts it: the skipped `record` check other labels leave never stands in for `verify`.
 It renders the references on the pull request's branch, commits them and only then drops the label,
 so a failed run or a rejected push keeps it on for a retry. The push uses `MERGE_WHEN_GREEN_TOKEN`

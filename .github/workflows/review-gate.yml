@@ -1,9 +1,9 @@
 name: review-gate
 
 # Called by the pull request workflows that build and test the app, as their first job: on the
-# commit a pull request opened with, or a draft was marked ready for review on, and on claude-review's
+# commit a pull request opened with, or a draft was marked ready for review on, and on ai-review's
 # own fix commit, it waits for that review to end, and holds the checks while a thread it opened is
-# unresolved. The waiting and the counting are the gate action of Quartel-Enterprise/claude-review
+# unresolved. The waiting and the counting are the gate action of Quartel-Enterprise/ai-review
 # (see its README and docs/ci.md, "Fixes and the review gate"); this job only fails the hold, in a
 # step whose name run-checks and merge-when-green look for to re-run the held runs.
 #
@@ -31,8 +31,9 @@ jobs:
       proceed: ${{ steps.gate.outputs.proceed }}
     steps:
       - id: gate
-        uses: Quartel-Enterprise/claude-review/gate@1.5.0
+        uses: Quartel-Enterprise/ai-review/gate@2.1.0
         with:
+          bot-login: claude[bot]
           # Under timeout-minutes, so a review stuck in the queue still lets the checks run.
           wait-minutes: 40
 
@@ -42,5 +43,5 @@ jobs:
         env:
           OPEN_THREADS: ${{ steps.gate.outputs.open-threads }}
         run: |
-          echo "::error::claude-review left $OPEN_THREADS open thread(s), so this workflow's checks didn't run. Push their fixes, which runs the checks on the new commit, or resolve them and add the run-checks label."
+          echo "::error::ai-review left $OPEN_THREADS open thread(s), so this workflow's checks didn't run. Push their fixes, which runs the checks on the new commit, or resolve them and add the run-checks label."
           exit 1

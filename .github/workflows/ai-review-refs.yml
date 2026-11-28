@@ -1,6 +1,6 @@
-name: claude-review-refs
+name: ai-review-refs
 
-# Fails when the workflows pin different releases of Quartel-Enterprise/claude-review. The gate and
+# Fails when the workflows pin different releases of Quartel-Enterprise/ai-review. The gate and
 # the threads action have to agree on which threads hold the checks and which step marks a hold, so
 # a bump that misses one `uses:` would let the gate hold runs nothing re-runs.
 on:
@@ -25,12 +25,12 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           sparse-checkout: .github/workflows
-      - name: Check that every claude-review ref is the same
+      - name: Check that every ai-review ref is the same
         run: |
-          refs=$(grep -rhoE 'Quartel-Enterprise/claude-review/[a-z-]+@[^[:space:]]+' .github/workflows | sed 's/.*@//' | sort -u)
+          refs=$(grep -rhoE 'Quartel-Enterprise/ai-review/[a-z-]+@[^[:space:]]+' .github/workflows | sed 's/.*@//' | sort -u)
           if [ "$(grep -c . <<< "$refs")" -gt 1 ]; then
-            echo "::error::The workflows pin different releases of Quartel-Enterprise/claude-review: $(tr '\n' ' ' <<< "$refs")Bump every uses: to the same one."
-            grep -rnE 'Quartel-Enterprise/claude-review/[a-z-]+@' .github/workflows
+            echo "::error::The workflows pin different releases of Quartel-Enterprise/ai-review: $(tr '\n' ' ' <<< "$refs")Bump every uses: to the same one."
+            grep -rnE 'Quartel-Enterprise/ai-review/[a-z-]+@' .github/workflows
             exit 1
           fi
-          echo "Every claude-review ref is ${refs:-absent}."
+          echo "Every ai-review ref is ${refs:-absent}."

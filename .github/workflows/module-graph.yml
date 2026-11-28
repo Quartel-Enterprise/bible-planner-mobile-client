@@ -4,7 +4,7 @@ name: module-graph
 # version, so Kotlin-only changes skip the full Gradle configuration this check needs.
 on:
   pull_request:
-    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    # The defaults, plus a draft marked ready, which ai-review reviews then (see review-gate below).
     types:
       - opened
       - synchronize
