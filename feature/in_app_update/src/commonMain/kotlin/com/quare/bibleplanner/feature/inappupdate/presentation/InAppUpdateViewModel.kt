@@ -14,13 +14,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-internal class InAppUpdateViewModel(
+class InAppUpdateViewModel internal constructor(
     private val startUpdate: StartUpdate,
     private val navigator: Navigator,
     route: InAppUpdateNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
     private val source = route.source
+
+    /*
+     * Why: each action closes the prompt. A second tap while the update starts would navigate back
+     * again and remove the screen under the prompt, or start the update twice.
+     */
+    private var hasHandledAction = false
 
     val uiState: StateFlow<InAppUpdateUiState>
         field = MutableStateFlow(InAppUpdateUiState(versionName = route.versionName))
@@ -30,6 +36,8 @@ internal class InAppUpdateViewModel(
     }
 
     override fun handleEvent(event: InAppUpdateUiEvent) {
+        if (hasHandledAction) return
+        hasHandledAction = true
         when (event) {
             InAppUpdateUiEvent.OnUpdateClick -> onUpdateClick()
             InAppUpdateUiEvent.OnDismiss -> onDismiss()
