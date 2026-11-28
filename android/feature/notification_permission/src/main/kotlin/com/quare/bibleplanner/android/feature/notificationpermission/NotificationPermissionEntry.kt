@@ -7,7 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -34,7 +34,8 @@ fun NotificationPermissionNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val viewModel = koinViewModel<NotificationPermissionViewModel>()
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val activity = context as? ComponentActivity
+    // Why: the dialog window's LocalContext is a ContextThemeWrapper, never the Activity itself.
+    val activity = LocalActivity.current
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(

@@ -84,7 +84,7 @@ internal fun CongratsContent(onEvent: (CongratsUiEvent) -> Unit) {
             )
             Spacer(modifier = Modifier.height(buttonSpacing))
             Button(
-                onClick = onDismiss,
+                onClick = { sheetCloseGuard.close { onEvent(CongratsUiEvent.OnStartExploring) } },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.congrats_button))

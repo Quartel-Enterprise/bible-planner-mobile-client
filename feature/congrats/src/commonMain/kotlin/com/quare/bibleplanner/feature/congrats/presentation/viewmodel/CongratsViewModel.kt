@@ -7,7 +7,7 @@ import com.quare.bibleplanner.feature.congrats.presentation.model.CongratsUiEven
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.launch
 
-class CongratsViewModel(
+class CongratsViewModel internal constructor(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<CongratsUiEvent>(trackEvent) {
