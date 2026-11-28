@@ -52,7 +52,7 @@ private fun StudySuggestionUiActionCollector(uiActionFlow: Flow<StudySuggestionU
         when (action) {
             is StudySuggestionUiAction.ShowSnackbar -> {
                 appSnackbarController.show(
-                    AppSnackbarMessage(
+                    AppSnackbarMessage.Resource(
                         stringResource = action.message.toStringResource(),
                         isDismissible = true,
                     ),

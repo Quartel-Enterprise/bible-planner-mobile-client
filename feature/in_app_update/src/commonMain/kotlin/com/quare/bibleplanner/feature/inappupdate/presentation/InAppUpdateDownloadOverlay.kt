@@ -23,7 +23,7 @@ fun InAppUpdateDownloadOverlay(modifier: Modifier = Modifier) {
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
             InAppUpdateDownloadUiAction.ShowDownloadFailed -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.update_download_failed,
                     isDismissible = true,
                 ),

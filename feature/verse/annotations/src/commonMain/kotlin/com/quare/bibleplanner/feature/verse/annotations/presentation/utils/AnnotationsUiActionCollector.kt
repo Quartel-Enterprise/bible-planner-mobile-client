@@ -16,7 +16,7 @@ internal fun AnnotationsUiActionCollector(uiActionFlow: Flow<AnnotationsUiAction
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             AnnotationsUiAction.NotifyAnnotationRemoved -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.annotation_removed,
                     isDismissible = true,
                 ),

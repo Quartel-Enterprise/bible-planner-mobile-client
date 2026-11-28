@@ -16,7 +16,7 @@ internal fun ReadListeningUiActionCollector(uiActionFlow: Flow<ReadListeningUiAc
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             ReadListeningUiAction.ShowSleepTimerEnded -> appSnackbarController.show(
-                AppSnackbarMessage(
+                AppSnackbarMessage.Resource(
                     stringResource = Res.string.listening_sleep_timer_ended,
                     isDismissible = true,
                 ),

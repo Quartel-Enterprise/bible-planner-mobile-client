@@ -269,7 +269,7 @@ internal class AgentCliTest {
         // Then
         assertEquals(
             expected = Json.parseToJsonElement(
-                """{"stringResource": {"@string": "saved", "text": "text of saved"}, "isDismissible": true}""",
+                """{"@type": "Resource", "stringResource": {"@string": "saved", "text": "text of saved"}, "isDismissible": true}""",
             ),
             actual = response.log.single { it.kind == "snackbar" }.payload,
         )

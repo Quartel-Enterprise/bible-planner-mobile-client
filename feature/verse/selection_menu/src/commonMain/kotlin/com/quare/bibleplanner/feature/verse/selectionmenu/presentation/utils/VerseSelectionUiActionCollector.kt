@@ -22,7 +22,7 @@ internal fun VerseSelectionUiActionCollector(uiActionFlow: Flow<VerseSelectionUi
 
             VerseSelectionUiAction.NotifyCopied -> {
                 appSnackbarController.show(
-                    AppSnackbarMessage(
+                    AppSnackbarMessage.Resource(
                         stringResource = Res.string.copied_to_clipboard,
                         isDismissible = true,
                     ),

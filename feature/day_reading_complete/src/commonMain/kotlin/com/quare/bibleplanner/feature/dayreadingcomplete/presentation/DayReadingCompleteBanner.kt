@@ -135,7 +135,7 @@ private fun DayReadingCompleteBannerUiActionCollector(
         when (action) {
             is DayReadingCompleteBannerUiAction.ShowSnackBar -> {
                 appSnackbarController.show(
-                    AppSnackbarMessage(
+                    AppSnackbarMessage.Resource(
                         stringResource = action.message.toStringResource(),
                         isDismissible = true,
                     ),
