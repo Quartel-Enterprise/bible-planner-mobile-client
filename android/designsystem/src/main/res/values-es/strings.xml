@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progress_dialog_loading">Cargando</string>
+    <string name="sheet_close">Cerrar</string>
+    <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
 </resources>

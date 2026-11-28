@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_language_title">App Language</string>
+    <string name="app_language_sync_description">Keep your language the same on all your devices</string>
+    <string name="app_language_english">English</string>
+    <string name="app_language_portuguese_brazil">Portuguese (Brazil)</string>
+    <string name="app_language_spanish">Spanish</string>
+</resources>

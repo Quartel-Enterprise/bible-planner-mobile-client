@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.applanguage.presentation.model
 
 import com.quare.bibleplanner.core.utils.locale.Language
 
-internal data class AppLanguageUiState(
+data class AppLanguageUiState(
     val selectedLanguage: Language,
     val languages: List<Language>,
     val isSyncEnabled: Boolean,

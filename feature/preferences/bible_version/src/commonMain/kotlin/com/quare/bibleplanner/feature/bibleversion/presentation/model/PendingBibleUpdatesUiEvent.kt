@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface PendingBibleUpdatesUiEvent : UiEvent {
+sealed interface PendingBibleUpdatesUiEvent : UiEvent {
     data class OnToggleVersion(
         val id: String,
     ) : PendingBibleUpdatesUiEvent {

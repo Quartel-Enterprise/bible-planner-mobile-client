@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bible_version_title">Versão da Bíblia</string>
+    <string name="bible_version_description">Baixe para ler offline e escolha sua versão padrão.</string>
+    <string name="bible_version_language_english">Inglês</string>
+    <string name="bible_version_language_portuguese_brazil">Português (Brasil)</string>
+    <string name="bible_version_language_spanish">Espanhol</string>
+    <string name="bible_version_download">Baixar</string>
+    <string name="bible_version_pause">Pausar</string>
+    <string name="bible_version_resume">Retomar</string>
+    <string name="bible_version_delete">Excluir</string>
+    <string name="bible_version_update">Atualizar</string>
+    <string name="bible_version_downloaded">Baixado</string>
+    <string name="bible_version_downloading_progress">Baixando %1$s%%</string>
+    <string name="bible_version_paused_progress">Pausado %1$s%%</string>
+    <string name="bible_version_tap_to_download">Toque para baixar</string>
+    <string name="bible_version_update_available">Atualização disponível</string>
+    <string name="bible_version_status_with_size">%1$s · %2$s</string>
+    <string name="bible_version_size_progress">%1$s de %2$s</string>
+    <string name="bible_version_load_error">Não foi possível baixar as versões da Bíblia para o seu dispositivo. Verifique sua conexão com a internet e tente novamente.</string>
+    <string name="bible_version_try_again">Tentar Novamente</string>
+    <string name="bible_version_updates_available">Atualizações disponíveis</string>
+    <string name="bible_version_updates_description">Novas revisões para versões que você baixou. Escolha quais atualizar.</string>
+    <string name="bible_version_update_count">Atualizar (%1$d)</string>
+    <string name="bible_version_megabytes">%1$d,%2$d MB</string>
+</resources>

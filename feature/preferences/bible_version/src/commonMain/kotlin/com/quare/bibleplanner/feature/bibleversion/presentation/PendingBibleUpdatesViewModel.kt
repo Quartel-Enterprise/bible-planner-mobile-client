@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class PendingBibleUpdatesViewModel(
+class PendingBibleUpdatesViewModel internal constructor(
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val dismissBibleUpdatePrompt: DismissBibleUpdatePromptUseCase,
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
