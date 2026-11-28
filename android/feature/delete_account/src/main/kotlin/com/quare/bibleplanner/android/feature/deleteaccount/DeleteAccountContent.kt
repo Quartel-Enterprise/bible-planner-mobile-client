@@ -57,7 +57,6 @@ internal fun DeleteAccountContent(
     onEvent: (DeleteAccountUiEvent) -> Unit,
 ) {
     val isIdle = uiState.status == DeleteAccountUiStatus.Idle
-    // Why: a failed deletion returns to Idle, where the user may confirm again.
     val resolution = rememberAlertDialogResolution(isIdle)
     HideSceneDialogScrimEffect()
     AlertDialog(
@@ -101,8 +100,13 @@ internal fun DeleteAccountContent(
         },
         confirmButton = {
             if (isIdle) {
+                /*
+                 * Why: a deletion that fails within one frame goes back to Idle before the dialog ever draws
+                 * Deleting, so a resolution closed by this tap would never reopen and leave the dialog stuck.
+                 * The ViewModel ignores a second confirm while it deletes.
+                 */
                 TextButton(
-                    onClick = { resolution.resolve { onEvent(DeleteAccountUiEvent.OnConfirmDelete) } },
+                    onClick = { onEvent(DeleteAccountUiEvent.OnConfirmDelete) },
                     enabled = uiState.isConfirmEnabled,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
                 ) {

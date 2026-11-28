@@ -70,7 +70,7 @@ class DeleteAccountViewModel internal constructor(
         when (event) {
             is DeleteAccountUiEvent.OnConfirmationTextChange -> updateConfirmationText(event.text)
             DeleteAccountUiEvent.OnConfirmDelete -> performDeletion()
-            DeleteAccountUiEvent.OnCancel -> navigator.navigateBack()
+            DeleteAccountUiEvent.OnCancel -> if (isIdle) navigator.navigateBack()
             DeleteAccountUiEvent.OnDismiss -> if (isIdle) navigator.navigateBack()
         }
     }

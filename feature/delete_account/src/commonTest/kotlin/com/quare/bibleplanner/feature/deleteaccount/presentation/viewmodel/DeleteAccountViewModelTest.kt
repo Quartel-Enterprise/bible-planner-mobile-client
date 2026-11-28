@@ -216,6 +216,21 @@ internal class DeleteAccountViewModelTest {
     }
 
     @Test
+    fun `GIVEN a deletion in progress WHEN cancelling THEN stays on the dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeKeyword()
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmDelete)
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnCancel)
+
+        // Then
+        assertIs<DeleteAccountUiStatus.Deleting>(viewModel.uiState.value.status)
+        assertTrue(commands.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the idle dialog WHEN dismissing it THEN navigates back`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
