@@ -72,7 +72,8 @@ private fun DayNotesField(
     onEvent: (DayUiEvent) -> Unit,
 ) {
     val fieldState = rememberTextFieldState(initialText = notes)
-    val sync = remember { NotesSync(lastSent = notes) }
+    // Why: a field restored by its saveable state (a lazy item scrolled back) must not send its stale text as typed.
+    val sync = remember { NotesSync(lastSent = fieldState.text.toString()) }
     NotesSyncEffect(
         notes = notes,
         fieldState = fieldState,

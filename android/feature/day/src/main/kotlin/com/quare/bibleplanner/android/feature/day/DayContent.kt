@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
@@ -30,15 +31,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.ui.utils.asStable
 
 // Why: the same width caps as the shared screen's ResponsiveColumn and landscape column.
 private val narrowContentMaxWidth = 800.dp
 internal val wideReadingMaxWidth = 560.dp
 private val askAiFabClearance = 88.dp
+// Why: the baseline profile journeys (tools/baseline-profile Journeys.kt) find the day by this tag.
+private const val DAY_CONTENT_TAG = "day_content"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +74,8 @@ internal fun DayContent(
                 )
             }
         },
+        // Why: CMP-10789 crashes on unattached insets when Nav3 moves a screen between scenes.
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
     ) { paddingValues ->
         val contentModifier = Modifier
             .fillMaxSize()
@@ -127,6 +134,7 @@ private fun DayTopBar(
             DayBackButton(onClick = { onEvent(DayUiEvent.OnBackClick) })
         },
         scrollBehavior = scrollBehavior,
+        windowInsets = TopAppBarDefaults.windowInsets.asStable(),
     )
 }
 
@@ -149,7 +157,7 @@ private fun DayNarrowContent(
 ) {
     val day = state.day
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.testTag(DAY_CONTENT_TAG),
         contentPadding = PaddingValues(bottom = askAiFabClearance),
     ) {
         centeredItem(key = "study") {

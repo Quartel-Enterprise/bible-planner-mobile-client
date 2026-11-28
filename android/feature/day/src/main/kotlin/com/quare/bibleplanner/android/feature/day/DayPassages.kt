@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
@@ -28,6 +29,9 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
+
+// Why: the baseline profile journeys (tools/baseline-profile Journeys.kt) find the chapters by this tag.
+private const val DAY_PASSAGES_TAG = "day_passages"
 
 @Composable
 internal fun DayPassagesCard(
@@ -38,7 +42,9 @@ internal fun DayPassagesCard(
 ) {
     val rows = passages.toRows(chapterReadStatus)
     ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .testTag(DAY_PASSAGES_TAG)
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
