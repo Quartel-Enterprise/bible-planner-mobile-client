@@ -25,7 +25,7 @@
     <string name="annotations_share">Share</string>
     <string name="annotations_remove">Remove</string>
     <string name="annotations_more_options">More options</string>
-    <string name="annotations_color_filter">Filter by highlight color</string>
+    <string name="annotations_color_filter">Filter by %1$s</string>
     <string name="annotations_empty_title">Nothing marked yet</string>
     <string name="annotations_empty_body">While reading, tap a verse to highlight, save or add a note. Everything shows up here.</string>
     <string name="annotations_no_results_title">No items match these filters</string>
@@ -54,4 +54,11 @@
     </plurals>
     <string name="annotations_back">Back</string>
     <string name="annotations_selected">Selected</string>
+    <string name="annotations_color_teal">Teal</string>
+    <string name="annotations_color_green">Green</string>
+    <string name="annotations_color_yellow">Yellow</string>
+    <string name="annotations_color_pink">Pink</string>
+    <string name="annotations_color_orange">Orange</string>
+    <string name="annotations_color_purple">Purple</string>
+    <string name="annotations_color_custom">custom color</string>
 </resources>

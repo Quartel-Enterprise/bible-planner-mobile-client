@@ -25,7 +25,7 @@
     <string name="annotations_share">Compartir</string>
     <string name="annotations_remove">Quitar</string>
     <string name="annotations_more_options">Más opciones</string>
-    <string name="annotations_color_filter">Filtrar por color del destacado</string>
+    <string name="annotations_color_filter">Filtrar por %1$s</string>
     <string name="annotations_empty_title">Nada marcado todavía</string>
     <string name="annotations_empty_body">Mientras lees, toca un versículo para destacarlo, guardarlo o anotarlo. Todo aparece aquí.</string>
     <string name="annotations_no_results_title">Ningún elemento coincide con estos filtros</string>
@@ -54,4 +54,11 @@
     </plurals>
     <string name="annotations_back">Volver</string>
     <string name="annotations_selected">Seleccionado</string>
+    <string name="annotations_color_teal">turquesa</string>
+    <string name="annotations_color_green">verde</string>
+    <string name="annotations_color_yellow">amarillo</string>
+    <string name="annotations_color_pink">rosa</string>
+    <string name="annotations_color_orange">naranja</string>
+    <string name="annotations_color_purple">morado</string>
+    <string name="annotations_color_custom">color personalizado</string>
 </resources>

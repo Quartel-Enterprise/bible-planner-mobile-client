@@ -42,7 +42,10 @@ internal fun AnnotationsColorFilterToggle(
         isAnyColorSelected -> UNSELECTED_ALPHA
         else -> 1f
     }
-    val description = stringResource(R.string.annotations_color_filter)
+    val description = stringResource(
+        R.string.annotations_color_filter,
+        stringResource(filter.color.toNameRes()),
+    )
     Box(
         modifier = modifier
             .size(34.dp)
