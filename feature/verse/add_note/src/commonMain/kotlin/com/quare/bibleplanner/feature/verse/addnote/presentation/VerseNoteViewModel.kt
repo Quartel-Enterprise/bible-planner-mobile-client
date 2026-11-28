@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class VerseNoteViewModel(
+class VerseNoteViewModel internal constructor(
     private val getVerseNote: GetVerseNote,
     private val saveVerseNote: SaveVerseNote,
     private val deleteVerseNote: DeleteVerseNote,

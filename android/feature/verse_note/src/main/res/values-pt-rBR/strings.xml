@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="verse_note_title">Anotação</string>
+    <string name="verse_note_edit_title">Editar anotação</string>
+    <string name="verse_note_delete">Excluir anotação</string>
+    <string name="verse_note_delete_title">Excluir a anotação de %1$s?</string>
+    <string name="verse_note_delete_body">O texto desta anotação será excluído. Os versículos continuam disponíveis na leitura.</string>
+    <string name="verse_note_delete_confirm">Excluir</string>
+    <string name="verse_note_delete_cancel">Cancelar</string>
+    <string name="verse_note_save">Salvar</string>
+    <string name="verse_note_placeholder">Escreva sua reflexão, oração ou observação sobre este trecho…</string>
+</resources>
