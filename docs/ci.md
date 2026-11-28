@@ -269,12 +269,12 @@ time. Now the review fixes what it found, and the checks wait for it:
   review: the push is never forced. The review then lists the fixed findings at the end of its body,
   under the fix commit, so they open no thread, and only the others as inline comments. Without a
   push, every finding is an inline comment, as before.
-- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis` and
-  `module-graph` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
+- **The checks wait.** `build-and-test`, `ui-tests`, `screenshot-tests`, `static-analysis`,
+  `module-graph` and `ios-app` start with a `review-gate` job, the reusable `review-gate.yml`. On the commit a
   pull request opened with, or a draft was marked ready for review on (those workflows add
   `ready_for_review` to their `pull_request` types for it), and on the review's fix commit (a push
   by `claude[bot]`), it waits for the `ai-review` run of the reviewed commit to end, checking
-  once a minute: five workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
+  once a minute: six workflows wait on the same review with `GITHUB_TOKEN`'s 1,000 requests an
   hour. On a draft marked ready, only a review run the same event created counts, since the commit
   may already have a skipped or completed one. When the pull request's head moved meanwhile (the fix
   commit), it skips the other jobs: that push started them again on the new commit, and cancels this
@@ -386,6 +386,37 @@ switch tabs, which on iOS are a native `UITabBar`.
 `:tools:baseline-profile` is in no workflow. Its tests sit in `src/main`, as a `com.android.test`
 module's do, so the script never finds it, and they are the macrobenchmarks: they run by hand on a
 physical device nothing else is using. See [Performance](performance.md).
+
+## iOS app build
+
+The `ios-app` workflow builds the Xcode project, `iosApp/iosApp.xcodeproj`, the way a developer
+runs it on the simulator: the `iosApp` scheme in Debug, for `generic/platform=iOS Simulator`, with
+`CODE_SIGNING_ALLOWED=NO`. Nothing else compiles the Swift code before `release.yml` does, and the
+SwiftUI screens of the [native UI migration](architecture/native-ui-migration.md) are in Swift, so
+without it a Swift compile error, or a change to a Kotlin type that Swift no longer compiles against,
+would merge and only fail the next release.
+
+- **Kotlin.** The project's `Compile Kotlin Framework` build phase runs
+  `./gradlew :shared:embedAndSignAppleFrameworkForXcode`, which links the debug `Shared` framework
+  for `iosSimulatorArm64`. It inherits the job's environment, so it uses the JDK and Gradle cache
+  `./.github/actions/gradle` set up, and the `~/.konan` entry of the `ios` job of `ui-tests` (see
+  [UI tests](#ui-tests)): the debug framework links against the same compiled library caches as
+  the simulator test binaries. A debug link skips the link-time optimization that makes the
+  release link take up to 26 minutes (see [iOS release link](#ios-release-link)). The job is a
+  default reader of the Gradle cache: it restores `main`'s entry on a pull request and writes on
+  `main`.
+- **No secrets.** Nothing is signed, and `local.properties` is left out: a missing key compiles to
+  an empty string. `GoogleService-Info.plist` is gitignored and only the release decodes it from a
+  secret, but the `Upload Crashlytics dSYMs` build phase validates it and fails the build without
+  one, so the job writes a placeholder with made-up values before building. It is never committed,
+  and pull requests from forks, which get no secrets, build too.
+- **No shared scheme.** The repository commits none, and `xcodebuild` creates the `iosApp` scheme
+  from the target, as it does for fastlane's build in `release.yml`.
+
+It runs only when a pull request touches `iosApp/`, `shared/`, `feature/`, `core/`, `ui/`,
+`build-logic/`, the Gradle files, `version.xcconfig` (which `Config.xcconfig` includes) or the
+workflow itself, and starts with the `review-gate` job. It is not a required check, so a pull request
+it skips is not held; `merge-when-green` waits for it when it runs.
 
 ## Screenshot tests
 
