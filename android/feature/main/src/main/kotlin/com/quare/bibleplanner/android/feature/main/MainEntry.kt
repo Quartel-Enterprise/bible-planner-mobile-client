@@ -17,7 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationForwardHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.quare.bibleplanner.android.navigation.LocalMainAnimatedContentScope
+import com.quare.bibleplanner.android.navigation.LocalMainEntryAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.navigation.withNativeEntries
@@ -89,7 +89,8 @@ private fun MainTabsNavDisplay(
         }
     }
     val navigationTransitions = rememberNavigationTransitions()
-    CompositionLocalProvider(LocalMainAnimatedContentScope provides animatedContentScope) {
+    // Why: native tabs only get their key, so they read the root entry's scope here for their shared elements.
+    CompositionLocalProvider(LocalMainEntryAnimatedContentScope provides animatedContentScope) {
         NavDisplay(
             entries = tabState.toDecoratedEntries(withNativeEntries(sharedEntries)),
             modifier = Modifier.fillMaxSize(),

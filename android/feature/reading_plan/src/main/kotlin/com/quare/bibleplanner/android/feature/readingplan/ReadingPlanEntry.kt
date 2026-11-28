@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.android.designsystem.theme.ExpressiveTheme
-import com.quare.bibleplanner.android.navigation.LocalMainAnimatedContentScope
+import com.quare.bibleplanner.android.navigation.LocalMainEntryAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
@@ -50,7 +50,7 @@ private fun ReadingPlanEntryContent() {
 @Composable
 private fun rememberReadingPlanTransitionScopes(): ReadingPlanTransitionScopes? {
     val sharedTransitionScope = LocalSharedTransitionScope.current ?: return null
-    val animatedVisibilityScope = LocalMainAnimatedContentScope.current ?: return null
+    val animatedVisibilityScope = LocalMainEntryAnimatedContentScope.current ?: return null
     // Why: a new instance on every state change would keep every day item from skipping recomposition.
     return remember(sharedTransitionScope, animatedVisibilityScope) {
         ReadingPlanTransitionScopes(
