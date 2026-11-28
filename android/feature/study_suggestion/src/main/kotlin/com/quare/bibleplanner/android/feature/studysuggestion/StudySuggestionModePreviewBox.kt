@@ -24,15 +24,19 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.Stud
 
 private val frameWidth = 72.dp
 private val frameHeight = 108.dp
-private val frameCornerRadius = 11.dp
+private val frameShape = RoundedCornerShape(11.dp)
 private val lineHeight = 3.dp
-private val lineCornerRadius = 2.dp
+private val lineShape = RoundedCornerShape(2.dp)
 private val sheetHeight = 62.dp
-private val sheetCornerRadius = 8.dp
+private val sheetShape = RoundedCornerShape(
+    topStart = 8.dp,
+    topEnd = 8.dp,
+)
 private val sheetIconSize = 16.dp
 private val sheetButtonHeight = 10.dp
 private val bannerHeight = 16.dp
-private val bannerCornerRadius = 6.dp
+private val bannerShape = RoundedCornerShape(6.dp)
+private val bannerLineShape = RoundedCornerShape(1.dp)
 private val bannerDotSize = 9.dp
 private val bottomBarHeight = 14.dp
 private const val SCRIM_ALPHA = 0.42f
@@ -49,12 +53,12 @@ internal fun StudySuggestionModePreviewBox(
             .size(
                 width = frameWidth,
                 height = frameHeight,
-            ).clip(RoundedCornerShape(frameCornerRadius))
+            ).clip(frameShape)
             .background(MaterialTheme.colorScheme.surface)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outlineVariant,
-                shape = RoundedCornerShape(frameCornerRadius),
+                shape = frameShape,
             ),
     ) {
         PreviewTextLineColumn()
@@ -92,7 +96,7 @@ private fun PreviewLine(widthFraction: Float) {
         modifier = Modifier
             .fillMaxWidth(widthFraction)
             .height(lineHeight)
-            .clip(RoundedCornerShape(lineCornerRadius))
+            .clip(lineShape)
             .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LINE_ALPHA)),
     )
 }
@@ -110,12 +114,8 @@ private fun DialogOverlay() {
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(sheetHeight)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = sheetCornerRadius,
-                        topEnd = sheetCornerRadius,
-                    ),
-                ).background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .clip(sheetShape)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 .padding(
                     horizontal = 8.dp,
                     vertical = 6.dp,
@@ -167,12 +167,12 @@ private fun BannerOverlay() {
                     .padding(horizontal = 5.dp)
                     .fillMaxWidth()
                     .height(bannerHeight)
-                    .clip(RoundedCornerShape(bannerCornerRadius))
+                    .clip(bannerShape)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = RoundedCornerShape(bannerCornerRadius),
+                        shape = bannerShape,
                     ).padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(3.dp),
@@ -200,14 +200,14 @@ private fun BannerOverlay() {
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .height(2.dp)
-                            .clip(RoundedCornerShape(1.dp))
+                            .clip(bannerLineShape)
                             .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LINE_ALPHA)),
                     )
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.55f)
                             .height(2.dp)
-                            .clip(RoundedCornerShape(1.dp))
+                            .clip(bannerLineShape)
                             .background(MaterialTheme.colorScheme.primary),
                     )
                 }

@@ -81,9 +81,9 @@ fun ExpandableText(
     var isExpanded by rememberSaveable(text) { mutableStateOf(false) }
     val showMore = stringResource(R.string.study_show_more)
     val showLess = stringResource(R.string.study_show_less)
-    var lastVisibleCharIndex by remember(text) { mutableIntStateOf(0) }
-    var hasOverflow by remember(text) { mutableStateOf(false) }
-    var truncatedAtWidth by remember(text) { mutableIntStateOf(0) }
+    var lastVisibleCharIndex by remember(text, collapsedMaxLines) { mutableIntStateOf(0) }
+    var hasOverflow by remember(text, collapsedMaxLines) { mutableStateOf(false) }
+    var truncatedAtWidth by remember(text, collapsedMaxLines) { mutableIntStateOf(0) }
     val toggleLink = LinkAnnotation.Clickable(
         tag = TOGGLE_TAG,
         styles = TextLinkStyles(
