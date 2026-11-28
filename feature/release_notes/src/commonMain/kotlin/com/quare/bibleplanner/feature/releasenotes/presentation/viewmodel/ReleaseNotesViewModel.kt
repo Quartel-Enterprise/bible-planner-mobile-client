@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ReleaseNotesViewModel(
+class ReleaseNotesViewModel internal constructor(
     private val uiStateFactory: ReleaseNotesUiStateFactory,
     private val navigator: Navigator,
     val platform: Platform,

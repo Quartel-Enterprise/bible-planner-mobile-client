@@ -6,7 +6,7 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNot
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.VisibleReleaseNote
 
-internal fun ReleaseNotesUiState.Success.toVisibleNotes(): List<VisibleReleaseNote> = when (currentTab) {
+fun ReleaseNotesUiState.Success.toVisibleNotes(): List<VisibleReleaseNote> = when (currentTab) {
     ReleaseNotesTab.LATEST -> listOfNotNull(latestRelease).toVisibleNotes(ReleaseVersionType.LATEST)
     ReleaseNotesTab.UPCOMING -> upcomingReleases.toVisibleNotes(ReleaseVersionType.UPCOMING)
     ReleaseNotesTab.PAST_VERSIONS -> pastReleases.toVisibleNotes(ReleaseVersionType.PAST)
