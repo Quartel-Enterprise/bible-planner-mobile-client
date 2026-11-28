@@ -47,7 +47,7 @@ internal fun PixQrContent(onEvent: (PixQrUiEvent) -> Unit) {
                     .background(
                         color = Color.White,
                         shape = MaterialTheme.shapes.large,
-                    ).padding(12.dp),
+                    ).padding(16.dp),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.pix_qr_code),
