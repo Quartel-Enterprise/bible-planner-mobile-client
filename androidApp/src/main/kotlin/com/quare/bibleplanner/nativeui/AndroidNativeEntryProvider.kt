@@ -12,6 +12,8 @@ import com.quare.bibleplanner.android.feature.loginsyncnudge.toNavEntry
 import com.quare.bibleplanner.android.feature.loginwarning.toNavEntry
 import com.quare.bibleplanner.android.feature.materialyou.toNavEntry
 import com.quare.bibleplanner.android.feature.notificationpermission.toNavEntry
+import com.quare.bibleplanner.android.feature.paywallteaser.toNavEntry
+import com.quare.bibleplanner.android.feature.pixqr.toNavEntry
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
@@ -22,6 +24,8 @@ import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
 
 internal class AndroidNativeEntryProvider : NativeEntryProvider {
@@ -36,6 +40,8 @@ internal class AndroidNativeEntryProvider : NativeEntryProvider {
         is NotificationPermissionNavRoute -> key.toNavEntry()
         is EditPlanStartDateNavRoute -> key.toNavEntry()
         is MaterialYouBottomSheetNavRoute -> key.toNavEntry()
+        is PixQrNavRoute -> key.toNavEntry()
+        is PaywallTeaserNavRoute -> key.toNavEntry()
         else -> null
     }
 }

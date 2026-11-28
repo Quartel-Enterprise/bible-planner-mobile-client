@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paywall_teaser_subscribe">Suscribirse a Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_title">Los colores personalizados son Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_body">La paleta predeterminada sigue siendo gratis. Con Pro puedes crear tus propios colores para diferenciar temas, promesas y oraciones.</string>
+    <string name="paywall_teaser_highlight_custom_color_dismiss">Usar la paleta predeterminada</string>
+    <string name="paywall_teaser_chapter_study_limit_title">Tus estudios gratis se acabaron</string>
+    <string name="paywall_teaser_chapter_study_limit_body">Ya usaste tus estudios de capítulo gratis. Con Pro puedes estudiar cualquier capítulo con IA, cuantas veces quieras — además del estudio del día y el chat sin límites.</string>
+    <string name="paywall_teaser_chapter_study_limit_dismiss">Ahora no</string>
+    <string name="paywall_teaser_chapter_listening_limit_title">Ya usaste la escucha gratis de hoy</string>
+    <string name="paywall_teaser_chapter_listening_limit_body">Cada día puedes desbloquear capítulos para escuchar con un video corto. Con Pro escuchas cualquier capítulo, todos los que quieras — y sigue al siguiente solo.</string>
+    <string name="paywall_teaser_chapter_listening_limit_body_free">La escucha gratis vuelve mañana. Con Pro escuchas cualquier capítulo, todos los que quieras — y sigue al siguiente solo.</string>
+    <string name="paywall_teaser_chapter_listening_limit_dismiss">Ahora no</string>
+    <string name="paywall_teaser_chapter_listening_pro_only_title">Escucha con Pro</string>
+    <string name="paywall_teaser_chapter_listening_pro_only_body">Con Pro puedes escuchar cualquier capítulo narrado por voces naturales, todos los que quieras, y seguir con el siguiente solo.</string>
+    <string name="paywall_teaser_share_image_style_title">Haz la tarjeta a tu manera con Pro</string>
+    <string name="paywall_teaser_share_image_style_body">Las fuentes y los fondos predefinidos siguen gratis. Con Pro eliges cualquier color, usas tus propias fotos y compartes sin la marca de Bible Planner.</string>
+    <string name="paywall_teaser_share_image_style_dismiss">Usar los estilos gratis</string>
+</resources>

@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
-internal class PaywallTeaserViewModel(
+class PaywallTeaserViewModel internal constructor(
     private val navigator: Navigator,
     route: PaywallTeaserNavRoute,
     trackEvent: TrackEvent,
