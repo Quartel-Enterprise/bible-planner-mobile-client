@@ -3,6 +3,7 @@ package com.quare.bibleplanner.android.feature.main
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationForwardHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.quare.bibleplanner.android.navigation.LocalMainEntryAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.navigation.withNativeEntries
@@ -87,12 +89,15 @@ private fun MainTabsNavDisplay(
         }
     }
     val navigationTransitions = rememberNavigationTransitions()
-    NavDisplay(
-        entries = tabState.toDecoratedEntries(withNativeEntries(sharedEntries)),
-        modifier = Modifier.fillMaxSize(),
-        onBack = tabState::goBack,
-        transitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
-        popTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
-        predictivePopTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
-    )
+    // Why: native tabs only get their key, so they read the root entry's scope here for their shared elements.
+    CompositionLocalProvider(LocalMainEntryAnimatedContentScope provides animatedContentScope) {
+        NavDisplay(
+            entries = tabState.toDecoratedEntries(withNativeEntries(sharedEntries)),
+            modifier = Modifier.fillMaxSize(),
+            onBack = tabState::goBack,
+            transitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+            popTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+            predictivePopTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+        )
+    }
 }
