@@ -51,7 +51,8 @@ fun ProfileAvatarImage(
     val avatarModifier = modifier
         .size(size)
         .clip(CircleShape)
-    val photoBytesHash = photoBytes?.contentHashCode()
+    // Why: hashing walks every byte of the photo, so it runs once per array instead of on every recomposition.
+    val photoBytesHash = remember(photoBytes) { photoBytes?.contentHashCode() }
     val targetSizePx = with(LocalDensity.current) { size.roundToPx() }
     var decodedPhoto by remember { mutableStateOf<DecodedPhoto?>(null) }
     // Why: keeps the previous photo on screen while new bytes decode or a new URL loads, instead of the placeholder.
