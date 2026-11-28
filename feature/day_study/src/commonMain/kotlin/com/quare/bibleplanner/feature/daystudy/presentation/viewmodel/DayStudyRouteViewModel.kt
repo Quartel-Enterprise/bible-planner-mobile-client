@@ -65,7 +65,7 @@ import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class DayStudyRouteViewModel(
+class DayStudyRouteViewModel internal constructor(
     private val getDayPassages: GetDayPassagesForDayStudyUseCase,
     private val getDayStudy: GetDayStudyUseCase,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,

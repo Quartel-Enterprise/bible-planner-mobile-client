@@ -11,7 +11,8 @@ used when such an import exists anywhere in the repository, which also covers mo
 their `Res` class to other modules through `publicResClass`.
 
 Android resources: each `<module>/src/<sourceSet>/res/values/strings.xml` is used when some Kotlin
-code references `R.string.<name>`/`R.plurals.<name>`, or some XML references `@string/<name>`.
+code references `R.string.<name>`/`R.plurals.<name>` (also through an alias such as
+`import ...designsystem.R as DesignSystemR`), or some XML references `@string/<name>`.
 
 Android Lint's `UnusedResources` can't do this job: it doesn't see Compose Resources accessors.
 
@@ -116,7 +117,7 @@ def main():
         unused = [
             name for kind, name in read_resources(strings_path)
             if name not in ANDROID_RESERVED_NAMES
-            and not re.search(rf'\bR\.{kind}\.{re.escape(name)}\b', kotlin_sources)
+            and not re.search(rf'\b\w*R\.{kind}\.{re.escape(name)}\b', kotlin_sources)
             and not re.search(rf'@string/{re.escape(name)}\b', xml_sources)
         ]
         checked += 1

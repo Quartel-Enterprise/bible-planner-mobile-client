@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.model
 
-internal sealed interface ContactSupportUiAction {
+sealed interface ContactSupportUiAction {
     data class OpenLink(
         val url: String,
     ) : ContactSupportUiAction

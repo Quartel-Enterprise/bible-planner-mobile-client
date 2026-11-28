@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusModel
 import software.quare.loadable.Loadable
 
-internal data class ContactSupportUiState(
+data class ContactSupportUiState(
     val accountStatusModel: AccountStatusModel,
     val subscriptionStatus: Loadable<SubscriptionStatus?>,
     val selectedLanguage: Loadable<Language>,

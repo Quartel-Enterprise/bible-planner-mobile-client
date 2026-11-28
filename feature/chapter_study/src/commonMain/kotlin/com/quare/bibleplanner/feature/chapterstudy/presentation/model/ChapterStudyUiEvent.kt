@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface ChapterStudyUiEvent : UiEvent {
+sealed interface ChapterStudyUiEvent : UiEvent {
     data object OnRetryClick : ChapterStudyUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             setOf(

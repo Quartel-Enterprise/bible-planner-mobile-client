@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contact support</string>
+    <string name="contact_support_description">We\'ll open your email app with a ready message. Just describe the issue and send — support is 100% human, handled by real people.</string>
+    <string name="contact_support_email_to_label">To</string>
+    <string name="contact_support_diagnostics_header">Will be included in the email</string>
+    <string name="contact_support_app_version_label">App version</string>
+    <string name="contact_support_platform_label">Platform</string>
+    <string name="contact_support_language_label">Language</string>
+    <string name="contact_support_account_label">Account</string>
+    <string name="contact_support_subscription_label">Subscription</string>
+    <string name="contact_support_account_not_connected">Not connected</string>
+    <string name="contact_support_subscription_free">Free</string>
+    <string name="contact_support_subscription_pro">Pro</string>
+    <string name="contact_support_platform_android">Android</string>
+    <string name="contact_support_platform_ios">iOS</string>
+    <string name="contact_support_platform_desktop">Desktop</string>
+    <string name="contact_support_platform_web">Web</string>
+    <string name="contact_support_open_email">Open email</string>
+    <string name="contact_support_copy_email">Copy email address</string>
+    <string name="contact_support_email_copied">Email copied to clipboard</string>
+    <string name="contact_support_language_english">English</string>
+    <string name="contact_support_language_portuguese_brazil">Portuguese (Brazil)</string>
+    <string name="contact_support_language_spanish">Spanish</string>
+</resources>

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progress_dialog_loading">Carregando</string>
+    <string name="study_show_more">Ver mais</string>
+    <string name="study_show_less">Ver menos</string>
+    <string name="study_generating_title">Preparando seu estudo</string>
+    <string name="study_error_title">A geração falhou</string>
+    <string name="study_error">Não foi possível carregar o estudo. Tente novamente.</string>
+    <string name="study_error_offline">A conexão caiu durante a geração do estudo. Verifique sua internet e tente novamente.</string>
+    <string name="study_retry">Tentar novamente</string>
+    <string name="study_ai_disclaimer">Conteúdo gerado por IA para apoiar o entendimento. Não substitui a leitura do texto completo.</string>
+    <string name="study_unlock">Desbloquear</string>
+    <string name="study_back">Voltar</string>
     <string name="date_active_now">Ativo agora</string>
     <plurals name="date_minutes_ago">
         <item quantity="one">há %1$d min</item>
