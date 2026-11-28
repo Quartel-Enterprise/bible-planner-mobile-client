@@ -15,6 +15,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.utils.rememberBooksLazyGridStates
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import com.quare.bibleplanner.ui.utils.LocalHostedTabBarHeight
 import com.quare.bibleplanner.ui.utils.ReserveHostedTabBarHeightEffect
 import com.quare.bibleplanner.ui.utils.transition.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,6 +48,7 @@ private fun BooksTabEntryContent() {
             isScrolled = isScrolled,
             lazyGridState = lazyGridStates.getCurrent(state),
             transitionScopes = transitionScopes,
+            hostedTabBarHeight = LocalHostedTabBarHeight.current ?: 0.dp,
             onEvent = viewModel::onEvent,
         )
     }
