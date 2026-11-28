@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -167,15 +168,27 @@ private fun CustomColorSwatchBox(
     onClick: () -> Unit,
 ) {
     val customColorLabel = stringResource(R.string.verse_selection_custom_color)
-    // Why: only the inner circle is clipped, so the lock badge can overhang its edge.
-    Box(modifier = Modifier.size(swatchSize)) {
+    /*
+     * Why: only the inner circle is clipped, so the lock badge can overhang its edge; the click sits on the outer box
+     * so the badge opens the paywall too, with an unbounded ripple to keep the circle's shape.
+     */
+    Box(
+        modifier = Modifier
+            .size(swatchSize)
+            .combinedClickable(
+                interactionSource = null,
+                indication = ripple(
+                    bounded = false,
+                    radius = swatchSize / 2,
+                ),
+                onClick = onClick,
+            ).semantics { contentDescription = customColorLabel },
+    ) {
         Box(
             modifier = Modifier
                 .size(swatchSize)
                 .alpha(if (isLocked) LOCKED_CUSTOM_SWATCH_ALPHA else 1f)
                 .clip(CircleShape)
-                .combinedClickable(onClick = onClick)
-                .semantics { contentDescription = customColorLabel }
                 .background(if (isLocked) lockedCustomSwatchBrush else customSwatchBrush)
                 .border(
                     width = customSwatchRingWidth,

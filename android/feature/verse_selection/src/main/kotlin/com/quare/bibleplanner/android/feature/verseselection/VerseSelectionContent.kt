@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -39,6 +40,7 @@ import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.Ver
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiState
 import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
 import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -128,6 +130,27 @@ private fun VerseSelectionSheet(
             }
         }
     }
+    /*
+     * Why: UNDISPATCHED makes the snap land before the next delta, so the nested scroll below can tell at once how
+     * much of a drag the sheet took.
+     */
+    val moveSheetBy: (Float) -> Float = { delta ->
+        val previousOffset = dragOffset.value
+        val newOffset = (previousOffset + delta).coerceAtLeast(0f)
+        coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) { dragOffset.snapTo(newOffset) }
+        newOffset - previousOffset
+    }
+    val settle: suspend (Float) -> Unit = { velocity ->
+        val isDismissed = velocity > DISMISS_VELOCITY || dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
+        if (isDismissed) dismiss() else dragOffset.animateTo(0f)
+    }
+    val nestedScrollConnection = remember(dragOffset) {
+        SheetNestedScrollConnection(
+            sheetOffset = { dragOffset.value },
+            moveSheetBy = { delta -> moveSheetBy(delta) },
+            settle = { velocity -> settle(velocity) },
+        )
+    }
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         SelectionSurface(
             modifier = Modifier
@@ -140,18 +163,11 @@ private fun VerseSelectionSheet(
                         y = dragOffset.value.roundToInt(),
                     )
                 }.blockPointerInput(isBlocked = closeGuard.isClosing)
+                .nestedScroll(nestedScrollConnection)
                 .draggable(
-                    state = rememberDraggableState { delta ->
-                        coroutineScope.launch {
-                            dragOffset.snapTo((dragOffset.value + delta).coerceAtLeast(0f))
-                        }
-                    },
+                    state = rememberDraggableState { delta -> moveSheetBy(delta) },
                     orientation = Orientation.Vertical,
-                    onDragStopped = { velocity ->
-                        val isDismissed = velocity > DISMISS_VELOCITY ||
-                            dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
-                        if (isDismissed) dismiss() else dragOffset.animateTo(0f)
-                    },
+                    onDragStopped = { velocity -> settle(velocity) },
                 ),
             shape = RoundedCornerShape(
                 topStart = cornerRadius,
