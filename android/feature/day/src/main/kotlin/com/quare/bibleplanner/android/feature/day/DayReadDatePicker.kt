@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.day
 
-import android.text.format.DateFormat
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,8 +12,8 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.quare.bibleplanner.android.designsystem.date.isSystem24HourFormat
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -63,7 +62,7 @@ internal fun DayReadDatePicker(
             val timePickerState = rememberTimePickerState(
                 initialHour = datePickerUiState.initialHour,
                 initialMinute = datePickerUiState.initialMinute,
-                is24Hour = DateFormat.is24HourFormat(LocalContext.current),
+                is24Hour = isSystem24HourFormat(),
             )
             TimePickerDialog(
                 onDismissRequest = onDismiss,
