@@ -25,3 +25,4 @@ User taps any list item on the Profile screen.
 - Destination impressions are also captured by [screen_view](screen_view.md); this event additionally covers options that open external links (`instagram`, `privacy_policy`, `terms`, `rate_app`) with no screen of their own.
 - Versions before the Web App row's removal could also send `option=web_app` (the Profile Web App row, hidden by the `profile_web_app_enabled` Remote Config flag); current versions never do.
 - `rate_app` always opens the platform store listing (`GetAppStoreLinkUseCase`); this tap is the only event for that action.
+- Every tap is logged, including a repeat the ViewModel ignores: a second tap on a link row within one second, on `privacy_options` while the consent form is open, or on `delete_progress` while the progress is still being read. Count distinct opens per session rather than raw events for those options.

@@ -97,9 +97,9 @@ class ProfileViewModel internal constructor(
 
                     ProfileOptionItemType.STUDY_SUGGESTION -> goToRoute(StudySuggestionNavRoute)
 
-                    ProfileOptionItemType.PRIVACY_POLICY -> openLink(event.type) { LegalUrl.PRIVACY_POLICY }
+                    ProfileOptionItemType.PRIVACY_POLICY -> openLink(event.type, LegalUrl.PRIVACY_POLICY)
 
-                    ProfileOptionItemType.TERMS -> openLink(event.type) { LegalUrl.TERMS_OF_SERVICE }
+                    ProfileOptionItemType.TERMS -> openLink(event.type, LegalUrl.TERMS_OF_SERVICE)
 
                     ProfileOptionItemType.PRIVACY_OPTIONS -> launchExternalAction(event.type) {
                         adsConsentService.showPrivacyOptions()
@@ -108,7 +108,7 @@ class ProfileViewModel internal constructor(
                     ProfileOptionItemType.BECOME_PRO ->
                         goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))
 
-                    ProfileOptionItemType.INSTAGRAM -> openLink(event.type) { getInstagramUrl() }
+                    ProfileOptionItemType.INSTAGRAM -> openLink(event.type, getInstagramUrl())
 
                     ProfileOptionItemType.EDIT_PLAN_START_DAY -> goToRoute(EditPlanStartDateNavRoute)
 
@@ -129,7 +129,7 @@ class ProfileViewModel internal constructor(
 
                     ProfileOptionItemType.CONTACT_SUPPORT -> goToRoute(ContactSupportNavRoute)
 
-                    ProfileOptionItemType.RATE_APP -> openLink(event.type) { getAppStoreLink() }
+                    ProfileOptionItemType.RATE_APP -> openLink(event.type, getAppStoreLink())
 
                     ProfileOptionItemType.CHECK_FOR_UPDATE -> checkForUpdateClick()
 
@@ -216,10 +216,10 @@ class ProfileViewModel internal constructor(
      */
     private fun openLink(
         type: ProfileOptionItemType,
-        url: suspend () -> String,
+        url: String,
     ) {
         launchExternalAction(type) {
-            uiAction.emit(OpenLink(url()))
+            uiAction.emit(OpenLink(url))
             delay(linkRepeatGuard)
         }
     }
