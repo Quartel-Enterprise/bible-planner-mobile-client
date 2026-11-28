@@ -115,11 +115,6 @@ private fun VerseSkeletonRow(lineWidthFractions: List<Float>) {
     }
 }
 
-internal enum class ChapterSkeletonPosition {
-    LEADING,
-    TRAILING,
-}
-
 @Composable
 private fun rememberSkeletonPulse(): State<Float> = rememberInfiniteTransition(label = "read_skeleton").animateFloat(
     initialValue = 1f,

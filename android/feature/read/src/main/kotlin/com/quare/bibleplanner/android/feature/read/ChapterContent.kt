@@ -6,17 +6,18 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningWordTargetModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
 import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-
-private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
+import com.quare.bibleplanner.feature.read.presentation.screen.component.toUntrimmed
 
 /*
  * Why: vertical reading emits every chapter into one list, so the next chapter is already below
@@ -107,11 +108,13 @@ internal fun LazyListScope.chapterContent(
     }
     if (shouldListChapterStudyCard(isChapterStudyBeside)) {
         item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-            val bookName = chapter.chapter.bookId.getBookName()
+            val chapterLabel = verseReferenceLabel(
+                bookId = chapter.chapter.bookId,
+                chapterNumber = chapter.chapter.chapterNumber,
+                verseNumbers = emptyList(),
+            )
             ChapterStudyEntryCard(
-                chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf {
-                    settings.isVerticalReadingEnabled
-                },
+                chapterLabel = chapterLabel.takeIf { settings.isVerticalReadingEnabled },
                 onClick = {
                     onEvent(
                         ReadUiEvent.OnChapterStudyClick(
@@ -142,19 +145,5 @@ internal fun LazyListScope.chapterContent(
     }
 }
 
-internal fun getChapterStartIndices(
-    chapters: List<ReadChapterUiModel>,
-    leadingItemCount: Int,
-    isChapterStudyBeside: Boolean,
-): List<Int> {
-    /*
-     * Why: must match the items chapterContent emits, or the visible chapter and the verse scroll
-     * target drift by one item per chapter.
-     */
-    val studyCardItemCount = if (shouldListChapterStudyCard(isChapterStudyBeside)) 1 else 0
-    return chapters.runningFold(leadingItemCount) { start, chapter ->
-        start + CHAPTER_HEADER_AND_END_ITEM_COUNT + chapter.verses.size + studyCardItemCount
-    }
-}
-
+// Why: the shared getChapterStartIndices counts the same items, so both must agree on the study card.
 private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside

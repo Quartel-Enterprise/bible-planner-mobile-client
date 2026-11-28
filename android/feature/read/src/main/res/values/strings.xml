@@ -24,5 +24,4 @@
     <string name="read_manage_bible_versions">Manage Bible Versions</string>
     <string name="read_status_with_size">%1$s · %2$s</string>
     <string name="read_size_progress">%1$s of %2$s</string>
-    <string name="read_megabytes_size">%1$d.%2$d MB</string>
 </resources>
