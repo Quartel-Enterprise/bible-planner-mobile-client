@@ -127,6 +127,8 @@ dependencies {
     implementation(projects.android.feature.notificationPermission)
     implementation(projects.android.feature.editPlanStartDate)
     implementation(projects.android.feature.materialYou)
+    implementation(projects.android.feature.pixQr)
+    implementation(projects.android.feature.paywallTeaser)
 
     // Features
     implementation(projects.feature.materialYou)
