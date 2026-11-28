@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -46,8 +47,6 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNot
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagBackgroundColor
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagContentColor
 import com.quare.bibleplanner.ui.utils.format
 
 private val contentMaxWidth = 800.dp
@@ -278,4 +277,18 @@ private fun ReleaseVersionType.toTag(): Int? = when (this) {
     ReleaseVersionType.LATEST -> R.string.release_notes_tag_latest
     ReleaseVersionType.UPCOMING -> R.string.release_notes_tag_upcoming
     ReleaseVersionType.PAST -> null
+}
+
+@Composable
+private fun ReleaseVersionType.tagBackgroundColor(): Color = if (this == ReleaseVersionType.UPCOMING) {
+    MaterialTheme.colorScheme.tertiaryContainer
+} else {
+    MaterialTheme.colorScheme.primaryContainer
+}
+
+@Composable
+private fun ReleaseVersionType.tagContentColor(): Color = if (this == ReleaseVersionType.UPCOMING) {
+    MaterialTheme.colorScheme.onTertiaryContainer
+} else {
+    MaterialTheme.colorScheme.onPrimaryContainer
 }

@@ -54,7 +54,7 @@ kotlin {
 
 buildkonfig {
     packageName = "com.quare.bibleplanner.feature.donation.generated"
-    exposeObjectWithName = "DonationBuildKonfig"
+    objectName = "DonationBuildKonfig"
 
     defaultConfigs {
         val properties = Properties()

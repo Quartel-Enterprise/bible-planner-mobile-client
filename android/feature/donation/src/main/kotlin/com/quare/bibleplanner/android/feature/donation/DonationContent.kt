@@ -54,12 +54,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.icon.SheetIconTile
-import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.feature.donation.presentation.DonationIcons
 import com.quare.bibleplanner.feature.donation.presentation.DonationSection
 import com.quare.bibleplanner.feature.donation.presentation.DonationType
 import com.quare.bibleplanner.feature.donation.presentation.DonationUiEvent
 import com.quare.bibleplanner.feature.donation.presentation.DonationUiState
+import com.quare.bibleplanner.feature.donation.presentation.address
 import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimationEffect
 import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
 import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
@@ -155,7 +155,7 @@ private fun DonationSectionCard(
             CopyAddressItem(
                 title = stringResource(R.string.donation_onchain),
                 icon = rememberVectorPainter(DonationIcons.OnChain),
-                address = DonationBuildKonfig.BTC_ONCHAIN,
+                address = DonationType.BTC_ONCHAIN.address,
                 type = DonationType.BTC_ONCHAIN,
                 copiedType = uiState.copiedType,
                 onEvent = onEvent,
@@ -163,7 +163,7 @@ private fun DonationSectionCard(
             CopyAddressItem(
                 title = stringResource(R.string.donation_lightning),
                 icon = rememberVectorPainter(DonationIcons.LightningBolt),
-                address = DonationBuildKonfig.BTC_LIGHTNING,
+                address = DonationType.BTC_LIGHTNING.address,
                 type = DonationType.BTC_LIGHTNING,
                 copiedType = uiState.copiedType,
                 onEvent = onEvent,
@@ -181,7 +181,7 @@ private fun DonationSectionCard(
             CopyAddressItem(
                 title = stringResource(R.string.donation_erc20),
                 icon = rememberVectorPainter(DonationIcons.Ethereum),
-                address = DonationBuildKonfig.USDT_ERC20,
+                address = DonationType.USDT_ERC20.address,
                 type = DonationType.USDT_ERC20,
                 copiedType = uiState.copiedType,
                 onEvent = onEvent,
@@ -189,7 +189,7 @@ private fun DonationSectionCard(
             CopyAddressItem(
                 title = stringResource(R.string.donation_trc20),
                 icon = rememberVectorPainter(DonationIcons.Tron),
-                address = DonationBuildKonfig.USDT_TRC20,
+                address = DonationType.USDT_TRC20.address,
                 type = DonationType.USDT_TRC20,
                 copiedType = uiState.copiedType,
                 onEvent = onEvent,
@@ -207,7 +207,7 @@ private fun DonationSectionCard(
             CopyAddressItem(
                 title = stringResource(R.string.donation_pix_random_key),
                 icon = null,
-                address = DonationBuildKonfig.PIX_KEY,
+                address = DonationType.PIX.address,
                 type = DonationType.PIX,
                 copiedType = uiState.copiedType,
                 onEvent = onEvent,
