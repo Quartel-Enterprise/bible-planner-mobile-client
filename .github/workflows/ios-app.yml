@@ -1,0 +1,155 @@
+name: ios-app
+
+# Builds the iOS app (iosApp/iosApp.xcodeproj) for the simulator, unsigned, so a Swift compile error
+# in the SwiftUI screens, or a Kotlin API change Swift no longer compiles against, fails the pull
+# request instead of the release. Nothing else compiles the Swift code before release.yml does.
+# See docs/ci.md, "iOS app build".
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which ai-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '.github/workflows/ios-app.yml'
+      - '.github/actions/gradle/**'
+      - 'iosApp/**'
+      - 'shared/**'
+      - 'feature/**'
+      - 'core/**'
+      - 'ui/**'
+      - 'build-logic/**'
+      - 'gradle/**'
+      - '**/*.gradle.kts'
+      - 'gradle.properties'
+      - 'gradlew'
+      # Config.xcconfig includes it.
+      - 'version.xcconfig'
+      - '!**/*.md'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/ios-app.yml'
+      - '.github/actions/gradle/**'
+      - 'iosApp/**'
+      - 'shared/**'
+      - 'feature/**'
+      - 'core/**'
+      - 'ui/**'
+      - 'build-logic/**'
+      - 'gradle/**'
+      - '**/*.gradle.kts'
+      - 'gradle.properties'
+      - 'gradlew'
+      # Config.xcconfig includes it.
+      - 'version.xcconfig'
+      - '!**/*.md'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  # A Debug build for the simulator: the Kotlin framework links without the link-time optimization
+  # that makes the release link take up to 26 minutes, and nothing is signed, so no secret is
+  # needed and pull requests from forks build too.
+  xcode-build:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Select the latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      # The Xcode project's "Compile Kotlin Framework" build phase runs
+      # ./gradlew :shared:embedAndSignAppleFrameworkForXcode, which inherits this job's environment:
+      # the JDK and setup-gradle's cache and init scripts. A default reader: it restores main's
+      # entry on a pull request and writes on main. See .github/actions/gradle.
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # Restores the entry the ios job of ui-tests saves: the debug framework links against the same
+      # compiled library caches as the simulator test binaries, which take about 15 minutes to build
+      # cold. Restore only: actions/cache never overwrites a key, so if this shorter job saved first,
+      # its entry would lack the ui-test library caches and ui-tests would rebuild them every run.
+      - name: Read the Kotlin version
+        id: kotlin
+        run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Kotlin/Native toolchain and library caches
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
+
+      # The real file is gitignored and only release.yml decodes it, from a secret. The app compiles
+      # without it, but the "Upload Crashlytics dSYMs" build phase validates it first and fails the
+      # build when it is missing. These values point at no Firebase project: this build never runs.
+      - name: Write a placeholder GoogleService-Info.plist
+        run: |
+          cat > iosApp/iosApp/GoogleService-Info.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>API_KEY</key>
+            <string>placeholder</string>
+            <key>GCM_SENDER_ID</key>
+            <string>000000000000</string>
+            <key>PLIST_VERSION</key>
+            <string>1</string>
+            <key>BUNDLE_ID</key>
+            <string>com.quare.bibleplanner.BiblePlanner</string>
+            <key>PROJECT_ID</key>
+            <string>placeholder</string>
+            <key>GOOGLE_APP_ID</key>
+            <string>1:000000000000:ios:0000000000000000000000</string>
+          </dict>
+          </plist>
+          EOF
+
+      # No shared scheme is committed: xcodebuild creates the iosApp one from the target, as it does
+      # for fastlane's build in release.yml.
+      - name: Build the app for the iOS simulator
+        run: >-
+          xcodebuild
+          -project iosApp/iosApp.xcodeproj
+          -scheme iosApp
+          -configuration Debug
+          -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          ARCHS=arm64
+          build
