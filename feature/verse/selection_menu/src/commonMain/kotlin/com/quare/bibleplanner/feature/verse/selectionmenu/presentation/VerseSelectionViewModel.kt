@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class VerseSelectionViewModel(
+class VerseSelectionViewModel internal constructor(
     private val observeVerseSelection: ObserveVerseSelection,
     private val clearVerseSelection: ClearVerseSelection,
     private val applyHighlightColor: ApplyHighlightColor,
