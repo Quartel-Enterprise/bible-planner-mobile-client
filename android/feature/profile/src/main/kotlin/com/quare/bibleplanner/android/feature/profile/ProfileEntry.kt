@@ -36,7 +36,7 @@ private fun ProfileTabEntryContent() {
     val viewModel = koinViewModel<ProfileViewModel>()
     val state by viewModel.uiState.collectAsState()
     ProfileUiActionCollector(viewModel = viewModel)
-    ReserveHostedTabBarHeightEffect(extraHeight = 0.dp)
+    ReserveHostedTabBarHeightEffect()
     val transitionScopes = rememberProfileTransitionScopes()
     ExpressiveTheme {
         ProfileContent(
