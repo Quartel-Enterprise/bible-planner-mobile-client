@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="subscription_details_status_title">Estado de la Suscripción</string>
+    <string name="subscription_details_active">Activo</string>
+    <string name="subscription_details_plan_pro">Plan Pro</string>
+    <string name="subscription_details_plan_pro_monthly">Pro / Plan Mensual</string>
+    <string name="subscription_details_plan_pro_annual">Pro / Plan Anual</string>
+    <string name="subscription_details_purchase_title">Detalles de la Compra</string>
+    <string name="subscription_details_purchase_date">Fecha de Compra</string>
+    <string name="subscription_details_renews">Renueva el</string>
+    <string name="subscription_details_expires">Expira el</string>
+    <string name="subscription_details_origin">Origen</string>
+    <string name="subscription_details_store_google_play">Google Play</string>
+    <string name="subscription_details_close">Cerrar</string>
+</resources>

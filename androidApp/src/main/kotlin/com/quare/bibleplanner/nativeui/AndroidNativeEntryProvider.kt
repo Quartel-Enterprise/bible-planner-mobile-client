@@ -14,6 +14,7 @@ import com.quare.bibleplanner.android.feature.materialyou.toNavEntry
 import com.quare.bibleplanner.android.feature.notificationpermission.toNavEntry
 import com.quare.bibleplanner.android.feature.paywallteaser.toNavEntry
 import com.quare.bibleplanner.android.feature.pixqr.toNavEntry
+import com.quare.bibleplanner.android.feature.subscriptiondetails.toNavEntry
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
@@ -26,6 +27,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
+import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
 
 internal class AndroidNativeEntryProvider : NativeEntryProvider {
@@ -42,6 +44,7 @@ internal class AndroidNativeEntryProvider : NativeEntryProvider {
         is MaterialYouBottomSheetNavRoute -> key.toNavEntry()
         is PixQrNavRoute -> key.toNavEntry()
         is PaywallTeaserNavRoute -> key.toNavEntry()
+        is SubscriptionDetailsNavRoute -> key.toNavEntry()
         else -> null
     }
 }

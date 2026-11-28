@@ -129,6 +129,7 @@ dependencies {
     implementation(projects.android.feature.materialYou)
     implementation(projects.android.feature.pixQr)
     implementation(projects.android.feature.paywallTeaser)
+    implementation(projects.android.feature.subscriptionDetails)
 
     // Features
     implementation(projects.feature.materialYou)
