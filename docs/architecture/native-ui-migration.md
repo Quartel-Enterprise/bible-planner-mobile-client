@@ -39,6 +39,8 @@ platform after each one.
    - `android/feature/<name>` holds one feature's screen: a `<Name>Content` composable that takes the shared
      ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
      `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
+     Book content is the exception: book names, book group titles and synopses (66 books in every language) stay in
+     the shared Compose resources, and native screens read them from there until step 4 gives them one native home.
    - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose and the Material
      icons, and to every feature module Koin, Navigation 3, the design system and `android/navigation`. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
      public; Compose Multiplatform's Android build already depends on it, so both resolve to one library.
