@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class EditPlanStartDateViewModel(
+class EditPlanStartDateViewModel internal constructor(
     private val planRepository: PlanRepository,
     private val setPlanStartTime: SetPlanStartTimeUseCase,
     private val getFinalTimestampAfterEdition: GetFinalTimestampAfterEditionUseCase,

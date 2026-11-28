@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AndroidColorSchemeViewModel(
+class AndroidColorSchemeViewModel internal constructor(
     private val useCases: MaterialYouUseCases,
     private val navigator: Navigator,
     trackEvent: TrackEvent,

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_plan_start_date_ok">Aceptar</string>
+    <string name="edit_plan_start_date_cancel">Cancelar</string>
+</resources>
