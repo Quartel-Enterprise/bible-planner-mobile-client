@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class DeleteAccountViewModel(
+class DeleteAccountViewModel internal constructor(
     private val deleteAccount: DeleteAccount,
     private val navigator: Navigator,
     getConfirmationKeyword: GetConfirmationKeyword,

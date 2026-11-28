@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.deleteaccount.presentation.model
 
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 
-internal data class DeleteAccountUiState(
+data class DeleteAccountUiState(
     val status: DeleteAccountUiStatus,
     val confirmationText: String,
     val isConfirmEnabled: Boolean,
