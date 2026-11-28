@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class NotificationPermissionViewModel(
+class NotificationPermissionViewModel internal constructor(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<NotificationPermissionUiEvent>(trackEvent) {
