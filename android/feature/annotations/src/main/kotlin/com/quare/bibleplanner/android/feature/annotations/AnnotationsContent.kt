@@ -1,0 +1,185 @@
+package com.quare.bibleplanner.android.feature.annotations
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsContentUiModel
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiState
+import software.quare.loadable.valueOrNull
+
+// Why: the same breakpoint and widths as the shared screen, so both layouts switch at the same window size.
+private val wideLayoutMinWidth = 840.dp
+private val filterPanelWidth = 220.dp
+private val listMaxWidth = 680.dp
+
+@Composable
+internal fun AnnotationsContent(
+    state: AnnotationsUiState,
+    onEvent: (AnnotationsUiEvent) -> Unit,
+) {
+    val loaded = state.content.valueOrNull()
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isWide = maxWidth >= wideLayoutMinWidth
+        NavigationBackHandler(
+            state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+            isBackEnabled = state.isSearchOpen && !isWide,
+            onBackCompleted = { onEvent(AnnotationsUiEvent.OnSearchCloseClick) },
+        )
+        Scaffold(
+            topBar = {
+                AnnotationsTopBar(
+                    shownCount = loaded?.shownCount,
+                    isSearchAvailable = loaded != null && loaded.totalCount > 0,
+                    isSearchOpen = state.isSearchOpen,
+                    searchQuery = state.searchQuery,
+                    isWide = isWide,
+                    onEvent = onEvent,
+                )
+            },
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
+            ) {
+                when {
+                    loaded == null -> AnnotationsListSkeleton()
+
+                    loaded.totalCount == 0 -> AnnotationsEmptyContent(
+                        otherVersions = loaded.otherVersions,
+                        onEvent = onEvent,
+                    )
+
+                    isWide -> WideAnnotationsContent(
+                        content = loaded,
+                        state = state,
+                        onEvent = onEvent,
+                    )
+
+                    else -> NarrowAnnotationsContent(
+                        content = loaded,
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
+            }
+        }
+    }
+    if (state.isCustomRangePickerOpen && loaded != null) {
+        AnnotationsRangePickerDialog(
+            customRange = loaded.customRange,
+            today = loaded.today,
+            onEvent = onEvent,
+        )
+    }
+    state.pendingRemoval?.let { item ->
+        AnnotationsRemoveDialog(
+            item = item,
+            onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun NarrowAnnotationsContent(
+    content: AnnotationsContentUiModel,
+    state: AnnotationsUiState,
+    onEvent: (AnnotationsUiEvent) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AnnotationsFilterBar(
+            content = content,
+            openFilterMenu = state.openFilterMenu,
+            onEvent = onEvent,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
+        AnnotationsResultsContent(
+            content = content,
+            state = state,
+            isWide = false,
+            onEvent = onEvent,
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 8.dp,
+                bottom = 24.dp,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun WideAnnotationsContent(
+    content: AnnotationsContentUiModel,
+    state: AnnotationsUiState,
+    onEvent: (AnnotationsUiEvent) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(32.dp),
+    ) {
+        AnnotationsFilterPanel(
+            content = content,
+            onEvent = onEvent,
+            modifier = Modifier
+                .width(filterPanelWidth)
+                .padding(top = 8.dp),
+        )
+        AnnotationsResultsContent(
+            content = content,
+            state = state,
+            isWide = true,
+            onEvent = onEvent,
+            contentPadding = PaddingValues(
+                top = 8.dp,
+                bottom = 32.dp,
+            ),
+            modifier = Modifier.widthIn(max = listMaxWidth),
+        )
+    }
+}
+
+@Composable
+private fun AnnotationsResultsContent(
+    content: AnnotationsContentUiModel,
+    state: AnnotationsUiState,
+    isWide: Boolean,
+    onEvent: (AnnotationsUiEvent) -> Unit,
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
+) {
+    if (content.shownCount == 0) {
+        AnnotationsNoResultsContent(
+            query = state.searchQuery.trim(),
+            onClearFiltersClick = { onEvent(AnnotationsUiEvent.OnClearFiltersClick) },
+            modifier = modifier,
+        )
+    } else {
+        AnnotationsList(
+            groups = content.groups,
+            otherVersions = content.otherVersions,
+            openMenuItemKey = state.openMenuItemKey,
+            isWide = isWide,
+            onEvent = onEvent,
+            contentPadding = contentPadding,
+            modifier = modifier.fillMaxSize(),
+        )
+    }
+}

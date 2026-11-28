@@ -10,6 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
+import kotlinx.datetime.number
 import kotlinx.datetime.toJavaLocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -18,6 +20,12 @@ import java.util.Locale
 // Why: the skeletons android.text.format.DateFormat.getTimeFormat picks, so times read as in the system apps.
 private const val TIME_SKELETON_24_HOURS = "Hm"
 private const val TIME_SKELETON_12_HOURS = "hm"
+private const val MONTH_SKELETON = "LLLL"
+private const val MONTH_YEAR_SKELETON = "MMMMy"
+private const val SHORT_DATE_SKELETON = "dMMM"
+private const val SHORT_DATE_YEAR_SKELETON = "dMMMy"
+private const val ANY_YEAR = 2000
+private const val FIRST_DAY = 1
 
 // Why: the app language can differ from the system's, and the configuration carries the one the app shows.
 @Composable
@@ -64,6 +72,54 @@ private fun formatTimeWithIcu(
         set(Calendar.MINUTE, time.minute)
     }
     return SimpleDateFormat(pattern, locale).format(calendar.time)
+}
+
+// Why: a month heads a group of dates, so it starts with a capital even where the locale writes it in lowercase.
+@Composable
+fun rememberMonthLabel(
+    month: Month,
+    year: Int?,
+): String {
+    val locale = currentAppLocale()
+    return remember(month, year, locale) {
+        formatDateWithIcu(
+            // Why: a month with no year still needs a full date to format, and the first day exists in every month.
+            date = LocalDate(
+                year = year ?: ANY_YEAR,
+                month = month,
+                day = FIRST_DAY,
+            ),
+            skeleton = if (year == null) MONTH_SKELETON else MONTH_YEAR_SKELETON,
+            locale = locale,
+        ).replaceFirstChar { it.titlecase(locale) }
+    }
+}
+
+@Composable
+fun rememberShortDateLabel(
+    date: LocalDate,
+    isYearShown: Boolean,
+): String {
+    val locale = currentAppLocale()
+    return remember(date, isYearShown, locale) {
+        formatDateWithIcu(
+            date = date,
+            skeleton = if (isYearShown) SHORT_DATE_YEAR_SKELETON else SHORT_DATE_SKELETON,
+            locale = locale,
+        )
+    }
+}
+
+private fun formatDateWithIcu(
+    date: LocalDate,
+    skeleton: String,
+    locale: Locale,
+): String {
+    val calendar = Calendar.getInstance(locale).apply {
+        clear()
+        set(date.year, date.month.number - 1, date.day)
+    }
+    return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale).format(calendar.time)
 }
 
 @Composable

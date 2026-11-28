@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.verse.annotations.presentation.model
 
 import kotlinx.datetime.Month
 
-internal sealed interface AnnotationGroupLabel {
+sealed interface AnnotationGroupLabel {
     data object Today : AnnotationGroupLabel
 
     data object Yesterday : AnnotationGroupLabel

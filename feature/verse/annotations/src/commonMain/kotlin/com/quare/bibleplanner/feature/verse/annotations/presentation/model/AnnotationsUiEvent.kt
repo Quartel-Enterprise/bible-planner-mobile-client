@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytic
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface AnnotationsUiEvent : UiEvent {
+sealed interface AnnotationsUiEvent : UiEvent {
     data object OnBackClick : AnnotationsUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.ANNOTATIONS_BACK_CLICKED,

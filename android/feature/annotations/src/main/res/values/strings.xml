@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="annotations_title">Annotations</string>
+    <string name="annotations_type_all">All</string>
+    <string name="annotations_type_highlights">Highlights</string>
+    <string name="annotations_type_saved">Saved</string>
+    <string name="annotations_type_notes">Notes</string>
+    <string name="annotations_filter_book">Book</string>
+    <string name="annotations_filter_all_books">All books</string>
+    <string name="annotations_filter_date">Date</string>
+    <string name="annotations_period_any">Any date</string>
+    <string name="annotations_period_today">Today</string>
+    <string name="annotations_period_last_7_days">Last 7 days</string>
+    <string name="annotations_period_last_30_days">Last 30 days</string>
+    <string name="annotations_period_custom">Custom</string>
+    <string name="annotations_apply_range">Apply</string>
+    <string name="annotations_clear_filters">Clear</string>
+    <string name="annotations_clear_all_filters">Clear all filters</string>
+    <string name="annotations_highlight_color_section">Highlight color</string>
+    <string name="annotations_period_section">Period</string>
+    <string name="annotations_book_section">Book</string>
+    <string name="annotations_open_in_chapter">Open in chapter</string>
+    <string name="annotations_add_note">Add note</string>
+    <string name="annotations_edit_note">Edit note</string>
+    <string name="annotations_share">Share</string>
+    <string name="annotations_remove">Remove</string>
+    <string name="annotations_more_options">More options</string>
+    <string name="annotations_color_filter">Filter by highlight color</string>
+    <string name="annotations_empty_title">Nothing marked yet</string>
+    <string name="annotations_empty_body">While reading, tap a verse to highlight, save or add a note. Everything shows up here.</string>
+    <string name="annotations_no_results_title">No items match these filters</string>
+    <string name="annotations_search">Search</string>
+    <string name="annotations_search_hint">Search verses, books and notes</string>
+    <string name="annotations_search_hint_short">Search verse, book or note</string>
+    <string name="annotations_clear_search">Clear search</string>
+    <string name="annotations_no_results_query">No results for “%1$s”</string>
+    <string name="annotations_no_results_query_hint">We search the reference, the verse text and the notes.</string>
+    <string name="annotations_no_results_filters_hint">Try widening the period or changing the type.</string>
+    <string name="annotations_no_results_clear">Clear filters</string>
+    <string name="annotations_remove_title">Remove %1$s?</string>
+    <string name="annotations_remove_body">Everything you marked on this passage will be removed. The text stays available in the reader.</string>
+    <string name="annotations_cancel">Cancel</string>
+    <string name="annotations_annotation_removed">Removed from your annotations</string>
+    <plurals name="annotations_item_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <string name="annotations_other_versions_empty_title">Nothing marked in this version</string>
+    <string name="annotations_other_versions_empty_body">Your marks stay with the Bible version you made them in.</string>
+    <string name="annotations_other_version_use">Use %1$s</string>
+    <plurals name="annotations_other_version_count">
+        <item quantity="one">%1$d mark in %2$s</item>
+        <item quantity="other">%1$d marks in %2$s</item>
+    </plurals>
+    <string name="annotations_back">Back</string>
+    <string name="annotations_selected">Selected</string>
+</resources>
