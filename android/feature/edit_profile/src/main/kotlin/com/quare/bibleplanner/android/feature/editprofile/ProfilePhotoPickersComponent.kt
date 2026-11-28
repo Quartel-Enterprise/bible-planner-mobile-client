@@ -59,7 +59,8 @@ internal fun ProfilePhotoPickersComponent(
 
             ProfilePhotoUiAction.LaunchGalleryPicker -> galleryLauncher.launch()
 
-            ProfilePhotoUiAction.LaunchCameraPicker -> {
+            // Why: the overlay draws behind the sheet's window, so it can't stop a double tap from opening two cameras.
+            ProfilePhotoUiAction.LaunchCameraPicker -> if (!isLaunchingCamera) {
                 isLaunchingCamera = true
                 launchCamera()
             }
