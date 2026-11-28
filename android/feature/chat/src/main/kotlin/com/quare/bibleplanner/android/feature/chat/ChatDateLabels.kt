@@ -10,9 +10,12 @@ import com.quare.bibleplanner.core.date.RelativeTime
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatConversationBucket
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.time.Clock
 
 @Composable
 internal fun relativeTimeLabel(relativeTime: RelativeTime): String = when (relativeTime) {
@@ -38,7 +41,23 @@ internal fun bucketLabel(bucket: ChatConversationBucket): String = when (bucket)
     ChatConversationBucket.Today -> stringResource(R.string.chat_bucket_today)
     ChatConversationBucket.Yesterday -> stringResource(R.string.chat_bucket_yesterday)
     ChatConversationBucket.LastSevenDays -> stringResource(R.string.chat_bucket_last_seven_days)
-    is ChatConversationBucket.InMonth -> stringResource(bucket.month.toStringRes())
+    is ChatConversationBucket.InMonth -> monthBucketLabel(bucket)
+}
+
+// Why: a month of an earlier year would otherwise read the same as that month of this year.
+@Composable
+private fun monthBucketLabel(bucket: ChatConversationBucket.InMonth): String {
+    val month = stringResource(bucket.month.toStringRes())
+    val currentYear = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year }
+    return if (bucket.year == currentYear) {
+        month
+    } else {
+        stringResource(
+            R.string.chat_bucket_month_year,
+            month,
+            bucket.year,
+        )
+    }
 }
 
 @Composable

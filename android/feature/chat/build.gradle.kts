@@ -11,5 +11,4 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kermit)
-    implementation(libs.androidx.activity.compose)
 }

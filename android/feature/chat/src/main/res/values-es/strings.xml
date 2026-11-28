@@ -38,6 +38,9 @@
     <string name="chat_bucket_today">Hoy</string>
     <string name="chat_bucket_yesterday">Ayer</string>
     <string name="chat_bucket_last_seven_days">Últimos 7 días</string>
+    <string name="chat_bucket_month_year">%1$s de %2$d</string>
+    <string name="chat_close">Cerrar</string>
+    <string name="chat_clear_search">Borrar búsqueda</string>
     <plurals name="chat_free_questions_left">
         <item quantity="one">%1$d pregunta gratis restante</item>
         <item quantity="other">%1$d preguntas gratis restantes</item>

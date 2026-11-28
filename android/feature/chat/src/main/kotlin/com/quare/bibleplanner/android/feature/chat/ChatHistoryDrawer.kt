@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.chat
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 
@@ -58,9 +60,11 @@ internal fun BoxScope.ChatHistoryDrawer(
     onEvent: (ChatUiEvent) -> Unit,
 ) {
     // Why: on Android, Back closes an open drawer before it leaves the screen.
-    BackHandler(enabled = history.isOpen) {
-        onEvent(ChatUiEvent.OnHistoryDismiss)
-    }
+    NavigationBackHandler(
+        state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+        isBackEnabled = history.isOpen,
+        onBackCompleted = { onEvent(ChatUiEvent.OnHistoryDismiss) },
+    )
     val interactionSource = remember { MutableInteractionSource() }
     AnimatedVisibility(
         visible = history.isOpen,

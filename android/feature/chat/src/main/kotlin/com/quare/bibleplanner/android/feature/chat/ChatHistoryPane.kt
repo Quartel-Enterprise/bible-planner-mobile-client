@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,7 +84,7 @@ internal fun ChatHistoryPane(
                 IconButton(onClick = dismiss) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
-                        contentDescription = stringResource(R.string.chat_conversations),
+                        contentDescription = stringResource(R.string.chat_close),
                     )
                 }
             }
@@ -161,7 +160,7 @@ private fun ChatSearchField(
         if (!isEmpty) {
             Icon(
                 imageVector = Icons.Rounded.Close,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.chat_clear_search),
                 modifier = Modifier
                     .size(clearIconSize)
                     .clickable { synced.textFieldState.clearText() },
@@ -258,7 +257,7 @@ private fun ChatEmptySearchColumn() {
         Icon(
             imageVector = Icons.Rounded.SearchOff,
             contentDescription = null,
-            modifier = Modifier.width(emptyStateIconSize),
+            modifier = Modifier.size(emptyStateIconSize),
             tint = MaterialTheme.colorScheme.outline,
         )
         Spacer(modifier = Modifier.height(8.dp))

@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -68,7 +69,7 @@ private const val SUGGESTIONS_KEY = "suggestions"
 private val sidebarLayoutMinWidth = 840.dp
 private val headerElevation = 4.dp
 private val sparkleSize = 22.dp
-internal val chatContentMaxWidth = 720.dp
+private val chatContentMaxWidth = 720.dp
 
 @Composable
 internal fun ChatContent(
@@ -89,6 +90,10 @@ internal fun ChatContent(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth >= sidebarLayoutMinWidth
         if (isWide) {
+            // Why: the sidebar replaces the drawer, which would otherwise reopen by itself once the window narrows.
+            LaunchedEffect(uiState.history.isOpen) {
+                if (uiState.history.isOpen) onEvent(ChatUiEvent.OnHistoryDismiss)
+            }
             Row(modifier = Modifier.fillMaxSize()) {
                 ChatHistorySidebar(
                     history = uiState.history,
