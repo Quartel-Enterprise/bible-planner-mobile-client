@@ -60,6 +60,9 @@ class CropPhotoViewModel internal constructor(
     private var imageHeight = 0
     private var circleDiameter = 1f
 
+    // Why: cancel, confirm and an unreadable image all pop this screen, and popping twice closes the screen below.
+    private var isFinishing = false
+
     init {
         viewModelScope.launch {
             decodeImageBitmap(route.file)
@@ -82,7 +85,7 @@ class CropPhotoViewModel internal constructor(
             CropPhotoUiEvent.OnFlipHorizontalClick -> updateOrientation(PhotoOrientation::flipHorizontally)
             CropPhotoUiEvent.OnFlipVerticalClick -> updateOrientation(PhotoOrientation::flipVertically)
             CropPhotoUiEvent.OnRotateClick -> updateOrientation(PhotoOrientation::rotateQuarterTurn)
-            CropPhotoUiEvent.OnCancelClick -> navigator.navigateBack()
+            CropPhotoUiEvent.OnCancelClick -> cancel()
             CropPhotoUiEvent.OnConfirmClick -> confirmCrop()
         }
     }
@@ -111,8 +114,15 @@ class CropPhotoViewModel internal constructor(
         uiState.update { it.copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp() }
     }
 
+    private fun cancel() {
+        if (isFinishing) return
+        isFinishing = true
+        navigator.navigateBack()
+    }
+
     private fun confirmCrop() {
-        if (imageWidth <= 0 || imageHeight <= 0) return
+        if (imageWidth <= 0 || imageHeight <= 0 || isFinishing) return
+        isFinishing = true
         viewModelScope.launch {
             val encoded = suspendRunCatching {
                 withContext(encodeDispatcher) {
@@ -140,6 +150,7 @@ class CropPhotoViewModel internal constructor(
     }
 
     private suspend fun finishWith(message: EditProfileMessage) {
+        isFinishing = true
         navigator.navigateBack()
         uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }

@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.android.feature.editprofile
+package com.quare.bibleplanner.android.designsystem.avatar
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
@@ -34,7 +34,7 @@ private val whitespace = Regex("\\s+")
 private const val INITIALS_FONT_RATIO = 0.38f
 
 @Composable
-internal fun ProfileAvatarImage(
+fun ProfileAvatarImage(
     photoUrl: String?,
     photoBytes: ByteArray?,
     displayName: String?,

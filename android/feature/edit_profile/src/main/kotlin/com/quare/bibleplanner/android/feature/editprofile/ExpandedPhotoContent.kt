@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.android.feature.editprofile
 
-import android.os.Build
-import android.view.WindowManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +26,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,14 +33,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogWindowProvider
+import com.quare.bibleplanner.android.designsystem.avatar.ProfileAvatarImage
+import com.quare.bibleplanner.android.designsystem.dialog.DialogWindowBlurEffect
 import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
@@ -217,18 +212,6 @@ private fun PhotoShortcutButton(
             color = labelColor,
             textAlign = TextAlign.Center,
         )
-    }
-}
-
-@Composable
-private fun DialogWindowBlurEffect(radius: Dp) {
-    val view = LocalView.current
-    val radiusPx = with(LocalDensity.current) { radius.roundToPx() }
-    SideEffect {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return@SideEffect
-        val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-        window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
-        window.attributes = window.attributes.apply { blurBehindRadius = radiusPx }
     }
 }
 

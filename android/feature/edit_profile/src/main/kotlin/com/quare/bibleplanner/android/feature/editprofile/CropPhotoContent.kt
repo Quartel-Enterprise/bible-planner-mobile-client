@@ -43,8 +43,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -98,16 +96,9 @@ internal fun CropPhotoContent(
             .background(screenBackground)
             .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
+        // Why: the header comes first so a slow decode still shows a way out.
+        CropHeader(onCancel = { onEvent(CropPhotoUiEvent.OnCancelClick) })
         val bitmap = (uiState.image as? ImageResult.Loaded)?.bitmap ?: return@Column
-        var isFinishing by remember { mutableStateOf(false) }
-        // Why: cancel and confirm both pop this screen; a second tap would pop the screen below or save twice.
-        val finishWith: (CropPhotoUiEvent) -> Unit = { event ->
-            if (!isFinishing) {
-                isFinishing = true
-                onEvent(event)
-            }
-        }
-        CropHeader(onCancel = { finishWith(CropPhotoUiEvent.OnCancelClick) })
         CropAreaBox(
             bitmap = bitmap,
             uiState = uiState,
@@ -124,8 +115,8 @@ internal fun CropPhotoContent(
             onRotate = { onEvent(CropPhotoUiEvent.OnRotateClick) },
         )
         CropActionRow(
-            onCancel = { finishWith(CropPhotoUiEvent.OnCancelClick) },
-            onConfirm = { finishWith(CropPhotoUiEvent.OnConfirmClick) },
+            onCancel = { onEvent(CropPhotoUiEvent.OnCancelClick) },
+            onConfirm = { onEvent(CropPhotoUiEvent.OnConfirmClick) },
         )
     }
 }
