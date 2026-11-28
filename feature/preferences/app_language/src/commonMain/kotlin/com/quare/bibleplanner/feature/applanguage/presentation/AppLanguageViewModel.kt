@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal class AppLanguageViewModel(
+class AppLanguageViewModel internal constructor(
     private val setAppLanguage: SetAppLanguage,
     private val setLanguageSyncEnabled: SetLanguageSyncEnabled,
     private val navigator: Navigator,
@@ -60,12 +60,6 @@ internal class AppLanguageViewModel(
             setAppLanguage(language)
             uiAction.emit(AppLanguageUiAction.ApplyLanguage(language))
             navigator.navigateBack()
-        }
-    }
-
-    private fun emitAction(action: AppLanguageUiAction) {
-        viewModelScope.launch {
-            uiAction.emit(action)
         }
     }
 }

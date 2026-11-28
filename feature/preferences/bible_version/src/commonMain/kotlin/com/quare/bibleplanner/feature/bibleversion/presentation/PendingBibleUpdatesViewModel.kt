@@ -12,12 +12,13 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVer
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdateItem
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class PendingBibleUpdatesViewModel(
+class PendingBibleUpdatesViewModel internal constructor(
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val dismissBibleUpdatePrompt: DismissBibleUpdatePromptUseCase,
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
@@ -27,6 +28,9 @@ internal class PendingBibleUpdatesViewModel(
 ) : TrackedViewModel<PendingBibleUpdatesUiEvent>(trackEvent) {
     val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>>
         field = MutableStateFlow<List<PendingBibleUpdateItem>>(emptyList())
+
+    // Why: updating can outlast any UI tap guard, and a second run would download again and close twice.
+    private var updateJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -66,7 +70,8 @@ internal class PendingBibleUpdatesViewModel(
     }
 
     private fun updateSelectedVersions() {
-        viewModelScope.launch {
+        if (updateJob?.isActive == true) return
+        updateJob = viewModelScope.launch {
             val selectedUpdates = pendingUpdates.value.filter { it.isSelected }
             selectedUpdates.forEach { item ->
                 updateBibleVersion(item.id)

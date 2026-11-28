@@ -21,6 +21,7 @@ import com.quare.bibleplanner.feature.bibleversion.fake.RecordingNotificationPer
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdateItem
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -176,6 +177,30 @@ internal class PendingBibleUpdatesViewModelTest {
             assertEquals(
                 expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
                 actual = navigationCommands(),
+            )
+        }
+
+    @Test
+    fun `GIVEN an update still running WHEN tapping update again THEN updates and closes once`() =
+        runTest(testDispatcher) {
+            // Given
+            val commands = navigationCommands()
+            val pendingAnswer = CompletableDeferred<Unit>()
+            permissionRequester.pendingAnswer = pendingAnswer
+            viewModel.onEvent(PendingBibleUpdatesUiEvent.OnUpdateClick)
+
+            // When
+            viewModel.onEvent(PendingBibleUpdatesUiEvent.OnUpdateClick)
+            pendingAnswer.complete(Unit)
+
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = permissionRequester.requestCount,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
             )
         }
 

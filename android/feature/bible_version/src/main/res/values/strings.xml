@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bible_version_title">Bible Version</string>
+    <string name="bible_version_description">Download to read offline and choose your default version.</string>
+    <string name="bible_version_download">Download</string>
+    <string name="bible_version_pause">Pause</string>
+    <string name="bible_version_resume">Resume</string>
+    <string name="bible_version_delete">Delete</string>
+    <string name="bible_version_update">Update</string>
+    <string name="bible_version_downloaded">Downloaded</string>
+    <string name="bible_version_downloading_progress">Downloading %1$s%%</string>
+    <string name="bible_version_paused_progress">Paused %1$s%%</string>
+    <string name="bible_version_tap_to_download">Tap to download</string>
+    <string name="bible_version_update_available">Update available</string>
+    <string name="bible_version_status_with_size">%1$s · %2$s</string>
+    <string name="bible_version_size_progress">%1$s of %2$s</string>
+    <string name="bible_version_load_error">We were unable to download the Bible versions to your device. Please check your internet connection and try again.</string>
+    <string name="bible_version_try_again">Try Again</string>
+    <string name="bible_version_updates_available">Updates available</string>
+    <string name="bible_version_updates_description">New revisions for versions you downloaded. Choose which to update.</string>
+    <string name="bible_version_update_count">Update (%1$d)</string>
+    <string name="bible_version_megabytes">%1$d.%2$d MB</string>
+</resources>

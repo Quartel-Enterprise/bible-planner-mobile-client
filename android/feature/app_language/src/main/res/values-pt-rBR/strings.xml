@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_language_title">Idioma do Aplicativo</string>
+    <string name="app_language_sync_description">Mantenha seu idioma igual em todos os seus dispositivos</string>
+</resources>

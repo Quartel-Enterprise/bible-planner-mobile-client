@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_selection_title">Theme</string>
+    <string name="theme_selection_appearance">Appearance</string>
+    <string name="theme_selection_light">Light</string>
+    <string name="theme_selection_dark">Dark</string>
+    <string name="theme_selection_system">System</string>
+    <string name="theme_selection_dynamic_colors">Dynamic colors</string>
+    <string name="theme_selection_dynamic_colors_info">Information</string>
+    <string name="theme_selection_contrast">Contrast</string>
+    <string name="theme_selection_contrast_standard">Standard</string>
+    <string name="theme_selection_contrast_medium">Medium</string>
+    <string name="theme_selection_contrast_high">High</string>
+    <string name="theme_selection_sync_description">Saves your theme to your account and applies it to all your devices</string>
+</resources>

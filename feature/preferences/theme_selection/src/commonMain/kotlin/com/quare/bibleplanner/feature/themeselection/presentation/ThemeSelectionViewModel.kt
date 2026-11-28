@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal class ThemeSelectionViewModel(
+class ThemeSelectionViewModel internal constructor(
     private val setThemeOption: SetThemeOption,
     private val setDynamicColorsEnabledFlow: SetIsDynamicColorsEnabled,
     private val setContrastType: SetContrastType,

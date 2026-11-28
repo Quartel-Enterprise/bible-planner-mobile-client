@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytic
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface AppLanguageUiEvent : UiEvent {
+sealed interface AppLanguageUiEvent : UiEvent {
     data class OnLanguageSelected(
         val language: Language,
     ) : AppLanguageUiEvent {

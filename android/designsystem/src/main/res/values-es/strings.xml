@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progress_dialog_loading">Cargando</string>
+    <string name="sheet_close">Cerrar</string>
+    <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
+    <string name="language_name_english">Inglés</string>
+    <string name="language_name_portuguese_brazil">Portugués (Brasil)</string>
+    <string name="language_name_spanish">Español</string>
     <string name="study_show_more">Ver más</string>
     <string name="study_show_less">Ver menos</string>
     <string name="study_generating_title">Preparando tu estudio</string>
