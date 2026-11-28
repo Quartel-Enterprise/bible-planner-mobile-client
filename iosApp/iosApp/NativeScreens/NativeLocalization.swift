@@ -36,22 +36,33 @@ struct NativeLocalization: Equatable {
 
     private static func resolveBundle(for languageTag: String) -> Bundle {
         if let cached = bundlesByLanguage[languageTag] { return cached }
-        // "pt-BR" has its own folder, while a regional tag such as "es-MX" falls back to its language.
-        let languageCode = String(languageTag.prefix { $0 != "-" && $0 != "_" })
-        var resolved = Bundle.main
-        for candidate in [languageTag, languageCode] {
-            if let path = Bundle.main.path(forResource: candidate, ofType: "lproj"), let bundle = Bundle(path: path) {
-                resolved = bundle
-                break
-            }
-        }
+        let folder = appLanguageFolder(for: languageTag)
+        let resolved = Bundle.main.path(forResource: folder, ofType: "lproj").flatMap(Bundle.init(path:)) ?? Bundle.main
         bundlesByLanguage[languageTag] = resolved
         return resolved
+    }
+
+    /// The same mapping as Kotlin's `IosLanguageProvider`, so a language the app doesn't have (such as "pt-PT" or
+    /// "fr") shows English here as it does on every Compose screen, instead of whatever `Bundle.main` matches.
+    private static func appLanguageFolder(for languageTag: String) -> String {
+        let parts = languageTag.replacingOccurrences(of: "_", with: "-").split(separator: "-")
+        let language = parts.first.map(String.init) ?? ""
+        let region = parts.count > 1 ? String(parts[1]) : ""
+        if language == "pt", region == "BR" { return "pt-BR" }
+        if language.hasPrefix("es") { return "es" }
+        return "en"
     }
 }
 
 /// A Kotlin `LocalDate` read through its ISO-8601 `toString()`, which Swift sees as `description`.
 struct PlanDate: Equatable {
+    /// Built once: every day row parses a date on each render.
+    private static let calendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .autoupdatingCurrent
+        return calendar
+    }()
+
     let date: Date
 
     init?(kotlinIsoDate: String) {
@@ -63,7 +74,7 @@ struct PlanDate: Equatable {
         components.day = parts[2]
         // Noon keeps the day the same in every time zone the calendar might apply.
         components.hour = 12
-        guard let date = Calendar(identifier: .gregorian).date(from: components) else { return nil }
+        guard let date = Self.calendar.date(from: components) else { return nil }
         self.date = date
     }
 

@@ -35,7 +35,6 @@ struct ReadingPlanView: View {
 }
 
 private enum RowID {
-    static let planOrder = "plan_order"
     static let hero = "hero"
 
     static func week(_ weekNumber: Int32) -> String {
@@ -52,7 +51,9 @@ private struct ReadingPlanContent: View {
     let onEvent: (ReadingPlanUiEvent) -> Void
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var visibleRows: Set<String> = []
+    /// How many on-screen rows each id has: a week's label and its days share the week's id, and a row moving to
+    /// another section can appear there before its old copy disappears, so a plain set would drop it.
+    @State private var visibleRowCounts: [String: Int] = [:]
 
     private var isSplit: Bool {
         horizontalSizeClass == .regular
@@ -64,13 +65,6 @@ private struct ReadingPlanContent: View {
                 lists(state: state)
                     .onChange(of: state.scrollToWeekNumber, initial: true) { _, weekNumber in
                         scrollToWeek(weekNumber, state: state, proxy: proxy)
-                    }
-                    .onChange(of: state.scrollToTop, initial: true) { _, scrollToTop in
-                        guard scrollToTop else { return }
-                        withAnimation {
-                            proxy.scrollTo(RowID.planOrder, anchor: .top)
-                        }
-                        onEvent(ReadingPlanUiEventOnScrollToTopCompleted.shared)
                     }
                     .onChange(of: isActiveRowVisible(state)) { _, isVisible in
                         if isVisible != state.isActiveRowVisible {
@@ -108,13 +102,12 @@ private struct ReadingPlanContent: View {
     private func overviewSections(state: any ReadingPlanUiState) -> some View {
         Section {
             planOrderPicker(state: state)
-                .id(RowID.planOrder)
         }
         if let loaded = state as? ReadingPlanUiStateLoaded {
             Section {
                 ReadingPlanHeroCard(status: loaded.planStatus, strings: strings, onEvent: onEvent)
-                    .onAppear { visibleRows.insert(RowID.hero) }
-                    .onDisappear { visibleRows.remove(RowID.hero) }
+                    .onAppear { setRowVisible(RowID.hero, true) }
+                    .onDisappear { setRowVisible(RowID.hero, false) }
             }
             .listRowBackground(Color.accentColor.opacity(0.12))
             Section(strings.text("progress_title")) {
@@ -171,13 +164,8 @@ private struct ReadingPlanContent: View {
                             strings: strings,
                             onEvent: onEvent,
                             rowID: RowID.week(week.weekPlan.number),
-                            onLabelVisibilityChange: { isVisible in
-                                let rowID = RowID.week(week.weekPlan.number)
-                                if isVisible {
-                                    visibleRows.insert(rowID)
-                                } else {
-                                    visibleRows.remove(rowID)
-                                }
+                            onRowVisibilityChange: { isVisible in
+                                setRowVisible(RowID.week(week.weekPlan.number), isVisible)
                             }
                         )
                     }
@@ -257,9 +245,19 @@ private struct ReadingPlanContent: View {
 
     private func isActiveRowVisible(_ state: any ReadingPlanUiState) -> Bool {
         guard let loaded = state as? ReadingPlanUiStateLoaded else { return true }
-        if visibleRows.contains(RowID.hero) { return true }
+        // Split, the hero sits in its own list that never scrolls away, so only the weeks list decides.
+        if !isSplit, isRowVisible(RowID.hero) { return true }
         guard let activeWeekNumber = loaded.planStatus.nextDay?.weekNumber else { return false }
-        return visibleRows.contains(RowID.week(activeWeekNumber))
+        return isRowVisible(RowID.week(activeWeekNumber))
+    }
+
+    private func isRowVisible(_ rowID: String) -> Bool {
+        (visibleRowCounts[rowID] ?? 0) > 0
+    }
+
+    private func setRowVisible(_ rowID: String, _ isVisible: Bool) {
+        let count = (visibleRowCounts[rowID] ?? 0) + (isVisible ? 1 : -1)
+        visibleRowCounts[rowID] = count > 0 ? count : nil
     }
 
     private func scrollToWeek(_ weekNumber: Int32, state: any ReadingPlanUiState, proxy: ScrollViewProxy) {

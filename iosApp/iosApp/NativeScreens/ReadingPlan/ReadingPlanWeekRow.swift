@@ -8,7 +8,9 @@ struct ReadingPlanWeekRow: View {
     let strings: ReadingPlanText
     let onEvent: (ReadingPlanUiEvent) -> Void
     let rowID: String
-    let onLabelVisibilityChange: (Bool) -> Void
+    /// Called as the week's label or one of its days scrolls in or out, so the week counts as on screen while any
+    /// of its rows is, like the whole week card of the shared screen.
+    let onRowVisibilityChange: (Bool) -> Void
 
     var body: some View {
         DisclosureGroup(isExpanded: expansion) {
@@ -20,12 +22,14 @@ struct ReadingPlanWeekRow: View {
                     strings: strings,
                     onEvent: onEvent
                 )
+                .onAppear { onRowVisibilityChange(true) }
+                .onDisappear { onRowVisibilityChange(false) }
             }
         } label: {
             label
                 .id(rowID)
-                .onAppear { onLabelVisibilityChange(true) }
-                .onDisappear { onLabelVisibilityChange(false) }
+                .onAppear { onRowVisibilityChange(true) }
+                .onDisappear { onRowVisibilityChange(false) }
         }
     }
 
