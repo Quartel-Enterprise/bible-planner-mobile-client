@@ -9,4 +9,6 @@
     <string name="study_error_offline">Se perdió la conexión mientras se generaba el estudio. Verifica tu internet e inténtalo de nuevo.</string>
     <string name="study_retry">Intentar de nuevo</string>
     <string name="study_ai_disclaimer">Contenido generado por IA para apoyar la comprensión. No sustituye la lectura del texto completo.</string>
+    <string name="study_unlock">Desbloquear</string>
+    <string name="study_back">Volver</string>
 </resources>

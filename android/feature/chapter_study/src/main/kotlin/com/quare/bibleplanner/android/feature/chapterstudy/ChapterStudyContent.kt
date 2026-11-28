@@ -35,6 +35,7 @@ import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStu
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
 import com.quare.bibleplanner.ui.utils.asStable
+import com.quare.bibleplanner.android.designsystem.R as DesignSystemR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +74,7 @@ internal fun ChapterStudyContent(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.chapter_study_back),
+                                contentDescription = stringResource(DesignSystemR.string.study_back),
                             )
                         }
                     },
@@ -172,7 +173,7 @@ private fun ChapterStudyHeroContent(
         buttonLabel = stringResource(
             when {
                 !hero.isLocked -> R.string.chapter_study_generate
-                hero.isRewardedUnlockOffered -> R.string.chapter_study_unlock
+                hero.isRewardedUnlockOffered -> DesignSystemR.string.study_unlock
                 else -> R.string.chapter_study_subscribe
             },
         ),

@@ -54,6 +54,7 @@ import com.quare.bibleplanner.ui.utils.asStable
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
+import com.quare.bibleplanner.android.designsystem.R as DesignSystemR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +97,7 @@ internal fun DayStudyContent(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.day_study_back),
+                                contentDescription = stringResource(DesignSystemR.string.study_back),
                             )
                         }
                     },
@@ -218,7 +219,7 @@ private fun DayStudyCardUiModel.toButtonLabelRes(): Int = when (mode) {
     DayStudyCardMode.VIEW -> R.string.day_study_view
 
     DayStudyCardMode.LOCKED -> if (isRewardedUnlockOffered) {
-        R.string.day_study_unlock
+        DesignSystemR.string.study_unlock
     } else {
         R.string.day_study_subscribe
     }

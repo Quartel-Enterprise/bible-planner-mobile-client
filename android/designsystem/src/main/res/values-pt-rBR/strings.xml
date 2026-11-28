@@ -9,4 +9,6 @@
     <string name="study_error_offline">A conexão caiu durante a geração do estudo. Verifique sua internet e tente novamente.</string>
     <string name="study_retry">Tentar novamente</string>
     <string name="study_ai_disclaimer">Conteúdo gerado por IA para apoiar o entendimento. Não substitui a leitura do texto completo.</string>
+    <string name="study_unlock">Desbloquear</string>
+    <string name="study_back">Voltar</string>
 </resources>

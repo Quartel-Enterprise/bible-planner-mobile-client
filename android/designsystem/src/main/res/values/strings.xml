@@ -9,4 +9,6 @@
     <string name="study_error_offline">The connection was lost while generating the study. Check your internet and try again.</string>
     <string name="study_retry">Try again</string>
     <string name="study_ai_disclaimer">AI-generated content to support understanding. It does not replace reading the full text.</string>
+    <string name="study_unlock">Unlock</string>
+    <string name="study_back">Back</string>
 </resources>

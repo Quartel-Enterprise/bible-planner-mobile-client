@@ -24,6 +24,4 @@
     <string name="chapter_study_quota_free">%1$d free</string>
     <string name="chapter_study_exhausted_subtitle">You have used your %1$d free analyses</string>
     <string name="chapter_study_pro_badge">PRO</string>
-    <string name="chapter_study_back">Back</string>
-    <string name="chapter_study_unlock">Unlock</string>
 </resources>

@@ -3,11 +3,14 @@ package com.quare.bibleplanner.android.designsystem.study
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -81,6 +85,7 @@ fun AiStudyHeroContent(
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(ButtonDefaults.IconSize),
+                    color = LocalContentColor.current,
                     strokeWidth = 2.dp,
                 )
             } else {
@@ -185,17 +190,23 @@ private fun AiStudyCenteredColumn(
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(
-                horizontal = 38.dp,
-                vertical = 40.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        content()
+    BoxWithConstraints(modifier = modifier) {
+        // Why: verticalScroll gives the column unbounded height, so it needs the viewport as its minimum to center.
+        val minHeight = if (constraints.hasBoundedHeight) maxHeight else 0.dp
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = minHeight)
+                .padding(
+                    horizontal = 38.dp,
+                    vertical = 40.dp,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            content()
+        }
     }
 }
 

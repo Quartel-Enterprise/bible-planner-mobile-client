@@ -31,6 +31,4 @@
     <string name="day_study_chat_entry_title">Pregunta sobre esta lectura</string>
     <string name="day_study_chat_entry_placeholder">Pregunta cualquier cosa sobre %1$s…</string>
     <string name="day_study_chat_entry_hint">El chat ya conoce el contexto de hoy</string>
-    <string name="day_study_back">Volver</string>
-    <string name="day_study_unlock">Desbloquear</string>
 </resources>

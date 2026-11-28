@@ -53,6 +53,7 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.daystudy.domain.model.FactModel
 import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
 import com.quare.bibleplanner.core.daystudy.domain.model.QaModel
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyTab
 import kotlinx.coroutines.launch
 
 private val contentMaxWidth = 720.dp
@@ -64,13 +65,13 @@ private val tabContentPadding = PaddingValues(
 )
 private const val EXPANDED_ARROW_DEGREES = 180f
 
-private enum class DayStudyTab(
-    @param:StringRes val titleRes: Int,
-) {
-    SUMMARY(R.string.day_study_tab_summary),
-    CONTEXT(R.string.day_study_tab_context),
-    QUESTIONS(R.string.day_study_tab_questions),
-}
+@get:StringRes
+private val DayStudyTab.titleRes: Int
+    get() = when (this) {
+        DayStudyTab.SUMMARY -> R.string.day_study_tab_summary
+        DayStudyTab.CONTEXT -> R.string.day_study_tab_context
+        DayStudyTab.QUESTIONS -> R.string.day_study_tab_questions
+    }
 
 @Composable
 internal fun DayStudyTabbedContent(
