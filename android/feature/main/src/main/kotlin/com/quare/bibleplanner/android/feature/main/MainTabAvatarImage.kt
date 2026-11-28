@@ -10,6 +10,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,10 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val whitespace = Regex("\\s+")
 private const val INITIALS_FONT_RATIO = 0.38f
@@ -45,26 +51,51 @@ internal fun MainTabAvatarImage(
         .clip(CircleShape)
         .semantics { this.contentDescription = contentDescription }
     val photoBytes = avatar.photoBytes
-    val photoBitmap = remember(photoBytes) { photoBytes?.toImageBitmap() }
+    val photoBitmap by rememberDecodedBitmap(photoBytes)
     val photoUrl = avatar.photoUrl
     val initials = remember(displayName) { displayName.toInitials() }
+    val fallback: @Composable () -> Unit = {
+        AvatarFallbackImage(
+            initials = initials,
+            size = size,
+            fallbackIcon = fallbackIcon,
+            contentDescription = contentDescription,
+            modifier = avatarModifier,
+        )
+    }
+    val bitmap = photoBitmap
     when {
-        photoBitmap != null -> Image(
-            bitmap = photoBitmap,
+        bitmap != null -> Image(
+            bitmap = bitmap,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = avatarModifier,
         )
 
-        photoUrl != null -> AsyncImage(
+        photoBytes == null && photoUrl != null -> SubcomposeAsyncImage(
             model = photoUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = avatarModifier,
+            loading = { fallback() },
+            error = { fallback() },
         )
 
-        initials != null -> Box(
-            modifier = avatarModifier.background(MaterialTheme.colorScheme.primaryContainer),
+        else -> fallback()
+    }
+}
+
+@Composable
+private fun AvatarFallbackImage(
+    initials: String?,
+    size: Dp,
+    fallbackIcon: ImageVector,
+    contentDescription: String,
+    modifier: Modifier,
+) {
+    if (initials != null) {
+        Box(
+            modifier = modifier.background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -74,12 +105,27 @@ internal fun MainTabAvatarImage(
                 fontSize = size.toInitialsFontSize(),
             )
         }
-
-        else -> Icon(
+    } else {
+        Icon(
             imageVector = fallbackIcon,
             contentDescription = contentDescription,
         )
     }
+}
+
+/*
+ * Why: decodes off the main thread and keeps the last decoded photo while a new one decodes, so the tab
+ * icon doesn't flash back to the initials on every profile update.
+ */
+@Composable
+private fun rememberDecodedBitmap(photoBytes: ByteArray?): State<ImageBitmap?> {
+    val state = remember { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(photoBytes) {
+        state.value = photoBytes?.let { bytes ->
+            withContext(Dispatchers.Default) { bytes.toImageBitmap() }
+        }
+    }
+    return state
 }
 
 private fun ByteArray.toImageBitmap(): ImageBitmap? = BitmapFactory.decodeByteArray(this, 0, size)?.asImageBitmap()

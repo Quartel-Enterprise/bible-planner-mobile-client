@@ -22,6 +22,8 @@ import com.quare.bibleplanner.core.navigation.withNativeEntries
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.main.presentation.LocalMainTabEntries
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
+import com.quare.bibleplanner.feature.main.presentation.navhost.NavTabState
+import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabState
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
@@ -35,7 +37,7 @@ internal fun MainNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(key = this) 
 @Composable
 private fun MainEntryContent(animatedContentScope: AnimatedContentScope) {
     val viewModel = koinViewModel<MainScreenViewModel>()
-    val tabState = rememberMainTabState()
+    val tabState = rememberNavTabState()
     val trackDestination = koinInject<TrackDestination>()
     val selectedTab = tabState.selectedTab
     LaunchedEffect(selectedTab) {
@@ -67,7 +69,7 @@ private fun MainEntryContent(animatedContentScope: AnimatedContentScope) {
 
 @Composable
 private fun MainTabsNavDisplay(
-    tabState: MainTabState,
+    tabState: NavTabState,
     animatedContentScope: AnimatedContentScope,
 ) {
     val sharedTabEntries = checkNotNull(LocalMainTabEntries.current) {
