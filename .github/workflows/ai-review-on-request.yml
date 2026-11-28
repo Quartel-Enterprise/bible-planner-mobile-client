@@ -1,12 +1,12 @@
-name: claude-review-on-request
+name: ai-review-on-request
 
 # Reviews a pull request again when it gets the ai-review label, usually after new pushes, since
-# claude-review only reviews when the pull request opens, or on the push that solves a conflict it
+# ai-review only reviews when the pull request opens, or on the push that solves a conflict it
 # opened with. Nothing starts while another review of the
 # same pull request is still running: the label is removed and that review's comments stand.
 #
 # It is a workflow of its own because every label added to a pull request starts it. Its job, named
-# differently from claude-review's, leaves a skipped review-on-request check for the other labels,
+# differently from ai-review's, leaves a skipped review-on-request check for the other labels,
 # so merge-when-green still sees the review check of the opening review.
 on:
   pull_request:
@@ -29,7 +29,7 @@ jobs:
       issues: read
       id-token: write
     steps:
-      # Any claude-review run not completed yet counts, even before its job is created. Every push
+      # Any ai-review run not completed yet counts, even before its job is created. Every push
       # starts one too, which ends in seconds without reviewing (only the push that solves a conflict
       # the pull request opened with is reviewed), so a run still unfinished after two minutes is the
       # one that counts: a label added right after a push isn't dropped for it. Every label starts a
@@ -47,18 +47,18 @@ jobs:
             gh api "repos/$GH_REPO/actions/runs?branch=$HEAD_REF&event=pull_request&per_page=100" \
               --jq ".workflow_runs[]
                 | select(.id != $RUN_ID and .status != \"completed\")
-                | select(.name == \"claude-review\" or .name == \"claude-review-on-request\")
+                | select(.name == \"ai-review\" or .name == \"ai-review-on-request\")
                 | \"\\(.id) \\(.name)\""
           }
           runs=$(unfinished)
           for _ in $(seq 12); do
-            grep -q ' claude-review$' <<< "$runs" || break
+            grep -q ' ai-review$' <<< "$runs" || break
             sleep 10
             runs=$(unfinished)
           done
           while read -r run name; do
             [ -n "$run" ] || continue
-            if [ "$name" = claude-review ] || gh api "repos/$GH_REPO/actions/runs/$run/jobs" \
+            if [ "$name" = ai-review ] || gh api "repos/$GH_REPO/actions/runs/$run/jobs" \
               --jq '.jobs[] | select(.status != "completed") | .name' | grep -q .; then
               echo "::notice::Another review of this pull request is still running, so none was started."
               echo "found=true" >> "$GITHUB_OUTPUT"
@@ -77,10 +77,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.5.0
+      - uses: Quartel-Enterprise/ai-review/review@2.1.0
         if: steps.in-progress.outputs.found == 'false'
         with:
-          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          providers: claude
+          claude-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           memory-repository: PierreVieira/bible-planner-agent-memory
           memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
           # The conventions only: the project_* memories and the index hold figures and ids a public

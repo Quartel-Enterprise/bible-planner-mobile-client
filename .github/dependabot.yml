@@ -1,19 +1,19 @@
 version: 2
 updates:
   # Only the shared actions of Quartel-Enterprise, whose releases are the one place their version is set:
-  # every other action is bumped by hand. The claude-review refs have to move together
-  # (claude-review-refs.yml), so one pull request bumps all of them. copied-code-check gets a pull request
+  # every other action is bumped by hand. The ai-review refs have to move together
+  # (ai-review-refs.yml), so one pull request bumps all of them. copied-code-check gets a pull request
   # of its own: the uses: line of duplication.yml pins it for CI and for ./scripts/cpd.sh alike.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
     allow:
-      - dependency-name: Quartel-Enterprise/claude-review*
+      - dependency-name: Quartel-Enterprise/ai-review*
       - dependency-name: Quartel-Enterprise/copied-code-check
     groups:
-      claude-review:
+      ai-review:
         patterns:
-          - Quartel-Enterprise/claude-review*
+          - Quartel-Enterprise/ai-review*
     commit-message:
       prefix: chore

@@ -1,4 +1,4 @@
-name: claude-review
+name: ai-review
 
 # Reviews every pull request with Claude when it opens, fixes what it found, and pushes the fixes as
 # a commit to the pull request's branch. It then posts the findings as one review: the fixed ones in
@@ -15,7 +15,7 @@ name: claude-review
 #
 # The job fails only when the run itself does (an expired token, the timeout), never because of what
 # the review found. The fix commit, like every push after the pull request opens (but the one below),
-# isn't reviewed again: adding the ai-review label does (claude-review-on-request), and that review
+# isn't reviewed again: adding the ai-review label does (ai-review-on-request), and that review
 # only comments.
 #
 # GitHub starts no pull_request workflow while the pull request conflicts with its base, so one opened
@@ -66,9 +66,10 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.5.0
+      - uses: Quartel-Enterprise/ai-review/review@2.1.0
         with:
-          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          providers: claude
+          claude-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           memory-repository: PierreVieira/bible-planner-agent-memory
           memory-ssh-key: ${{ secrets.AGENT_MEMORY_DEPLOY_KEY }}
           # The conventions only: the project_* memories and the index hold figures and ids a public

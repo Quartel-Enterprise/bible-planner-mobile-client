@@ -7,7 +7,7 @@ name: merge-when-green
 # It runs when the label is added (the checks may already be green) and whenever one of the pull
 # request workflows completes (the last one to finish is the one that finds everything green).
 #
-# A green pull request with an unresolved review conversation (a finding of claude-review, say) is
+# A green pull request with an unresolved review conversation (a finding of ai-review, say) is
 # not merged: the label goes and a comment says why. Resolving a conversation starts no workflow, so
 # adding the label again is what merges it then. The checks review-gate held for those conversations
 # (see review-gate.yml) don't count as failed: once every conversation is resolved, this workflow
@@ -25,9 +25,9 @@ on:
       - duplication
       - module-graph
       - translations
-      - claude-review-refs
-      - claude-review
-      - claude-review-on-request
+      - ai-review-refs
+      - ai-review
+      - ai-review-on-request
     types:
       - completed
 
@@ -92,7 +92,7 @@ jobs:
             exit 0
           fi
 
-          # A gate that held its workflow's checks for claude-review's open threads is the only
+          # A gate that held its workflow's checks for ai-review's open threads is the only
           # review-gate check that fails. Its run completes failed, which starts this workflow too.
           held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
           unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
@@ -108,7 +108,7 @@ jobs:
           # for a moment after review-gate passes every check is green while its workflow still has
           # jobs to run. A run of a workflow that calls review-gate counts as unfinished until it
           # completes; its completion starts this workflow again. Only those: a run started by a label
-          # (claude-review-on-request, record-screenshots) skips its job and may not start this one.
+          # (ai-review-on-request, record-screenshots) skips its job and may not start this one.
           # The run that started this one counts as complete whatever the listing says, which can lag
           # behind the event.
           running=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=100" \
@@ -130,7 +130,7 @@ jobs:
       # instead of a failed run nobody looks at.
       - id: threads
         if: steps.green.outputs.pr != ''
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
@@ -164,7 +164,7 @@ jobs:
       # completion starts this workflow again.
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: rerun-held
           sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}

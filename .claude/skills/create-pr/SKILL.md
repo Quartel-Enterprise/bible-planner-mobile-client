@@ -161,28 +161,18 @@ Two reviews run on the whole change, the commits ahead of `main` and the uncommi
 Both start with a fresh context, so they judge the change rather than the conversation that produced
 it:
 
-- `/code-review high --max-findings all` looks for correctness bugs and for cleanups of the changed
-  code (reuse, simplification, efficiency).
+- The `pre-pr-review` skill (from [`Quartel-Enterprise/quare-skills`](https://github.com/Quartel-Enterprise/quare-skills), running `ai-review --provider antigravity --fallback claude --effort high`) looks for correctness bugs and for cleanups of the changed
+  code (reuse, simplification, efficiency) using Gemini/Antigravity first and automatically falling back to Claude on quota or errors.
 - `review-conventions` checks the change against the docs under `docs/`, the product invariants, and
   the description from step 8.
 
-`/code-review` reads `git diff @{upstream}...HEAD` plus `git diff HEAD`. The second leaves out files
-git doesn't track yet, so mark new files as intended to be added first:
+Mark untracked new files as intended to be added so `git diff` includes them:
 
 ```bash
 git add -N .
 ```
 
-The first covers the whole branch only while its upstream is `origin/main`. Once the branch has been
-pushed, its upstream is its own remote branch, and the pushed commits would drop out of the review.
-In that case, commit any uncommitted changes now (step 11) and pass the branch name as the target.
-
-Then invoke the `code-review` skill with `high --max-findings all` as its arguments
-(`high <branch> --max-findings all` for a pushed branch): without the flag it keeps only the ten
-most severe findings, and the rest surface one review at a time on GitHub. The skill remembers the
-flag, so the user's own `/code-review` runs report every finding too, until they pass
-`--max-findings default`. Invoke the `review-conventions` skill with the description from step 8 as
-its argument. Wait for both results before going on.
+Then run the `pre-pr-review` skill (`ai-review --provider antigravity --fallback claude --effort high --base origin/main`, which reviews every commit ahead of `origin/main` plus uncommitted changes and reports all findings by default), and invoke the `review-conventions` skill with the description from step 8 as its argument. Wait for both results before going on.
 
 If neither reports anything, continue to step 10. Otherwise stop and show the user every finding,
 grouped by review, then use the `AskUserQuestion` tool to ask how to proceed:
@@ -349,7 +339,7 @@ command exits:
   stays on, so re-running the check until it's green still merges the pull request; `finish-task`
   then runs when the user asks for it.
 - **3, label removed:** the usual reason is that every check passed, or was held, but a review
-  conversation is still unresolved, often a `claude-review` finding. `merge-when-green` then removes its label and
+  conversation is still unresolved, often a `ai-review` finding. `merge-when-green` then removes its label and
   comments on the pull request (see [docs/ci.md](../../../docs/ci.md#unresolved-conversations)).
   List the open conversations with the `reviewThreads` GraphQL query from `merge-when-green.yml`
   (asking for each thread's `path` and first comment body too) and show them to the user. For each
@@ -361,7 +351,7 @@ The `merge-when-green` check itself counts too: it fails when its token is missi
 when the merge itself fails (e.g. a conflict with `main`), and then nothing else would merge the
 pull request.
 
-If the user asks to merge right away instead, first wait for the opening `claude-review` run: it may
+If the user asks to merge right away instead, first wait for the opening `ai-review` run: it may
 push a commit of its fixes to the branch (see [docs/ci.md](../../../docs/ci.md#fixes-and-the-review-gate)),
 and a merge before it ends would leave them out. Then wait for the required checks, of the fix commit
 when there is one, and merge:
@@ -369,7 +359,7 @@ when there is one, and merge:
 ```bash
 sha=$(gh pr view --json headRefOid -q .headRefOid)
 for _ in $(seq 20); do
-  run=$(gh run list --workflow claude-review.yml --commit "$sha" --json databaseId -q '.[0].databaseId')
+  run=$(gh run list --workflow ai-review.yml --commit "$sha" --json databaseId -q '.[0].databaseId')
   [ -n "$run" ] && break
   sleep 3
 done
@@ -384,7 +374,7 @@ gh pr merge --squash
 
 A ruleset on `main` requires the `check-translations` and `duplication` status checks and every
 review conversation resolved, so `gh pr merge` refuses to merge until all of them hold ("the base
-branch policy prohibits the merge"). An unresolved `claude-review` finding has to be fixed or
+branch policy prohibits the merge"). An unresolved `ai-review` finding has to be fixed or
 answered, then resolved, before the merge goes through. The checks take a minute or two. Right
 after the push, GitHub hasn't registered them yet and `gh pr checks` fails with "no checks
 reported", so the loop first waits up to two minutes for both to show up. If they never do, check the

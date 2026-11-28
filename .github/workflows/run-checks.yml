@@ -1,6 +1,6 @@
 name: run-checks
 
-# Re-runs the checks review-gate held on a pull request's head commit for claude-review's open
+# Re-runs the checks review-gate held on a pull request's head commit for ai-review's open
 # threads (see review-gate.yml), once those threads are resolved. Resolving a thread starts no
 # workflow, so adding the run-checks label is what starts them when the author resolved the threads
 # without pushing. A push needs no label: it runs the checks on its own commit, and merge-when-green
@@ -27,11 +27,12 @@ jobs:
       pull-requests: write
     steps:
       - id: threads
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: open-threads
           pull-request: ${{ github.event.pull_request.number }}
-          claude-only: 'true'
+          review-only: 'true'
+          bot-login: claude[bot]
 
       - name: Say why nothing was re-run
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count != '0'
@@ -48,7 +49,7 @@ jobs:
 
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: rerun-held
           sha: ${{ github.event.pull_request.head.sha }}
