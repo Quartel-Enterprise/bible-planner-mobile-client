@@ -98,10 +98,19 @@ class DayViewModel internal constructor(
                 currentState = uiState.value as? DayUiState.Loaded,
             ),
         ) { state ->
-            uiState.update { state }
+            uiState.update { state.withPendingNotes() }
             reconcileStudyCompanion()
             checkPendingStudyReopen()
         }
+    }
+
+    /*
+     * Why: until the debounced save lands, the stored day still holds older notes, and any emission (a read toggle,
+     * or the echo of an earlier save) would otherwise overwrite what the user has typed since.
+     */
+    private fun DayUiState.withPendingNotes(): DayUiState {
+        val notes = pendingNotes ?: return this
+        return if (this is DayUiState.Loaded) copy(day = day.copy(notes = notes)) else this
     }
 
     private fun onWidthClassChanged(isWide: Boolean) {
@@ -387,11 +396,22 @@ class DayViewModel internal constructor(
             dayNumber = dayNumber,
         )
         if (deleteNotesRoute != null) {
+            // Why: a pending save would otherwise keep its notes over the deletion the dialog confirms.
+            flushPendingNotes()
             navigator.navigate(deleteNotesRoute)
             return
         }
         viewModelScope.launch {
             uiAction.emit(DayUiAction.ShowSnackBar(DayMessage.NOTHING_TO_DELETE))
+        }
+    }
+
+    private fun flushPendingNotes() {
+        val notes = pendingNotes ?: return
+        notesSaveJob?.cancel()
+        notesSaveJob = viewModelScope.launch {
+            saveNotes(notes)
+            pendingNotes = null
         }
     }
 
@@ -416,6 +436,9 @@ class DayViewModel internal constructor(
             delay(500.milliseconds)
             val loadedState = safeLoadedState ?: return@launch
             if (!loadedState.hasNotes()) return@launch
+            notesSaveJob?.cancel()
+            pendingNotes = null
+            updateLoadedState { loaded -> loaded.copy(day = loaded.day.copy(notes = null)) }
             useCases.deleteDayNotes(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
