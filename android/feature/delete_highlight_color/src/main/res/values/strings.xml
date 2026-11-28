@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_highlight_color_title">Delete this color?</string>
+    <string name="delete_highlight_color_message">You can take the color out of the palette and keep the highlights already made with it, or delete everything.</string>
+    <string name="delete_highlight_color_keep_highlights">Delete color, keep highlights</string>
+    <string name="delete_highlight_color_and_highlights">Delete color and highlights</string>
+    <string name="delete_highlight_color_cancel">Cancel</string>
+    <string name="delete_highlight_color_removed_kept">Color removed from the palette. Highlights kept</string>
+    <string name="delete_highlight_color_removed">Custom color removed</string>
+</resources>
