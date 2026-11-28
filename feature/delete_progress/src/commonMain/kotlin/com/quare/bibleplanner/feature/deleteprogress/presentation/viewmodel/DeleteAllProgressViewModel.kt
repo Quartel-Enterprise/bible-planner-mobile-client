@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class DeleteAllProgressViewModel(
+class DeleteAllProgressViewModel internal constructor(
     private val resetAllProgress: ResetAllProgressUseCase,
     private val navigator: Navigator,
     trackEvent: TrackEvent,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class DeleteVersionViewModel(
+class DeleteVersionViewModel internal constructor(
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
     private val navigator: Navigator,
     route: DeleteVersionNavRoute,
