@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.read.presentation.utils
 
 import androidx.compose.runtime.Composable
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.highlight_color_removed
+import bibleplanner.feature.read.generated.resources.highlight_color_removed_kept
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -16,7 +19,11 @@ internal fun DeleteHighlightColorUiActionCollector(uiActionFlow: Flow<DeleteHigh
             is DeleteHighlightColorUiAction.NotifyDeletion -> {
                 appSnackbarController.show(
                     AppSnackbarMessage.Resource(
-                        stringResource = uiAction.stringResource,
+                        stringResource = if (uiAction.hasKeptHighlights) {
+                            Res.string.highlight_color_removed_kept
+                        } else {
+                            Res.string.highlight_color_removed
+                        },
                         isDismissible = true,
                     ),
                 )
