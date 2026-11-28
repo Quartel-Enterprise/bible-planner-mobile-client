@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="annotations_title">Marcações</string>
+    <string name="annotations_type_all">Todos</string>
+    <string name="annotations_type_highlights">Destaques</string>
+    <string name="annotations_type_saved">Salvos</string>
+    <string name="annotations_type_notes">Anotações</string>
+    <string name="annotations_filter_book">Livro</string>
+    <string name="annotations_filter_all_books">Todos os livros</string>
+    <string name="annotations_filter_date">Data</string>
+    <string name="annotations_period_any">Qualquer data</string>
+    <string name="annotations_period_today">Hoje</string>
+    <string name="annotations_period_last_7_days">Últimos 7 dias</string>
+    <string name="annotations_period_last_30_days">Últimos 30 dias</string>
+    <string name="annotations_period_custom">Personalizado</string>
+    <string name="annotations_apply_range">Aplicar</string>
+    <string name="annotations_clear_filters">Limpar</string>
+    <string name="annotations_clear_all_filters">Limpar todos os filtros</string>
+    <string name="annotations_highlight_color_section">Cor do destaque</string>
+    <string name="annotations_period_section">Período</string>
+    <string name="annotations_book_section">Livro</string>
+    <string name="annotations_open_in_chapter">Abrir no capítulo</string>
+    <string name="annotations_add_note">Adicionar anotação</string>
+    <string name="annotations_edit_note">Editar anotação</string>
+    <string name="annotations_share">Compartilhar</string>
+    <string name="annotations_remove">Remover</string>
+    <string name="annotations_more_options">Mais opções</string>
+    <string name="annotations_color_filter">Filtrar por %1$s</string>
+    <string name="annotations_empty_title">Nada marcado ainda</string>
+    <string name="annotations_empty_body">Durante a leitura, toque em um versículo para destacar, salvar ou anotar. Tudo aparece aqui.</string>
+    <string name="annotations_no_results_title">Nenhum item com esses filtros</string>
+    <string name="annotations_search">Buscar</string>
+    <string name="annotations_search_hint">Buscar em versículos, livros e anotações</string>
+    <string name="annotations_search_hint_short">Buscar versículo, livro ou anotação</string>
+    <string name="annotations_clear_search">Limpar busca</string>
+    <string name="annotations_no_results_query">Nenhum resultado para “%1$s”</string>
+    <string name="annotations_no_results_query_hint">Buscamos na referência, no texto do versículo e nas anotações.</string>
+    <string name="annotations_no_results_filters_hint">Tente ampliar o período ou trocar o tipo.</string>
+    <string name="annotations_no_results_clear">Limpar filtros</string>
+    <string name="annotations_remove_title">Remover %1$s?</string>
+    <string name="annotations_remove_body">Tudo o que você marcou nesta passagem será removido. O texto continua disponível na leitura.</string>
+    <string name="annotations_cancel">Cancelar</string>
+    <string name="annotations_annotation_removed">Removido das suas marcações</string>
+    <plurals name="annotations_item_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d itens</item>
+    </plurals>
+    <string name="annotations_other_versions_empty_title">Nada marcado nesta versão</string>
+    <string name="annotations_other_versions_empty_body">Suas marcações ficam na versão da Bíblia em que foram feitas.</string>
+    <string name="annotations_other_version_use">Usar %1$s</string>
+    <plurals name="annotations_other_version_count">
+        <item quantity="one">%1$d marcação em %2$s</item>
+        <item quantity="other">%1$d marcações em %2$s</item>
+    </plurals>
+    <string name="annotations_back">Voltar</string>
+    <string name="annotations_selected">Selecionado</string>
+    <string name="annotations_color_teal">turquesa</string>
+    <string name="annotations_color_green">verde</string>
+    <string name="annotations_color_yellow">amarelo</string>
+    <string name="annotations_color_pink">rosa</string>
+    <string name="annotations_color_orange">laranja</string>
+    <string name="annotations_color_purple">roxo</string>
+    <string name="annotations_color_custom">cor personalizada</string>
+</resources>
