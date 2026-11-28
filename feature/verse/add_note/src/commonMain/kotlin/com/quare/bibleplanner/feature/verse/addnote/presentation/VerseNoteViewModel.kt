@@ -15,12 +15,13 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class VerseNoteViewModel(
+class VerseNoteViewModel internal constructor(
     private val getVerseNote: GetVerseNote,
     private val saveVerseNote: SaveVerseNote,
     private val deleteVerseNote: DeleteVerseNote,
@@ -36,6 +37,9 @@ internal class VerseNoteViewModel(
         chapterNumber = route.chapterNumber,
     )
     private val verseNumbers = route.verseNumbers
+
+    // Why: a second save or delete tap before the write finishes would write twice and leave twice.
+    private var writeJob: Job? = null
 
     val uiState: StateFlow<VerseNoteUiState>
         field = MutableStateFlow(
@@ -105,6 +109,7 @@ internal class VerseNoteViewModel(
     }
 
     private fun saveNote() {
+        if (writeJob?.isActive == true) return
         val text = uiState.value.text
         trackEvent(
             name = AnalyticsEventNames.VERSE_NOTE_SAVED,
@@ -114,7 +119,7 @@ internal class VerseNoteViewModel(
                 AnalyticsParams.IS_EXISTING to (noteId != null),
             ),
         )
-        viewModelScope.launch {
+        writeJob = viewModelScope.launch {
             saveVerseNote(
                 noteId = noteId,
                 chapter = chapter,
@@ -127,12 +132,13 @@ internal class VerseNoteViewModel(
 
     private fun deleteNote() {
         val existingNoteId = noteId ?: return
+        if (writeJob?.isActive == true) return
         uiState.update { it.copy(isDeleteConfirmationVisible = false) }
         trackEvent(
             name = AnalyticsEventNames.VERSE_NOTE_DELETED,
             params = mapOf(AnalyticsParams.VERSE_COUNT to verseNumbers.size),
         )
-        viewModelScope.launch {
+        writeJob = viewModelScope.launch {
             deleteVerseNote(existingNoteId)
             navigator.navigateBack()
         }
