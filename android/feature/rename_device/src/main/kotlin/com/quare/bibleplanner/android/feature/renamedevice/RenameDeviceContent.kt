@@ -36,9 +36,6 @@ internal fun RenameDeviceContent(
         )
     }
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-    }
     AppAlertDialog(
         title = stringResource(R.string.rename_device_title),
         confirmText = stringResource(R.string.rename_device_save),
@@ -47,6 +44,10 @@ internal fun RenameDeviceContent(
         onDismiss = { onEvent(RenameDeviceUiEvent.OnDismiss) },
         isConfirmEnabled = name.text.isNotBlank(),
     ) {
+        // Why: the alert composes later in its own window, so a request from outside could beat the field.
+        LaunchedEffect(focusRequester) {
+            focusRequester.requestFocus()
+        }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
