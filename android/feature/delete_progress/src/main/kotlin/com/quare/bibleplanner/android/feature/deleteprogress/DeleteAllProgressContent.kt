@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceRow
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceType
+import com.quare.bibleplanner.android.designsystem.dialog.HideSceneDialogScrimEffect
 import com.quare.bibleplanner.android.designsystem.dialog.rememberAlertDialogResolution
 import com.quare.bibleplanner.android.designsystem.theme.success
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
@@ -40,6 +41,7 @@ internal fun DeleteAllProgressContent(
     val isIdle = uiState == DeleteAllProgressUiState.Idle
     // Why: a failed reset returns to Idle, where the user may confirm again.
     val resolution = rememberAlertDialogResolution(isIdle)
+    HideSceneDialogScrimEffect()
     AlertDialog(
         onDismissRequest = { resolution.resolve { onEvent(DeleteAllProgressUiEvent.OnCancel) } },
         properties = DialogProperties(
