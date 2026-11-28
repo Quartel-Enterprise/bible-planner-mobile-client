@@ -4,9 +4,9 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
-private const val COLLAPSED_WEEK_LIMIT = 2
+const val COLLAPSED_WEEK_LIMIT = 2
 
-internal sealed interface ReadingPlanListItem {
+sealed interface ReadingPlanListItem {
     data class SectionHeader(
         val group: WeekGroup,
     ) : ReadingPlanListItem
@@ -23,7 +23,7 @@ internal sealed interface ReadingPlanListItem {
 
 internal const val SIDE_PANEL_ITEM_COUNT = 3
 
-internal fun buildReadingPlanWeekItems(state: ReadingPlanUiState.Loaded): List<ReadingPlanListItem> {
+fun buildReadingPlanWeekItems(state: ReadingPlanUiState.Loaded): List<ReadingPlanListItem> {
     val grouped = state.weekPlans.groupBy { it.group }
     return buildList {
         addGroupSection(
@@ -44,7 +44,7 @@ internal fun buildReadingPlanWeekItems(state: ReadingPlanUiState.Loaded): List<R
     }
 }
 
-internal fun getReadingPlanWeekScrollIndex(
+fun getReadingPlanWeekScrollIndex(
     state: ReadingPlanUiState.Loaded,
     includeSidePanel: Boolean,
     weekNumber: Int,
@@ -58,7 +58,7 @@ internal fun getReadingPlanWeekScrollIndex(
     return leading + indexInWeeks
 }
 
-internal fun getReadingPlanItemKey(item: ReadingPlanListItem): Any = when (item) {
+fun getReadingPlanItemKey(item: ReadingPlanListItem): Any = when (item) {
     is ReadingPlanListItem.SectionHeader -> "section_${item.group}"
     is ReadingPlanListItem.Week -> item.week.weekPlan.number
     is ReadingPlanListItem.ShowMore -> "show_more_${item.group}"
