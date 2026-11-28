@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_continue_with_google">Continuar con Google</string>
+    <string name="login_continue_with_apple">Continuar con Apple</string>
+    <string name="login_not_now">Ahora no</string>
+    <string name="login_error_try_again_later">Algo salió mal. Por favor, inténtalo de nuevo más tarde.</string>
+    <string name="login_error_connection">Se agotó el tiempo de conexión. Verifica tu internet e inténtalo de nuevo.</string>
+    <string name="login_error_email_required">Necesitas compartir tu correo electrónico para iniciar sesión. Inténtalo de nuevo y elige compartirlo.</string>
+    <string name="login_google_sign_in_unavailable_title">No se pudo iniciar sesión con Google</string>
+    <string name="login_google_sign_in_unavailable_message">Este dispositivo no proporcionó una cuenta de Google. Agrega una si aún no la tienes o inténtalo más tarde; también puedes iniciar sesión con otra opción.</string>
+    <string name="login_google_sign_in_unavailable_confirm">Agregar cuenta</string>
+    <string name="login_google_sign_in_unavailable_dismiss">Cancelar</string>
+    <string name="login_result_success">Sesión iniciada correctamente</string>
+    <string name="login_result_error">No se pudo iniciar sesión. Inténtalo de nuevo.</string>
+    <string name="login_terms_agreement_part_1">"Al continuar, aceptas nuestros "</string>
+    <string name="login_terms_agreement_part_2">" y\n"</string>
+    <string name="login_terms_of_service">Términos de Servicio</string>
+    <string name="login_privacy_policy">Política de Privacidad</string>
+    <string name="login_terms_agreement_part_3">.</string>
+</resources>

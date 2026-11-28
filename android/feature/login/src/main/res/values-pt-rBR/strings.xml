@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_continue_with_google">Continuar com Google</string>
+    <string name="login_continue_with_apple">Continuar com Apple</string>
+    <string name="login_not_now">Agora não</string>
+    <string name="login_error_try_again_later">Algo deu errado. Por favor, tente novamente mais tarde.</string>
+    <string name="login_error_connection">Tempo de conexão esgotado. Verifique sua internet e tente novamente.</string>
+    <string name="login_error_email_required">Você precisa compartilhar seu e-mail para entrar. Tente novamente e escolha compartilhá-lo.</string>
+    <string name="login_google_sign_in_unavailable_title">Não foi possível entrar com o Google</string>
+    <string name="login_google_sign_in_unavailable_message">Este dispositivo não forneceu uma conta Google. Adicione uma, se ainda não tiver, ou tente novamente mais tarde — você também pode entrar com outra opção.</string>
+    <string name="login_google_sign_in_unavailable_confirm">Adicionar conta</string>
+    <string name="login_google_sign_in_unavailable_dismiss">Cancelar</string>
+    <string name="login_result_success">Login realizado com sucesso</string>
+    <string name="login_result_error">Não foi possível fazer login. Tente novamente.</string>
+    <string name="login_terms_agreement_part_1">"Ao continuar, você concorda com nossos "</string>
+    <string name="login_terms_agreement_part_2">" e\n"</string>
+    <string name="login_terms_of_service">Termos de Serviço</string>
+    <string name="login_privacy_policy">Política de Privacidade</string>
+    <string name="login_terms_agreement_part_3">.</string>
+</resources>
