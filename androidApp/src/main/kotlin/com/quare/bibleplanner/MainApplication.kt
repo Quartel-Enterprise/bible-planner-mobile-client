@@ -3,6 +3,7 @@ package com.quare.bibleplanner
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import androidx.work.Configuration
+import com.quare.bibleplanner.android.navigation.loadNativeEntryFactories
 import com.quare.bibleplanner.core.navigation.NativeEntryProvider
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.crashlytics.configure
@@ -28,7 +29,7 @@ class MainApplication :
     Configuration.Provider {
     private val mainApplicationModule = module {
         singleOf(::AndroidNotificationStringProvider).bind<NotificationStringProvider>()
-        singleOf(::AndroidNativeEntryProvider).bind<NativeEntryProvider>()
+        single<NativeEntryProvider> { AndroidNativeEntryProvider(loadNativeEntryFactories()) }
     }
 
     override val workManagerConfiguration: Configuration = Configuration.Builder().build()

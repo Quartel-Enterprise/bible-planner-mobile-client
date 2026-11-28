@@ -9,6 +9,7 @@ desktopApp/          # Desktop (JVM) application module
 iosApp/              # iOS application (Xcode project)
 android/             # Native Android UI on Material 3 Expressive (see native-ui-migration.md, step 2)
 ├── designsystem/    # ExpressiveTheme and the components the native screens share
+├── navigation/      # NativeEntryFactory, which each screen lists in META-INF/services for ServiceLoader
 └── feature/         # One module per migrated screen: <Name>Content, res strings, <Route>.toNavEntry()
 core/
 ├── books/           # Books domain + data + DI

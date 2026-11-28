@@ -10,7 +10,7 @@ import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.viewmodel.LoginSyncNudgeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun LoginSyncNudgeNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun LoginSyncNudgeNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

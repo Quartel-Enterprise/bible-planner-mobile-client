@@ -40,11 +40,16 @@ platform after each one.
      ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
      `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
    - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose and the Material
-     icons, and to every feature module Koin, Navigation 3 and the design system. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
+     icons, and to every feature module Koin, Navigation 3, the design system and `android/navigation`. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
      public; Compose Multiplatform's Android build already depends on it, so both resolve to one library.
-   - `:androidApp` binds a `NativeEntryProvider` (`:core:navigation`) that maps each migrated route to its native
-     entry; `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request
-     at a time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
+   - Each feature module registers itself, so screens can land in parallel pull requests without touching a shared
+     file: `settings.gradle.kts` includes every directory under `android/feature`, `:androidApp` depends on all of
+     them, and the module lists its `NativeEntryFactory` (`android/navigation`, the class that turns its route into
+     `toNavEntry()`) in `src/main/resources/META-INF/services/com.quare.bibleplanner.android.navigation.NativeEntryFactory`.
+     The convention plugin fails the build when that file is missing or lists no factory from the module's own package.
+   - `:androidApp` binds a `NativeEntryProvider` (`:core:navigation`) that asks the factories `ServiceLoader` finds;
+     `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request at a
+     time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
      becomes `public` with an `internal` constructor so the Android module can name it.
    - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never
      depends on another one, and none depends on `:shared`. jscpd doesn't scan `android/` while its screens

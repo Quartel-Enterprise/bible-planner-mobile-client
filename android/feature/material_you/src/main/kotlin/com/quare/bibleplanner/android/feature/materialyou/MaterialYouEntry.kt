@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.feature.materialyou.presentation.viewmodel.AndroidColorSchemeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun MaterialYouBottomSheetNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun MaterialYouBottomSheetNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

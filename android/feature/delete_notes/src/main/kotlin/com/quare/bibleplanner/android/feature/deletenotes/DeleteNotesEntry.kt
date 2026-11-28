@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.deletenotes.presentation.viewmodel.DeleteN
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun DeleteNotesRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun DeleteNotesRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

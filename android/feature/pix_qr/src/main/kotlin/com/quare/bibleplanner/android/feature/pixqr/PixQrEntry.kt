@@ -8,7 +8,7 @@ import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.feature.donation.pixqr.presentation.PixQrViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun PixQrNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun PixQrNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

@@ -45,12 +45,32 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
                 add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
                 // Why: a feature screen builds its Navigation 3 entry with the shared ViewModel from Koin.
                 if (path.startsWith(FEATURE_PATH_PREFIX)) {
+                    checkNativeEntryFactoryIsListed()
                     add("implementation", platform(libs.findLibrary("koin-bom").get()))
                     add("implementation", libs.findLibrary("koin-compose-viewmodel").get())
                     add("implementation", libs.findLibrary("navigation3-ui").get())
                     add("implementation", project(DESIGN_SYSTEM_PATH))
+                    add("implementation", project(NAVIGATION_PATH))
                 }
             }
+        }
+    }
+
+    // Why: the app finds native screens with ServiceLoader, so an unlisted factory would silently keep the shared UI.
+    private fun Project.checkNativeEntryFactoryIsListed() {
+        val servicesFile = file("src/main/resources/META-INF/services/$NATIVE_ENTRY_FACTORY")
+        val servicesPath = servicesFile.relativeTo(rootDir)
+        check(servicesFile.isFile) {
+            "$path must list its NativeEntryFactory implementation in $servicesPath"
+        }
+        // Why: a services file copied from another screen's module would point at that screen's factory instead.
+        val namespace = createNamespace()
+        val listedFactories = servicesFile
+            .readLines()
+            .map { line -> line.substringBefore('#').trim() }
+            .filter { line -> line.isNotEmpty() }
+        check(listedFactories.isNotEmpty() && listedFactories.all { factory -> factory.startsWith("$namespace.") }) {
+            "$servicesPath must list this module's own NativeEntryFactory implementation, under package $namespace"
         }
     }
 
@@ -67,6 +87,8 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
     private companion object {
         const val DESIGN_SYSTEM_PATH = ":android:designsystem"
+        const val NAVIGATION_PATH = ":android:navigation"
+        const val NATIVE_ENTRY_FACTORY = "com.quare.bibleplanner.android.navigation.NativeEntryFactory"
         const val FEATURE_PATH_PREFIX = ":android:feature:"
     }
 }

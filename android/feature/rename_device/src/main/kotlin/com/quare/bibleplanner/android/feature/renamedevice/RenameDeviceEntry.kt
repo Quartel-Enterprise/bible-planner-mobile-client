@@ -16,7 +16,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun RenameDeviceNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun RenameDeviceNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.viewmodel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun AddNotesFreeWarningNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun AddNotesFreeWarningNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

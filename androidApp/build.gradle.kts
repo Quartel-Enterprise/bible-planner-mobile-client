@@ -117,21 +117,11 @@ dependencies {
     implementation(projects.shared)
 
     // Native Android UI
-    implementation(projects.android.feature.deleteNotes)
-    implementation(projects.android.feature.loginWarning)
-    implementation(projects.android.feature.addNotesFreeWarning)
-    implementation(projects.android.feature.loginSyncNudge)
-    implementation(projects.android.feature.deleteVersion)
-    implementation(projects.android.feature.deleteProgress)
-    implementation(projects.android.feature.congrats)
-    implementation(projects.android.feature.notificationPermission)
-    implementation(projects.android.feature.editPlanStartDate)
-    implementation(projects.android.feature.materialYou)
-    implementation(projects.android.feature.pixQr)
-    implementation(projects.android.feature.paywallTeaser)
-    implementation(projects.android.feature.subscriptionDetails)
-    implementation(projects.android.feature.studyUnlock)
-    implementation(projects.android.feature.renameDevice)
+    implementation(projects.android.navigation)
+    // Why: settings.gradle.kts includes every native screen module, so adding one edits no shared file.
+    rootProject.subprojects
+        .filter { module -> module.path.startsWith(":android:feature:") }
+        .forEach { module -> implementation(module) }
 
     // Features
     implementation(projects.feature.materialYou)
