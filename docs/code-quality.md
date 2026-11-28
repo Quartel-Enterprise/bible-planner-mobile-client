@@ -190,6 +190,11 @@ python3 scripts/check_unused_strings.py      # every string is referenced by the
 python3 scripts/check_compose_apostrophes.py # no Compose Resources string escapes an apostrophe as \'
 ```
 
+The same workflow runs `python3 scripts/check_ios_translations.py` for the SwiftUI screens' tables: every
+`.strings` and `.stringsdict` table in `iosApp/iosApp/en.lproj` must exist in `pt-BR.lproj` and
+`es.lproj` with the same keys, and each key (each plural variant, in a `.stringsdict`) must use the same
+format specifiers in every language.
+
 `check_unused_strings.py` reports a string no code references anymore, so a leftover of a removed
 feature doesn't keep being translated. A Compose Resources string counts as used when some Kotlin
 file imports its accessor (`import bibleplanner.feature.day.generated.resources.day_title`); an

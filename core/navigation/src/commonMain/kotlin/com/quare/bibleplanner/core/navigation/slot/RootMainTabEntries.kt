@@ -24,34 +24,62 @@ internal class RootMainTabEntries(
         navigationRail: @Composable () -> Unit,
         animatedContentScope: AnimatedContentScope,
     ) {
-        val nativePlans = nativeTabContent?.contentFor(MainNavRouteDestination.Plans)
-        if (nativePlans == null) {
-            scope.readingPlan(
+        scope.tab(
+            tab = MainNavRouteDestination.Plans,
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+        ) {
+            readingPlan(
                 navigationBar = navigationBar,
                 navigationRail = navigationRail,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
             )
-        } else {
-            scope.entry<MainNavRouteDestination.Plans> {
-                MainTabScaffold(
-                    navigationBar = navigationBar,
-                    navigationRail = navigationRail,
-                    content = nativePlans,
-                )
-            }
         }
-        scope.booksScreen(
+        scope.tab(
+            tab = MainNavRouteDestination.Books,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedContentScope,
-        )
-        scope.profile(
+        ) {
+            booksScreen(
+                navigationBar = navigationBar,
+                navigationRail = navigationRail,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedContentScope,
+            )
+        }
+        scope.tab(
+            tab = MainNavRouteDestination.Profile,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
-        )
+        ) {
+            profile(
+                navigationBar = navigationBar,
+                navigationRail = navigationRail,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+            )
+        }
+    }
+
+    // Why: a tab with a native body keeps the shared scaffold, so the shared tab bar stays around it.
+    private fun EntryProviderScope<NavKey>.tab(
+        tab: MainNavRouteDestination,
+        navigationBar: @Composable (Modifier) -> Unit,
+        navigationRail: @Composable () -> Unit,
+        registerShared: EntryProviderScope<NavKey>.() -> Unit,
+    ) {
+        val nativeContent = nativeTabContent?.contentFor(tab)
+        if (nativeContent == null) {
+            registerShared()
+            return
+        }
+        entry(key = tab) {
+            MainTabScaffold(
+                navigationBar = navigationBar,
+                navigationRail = navigationRail,
+                content = nativeContent,
+            )
+        }
     }
 }

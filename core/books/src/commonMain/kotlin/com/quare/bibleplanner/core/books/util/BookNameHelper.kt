@@ -70,6 +70,7 @@ import bibleplanner.core.books.generated.resources.book_zec
 import bibleplanner.core.books.generated.resources.book_zep
 import com.quare.bibleplanner.core.model.book.BookId
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 fun BookId.toBookNameResource(): StringResource = when (this) {
@@ -143,3 +144,8 @@ fun BookId.toBookNameResource(): StringResource = when (this) {
 
 @Composable
 fun BookId.getBookName(): String = stringResource(toBookNameResource())
+
+// Why: the SwiftUI screens read book names from these shared resources too, in the language Compose uses.
+suspend fun getBookNames(): Map<BookId, String> = BookId.entries.associateWith { bookId ->
+    getString(bookId.toBookNameResource())
+}

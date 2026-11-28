@@ -6,23 +6,28 @@ import SwiftUI
 struct ReadingPlanView: View {
     let model: ReadingPlanScreenModel
     @State private var localization = NativeLocalization.current()
+    @State private var bookNames: [String: String] = [:]
 
     var body: some View {
-        let strings = ReadingPlanText(localization: localization)
+        let strings = ReadingPlanText(localization: localization, bookNames: bookNames)
         ReadingPlanContent(state: model.state, strings: strings, onEvent: model.send)
             .navigationTitle(strings.text("title"))
             .alert(Text(strings.text("no_progress_to_delete")), isPresented: noProgressAlertBinding) {}
             .environment(\.locale, localization.locale)
+            .task(id: localization.languageTag) {
+                // Runs on the main actor, which Kotlin suspend functions called from Swift require.
+                if let names = try? await NativeBookNames.shared.load() {
+                    bookNames = names
+                }
+            }
             .onReceive(
                 NotificationCenter.default
                     .publisher(for: UserDefaults.didChangeNotification)
                     .receive(on: DispatchQueue.main)
             ) { _ in
-                // The app language screen changes AppleLanguages while the app runs.
-                let current = NativeLocalization.current()
-                if current != localization {
-                    localization = current
-                }
+                // Any defaults write posts this; only a new AppleLanguages, set by the app language screen, matters.
+                guard NativeLocalization.currentLanguageTag() != localization.languageTag else { return }
+                localization = NativeLocalization.current()
             }
     }
 

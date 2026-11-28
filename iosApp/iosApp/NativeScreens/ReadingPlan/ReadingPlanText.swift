@@ -6,6 +6,8 @@ struct ReadingPlanText: Equatable {
     static let table = "ReadingPlan"
 
     let localization: NativeLocalization
+    /// Book names by `BookId` name, loaded from the shared Compose resources through `NativeBookNames`.
+    let bookNames: [String: String]
 
     var locale: Locale { localization.locale }
 
@@ -18,8 +20,18 @@ struct ReadingPlanText: Equatable {
         String(format: text(key), locale: locale, arguments: arguments)
     }
 
+    /// The passages of a day, such as "Genesis 1-3, Psalms 1".
     func readingLabel(_ passages: [PassageModel]) -> String {
-        localization.readingLabel(passages)
+        passages.map { passage in
+            let name = bookName(passage.bookId)
+            guard let chapterRanges = passage.chapterRanges, !chapterRanges.isEmpty else { return name }
+            return "\(name) \(chapterRanges)"
+        }
+        .joined(separator: ", ")
+    }
+
+    func bookName(_ bookId: BookId) -> String {
+        bookNames[bookId.name] ?? ""
     }
 
     // MARK: Plan order and menu
@@ -125,10 +137,10 @@ struct ReadingPlanText: Equatable {
 
     func motivation(_ message: PlanMotivationMessage) -> String {
         if let milestone = message as? PlanMotivationMessageMilestoneOnlyOneBookLeft {
-            return format("motivation_milestone_only_one_left", localization.bookName(milestone.bookId))
+            return format("motivation_milestone_only_one_left", bookName(milestone.bookId))
         }
         if let milestone = message as? PlanMotivationMessageMilestoneBookCompleted {
-            return format("motivation_milestone_book_completed", localization.bookName(milestone.bookId))
+            return format("motivation_milestone_book_completed", bookName(milestone.bookId))
         }
         return text(motivationKey(message))
     }

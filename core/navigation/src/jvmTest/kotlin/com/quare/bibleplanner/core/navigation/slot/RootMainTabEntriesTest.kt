@@ -43,14 +43,18 @@ internal class RootMainTabEntriesTest {
     }
 
     @Test
-    fun `GIVEN a native tab content provider WHEN registering THEN asks it for the plans tab and every tab resolves`() {
+    fun `GIVEN a native tab content provider WHEN registering THEN asks it for every tab and every tab resolves`() {
         // Given
         val requestedTabs = mutableListOf<MainNavRouteDestination>()
         val tabEntries = RootMainTabEntries(
             sharedTransitionScope = unusedStub<SharedTransitionScope>(),
             nativeTabContent = { tab ->
                 requestedTabs += tab
-                {}
+                if (tab == MainNavRouteDestination.Plans) {
+                    {}
+                } else {
+                    null
+                }
             },
         )
         val unresolved = mutableListOf<NavKey>()
@@ -76,7 +80,14 @@ internal class RootMainTabEntriesTest {
         ).forEach(provider::invoke)
 
         // Then
-        assertEquals(listOf<MainNavRouteDestination>(MainNavRouteDestination.Plans), requestedTabs)
+        assertEquals(
+            listOf(
+                MainNavRouteDestination.Plans,
+                MainNavRouteDestination.Books,
+                MainNavRouteDestination.Profile,
+            ),
+            requestedTabs,
+        )
         assertEquals(emptyList(), unresolved)
     }
 

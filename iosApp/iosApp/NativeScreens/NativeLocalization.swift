@@ -1,37 +1,32 @@
 import Foundation
-import Shared
 
 /// Strings, plurals and formats in the in-app language.
 ///
 /// The app language screen stores the chosen language in `AppleLanguages` while the app runs, but `Bundle.main`
 /// keeps the language the app launched with, so the native screens read their tables from that language's bundle.
 struct NativeLocalization: Equatable {
+    let languageTag: String
     let locale: Locale
     private let bundle: Bundle
 
     private static var bundlesByLanguage: [String: Bundle] = [:]
 
+    /// The first of `AppleLanguages`, which the app language screen sets.
+    static func currentLanguageTag() -> String {
+        UserDefaults.standard.stringArray(forKey: "AppleLanguages")?.first ?? "en"
+    }
+
     static func current() -> NativeLocalization {
-        let languageTag = UserDefaults.standard.stringArray(forKey: "AppleLanguages")?.first ?? "en"
-        return NativeLocalization(locale: Locale(identifier: languageTag), bundle: resolveBundle(for: languageTag))
+        let languageTag = currentLanguageTag()
+        return NativeLocalization(
+            languageTag: languageTag,
+            locale: Locale(identifier: languageTag),
+            bundle: resolveBundle(for: languageTag)
+        )
     }
 
     func text(_ key: String, table: String) -> String {
         bundle.localizedString(forKey: key, value: nil, table: table)
-    }
-
-    /// The passages of a day, such as "Genesis 1-3, Psalms 1".
-    func readingLabel(_ passages: [PassageModel]) -> String {
-        passages.map { passage in
-            let name = bookName(passage.bookId)
-            guard let chapterRanges = passage.chapterRanges, !chapterRanges.isEmpty else { return name }
-            return "\(name) \(chapterRanges)"
-        }
-        .joined(separator: ", ")
-    }
-
-    func bookName(_ bookId: BookId) -> String {
-        text("book_" + bookId.name.lowercased(), table: "BookNames")
     }
 
     private static func resolveBundle(for languageTag: String) -> Bundle {

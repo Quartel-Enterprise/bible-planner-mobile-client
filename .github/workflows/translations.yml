@@ -32,6 +32,10 @@ jobs:
       - name: Check translations
         run: python3 scripts/check_translations.py
 
+      # The SwiftUI screens' .lproj tables: same keys and format specifiers in every language
+      - name: Check iOS translations
+        run: python3 scripts/check_ios_translations.py
+
       # Every string in a values/strings.xml must be referenced by the code, so a
       # string left behind by a removed feature doesn't keep being translated
       - name: Check unused strings

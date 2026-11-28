@@ -108,6 +108,9 @@ Until step 4, the Compose root keeps drawing the app on iOS and hosts each Swift
   `UiEvent` through `onEvent`, and lets the ViewModel navigate through the shared back stack. Its strings live
   in the app's `<lang>.lproj` tables (`ReadingPlan.strings`, plurals in `.stringsdict`), read through
   `NativeLocalization`, which follows the in-app language the app language screen sets at run time.
+  `scripts/check_ios_translations.py` checks that every table has the same keys and format specifiers in `en`,
+  `pt-BR` and `es`. Book names stay in the shared Compose resources until step 4: Swift loads them through
+  `NativeBookNames` (`:shared` `iosMain`).
 - Kotlin enums reach Swift as classes, so the screen mirrors each one by `name` in a Swift enum
   (`PlanModeKind`) to map it to text and an SF Symbol with an exhaustive `switch`.
 - The `iosApp` folder is a synchronized group in the Xcode project, so new Swift files and `.lproj` tables
