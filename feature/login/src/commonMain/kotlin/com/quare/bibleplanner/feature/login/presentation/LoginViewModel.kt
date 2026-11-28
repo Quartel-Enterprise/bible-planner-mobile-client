@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class LoginViewModel(
+class LoginViewModel internal constructor(
     private val signInStarter: SignInStarter,
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
     private val isGoogleCredentialUnavailable: IsGoogleCredentialUnavailable,
