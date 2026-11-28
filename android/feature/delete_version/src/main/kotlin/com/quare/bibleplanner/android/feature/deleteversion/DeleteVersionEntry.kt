@@ -11,7 +11,7 @@ import com.quare.bibleplanner.feature.deleteversion.presentation.viewmodel.Delet
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun DeleteVersionNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun DeleteVersionNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

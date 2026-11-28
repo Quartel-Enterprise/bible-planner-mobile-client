@@ -27,7 +27,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NotificationPermissionNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun NotificationPermissionNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

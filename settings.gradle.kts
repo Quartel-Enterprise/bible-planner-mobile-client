@@ -114,20 +114,13 @@ include(":feature:verse:add_note")
 include(":feature:verse:selection_menu")
 include(":feature:verse:annotations")
 include(":android:designsystem")
-include(":android:feature:delete_notes")
-include(":android:feature:login_warning")
-include(":android:feature:add_notes_free_warning")
-include(":android:feature:login_sync_nudge")
-include(":android:feature:delete_version")
-include(":android:feature:delete_progress")
-include(":android:feature:congrats")
-include(":android:feature:notification_permission")
-include(":android:feature:edit_plan_start_date")
-include(":android:feature:material_you")
-include(":android:feature:pix_qr")
-include(":android:feature:paywall_teaser")
-include(":android:feature:subscription_details")
-include(":android:feature:study_unlock")
+include(":android:navigation")
+// Why: every native screen is its own module under android/feature, found here so that adding one edits no shared file.
+file("android/feature")
+    .listFiles { dir -> dir.resolve("build.gradle.kts").isFile }
+    .orEmpty()
+    .sortedBy { dir -> dir.name }
+    .forEach { dir -> include(":android:feature:${dir.name}") }
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

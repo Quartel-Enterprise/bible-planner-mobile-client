@@ -12,7 +12,7 @@ import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditP
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel.EditPlanStartDateViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun EditPlanStartDateNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun EditPlanStartDateNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

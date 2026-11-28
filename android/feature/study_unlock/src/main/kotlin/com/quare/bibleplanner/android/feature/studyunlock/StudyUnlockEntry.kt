@@ -11,7 +11,7 @@ import com.quare.bibleplanner.feature.studyunlock.presentation.viewmodel.StudyUn
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun StudyUnlockNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun StudyUnlockNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = getSheetPane(),
 ) {

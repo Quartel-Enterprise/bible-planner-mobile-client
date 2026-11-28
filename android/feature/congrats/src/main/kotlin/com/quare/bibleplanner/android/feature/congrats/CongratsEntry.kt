@@ -8,7 +8,7 @@ import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.congrats.presentation.viewmodel.CongratsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun CongratsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun CongratsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = getSheetPane(),
 ) {

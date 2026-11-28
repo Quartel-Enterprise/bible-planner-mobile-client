@@ -16,7 +16,7 @@ import com.quare.bibleplanner.feature.subscriptiondetails.presentation.viewmodel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-fun SubscriptionDetailsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun SubscriptionDetailsNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

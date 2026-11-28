@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.loginwarning.presentation.viewmodel.LoginW
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun LoginWarningNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun LoginWarningNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {

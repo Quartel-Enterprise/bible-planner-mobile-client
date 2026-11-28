@@ -10,7 +10,7 @@ import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel.DeleteAllProgressViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun DeleteAllProgressNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
+internal fun DeleteAllProgressNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
 ) {
