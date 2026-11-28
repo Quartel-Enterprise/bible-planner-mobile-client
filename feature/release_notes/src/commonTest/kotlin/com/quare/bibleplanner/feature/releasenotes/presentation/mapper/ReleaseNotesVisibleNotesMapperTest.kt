@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.releasenotes.presentation.utils
+package com.quare.bibleplanner.feature.releasenotes.presentation.mapper
 
 import com.quare.bibleplanner.core.date.DateRepresentation
 import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel

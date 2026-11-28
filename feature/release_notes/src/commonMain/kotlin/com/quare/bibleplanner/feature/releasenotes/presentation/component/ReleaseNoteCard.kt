@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toTagResource
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTagResource
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.format
 import org.jetbrains.compose.resources.stringResource

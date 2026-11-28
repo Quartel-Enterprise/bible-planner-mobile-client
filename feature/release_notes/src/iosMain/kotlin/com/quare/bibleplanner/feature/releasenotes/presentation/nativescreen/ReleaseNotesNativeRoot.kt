@@ -36,7 +36,11 @@ internal fun ReleaseNotesNativeRoot(
         factory = { screen.viewController },
         modifier = Modifier.fillMaxSize(),
         update = { screen.render(nativeState) },
-        // Why: the SwiftUI list owns every touch; cooperative mode would delay taps to let Compose scroll.
-        properties = UIKitInteropProperties(interactionMode = UIKitInteropInteractionMode.NonCooperative),
+        properties = UIKitInteropProperties(
+            // Why: the SwiftUI list owns every touch; cooperative mode would delay taps to let Compose scroll.
+            interactionMode = UIKitInteropInteractionMode.NonCooperative,
+            // Why: off by default, which hides the whole native screen from VoiceOver.
+            isNativeAccessibilityEnabled = true,
+        ),
     )
 }

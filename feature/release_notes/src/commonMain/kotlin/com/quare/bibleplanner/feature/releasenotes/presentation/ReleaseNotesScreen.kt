@@ -29,10 +29,10 @@ import bibleplanner.ui.component.generated.resources.ic_github
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.component.ReleaseNoteCard
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toTitleResource
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toVisibleNotes
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTitleResource
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toVisibleNotes
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton

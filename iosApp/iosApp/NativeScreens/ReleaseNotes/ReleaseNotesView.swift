@@ -30,6 +30,7 @@ struct ReleaseNotesView: View {
                     } label: {
                         Image(systemName: "chevron.backward")
                     }
+                    .accessibilityLabel(state.backButtonLabel)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

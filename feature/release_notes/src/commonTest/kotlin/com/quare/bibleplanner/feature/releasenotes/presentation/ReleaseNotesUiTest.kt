@@ -10,29 +10,49 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.release_notes.generated.resources.Res
 import bibleplanner.feature.release_notes.generated.resources.release_notes_error_loading
 import bibleplanner.feature.release_notes.generated.resources.release_notes_screen_title
+import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_latest
+import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_past
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
+import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
 import com.quare.bibleplanner.ui.testing.AnimationsDisabled
 import com.quare.bibleplanner.ui.testing.SharedTransitionTestContent
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 internal class ReleaseNotesUiTest {
     private var isReleaseNotesShown by mutableStateOf(false)
+    private val sentEvents = mutableListOf<ReleaseNotesUiEvent>()
+    private val successState = ReleaseNotesUiState.Success(
+        latestRelease = null,
+        upcomingReleases = emptyList(),
+        pastReleases = emptyList(),
+        currentTab = ReleaseNotesTab.LATEST,
+        availableTabs = listOf(
+            ReleaseNotesTab.LATEST,
+            ReleaseNotesTab.PAST_VERSIONS,
+        ),
+    )
 
     @Test
     fun `GIVEN animations disabled WHEN opening the release notes THEN shows the title in the top bar`() =
         runComposeUiTest(effectContext = AnimationsDisabled) {
             // Given
             val title = getString(Res.string.release_notes_screen_title)
-            prepareScenario(title = title)
+            prepareScenario(
+                title = title,
+                uiState = ReleaseNotesUiState.Error,
+            )
 
             // When
             isReleaseNotesShown = true
@@ -51,7 +71,53 @@ internal class ReleaseNotesUiTest {
             )
         }
 
-    private fun ComposeUiTest.prepareScenario(title: String) {
+    @Test
+    fun `GIVEN the latest tab is selected WHEN tapping another tab THEN sends the tab selection`() =
+        runComposeUiTest(effectContext = AnimationsDisabled) {
+            // Given
+            prepareSuccessScenario()
+
+            // When
+            onNodeWithText(getString(Res.string.release_notes_tab_past)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReleaseNotesUiEvent>(
+                    ReleaseNotesUiEvent.OnTabSelected(ReleaseNotesTab.PAST_VERSIONS),
+                ),
+                actual = sentEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the latest tab is selected WHEN tapping it again THEN sends no event`() =
+        runComposeUiTest(effectContext = AnimationsDisabled) {
+            // Given
+            prepareSuccessScenario()
+
+            // When
+            onNodeWithText(getString(Res.string.release_notes_tab_latest)).performClick()
+
+            // Then
+            assertEquals(
+                expected = emptyList<ReleaseNotesUiEvent>(),
+                actual = sentEvents,
+            )
+        }
+
+    private suspend fun ComposeUiTest.prepareSuccessScenario() {
+        prepareScenario(
+            title = getString(Res.string.release_notes_screen_title),
+            uiState = successState,
+        )
+        isReleaseNotesShown = true
+        waitForIdle()
+    }
+
+    private fun ComposeUiTest.prepareScenario(
+        title: String,
+        uiState: ReleaseNotesUiState,
+    ) {
         setUiTestContent {
             SharedTransitionTestContent(
                 isTargetShown = isReleaseNotesShown,
@@ -67,8 +133,8 @@ internal class ReleaseNotesUiTest {
                 target = { animatedContentScope ->
                     ReleaseNotesScreen(
                         platform = Platform.Android,
-                        uiState = ReleaseNotesUiState.Error,
-                        onEvent = {},
+                        uiState = uiState,
+                        onEvent = sentEvents::add,
                         sharedTransitionScope = this,
                         animatedContentScope = animatedContentScope,
                     )

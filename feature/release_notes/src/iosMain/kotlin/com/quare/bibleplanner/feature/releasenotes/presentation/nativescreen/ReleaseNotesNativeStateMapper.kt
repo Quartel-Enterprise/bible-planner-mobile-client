@@ -7,6 +7,10 @@ import bibleplanner.feature.release_notes.generated.resources.Res
 import bibleplanner.feature.release_notes.generated.resources.release_notes_error_loading
 import bibleplanner.feature.release_notes.generated.resources.release_notes_screen_title
 import bibleplanner.feature.release_notes.generated.resources.release_notes_view_all_github
+import bibleplanner.ui.component.generated.resources.back
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toTagResource
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toTitleResource
+import com.quare.bibleplanner.feature.releasenotes.presentation.mapper.toVisibleNotes
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.VisibleReleaseNote
 import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.model.ReleaseNotesNativeColors
@@ -18,11 +22,9 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.nativescreen.mod
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.isUpcoming
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagBackgroundColor
 import com.quare.bibleplanner.feature.releasenotes.presentation.utils.tagContentColor
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTagResource
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toTitleResource
-import com.quare.bibleplanner.feature.releasenotes.presentation.utils.toVisibleNotes
 import com.quare.bibleplanner.ui.utils.format
 import org.jetbrains.compose.resources.stringResource
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 /*
  * Why: strings, dates and colors are resolved here, inside the composition, so the SwiftUI screen
@@ -31,6 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ReleaseNotesUiState.toNativeState(): ReleaseNotesNativeState = ReleaseNotesNativeState(
     title = stringResource(Res.string.release_notes_screen_title),
+    backButtonLabel = stringResource(ComponentRes.string.back),
     githubButtonLabel = stringResource(Res.string.release_notes_view_all_github),
     content = toNativeContent(),
     colors = nativeColors(),

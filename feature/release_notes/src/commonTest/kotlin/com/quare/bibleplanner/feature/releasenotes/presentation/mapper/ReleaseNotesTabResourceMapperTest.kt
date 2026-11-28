@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.releasenotes.presentation.utils
+package com.quare.bibleplanner.feature.releasenotes.presentation.mapper
 
 import bibleplanner.feature.release_notes.generated.resources.Res
 import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_latest

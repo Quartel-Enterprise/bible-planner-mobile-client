@@ -6,7 +6,7 @@ Captures which tab the user opens on the release-notes screen. Shows whether use
 
 ## When it fires
 
-User taps one of the three tabs on the release-notes screen.
+User switches to another tab on the release-notes screen. Tapping the tab that is already selected doesn't fire it; app versions before the native iOS release notes also counted those re-taps.
 
 ## Trigger source
 
