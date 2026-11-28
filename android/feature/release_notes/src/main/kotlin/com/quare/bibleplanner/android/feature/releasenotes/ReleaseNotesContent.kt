@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -110,10 +113,15 @@ private fun ReleaseNotesList(
     onEvent: (ReleaseNotesUiEvent) -> Unit,
 ) {
     val selectedTabIndex = state.availableTabs.indexOf(state.currentTab).coerceAtLeast(0)
+    val layoutDirection = LocalLayoutDirection.current
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = paddingValues.calculateTopPadding()),
+            .padding(
+                start = paddingValues.calculateStartPadding(layoutDirection),
+                top = paddingValues.calculateTopPadding(),
+                end = paddingValues.calculateEndPadding(layoutDirection),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SecondaryTabRow(
@@ -163,8 +171,8 @@ private fun ReleaseNoteCard(
         onClick = onClick,
         enabled = type.isClickable,
         modifier = Modifier
-            .fillMaxWidth()
-            .widthIn(max = contentMaxWidth),
+            .widthIn(max = contentMaxWidth)
+            .fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(

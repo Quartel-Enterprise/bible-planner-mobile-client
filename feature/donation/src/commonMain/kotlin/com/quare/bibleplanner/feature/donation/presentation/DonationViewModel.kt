@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DonationViewModel(
+class DonationViewModel internal constructor(
     private val navigator: Navigator,
     factory: DonationUiStateFactory,
     trackEvent: TrackEvent,
