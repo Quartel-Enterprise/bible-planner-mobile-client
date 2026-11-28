@@ -37,7 +37,10 @@ internal fun EditNameContent(
         mutableStateOf(
             TextFieldValue(
                 text = initialName,
-                selection = TextRange(0, initialName.length),
+                selection = TextRange(
+                    start = 0,
+                    end = initialName.length,
+                ),
             ),
         )
     }
@@ -73,14 +76,15 @@ internal fun EditNameContent(
     }
 }
 
-private fun TextFieldValue.toTruncated(maxLength: Int): TextFieldValue = if (text.length <= maxLength) {
-    this
-} else {
-    copy(
-        text = text.take(maxLength),
+private fun TextFieldValue.toTruncated(maxLength: Int): TextFieldValue {
+    if (text.length <= maxLength) return this
+    // Why: cutting between the two halves of a surrogate pair (an emoji) would save a broken character.
+    val end = if (text[maxLength - 1].isHighSurrogate()) maxLength - 1 else maxLength
+    return copy(
+        text = text.take(end),
         selection = TextRange(
-            start = selection.start.coerceAtMost(maxLength),
-            end = selection.end.coerceAtMost(maxLength),
+            start = selection.start.coerceAtMost(end),
+            end = selection.end.coerceAtMost(end),
         ),
         composition = null,
     )

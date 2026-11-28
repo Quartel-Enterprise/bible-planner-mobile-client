@@ -66,7 +66,8 @@ internal fun EditPhotoSourceContent(
                 PhotoSourceItem(
                     icon = Icons.Rounded.AccountCircle,
                     text = stringResource(R.string.edit_profile_photo_use_provider),
-                    onClick = { onEvent(ProfilePhotoUiEvent.OnUseProviderPhotoClick) },
+                    // Why: the ViewModel pops the sheet when the photo changes; a second tap would pop the screen below.
+                    onClick = { sheetCloseGuard.close { onEvent(ProfilePhotoUiEvent.OnUseProviderPhotoClick) } },
                 )
             }
             PhotoSourceItem(
@@ -85,7 +86,7 @@ internal fun EditPhotoSourceContent(
                 PhotoSourceItem(
                     icon = Icons.Rounded.Delete,
                     text = stringResource(R.string.edit_profile_photo_remove),
-                    onClick = { onEvent(ProfilePhotoUiEvent.OnRemovePhotoClick) },
+                    onClick = { sheetCloseGuard.close { onEvent(ProfilePhotoUiEvent.OnRemovePhotoClick) } },
                     color = MaterialTheme.colorScheme.error,
                 )
             }

@@ -56,11 +56,28 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
         }
     }
 
-    // Why: the app finds native screens with ServiceLoader, so an unlisted factory would silently keep the shared UI.
+    /*
+     * Why: the app finds native screens with ServiceLoader, so an unlisted factory would silently keep the
+     * shared UI, and a listed class that doesn't exist (a typo, a move) would crash the app on its first frame.
+     */
     private fun Project.checkNativeEntryFactoryIsListed() {
         val servicesFile = file("src/main/resources/META-INF/services/$NATIVE_ENTRY_FACTORY")
         check(servicesFile.isFile) {
             "$path must list its NativeEntryFactory implementation in ${servicesFile.relativeTo(rootDir)}"
+        }
+        val listedClasses = servicesFile
+            .readLines()
+            .map { line -> line.substringBefore('#').trim() }
+            .filter { className -> className.isNotEmpty() }
+        check(listedClasses.isNotEmpty()) {
+            "${servicesFile.relativeTo(rootDir)} lists no NativeEntryFactory implementation"
+        }
+        listedClasses.forEach { className ->
+            val sourceFile = file("src/main/kotlin/${className.replace('.', '/')}.kt")
+            check(sourceFile.isFile) {
+                "${servicesFile.relativeTo(rootDir)} lists $className, " +
+                    "but ${sourceFile.relativeTo(rootDir)} doesn't exist"
+            }
         }
     }
 
