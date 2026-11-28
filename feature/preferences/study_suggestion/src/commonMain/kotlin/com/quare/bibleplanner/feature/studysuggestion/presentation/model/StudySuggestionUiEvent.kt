@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-internal sealed interface StudySuggestionUiEvent : UiEvent {
+sealed interface StudySuggestionUiEvent : UiEvent {
     data class OnToggleClick(
         val isNewValueOn: Boolean,
     ) : StudySuggestionUiEvent {

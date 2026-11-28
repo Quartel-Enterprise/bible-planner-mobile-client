@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.verse.annotations.presentation.model
 
-internal enum class AnnotationPeriod(
+enum class AnnotationPeriod(
     val maxDaysAgo: Int?,
     val analyticsValue: String,
 ) {

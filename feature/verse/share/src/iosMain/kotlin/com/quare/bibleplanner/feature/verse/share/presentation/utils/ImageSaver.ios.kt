@@ -8,9 +8,7 @@ import io.github.vinceglb.filekit.saveImageToGallery
 import kotlinx.coroutines.launch
 
 @Composable
-internal actual fun rememberImageSaver(
-    onResult: (ImageSaveResult) -> Unit,
-): (imageBytes: ByteArray, fileName: String) -> Unit {
+actual fun rememberImageSaver(onResult: (ImageSaveResult) -> Unit): (imageBytes: ByteArray, fileName: String) -> Unit {
     val coroutineScope = rememberCoroutineScope()
     return { imageBytes, fileName ->
         coroutineScope.launch {

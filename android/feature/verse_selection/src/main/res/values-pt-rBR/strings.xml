@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="verse_selection_close">Fechar</string>
+    <string name="verse_selection_save">Salvar</string>
+    <string name="verse_selection_saved">Salvo</string>
+    <string name="verse_selection_add_note">Anotação</string>
+    <string name="verse_selection_view_note">Ver anotação</string>
+    <string name="verse_selection_share">Compartilhar</string>
+    <string name="verse_selection_copy">Copiar</string>
+    <string name="verse_selection_custom_color">Cor personalizada</string>
+    <string name="verse_selection_custom_color_hint">Segure uma cor personalizada para removê-la da paleta</string>
+    <string name="verse_selection_cancel">Cancelar</string>
+    <string name="verse_selection_apply_color">Aplicar cor</string>
+    <string name="verse_selection_copied_to_clipboard">Copiado para a área de transferência</string>
+</resources>

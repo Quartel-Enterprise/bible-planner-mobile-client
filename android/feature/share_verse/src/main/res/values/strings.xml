@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_verse_title">Share</string>
+    <string name="share_verse_as_text">As text</string>
+    <string name="share_verse_as_text_description">Send the passage through the system share sheet</string>
+    <string name="share_verse_as_image">As an image</string>
+    <string name="share_verse_as_image_description">A card for Stories and WhatsApp status</string>
+    <string name="share_verse_image_title">Share as an image</string>
+    <string name="share_verse_typography">Typography</string>
+    <string name="share_verse_background">Background</string>
+    <string name="share_verse_action">Share</string>
+    <string name="share_verse_app_name">Bible Planner</string>
+    <string name="share_verse_add_streak">Add streak</string>
+    <string name="share_verse_remove_streak">Remove streak</string>
+    <string name="share_verse_remove_watermark">Remove mark</string>
+    <string name="share_verse_show_watermark">Show mark</string>
+    <string name="share_verse_custom_color">Custom color</string>
+    <string name="share_verse_photo_background">Photo background</string>
+    <string name="share_verse_download">Save image</string>
+    <string name="share_verse_image_saved">Image saved</string>
+    <string name="share_verse_image_save_failed">Couldn\'t save the image</string>
+    <string name="share_verse_photo_load_failed">Couldn\'t open this photo</string>
+    <string name="share_verse_pro_only">Pro only</string>
+    <plurals name="share_verse_streak_days">
+        <item quantity="one">%1$d day in a row</item>
+        <item quantity="other">%1$d days in a row</item>
+    </plurals>
+</resources>

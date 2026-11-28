@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_title">Update available</string>
+    <string name="in_app_update_version">Version %1$s</string>
+    <string name="in_app_update_dismiss">Not now</string>
+    <string name="in_app_update_description">Google Play downloads the new version while you keep using the app.</string>
+    <string name="in_app_update_action">Update</string>
+</resources>

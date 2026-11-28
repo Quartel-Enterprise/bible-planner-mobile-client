@@ -20,9 +20,7 @@ private const val FILE_EXTENSION_SEPARATOR = "."
  * FileKit's cache directory on the JVM needs FileKit.init(appId), which the desktop app never calls.
  */
 @Composable
-internal actual fun rememberImageSaver(
-    onResult: (ImageSaveResult) -> Unit,
-): (imageBytes: ByteArray, fileName: String) -> Unit {
+actual fun rememberImageSaver(onResult: (ImageSaveResult) -> Unit): (imageBytes: ByteArray, fileName: String) -> Unit {
     val coroutineScope = rememberCoroutineScope()
     var pendingBytes by remember { mutableStateOf<ByteArray?>(null) }
     val fileSaver = rememberFileSaverLauncher(dialogSettings = FileKitDialogSettings.createDefault()) { destination ->
