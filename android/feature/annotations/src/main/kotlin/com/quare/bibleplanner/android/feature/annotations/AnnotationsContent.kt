@@ -33,11 +33,13 @@ internal fun AnnotationsContent(
     onEvent: (AnnotationsUiEvent) -> Unit,
 ) {
     val loaded = state.content.valueOrNull()
+    // Why: a query typed in the wide layout's always-visible field still filters after the window narrows.
+    val isSearchShown = state.isSearchOpen || state.searchQuery.isNotEmpty()
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth >= wideLayoutMinWidth
         NavigationBackHandler(
             state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
-            isBackEnabled = state.isSearchOpen && !isWide,
+            isBackEnabled = isSearchShown && !isWide,
             onBackCompleted = { onEvent(AnnotationsUiEvent.OnSearchCloseClick) },
         )
         Scaffold(
@@ -45,7 +47,7 @@ internal fun AnnotationsContent(
                 AnnotationsTopBar(
                     shownCount = loaded?.shownCount,
                     isSearchAvailable = loaded != null && loaded.totalCount > 0,
-                    isSearchOpen = state.isSearchOpen,
+                    isSearchOpen = isSearchShown,
                     searchQuery = state.searchQuery,
                     isWide = isWide,
                     onEvent = onEvent,

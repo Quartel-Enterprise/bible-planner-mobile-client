@@ -2,6 +2,7 @@ package com.quare.bibleplanner.android.designsystem.date
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.icu.util.GregorianCalendar
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -115,7 +116,8 @@ private fun formatDateWithIcu(
     skeleton: String,
     locale: Locale,
 ): String {
-    val calendar = Calendar.getInstance(locale).apply {
+    // Why: the fields are Gregorian, while Calendar.getInstance can pick the locale's (Buddhist in th, Persian in fa).
+    val calendar = GregorianCalendar(locale).apply {
         clear()
         set(date.year, date.month.number - 1, date.day)
     }

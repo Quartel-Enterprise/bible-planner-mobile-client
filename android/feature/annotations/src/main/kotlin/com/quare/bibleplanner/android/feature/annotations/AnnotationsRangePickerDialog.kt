@@ -12,11 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.quare.bibleplanner.android.designsystem.dialog.rememberAlertDialogResolution
+import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationDateRange
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +24,7 @@ internal fun AnnotationsRangePickerDialog(
     today: LocalDate,
     onEvent: (AnnotationsUiEvent) -> Unit,
 ) {
-    val todayUtcMillis = today.toUtcMillis()
+    val todayUtcMillis = today.toTimestampUTC()
     val selectableDates = remember(today) {
         object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= todayUtcMillis
@@ -34,9 +33,9 @@ internal fun AnnotationsRangePickerDialog(
         }
     }
     val state = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = customRange?.start?.toUtcMillis(),
-        initialSelectedEndDateMillis = customRange?.end?.toUtcMillis(),
-        initialDisplayedMonthMillis = customRange?.start?.toUtcMillis() ?: todayUtcMillis,
+        initialSelectedStartDateMillis = customRange?.start?.toTimestampUTC(),
+        initialSelectedEndDateMillis = customRange?.end?.toTimestampUTC(),
+        initialDisplayedMonthMillis = customRange?.start?.toTimestampUTC() ?: todayUtcMillis,
         selectableDates = selectableDates,
     )
     val resolution = rememberAlertDialogResolution()
@@ -74,5 +73,3 @@ internal fun AnnotationsRangePickerDialog(
         )
     }
 }
-
-private fun LocalDate.toUtcMillis(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
