@@ -50,6 +50,7 @@ internal fun DayContent(
     state: DayUiState,
     isWide: Boolean,
     snackbarHostState: SnackbarHostState,
+    transitionScopes: DayTransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     studySection: @Composable (DayUiState.Loaded, Modifier) -> Unit,
 ) {
@@ -68,6 +69,7 @@ internal fun DayContent(
             if (!isWide) {
                 DayTopBar(
                     state = state,
+                    transitionScopes = transitionScopes,
                     scrollBehavior = scrollBehavior,
                     onEvent = onEvent,
                 )
@@ -91,12 +93,14 @@ internal fun DayContent(
             is DayUiState.Loaded -> if (isWide) {
                 DayWideContent(
                     state = state,
+                    transitionScopes = transitionScopes,
                     onEvent = onEvent,
                     modifier = contentModifier,
                 )
             } else {
                 DayNarrowContent(
                     state = state,
+                    transitionScopes = transitionScopes,
                     onEvent = onEvent,
                     studySection = studySection,
                     modifier = contentModifier,
@@ -119,13 +123,18 @@ internal fun DayContent(
 @Composable
 private fun DayTopBar(
     state: DayUiState,
+    transitionScopes: DayTransitionScopes?,
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: (DayUiEvent) -> Unit,
 ) {
     TopAppBar(
         title = {
             when (state) {
-                is DayUiState.Loaded -> DayHeaderTitle(state = state)
+                is DayUiState.Loaded -> DayHeaderTitle(
+                    state = state,
+                    transitionScopes = transitionScopes,
+                )
+
                 DayUiState.Loading -> DayHeaderTitleSkeleton(pulse = rememberDaySkeletonPulse())
             }
         },
@@ -150,6 +159,7 @@ internal fun DayBackButton(onClick: () -> Unit) {
 @Composable
 private fun DayNarrowContent(
     state: DayUiState.Loaded,
+    transitionScopes: DayTransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     studySection: @Composable (DayUiState.Loaded, Modifier) -> Unit,
     modifier: Modifier = Modifier,
@@ -192,6 +202,9 @@ private fun DayNarrowContent(
             centeredItem(key = "planned_read_date") {
                 DayPlannedReadDateText(
                     plannedReadDate = plannedReadDate,
+                    weekNumber = state.weekNumber,
+                    dayNumber = day.number,
+                    transitionScopes = transitionScopes,
                     modifier = Modifier.padding(
                         start = 16.dp,
                         end = 16.dp,
@@ -242,6 +255,7 @@ private fun LazyListScope.centeredItem(
 @Composable
 private fun DayWideContent(
     state: DayUiState.Loaded,
+    transitionScopes: DayTransitionScopes?,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -261,6 +275,7 @@ private fun DayWideContent(
             ) {
                 DayHeaderTitle(
                     state = state,
+                    transitionScopes = transitionScopes,
                     horizontalAlignment = Alignment.Start,
                 )
             }
@@ -292,7 +307,12 @@ private fun DayWideContent(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 day.plannedReadDate?.let { plannedReadDate ->
-                    DayPlannedReadDateText(plannedReadDate = plannedReadDate)
+                    DayPlannedReadDateText(
+                        plannedReadDate = plannedReadDate,
+                        weekNumber = state.weekNumber,
+                        dayNumber = day.number,
+                        transitionScopes = transitionScopes,
+                    )
                 }
                 DayCompletedDateSection(
                     isRead = day.isRead,

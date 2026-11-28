@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
+import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
 private const val READ_STATUS_ANIMATION_MILLIS = 300
@@ -43,6 +44,7 @@ private val dayActionButtonMinHeight = 44.dp
 @Composable
 internal fun DayHeaderTitle(
     state: DayUiState.Loaded,
+    transitionScopes: DayTransitionScopes?,
     modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
@@ -54,11 +56,32 @@ internal fun DayHeaderTitle(
             weekNumber = state.weekNumber,
             dayNumber = state.day.number,
         )
-        Text(
-            text = stringResource(R.string.day_week_title, state.weekNumber) +
-                " — " +
-                stringResource(R.string.day_day_title, dayIndex),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.day_week_title, state.weekNumber),
+                modifier = Modifier.titleSharedElementOf(
+                    transitionScopes = transitionScopes,
+                    key = SharedTransitionAnimationUtils.buildWeekNumberId(state.weekNumber),
+                ),
+            )
+            Text(
+                text = " — ",
+                modifier = Modifier.titleSharedElementOf(
+                    transitionScopes = transitionScopes,
+                    key = SharedTransitionAnimationUtils.buildWeekSeparatorId(state.weekNumber),
+                ),
+            )
+            Text(
+                text = stringResource(R.string.day_day_title, dayIndex),
+                modifier = Modifier.titleSharedElementOf(
+                    transitionScopes = transitionScopes,
+                    key = SharedTransitionAnimationUtils.buildDayNumberId(
+                        weekNumber = state.weekNumber,
+                        dayNumebr = state.day.number,
+                    ),
+                ),
+            )
+        }
         Spacer(modifier = Modifier.height(4.dp))
         DayProgressIndicator(
             completedCount = state.completedPassagesCount,
