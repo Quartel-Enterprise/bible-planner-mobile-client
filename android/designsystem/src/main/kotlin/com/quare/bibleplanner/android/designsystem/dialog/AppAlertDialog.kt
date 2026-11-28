@@ -46,7 +46,8 @@ fun AppAlertDialog(
     icon: ImageVector? = null,
     text: @Composable () -> Unit,
 ) {
-    val resolution = rememberAlertDialogResolution()
+    // Why: a dialog that stays open after an action and changes its content must take taps again.
+    val resolution = rememberAlertDialogResolution(title, confirmText)
     AlertDialog(
         onDismissRequest = { resolution.resolve(onDismissRequest) },
         icon = icon?.let { imageVector ->
