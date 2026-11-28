@@ -3,6 +3,10 @@ package com.quare.bibleplanner.android.feature.logout
 import android.content.Context
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.NavEntry
@@ -32,17 +36,28 @@ internal fun LogoutNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     val uiState by viewModel.uiState.collectAsState()
     val appSnackbarController = koinInject<AppSnackbarController>()
     val context = LocalContext.current
+    var failedAttempts by remember { mutableIntStateOf(0) }
     ActionCollector(viewModel.uiAction) { uiAction ->
         when (uiAction) {
-            is LogoutUiAction.ShowError -> appSnackbarController.show(context.createErrorMessage(uiAction.error))
+            is LogoutUiAction.ShowError -> {
+                failedAttempts++
+                appSnackbarController.show(context.createErrorMessage(uiAction.error))
+            }
+
             LogoutUiAction.NotifySuccess -> appSnackbarController.show(context.createSuccessMessage())
         }
     }
     ExpressiveTheme {
-        LogoutContent(
-            uiState = uiState,
-            onEvent = viewModel::onEvent,
-        )
+        /*
+         * Why: a logout that fails within one frame goes Idle -> Loading -> Idle before Loading is drawn, so the
+         * confirmation dialog, which ignores taps once one resolved it, must be rebuilt to take them again.
+         */
+        key(failedAttempts) {
+            LogoutContent(
+                uiState = uiState,
+                onEvent = viewModel::onEvent,
+            )
+        }
     }
 }
 
