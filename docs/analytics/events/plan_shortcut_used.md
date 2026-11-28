@@ -26,3 +26,4 @@ User taps a shortcut button on the reading-plan screen.
 
 - Scroll-completion bookkeeping (`OnScrollToWeekCompleted`, `OnScrollToTopCompleted`, `OnFlashCompleted`, `OnScrollStateChange`, `OnActiveRowVisibilityChange`) is not tracked (see README "Explicitly not tracked").
 - Related: [plan_week_toggled](plan_week_toggled.md), [plan_group_toggled](plan_group_toggled.md).
+- The iOS app offers `active_row` as a toolbar button and has no scroll back to top button, since tapping the status bar already scrolls the list to the top there, so iOS never sends `scroll_top`.

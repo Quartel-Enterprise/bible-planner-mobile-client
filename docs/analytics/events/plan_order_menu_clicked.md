@@ -23,3 +23,4 @@ None.
 
 - Closing the menu without picking an order is tracked separately: [plan_order_menu_dismissed](plan_order_menu_dismissed.md).
 - Picking an order fires [plan_selected](plan_selected.md), the same event the segmented buttons fire.
+- The iOS app draws this menu with SwiftUI's native `Menu`, which doesn't report opening or closing, so iOS app versions from the SwiftUI Plans tab on never send it.

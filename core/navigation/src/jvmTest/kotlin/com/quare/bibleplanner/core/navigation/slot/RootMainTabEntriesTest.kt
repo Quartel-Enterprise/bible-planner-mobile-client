@@ -42,6 +42,44 @@ internal class RootMainTabEntriesTest {
         assertEquals(emptyList(), unresolved)
     }
 
+    @Test
+    fun `GIVEN a native tab content provider WHEN registering THEN asks it for the plans tab and every tab resolves`() {
+        // Given
+        val requestedTabs = mutableListOf<MainNavRouteDestination>()
+        val tabEntries = RootMainTabEntries(
+            sharedTransitionScope = unusedStub<SharedTransitionScope>(),
+            nativeTabContent = { tab ->
+                requestedTabs += tab
+                {}
+            },
+        )
+        val unresolved = mutableListOf<NavKey>()
+
+        // When
+        val provider = entryProvider<NavKey>(
+            fallback = { key ->
+                unresolved += key
+                NavEntry(key) {}
+            },
+        ) {
+            tabEntries.register(
+                scope = this,
+                navigationBar = {},
+                navigationRail = {},
+                animatedContentScope = unusedStub<AnimatedContentScope>(),
+            )
+        }
+        listOf(
+            MainNavRouteDestination.Plans,
+            MainNavRouteDestination.Books,
+            MainNavRouteDestination.Profile,
+        ).forEach(provider::invoke)
+
+        // Then
+        assertEquals(listOf<MainNavRouteDestination>(MainNavRouteDestination.Plans), requestedTabs)
+        assertEquals(emptyList(), unresolved)
+    }
+
     private inline fun <reified T : Any> unusedStub(): T = Proxy.newProxyInstance(
         T::class.java.classLoader,
         arrayOf(T::class.java),

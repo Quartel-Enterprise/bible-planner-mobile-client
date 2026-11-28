@@ -22,3 +22,4 @@ None.
 ## Notes
 
 - Does not fire when the menu closes because an order was picked; that path fires [plan_selected](plan_selected.md).
+- The iOS app draws this menu with SwiftUI's native `Menu`, which doesn't report opening or closing, so iOS app versions from the SwiftUI Plans tab on never send it.
