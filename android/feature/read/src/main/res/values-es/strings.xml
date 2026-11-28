@@ -15,7 +15,7 @@
     <string name="read_mark_as_read">Marcar como Leído</string>
     <string name="read_unknown_error_occurred">Ocurrió un error desconocido.</string>
     <string name="read_retry">Reintentar</string>
-    <string name="read_chapter_not_downloaded_error">Aún no has descargado "%1$s %2$d" en la versión "%3$s".</string>
+    <string name="read_chapter_not_downloaded_error">Aún no has descargado \"%1$s %2$d\" en la versión \"%3$s\".</string>
     <string name="read_downloading_progress">Descargando %1$s%%</string>
     <string name="read_paused_progress">Pausado %1$s%%</string>
     <string name="read_resume_download">Reanudar descarga</string>

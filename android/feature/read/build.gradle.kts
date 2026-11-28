@@ -10,6 +10,5 @@ dependencies {
     implementation(projects.core.verseAnnotations)
     implementation(projects.ui.component)
     implementation(projects.ui.theme)
-    implementation(projects.ui.utils)
     implementation(libs.compose.materialIconsExtended)
 }
