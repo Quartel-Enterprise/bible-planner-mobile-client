@@ -5,7 +5,7 @@
     <string name="donation_bitcoin_description">On-chain y Lightning</string>
     <string name="donation_usdt">USDT</string>
     <string name="donation_usdt_description">ERC20 / TRC20</string>
-    <string name="donation_pix">Brazilian Pix</string>
+    <string name="donation_pix">Pix brasileño</string>
     <string name="donation_pix_description">Clave Aleatoria y Código QR</string>
     <string name="donation_gh_sponsors">GitHub Sponsors</string>
     <string name="donation_gh_sponsors_description">Mensual o pago único</string>
