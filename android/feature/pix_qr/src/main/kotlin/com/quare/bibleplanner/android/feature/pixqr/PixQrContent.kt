@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,11 +32,16 @@ internal fun PixQrContent(onEvent: (PixQrUiEvent) -> Unit) {
         onDismiss = { onEvent(PixQrUiEvent.Dismiss) },
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Why: banking apps read dark modules on a light background best, so the code stays black on white in dark theme too.
+            /*
+             * Why: banking apps read dark modules on a light background best, so the code stays black on
+             * white in dark theme too.
+             */
             Box(
                 modifier = Modifier
                     .background(
