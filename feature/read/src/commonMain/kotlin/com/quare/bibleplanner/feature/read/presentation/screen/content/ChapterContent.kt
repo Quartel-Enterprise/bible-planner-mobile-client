@@ -149,7 +149,7 @@ internal fun LazyListScope.chapterContent(
     }
 }
 
-internal fun getChapterStartIndices(
+fun getChapterStartIndices(
     chapters: List<ReadChapterUiModel>,
     leadingItemCount: Int,
     isChapterStudyBeside: Boolean,

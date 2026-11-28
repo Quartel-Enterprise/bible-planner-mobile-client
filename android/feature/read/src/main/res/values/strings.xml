@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="read_open_verse_note">Open note</string>
+    <string name="read_listening_listen_today">Listen to today\'s reading · %1$d of %2$d</string>
+    <string name="read_listening_listen_chapter">Listen to chapter · %1$d min</string>
+    <string name="read_listening_preparing">Preparing the voice…</string>
+    <string name="read_listening_listening_remaining">Listening · %1$s left</string>
+    <string name="read_listening_paused_at">Paused at %1$s</string>
+    <string name="read_chapter_study_card_title">Study this chapter</string>
+    <string name="read_chapter_study_card_subtitle">Summary, context and reflections · AI</string>
+    <string name="read_chapter_study_card_subtitle_with_chapter">%1$s · Summary, context and reflections · AI</string>
+    <string name="read_next_chapter">Next</string>
+    <string name="read_previous_chapter">Previous</string>
+    <string name="read_status_read">Read</string>
+    <string name="read_mark_as_read">Mark as Read</string>
+    <string name="read_unknown_error_occurred">An unknown error occurred.</string>
+    <string name="read_retry">Retry</string>
+    <string name="read_chapter_not_downloaded_error">You haven\'t downloaded \"%1$s %2$d\" in the \"%3$s\" version yet.</string>
+    <string name="read_downloading_progress">Downloading %1$s%%</string>
+    <string name="read_paused_progress">Paused %1$s%%</string>
+    <string name="read_resume_download">Resume download</string>
+    <string name="read_download_version_with_size">Download (%1$s)</string>
+    <string name="read_download_version">Download</string>
+    <string name="read_manage_bible_versions">Manage Bible Versions</string>
+    <string name="read_status_with_size">%1$s · %2$s</string>
+    <string name="read_size_progress">%1$s of %2$s</string>
+</resources>

@@ -46,10 +46,8 @@ fun MainTabScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    val hostedTabBarHeight = LocalHostedTabBarHeight.current
-    if (hostedTabBarHeight != null) {
+    if (LocalHostedTabBarHeight.current != null) {
         HostedTabScaffold(
-            hostedTabBarHeight = hostedTabBarHeight,
             floatingActionButton = floatingActionButton,
             content = content,
             modifier = modifier,
@@ -111,21 +109,13 @@ private fun WideTabScaffold(
 
 @Composable
 private fun HostedTabScaffold(
-    hostedTabBarHeight: Dp,
     floatingActionButton: @Composable () -> Unit,
     content: @Composable () -> Unit,
     modifier: Modifier,
 ) {
-    val navigationBarInsets = WindowInsets.navigationBars
-    val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
-    ReserveBottomOverlayHeightEffect {
-        maxOf(
-            navigationBarInsets.getBottom(density).toFloat(),
-            with(density) { hostedTabBarHeight.toPx() },
-        ) + with(density) { reservedFabHeight.toFabClearance().toPx() }
-    }
+    ReserveHostedTabBarHeightEffect(extraHeight = reservedFabHeight.toFabClearance())
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
