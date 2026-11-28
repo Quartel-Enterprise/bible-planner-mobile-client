@@ -48,9 +48,13 @@ private val verseLineHeight = 14.dp
 private val verseLineSpacing = 14.dp
 private val verseVerticalPadding = 6.dp
 
-internal fun LazyListScope.chapterSkeletonContent(position: ChapterSkeletonPosition) {
+// Why: one pulse drives every row, so lazily composed rows stay in step and only one animation runs.
+internal fun LazyListScope.chapterSkeletonContent(
+    position: ChapterSkeletonPosition,
+    pulse: () -> Float,
+) {
     item(key = "$CHAPTER_SKELETON_KEY-${position.name}-header") {
-        ChapterHeaderSkeleton()
+        ChapterHeaderSkeleton(pulse = pulse)
     }
     items(
         count = VERSE_SKELETON_COUNT,
@@ -58,17 +62,17 @@ internal fun LazyListScope.chapterSkeletonContent(position: ChapterSkeletonPosit
     ) { index ->
         VerseSkeletonRow(
             lineWidthFractions = verseLineWidthFractions[index % verseLineWidthFractions.size],
+            pulse = pulse,
         )
     }
 }
 
 @Composable
-private fun ChapterHeaderSkeleton() {
-    val pulse by rememberSkeletonPulse()
+private fun ChapterHeaderSkeleton(pulse: () -> Float) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer { alpha = pulse }
+            .graphicsLayer { alpha = pulse() }
             .padding(vertical = headerVerticalPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -87,11 +91,13 @@ private fun ChapterHeaderSkeleton() {
 }
 
 @Composable
-private fun VerseSkeletonRow(lineWidthFractions: List<Float>) {
-    val pulse by rememberSkeletonPulse()
+private fun VerseSkeletonRow(
+    lineWidthFractions: List<Float>,
+    pulse: () -> Float,
+) {
     Row(
         modifier = Modifier
-            .graphicsLayer { alpha = pulse }
+            .graphicsLayer { alpha = pulse() }
             .padding(vertical = verseVerticalPadding),
         horizontalArrangement = Arrangement.spacedBy(9.dp),
     ) {
@@ -116,7 +122,7 @@ private fun VerseSkeletonRow(lineWidthFractions: List<Float>) {
 }
 
 @Composable
-private fun rememberSkeletonPulse(): State<Float> = rememberInfiniteTransition(label = "read_skeleton").animateFloat(
+internal fun rememberSkeletonPulse(): State<Float> = rememberInfiniteTransition(label = "read_skeleton").animateFloat(
     initialValue = 1f,
     targetValue = PULSE_MIN_ALPHA,
     animationSpec = infiniteRepeatable(
@@ -127,7 +133,7 @@ private fun rememberSkeletonPulse(): State<Float> = rememberInfiniteTransition(l
 )
 
 @Composable
-private fun ReadSkeletonBox(modifier: Modifier = Modifier) {
+internal fun ReadSkeletonBox(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .background(
