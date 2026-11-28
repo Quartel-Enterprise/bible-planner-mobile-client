@@ -8,5 +8,4 @@ dependencies {
     implementation(projects.core.verseAnnotations)
     implementation(projects.ui.component)
     implementation(projects.ui.utils)
-    implementation(libs.compose.components.resources)
 }

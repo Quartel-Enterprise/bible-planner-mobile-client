@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.deletecolor
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.highlight_color_removed
-import bibleplanner.feature.read.generated.resources.highlight_color_removed_kept
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -49,15 +46,7 @@ class DeleteHighlightColorViewModel internal constructor(
                 colorKey = colorKey,
                 shouldKeepHighlights = shouldKeepHighlights,
             )
-            uiAction.emit(
-                DeleteHighlightColorUiAction.NotifyDeletion(
-                    if (shouldKeepHighlights) {
-                        Res.string.highlight_color_removed_kept
-                    } else {
-                        Res.string.highlight_color_removed
-                    },
-                ),
-            )
+            uiAction.emit(DeleteHighlightColorUiAction.NotifyDeletion(hasKeptHighlights = shouldKeepHighlights))
             // Why: going back disposes the entry's action collector, so the snackbar must be emitted first.
             navigator.navigateBack()
         }

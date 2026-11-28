@@ -16,9 +16,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-// Why: the shared action carries a Compose Multiplatform StringResource, which only its key ties to native text.
-private const val KEPT_HIGHLIGHTS_MESSAGE_KEY = "highlight_color_removed_kept"
-
 internal fun DeleteHighlightColorNavRoute.toNavEntry(): NavEntry<NavKey> = NavEntry(
     key = this,
     metadata = DialogSceneStrategy.dialog(),
@@ -29,9 +26,7 @@ internal fun DeleteHighlightColorNavRoute.toNavEntry(): NavEntry<NavKey> = NavEn
     ActionCollector(viewModel.uiAction) { uiAction ->
         when (uiAction) {
             is DeleteHighlightColorUiAction.NotifyDeletion -> appSnackbarController.show(
-                context.createDeletionMessage(
-                    hasKeptHighlights = uiAction.stringResource.key == KEPT_HIGHLIGHTS_MESSAGE_KEY,
-                ),
+                context.createDeletionMessage(hasKeptHighlights = uiAction.hasKeptHighlights),
             )
         }
     }

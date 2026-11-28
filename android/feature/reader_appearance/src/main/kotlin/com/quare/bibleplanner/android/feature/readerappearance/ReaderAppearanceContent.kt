@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -74,6 +75,7 @@ private val cardShape = RoundedCornerShape(16.dp)
 private val horizontalPadding = 16.dp
 private val cardSpacing = 8.dp
 private val bottomPadding = 24.dp
+private val rulerLineOptions = (ReaderRulerLines.MIN..ReaderRulerLines.MAX).toList()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -319,12 +321,16 @@ private fun FontCard(
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .selectableGroup()
                         .padding(
                             start = 12.dp,
                             end = 12.dp,
                             bottom = 12.dp,
                         ),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 8.dp,
+                        alignment = Alignment.CenterHorizontally,
+                    ),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     ReaderFont.entries.forEach { font ->
@@ -446,20 +452,23 @@ private fun RulerHeightRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = pluralStringResource(R.plurals.reader_appearance_ruler_lines, lines, lines),
+                text = pluralStringResource(
+                    R.plurals.reader_appearance_ruler_lines,
+                    lines,
+                    lines,
+                ),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
             )
         }
-        val options = (ReaderRulerLines.MIN..ReaderRulerLines.MAX).toList()
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            options.forEachIndexed { index, option ->
+            rulerLineOptions.forEachIndexed { index, option ->
                 SegmentedButton(
                     selected = option == lines,
                     onClick = { onEvent(ReaderAppearanceUiEvent.OnRulerLinesChange(option)) },
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
-                        count = options.size,
+                        count = rulerLineOptions.size,
                     ),
                 ) {
                     Text(text = option.toString())
