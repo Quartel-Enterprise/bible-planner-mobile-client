@@ -1,2 +1,5 @@
 com.quare.bibleplanner.android.feature.editprofile.EditNameEntryFactory
 com.quare.bibleplanner.android.feature.editprofile.EditPhotoSourceEntryFactory
+com.quare.bibleplanner.android.feature.editprofile.EditProfileEntryFactory
+com.quare.bibleplanner.android.feature.editprofile.ExpandedPhotoEntryFactory
+com.quare.bibleplanner.android.feature.editprofile.CropPhotoEntryFactory

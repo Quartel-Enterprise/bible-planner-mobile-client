@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_details_title">Detalles de la cuenta</string>
+    <string name="account_details_login_method">Método de inicio de sesión</string>
+    <string name="account_details_login_google">Google</string>
+    <string name="account_details_login_apple">Apple</string>
+    <string name="account_details_login_other">Correo</string>
+    <string name="account_details_last_login">Último inicio de sesión</string>
+    <string name="account_details_created_at">Cuenta creada el</string>
+    <string name="account_details_value_unknown">—</string>
+    <string name="account_details_connected_devices">Dispositivos conectados</string>
+    <plurals name="account_details_devices_active">
+        <item quantity="one">%1$d activo</item>
+        <item quantity="other">%1$d activos</item>
+    </plurals>
+    <string name="account_details_this_device">ESTE DISPOSITIVO</string>
+    <string name="account_details_device_options">Opciones del dispositivo</string>
+    <string name="account_details_rename">Renombrar</string>
+    <string name="account_details_sign_out">Cerrar sesión</string>
+    <string name="account_details_logout">Cerrar sesión de la cuenta</string>
+    <string name="account_details_device_signed_out">Sesión cerrada en ese dispositivo</string>
+    <string name="account_details_action_error">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="account_details_active_now">Activo ahora</string>
+    <plurals name="account_details_minutes_ago">
+        <item quantity="one">Hace %1$d min</item>
+        <item quantity="other">Hace %1$d min</item>
+    </plurals>
+    <plurals name="account_details_hours_ago">
+        <item quantity="one">Hace %1$d hora</item>
+        <item quantity="other">Hace %1$d horas</item>
+    </plurals>
+    <string name="account_details_today">Hoy</string>
+    <string name="account_details_yesterday">Ayer</string>
+    <string name="account_details_tomorrow">Mañana</string>
+    <plurals name="account_details_days_ago">
+        <item quantity="one">Hace %1$d día</item>
+        <item quantity="other">Hace %1$d días</item>
+    </plurals>
+    <string name="account_details_last_week">Semana pasada</string>
+    <plurals name="account_details_weeks_ago">
+        <item quantity="one">Hace %1$d semana</item>
+        <item quantity="other">Hace %1$d semanas</item>
+    </plurals>
+    <string name="account_details_last_month">Mes pasado</string>
+    <plurals name="account_details_months_ago">
+        <item quantity="one">Hace %1$d mes</item>
+        <item quantity="other">Hace %1$d meses</item>
+    </plurals>
+</resources>
