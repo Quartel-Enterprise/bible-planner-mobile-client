@@ -56,7 +56,10 @@ platform after each one.
    - The tabs follow the same rule one level down: `android/feature/main` draws the tab bar or rail and runs the
      inner `NavDisplay`, which asks the `NativeEntryProvider` for each tab key and falls back to the shared tab
      from `LocalMainTabEntries` (provided by `RootAppNavDisplay` with the root's shared transition scope). It
-     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there.
+     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there. A native
+     tab draws only its body too, reserves the same bottom overlay height, and declares its shared elements toward
+     root screens with `LocalSharedTransitionScope` and the main entry's `LocalMainAnimatedContentScope`
+     (`android/navigation`).
    - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never
      depends on another one, and none depends on `:shared`. jscpd doesn't scan `android/` while its screens
      still duplicate the Compose Multiplatform ones they replace.

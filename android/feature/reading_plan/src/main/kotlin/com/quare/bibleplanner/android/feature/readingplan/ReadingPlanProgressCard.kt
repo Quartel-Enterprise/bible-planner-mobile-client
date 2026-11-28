@@ -1,0 +1,258 @@
+package com.quare.bibleplanner.android.feature.readingplan
+
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
+import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import kotlin.math.abs
+import kotlin.math.round
+
+private const val PROGRESS_ANIMATION_MILLIS = 400
+
+@Composable
+internal fun ReadingPlanProgressCard(
+    state: ReadingPlanUiState.Loaded,
+    modifier: Modifier = Modifier,
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = state.progress,
+        animationSpec = tween(
+            durationMillis = PROGRESS_ANIMATION_MILLIS,
+            easing = LinearEasing,
+        ),
+        label = "planProgressAnimation",
+    )
+    val animatedReadDays by animateIntAsState(
+        targetValue = state.readDaysCount,
+        label = "planReadDaysAnimation",
+    )
+    val totalDaysCount = state.totalDaysCount
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            ProgressHeader()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                ProgressRingIndicator(
+                    progress = animatedProgress,
+                    text = "${animatedProgress.formatProgress()}%",
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.reading_plan_progress_days_completed,
+                            animatedReadDays,
+                            totalDaysCount,
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.reading_plan_progress_days_remaining,
+                            (totalDaysCount - animatedReadDays).coerceAtLeast(0),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    PlanStatusChip(planStatus = state.planStatus)
+                }
+            }
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = state.motivationMessage.resolveText(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Start,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProgressHeader() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Icon(
+            modifier = Modifier.size(20.dp),
+            imageVector = Icons.AutoMirrored.Filled.TrendingUp,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.secondary,
+        )
+        Text(
+            text = stringResource(R.string.reading_plan_progress_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+private fun ProgressRingIndicator(
+    progress: Float,
+    text: String,
+) {
+    Box(contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(100.dp),
+            progress = { (progress / 100f).coerceIn(0f, 1f) },
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            strokeWidth = 9.dp,
+            strokeCap = StrokeCap.Round,
+            gapSize = 0.dp,
+        )
+        Text(
+            modifier = Modifier.width(64.dp),
+            text = text,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                maxFontSize = MaterialTheme.typography.titleLarge.fontSize,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun PlanStatusChip(planStatus: PlanStatus) {
+    val daysSinceLastRead = planStatus.daysSinceLastRead
+    val animatedStreak by animateIntAsState(
+        targetValue = planStatus.shownStreakDays,
+        label = "streakDaysAnimation",
+    )
+    val animatedLapse by animateIntAsState(
+        targetValue = daysSinceLastRead ?: 0,
+        label = "lapseDaysAnimation",
+    )
+    when {
+        planStatus.mode == PlanMode.Behind && daysSinceLastRead != null -> StatusChip(
+            icon = Icons.Default.Schedule,
+            text = pluralStringResource(
+                R.plurals.reading_plan_no_read_for_days,
+                daysSinceLastRead,
+                animatedLapse,
+            ),
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        planStatus.shownStreakDays > 0 -> StatusChip(
+            icon = Icons.Default.LocalFireDepartment,
+            text = pluralStringResource(
+                R.plurals.reading_plan_streak_days_label,
+                planStatus.shownStreakDays,
+                animatedStreak,
+            ),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            iconColor = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
+
+@Composable
+private fun StatusChip(
+    icon: ImageVector,
+    text: String,
+    containerColor: Color,
+    contentColor: Color,
+    iconColor: Color,
+) {
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = RoundedCornerShape(50),
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 5.dp,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+private fun Float.formatProgress(): String {
+    val rounded = round(this * 100.0f) / 100.0f
+    val tolerance = 0.0001f
+    if (abs(rounded % 1.0f) < tolerance) {
+        return rounded.toInt().toString()
+    }
+    val integerPart = rounded.toInt()
+    val decimalPart = rounded - integerPart
+    val decimalAsInt = (decimalPart * 100.0f + 0.5f).toInt()
+    if (decimalAsInt % 10 == 0) {
+        return "$integerPart.${decimalAsInt / 10}"
+    }
+    return "$integerPart.${decimalAsInt / 10}${decimalAsInt % 10}"
+}

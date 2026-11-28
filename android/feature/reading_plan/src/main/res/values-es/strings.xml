@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reading_plan_book_order">Orden de los Libros</string>
+    <string name="reading_plan_chronological_order">Orden Cronológico</string>
+    <string name="reading_plan_progress_title">Progreso del plan</string>
+    <string name="reading_plan_progress_days_completed">%1$d de %2$d días</string>
+    <string name="reading_plan_progress_days_remaining">%1$d días restantes</string>
+    <string name="reading_plan_motivation_overall_zero">Todo empieza con una página.</string>
+    <string name="reading_plan_motivation_overall_early_start">¡Gran comienzo! El hábito está naciendo.</string>
+    <string name="reading_plan_motivation_overall_building_solid">Estás construyendo algo sólido.</string>
+    <string name="reading_plan_motivation_overall_approaching_third">Casi un tercio completado. ¡Sigue!</string>
+    <string name="reading_plan_motivation_overall_past_thirty" formatted="false">¡Ya pasaste el 30%! Impresionante.</string>
+    <string name="reading_plan_motivation_overall_halfway">¡Mitad del camino recorrido!</string>
+    <string name="reading_plan_motivation_overall_more_than_half">Más de la mitad. La constancia es tuya.</string>
+    <string name="reading_plan_motivation_overall_three_quarters">Tres cuartos completados. No pares ahora.</string>
+    <string name="reading_plan_motivation_overall_final_stretch">La recta final se acerca.</string>
+    <string name="reading_plan_motivation_overall_almost_there">Casi lo logras. ¡Un último esfuerzo!</string>
+    <string name="reading_plan_motivation_overall_completed">¡Plan completado! Qué logro.</string>
+    <string name="reading_plan_motivation_streak_1">Primer día — lo más difícil ya pasó.</string>
+    <string name="reading_plan_motivation_streak_3">3 días seguidos. El hábito está empezando.</string>
+    <string name="reading_plan_motivation_streak_7">¡Una semana entera. Eres constante!</string>
+    <string name="reading_plan_motivation_streak_14">¡Dos semanas sin parar. Qué disciplina!</string>
+    <string name="reading_plan_motivation_streak_30">Un mes de fidelidad. Extraordinario.</string>
+    <string name="reading_plan_motivation_streak_100">100 días. Esto es transformación de vida.</string>
+    <string name="reading_plan_motivation_day_not_started">Hoy aún no — hay tiempo.</string>
+    <string name="reading_plan_motivation_day_started">Empezaste el día en la Palabra.</string>
+    <string name="reading_plan_motivation_day_completed">¡Misión del día cumplida!</string>
+    <string name="reading_plan_motivation_day_one_overdue">Volver también es valentía.</string>
+    <string name="reading_plan_motivation_day_multiple_overdue">Sin culpa — vuelve a tu ritmo.</string>
+    <string name="reading_plan_motivation_milestone_entered_new_testament">¡Llegaste al Nuevo Testamento!</string>
+    <string name="reading_plan_motivation_milestone_only_one_left">Solo queda %1$s.</string>
+    <string name="reading_plan_motivation_milestone_first_book_completed">¡Primer libro completado en el plan!</string>
+    <string name="reading_plan_motivation_milestone_book_completed">Terminaste %1$s. ¡Próximo capítulo!</string>
+    <string name="reading_plan_week_number">Semana %1$d</string>
+    <string name="reading_plan_week_progress_summary">%1$d de %2$d días</string>
+    <string name="reading_plan_day_number">Día %1$d</string>
+    <string name="reading_plan_today_badge">Hoy</string>
+    <string name="reading_plan_more_options">Más opciones</string>
+    <string name="reading_plan_delete_progress_option">Eliminar progreso</string>
+    <string name="reading_plan_scroll_to_top">Desplazar arriba</string>
+    <string name="reading_plan_no_progress_to_delete_message">Aún no has realizado ningún progreso para eliminar nada.</string>
+    <string name="reading_plan_edit_plan_start_day">Día de inicio del plan</string>
+    <string name="reading_plan_hero_kicker_new">TU PRIMERA LECTURA</string>
+    <string name="reading_plan_hero_kicker_today">LECTURA DE HOY</string>
+    <string name="reading_plan_hero_kicker_ahead">VAS ADELANTADO</string>
+    <string name="reading_plan_hero_kicker_behind">CONTINÚA DONDE LO DEJASTE</string>
+    <string name="reading_plan_hero_kicker_caughtup">ESTÁS AL DÍA</string>
+    <string name="reading_plan_hero_tomorrow_day">Mañana · Día %1$d</string>
+    <string name="reading_plan_hero_caughtup_note">¡Todo al día! Ya leíste todo lo planeado para hoy.</string>
+    <string name="reading_plan_hero_primary_read_ahead">Leer por adelantado</string>
+    <string name="reading_plan_hero_day_of_total">Día %1$d de %2$d</string>
+    <string name="reading_plan_hero_next_day">Próxima · Día %1$d</string>
+    <string name="reading_plan_hero_behind_day">Día %1$d · %2$s</string>
+    <string name="reading_plan_hero_primary_start">Empezar a leer</string>
+    <string name="reading_plan_hero_primary_read_now">Leer ahora</string>
+    <string name="reading_plan_hero_primary_continue">Continuar lectura</string>
+    <string name="reading_plan_hero_primary_resume">Retomar lectura</string>
+    <string name="reading_plan_hero_new_note">¡Bienvenido! Un capítulo a la vez — tú puedes.</string>
+    <string name="reading_plan_hero_skip_to_today">Saltar a hoy · Día %1$d (%2$s)</string>
+    <string name="reading_plan_mark_as_read">Marcar como leído</string>
+    <string name="reading_plan_done_title">¡Plan completado!</string>
+    <string name="reading_plan_section_current">ESTA SEMANA</string>
+    <string name="reading_plan_section_current_behind">CONTINÚA DONDE LO DEJASTE</string>
+    <string name="reading_plan_section_upcoming">A CONTINUACIÓN</string>
+    <string name="reading_plan_section_completed">COMPLETADAS</string>
+    <string name="reading_plan_chip_overdue">Atrasado</string>
+    <string name="reading_plan_fab_back_to_today">Volver a hoy</string>
+    <string name="reading_plan_fab_next_reading">Próxima lectura</string>
+    <string name="reading_plan_fab_resume">Donde quedé</string>
+    <string name="reading_plan_see_less">Ver menos</string>
+    <plurals name="reading_plan_streak_days_label">
+        <item quantity="one">%1$d día seguido</item>
+        <item quantity="other">%1$d días seguidos</item>
+    </plurals>
+    <plurals name="reading_plan_see_more_weeks">
+        <item quantity="one">Ver %1$d semana más</item>
+        <item quantity="other">Ver %1$d semanas más</item>
+    </plurals>
+    <plurals name="reading_plan_no_read_for_days">
+        <item quantity="one">Sin lectura hace %1$d día</item>
+        <item quantity="other">Sin lectura hace %1$d días</item>
+    </plurals>
+    <plurals name="reading_plan_days_ahead_note">
+        <item quantity="one">Vas %1$d día adelantado. Sigue tu ritmo.</item>
+        <item quantity="other">Vas %1$d días adelantado. Sigue tu ritmo.</item>
+    </plurals>
+    <plurals name="reading_plan_days_behind_reassure">
+        <item quantity="one">Vas %1$d día atrasado — sin prisa.</item>
+        <item quantity="other">Vas %1$d días atrasado — sin prisa.</item>
+    </plurals>
+    <plurals name="reading_plan_done_subtitle">
+        <item quantity="one">Qué logro. %1$d día en la Palabra.</item>
+        <item quantity="other">Qué logro. %1$d días en la Palabra.</item>
+    </plurals>
+    <string name="reading_plan_day_read">Día %1$d leído</string>
+    <string name="reading_plan_expand">Expandir</string>
+    <string name="reading_plan_collapse">Colapsar</string>
+    <string name="reading_plan_selected">Seleccionado</string>
+</resources>
