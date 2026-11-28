@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_plans">Planos</string>
+    <string name="main_books">Livros</string>
+    <string name="main_profile">Perfil</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="books_search">Pesquisar livro...</string>
+    <string name="books_filter_read">Lidos</string>
+    <string name="books_filter_unread">Não lidos</string>
+    <string name="books_filter_favorites">Favoritos</string>
+    <string name="books_search_icon">Pesquisar</string>
+    <string name="books_clear_search">Limpar pesquisa</string>
+    <string name="books_sort_alphabetical_ascending">Alfabética (A-Z)</string>
+    <string name="books_sort_alphabetical_descending">Alfabética (Z-A)</string>
+    <string name="books_layout_list">Lista</string>
+    <string name="books_layout_grid">Grade</string>
+    <string name="books_sort">Ordenar</string>
+    <string name="books_filter">Filtrar</string>
+    <string name="books_all_testaments">Todos</string>
+    <string name="books_favorite">Favorito</string>
+    <string name="books_selected">Selecionado</string>
+</resources>
