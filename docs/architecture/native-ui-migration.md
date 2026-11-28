@@ -51,6 +51,10 @@ platform after each one.
      `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request at a
      time and the Compose Multiplatform version stays for iOS and the web until step 4. The shared ViewModel
      becomes `public` with an `internal` constructor so the Android module can name it.
+   - The tabs follow the same rule one level down: `android/feature/main` draws the tab bar or rail and runs the
+     inner `NavDisplay`, which asks the `NativeEntryProvider` for each tab key and falls back to the shared tab
+     from `LocalMainTabEntries` (provided by `RootAppNavDisplay` with the root's shared transition scope). It
+     provides `LocalHostedTabBarHeight`, so the shared `MainTabScaffold` draws only the tab's body there.
    - `assertModuleGraph` keeps them on top: nothing shared depends on `:android:*`, an Android feature never
      depends on another one, and none depends on `:shared`. jscpd doesn't scan `android/` while its screens
      still duplicate the Compose Multiplatform ones they replace.

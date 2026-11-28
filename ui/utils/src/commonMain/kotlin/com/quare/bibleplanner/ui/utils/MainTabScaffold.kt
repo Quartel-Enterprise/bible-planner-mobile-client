@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -46,6 +47,16 @@ fun MainTabScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    val hostedTabBarHeight = LocalHostedTabBarHeight.current
+    if (hostedTabBarHeight != null) {
+        HostedTabScaffold(
+            hostedTabBarHeight = hostedTabBarHeight,
+            floatingActionButton = floatingActionButton,
+            content = content,
+            modifier = modifier,
+        )
+        return
+    }
     BoxWithConstraints(modifier = modifier) {
         if (maxWidth > WIDE_SCREEN_WIDTH.dp && !isNativeNavigationBar) {
             WideTabScaffold(
@@ -97,6 +108,44 @@ private fun WideTabScaffold(
             },
         )
     }
+}
+
+@Composable
+private fun HostedTabScaffold(
+    hostedTabBarHeight: Dp,
+    floatingActionButton: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier,
+) {
+    val navigationBarInsets = WindowInsets.navigationBars
+    val density = LocalDensity.current
+    var fabAreaHeight by remember { mutableStateOf(0.dp) }
+    val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
+    // Why: the reservation reads the height when it changes, after the host measures its bar.
+    val currentHostedTabBarHeight by rememberUpdatedState(hostedTabBarHeight)
+    ReserveBottomOverlayHeightEffect {
+        maxOf(
+            navigationBarInsets.getBottom(density).toFloat(),
+            with(density) { currentHostedTabBarHeight.toPx() },
+        ) + with(density) { reservedFabHeight.toFabClearance().toPx() }
+    }
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            MeasuredFabBox(
+                fabAreaHeight = fabAreaHeight,
+                onFabAreaHeightChange = { fabAreaHeight = it },
+                content = floatingActionButton,
+            )
+        },
+        content = { paddingValues ->
+            CompositionLocalProvider(
+                value = LocalMainPadding provides paddingValues.withHostedFabClearance(reservedFabHeight),
+                content = content,
+            )
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -209,6 +258,18 @@ private fun PaddingValues.withFabClearance(
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
         bottom = navigationBarBottom + fabAreaHeight.toFabClearance(),
+    )
+}
+
+@Composable
+private fun PaddingValues.withHostedFabClearance(fabAreaHeight: Dp): PaddingValues {
+    if (fabAreaHeight <= 0.dp) return this
+    val layoutDirection = LocalLayoutDirection.current
+    return PaddingValues(
+        start = calculateStartPadding(layoutDirection),
+        top = calculateTopPadding(),
+        end = calculateEndPadding(layoutDirection),
+        bottom = calculateBottomPadding() + fabAreaHeight.toFabClearance(),
     )
 }
 
