@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-internal class ChatViewModel(
+class ChatViewModel internal constructor(
     private val useCases: ChatUseCases,
     private val draftAutosave: ChatDraftAutosave,
     private val answerWait: ChatAnswerWait,

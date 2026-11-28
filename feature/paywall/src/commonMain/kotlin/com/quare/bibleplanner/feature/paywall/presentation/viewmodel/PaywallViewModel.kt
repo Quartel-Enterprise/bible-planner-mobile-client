@@ -26,6 +26,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,7 +36,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class PaywallViewModel(
+class PaywallViewModel internal constructor(
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
     private val getAuthenticatedUserId: GetAuthenticatedUserId,
@@ -70,6 +71,9 @@ internal class PaywallViewModel(
     private var storePackages: List<StorePackage> = emptyList()
 
     private var purchaseInitiated = false
+
+    // Why: isPurchasing is set only after the suspending login check, so a second tap in between would start twice.
+    private var billingJob: Job? = null
 
     init {
         trackEvent(
@@ -117,60 +121,59 @@ internal class PaywallViewModel(
                 }
             }
 
-            PaywallUiEvent.OnStartProJourneyClick -> {
-                viewModelScope.launch {
-                    if (!ensureLoggedIn()) return@launch
-                    val currentState = uiState.value
+            PaywallUiEvent.OnStartProJourneyClick -> launchBillingJob {
+                if (!ensureLoggedIn()) return@launchBillingJob
+                val currentState = uiState.value
 
-                    if (currentState is PaywallUiState.Success) {
-                        if (currentState.isPurchasing) return@launch
+                if (currentState is PaywallUiState.Success) {
+                    if (currentState.isPurchasing) return@launchBillingJob
 
-                        val selectedPlan = currentState.subscriptionPlans.firstOrNull { it.isSelected } ?: return@launch
+                    val selectedPlan =
+                        currentState.subscriptionPlans.firstOrNull { it.isSelected } ?: return@launchBillingJob
 
-                        val packageToPurchase = storePackages.find {
-                            val pkgType = it.type
-                            val planType = selectedPlan.type
+                    val packageToPurchase = storePackages.find {
+                        val pkgType = it.type
+                        val planType = selectedPlan.type
 
-                            (pkgType.name == "MONTHLY" && planType.name == "Monthly") ||
-                                (pkgType.name == "ANNUAL" && planType.name == "Annual")
-                        }
+                        (pkgType.name == "MONTHLY" && planType.name == "Monthly") ||
+                            (pkgType.name == "ANNUAL" && planType.name == "Annual")
+                    }
 
-                        if (packageToPurchase != null) {
-                            purchaseInitiated = true
-                            trackPurchaseEvent(
-                                name = AnalyticsEventNames.PURCHASE_STARTED,
-                                plan = selectedPlan.type,
-                                storePackage = packageToPurchase,
-                            )
-                            uiState.update { currentState.copy(isPurchasing = true) }
+                    if (packageToPurchase != null) {
+                        purchaseInitiated = true
+                        trackPurchaseEvent(
+                            name = AnalyticsEventNames.PURCHASE_STARTED,
+                            plan = selectedPlan.type,
+                            storePackage = packageToPurchase,
+                        )
+                        uiState.update { currentState.copy(isPurchasing = true) }
 
-                            getPurchaseResultUseCase(packageToPurchase)
-                                .onSuccess {
-                                    trackPurchaseEvent(
-                                        name = AnalyticsEventNames.PURCHASE_COMPLETED,
-                                        plan = selectedPlan.type,
-                                        storePackage = packageToPurchase,
-                                    )
-                                    uiState.update { currentState.copy(isPurchasing = false) }
-                                    navigator.navigateReplacingTop(CongratsNavRoute)
-                                }.onFailure { error ->
-                                    trackEvent(
-                                        name = AnalyticsEventNames.PURCHASE_FAILED,
-                                        params = mapOf(
-                                            AnalyticsParams.REASON to analyticsReasonMapper.map(error),
-                                            AnalyticsParams.SUBSCRIPTION_PLAN to selectedPlan.type.toAnalyticsValue(),
-                                            AnalyticsParams.STORE to store,
-                                        ),
-                                    )
-                                    uiState.update { currentState.copy(isPurchasing = false) }
-                                    uiAction.emit(
-                                        PaywallUiAction.ShowError(
-                                            error = exceptionMapper.map(error),
-                                            storeName = storeName,
-                                        ),
-                                    )
-                                }
-                        }
+                        getPurchaseResultUseCase(packageToPurchase)
+                            .onSuccess {
+                                trackPurchaseEvent(
+                                    name = AnalyticsEventNames.PURCHASE_COMPLETED,
+                                    plan = selectedPlan.type,
+                                    storePackage = packageToPurchase,
+                                )
+                                uiState.update { currentState.copy(isPurchasing = false) }
+                                navigator.navigateReplacingTop(CongratsNavRoute)
+                            }.onFailure { error ->
+                                trackEvent(
+                                    name = AnalyticsEventNames.PURCHASE_FAILED,
+                                    params = mapOf(
+                                        AnalyticsParams.REASON to analyticsReasonMapper.map(error),
+                                        AnalyticsParams.SUBSCRIPTION_PLAN to selectedPlan.type.toAnalyticsValue(),
+                                        AnalyticsParams.STORE to store,
+                                    ),
+                                )
+                                uiState.update { currentState.copy(isPurchasing = false) }
+                                uiAction.emit(
+                                    PaywallUiAction.ShowError(
+                                        error = exceptionMapper.map(error),
+                                        storeName = storeName,
+                                    ),
+                                )
+                            }
                     }
                 }
             }
@@ -195,46 +198,49 @@ internal class PaywallViewModel(
                 }
             }
 
-            PaywallUiEvent.OnRestorePurchases -> {
-                viewModelScope.launch {
-                    if (!ensureLoggedIn()) return@launch
-                    purchaseInitiated = true
-                    val currentState = uiState.value
-                    if (currentState is PaywallUiState.Success) {
-                        uiState.update { currentState.copy(isPurchasing = true) }
-                    }
-
-                    getRestorePurchaseResultUseCase()
-                        .onSuccess {
-                            trackEvent(
-                                name = AnalyticsEventNames.RESTORE_COMPLETED,
-                                params = mapOf(AnalyticsParams.STORE to store),
-                            )
-                            if (currentState is PaywallUiState.Success) {
-                                uiState.update { currentState.copy(isPurchasing = false) }
-                            }
-                            navigator.navigateReplacingTop(CongratsNavRoute)
-                        }.onFailure { error ->
-                            trackEvent(
-                                name = AnalyticsEventNames.RESTORE_FAILED,
-                                params = mapOf(
-                                    AnalyticsParams.REASON to analyticsReasonMapper.map(error),
-                                    AnalyticsParams.STORE to store,
-                                ),
-                            )
-                            if (currentState is PaywallUiState.Success) {
-                                uiState.update { currentState.copy(isPurchasing = false) }
-                            }
-                            uiAction.emit(
-                                PaywallUiAction.ShowError(
-                                    error = exceptionMapper.map(error),
-                                    storeName = storeName,
-                                ),
-                            )
-                        }
+            PaywallUiEvent.OnRestorePurchases -> launchBillingJob {
+                if (!ensureLoggedIn()) return@launchBillingJob
+                purchaseInitiated = true
+                val currentState = uiState.value
+                if (currentState is PaywallUiState.Success) {
+                    uiState.update { currentState.copy(isPurchasing = true) }
                 }
+
+                getRestorePurchaseResultUseCase()
+                    .onSuccess {
+                        trackEvent(
+                            name = AnalyticsEventNames.RESTORE_COMPLETED,
+                            params = mapOf(AnalyticsParams.STORE to store),
+                        )
+                        if (currentState is PaywallUiState.Success) {
+                            uiState.update { currentState.copy(isPurchasing = false) }
+                        }
+                        navigator.navigateReplacingTop(CongratsNavRoute)
+                    }.onFailure { error ->
+                        trackEvent(
+                            name = AnalyticsEventNames.RESTORE_FAILED,
+                            params = mapOf(
+                                AnalyticsParams.REASON to analyticsReasonMapper.map(error),
+                                AnalyticsParams.STORE to store,
+                            ),
+                        )
+                        if (currentState is PaywallUiState.Success) {
+                            uiState.update { currentState.copy(isPurchasing = false) }
+                        }
+                        uiAction.emit(
+                            PaywallUiAction.ShowError(
+                                error = exceptionMapper.map(error),
+                                storeName = storeName,
+                            ),
+                        )
+                    }
             }
         }
+    }
+
+    private fun launchBillingJob(block: suspend () -> Unit) {
+        if (billingJob?.isActive == true) return
+        billingJob = viewModelScope.launch { block() }
     }
 
     private fun trackPurchaseEvent(

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_title">Assistente</string>
+    <string name="chat_context_loaded">Conversa com o contexto de %1$s carregado</string>
+    <string name="chat_context_empty">Pergunte sobre qualquer leitura do seu plano ou sobre a Bíblia</string>
+    <string name="chat_context_chip">Contexto de %1$s</string>
+    <string name="chat_welcome_with_context">Olá! Posso ajudar você a entender a leitura de hoje (%1$s). Pergunte o que quiser ou toque em uma sugestão.</string>
+    <string name="chat_welcome_generic">Olá! Sou seu assistente de estudos. Posso ajudar com base no que você já leu no seu plano ou com qualquer outra dúvida sobre a Bíblia. Sobre o que quer conversar?</string>
+    <string name="chat_thinking">Pensando…</string>
+    <string name="chat_suggestions_label">SUGESTÕES</string>
+    <string name="chat_suggestion_bar_single">Sugestão</string>
+    <string name="chat_suggestion_bar_many">Sugestões (%1$d)</string>
+    <string name="chat_input_placeholder_with_context">Pergunte sobre %1$s…</string>
+    <string name="chat_input_placeholder_generic">Pergunte sobre suas leituras…</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_offline_title">Sem conexão</string>
+    <string name="chat_offline_message">Não foi possível obter a resposta. Verifique sua internet e tente novamente.</string>
+    <string name="chat_retry">Tentar novamente</string>
+    <string name="chat_rate_limit_title">Aguarde um momento</string>
+    <string name="chat_rate_limit_message">Você enviou muitas perguntas em sequência. Isso ajuda a manter o serviço estável — em instantes você poderá continuar.</string>
+    <string name="chat_rate_limit_countdown">Disponível em %1$ds</string>
+    <string name="chat_cooldown_input">Aguarde %1$ds para enviar novamente</string>
+    <string name="chat_locked_input">Assine para continuar perguntando</string>
+    <string name="chat_new">Nova</string>
+    <string name="chat_conversations">Conversas</string>
+    <string name="chat_back">Voltar</string>
+    <string name="chat_search_conversations">Buscar conversas</string>
+    <string name="chat_no_conversations_found">Nenhuma conversa encontrada</string>
+    <string name="chat_no_conversations_title">Nenhuma conversa ainda</string>
+    <string name="chat_no_conversations_body">Suas conversas com o assistente aparecem aqui. Comece perguntando sobre a leitura de hoje.</string>
+    <string name="chat_new_conversation">Nova conversa</string>
+    <string name="chat_rename">Renomear</string>
+    <string name="chat_delete">Excluir</string>
+    <string name="chat_delete_confirmation">Excluir esta conversa?</string>
+    <string name="chat_cancel">Cancelar</string>
+    <string name="chat_confirm_rename">Confirmar</string>
+    <string name="chat_conversation_options">Opções da conversa</string>
+    <string name="chat_today">Hoje</string>
+    <string name="chat_yesterday">Ontem</string>
+    <string name="chat_bucket_last_seven_days">Últimos 7 dias</string>
+    <string name="chat_bucket_month_year">%1$s de %2$d</string>
+    <string name="chat_close">Fechar</string>
+    <string name="chat_clear_search">Limpar busca</string>
+    <plurals name="chat_free_questions_left">
+        <item quantity="one">%1$d pergunta grátis restante</item>
+        <item quantity="other">%1$d perguntas grátis restantes</item>
+    </plurals>
+    <string name="chat_date_tomorrow">Amanhã</string>
+    <plurals name="chat_date_days_ago">
+        <item quantity="one">%1$d dia atrás</item>
+        <item quantity="other">%1$d dias atrás</item>
+    </plurals>
+    <string name="chat_date_last_week">Semana passada</string>
+    <plurals name="chat_date_weeks_ago">
+        <item quantity="one">%1$d semana atrás</item>
+        <item quantity="other">%1$d semanas atrás</item>
+    </plurals>
+    <string name="chat_date_last_month">Mês passado</string>
+    <plurals name="chat_date_months_ago">
+        <item quantity="one">%1$d mês atrás</item>
+        <item quantity="other">%1$d meses atrás</item>
+    </plurals>
+    <string name="chat_relative_active_now">Ativo agora</string>
+    <plurals name="chat_relative_minutes_ago">
+        <item quantity="one">há %1$d min</item>
+        <item quantity="other">há %1$d min</item>
+    </plurals>
+    <plurals name="chat_relative_hours_ago">
+        <item quantity="one">há %1$d hora</item>
+        <item quantity="other">há %1$d horas</item>
+    </plurals>
+    <string name="chat_january">Janeiro</string>
+    <string name="chat_february">Fevereiro</string>
+    <string name="chat_march">Março</string>
+    <string name="chat_april">Abril</string>
+    <string name="chat_may">Maio</string>
+    <string name="chat_june">Junho</string>
+    <string name="chat_july">Julho</string>
+    <string name="chat_august">Agosto</string>
+    <string name="chat_september">Setembro</string>
+    <string name="chat_october">Outubro</string>
+    <string name="chat_november">Novembro</string>
+    <string name="chat_december">Dezembro</string>
+    <string name="chat_collapse">Colapsar</string>
+    <string name="chat_expand">Expandir</string>
+</resources>

@@ -314,6 +314,42 @@ internal class PaywallViewModelTest {
         }
 
     @Test
+    fun `GIVEN the login check still running WHEN starting the pro journey twice THEN buys once`() =
+        runTest(testDispatcher) {
+            // Given
+            val pendingLoginCheck = CompletableDeferred<String?>()
+            prepareScenario(authenticatedUserId = { pendingLoginCheck.await() })
+            viewModel.onEvent(PaywallUiEvent.OnStartProJourneyClick)
+
+            // When
+            viewModel.onEvent(PaywallUiEvent.OnStartProJourneyClick)
+            pendingLoginCheck.complete("user-1")
+
+            // Then
+            assertEquals(listOf(annualPackage), purchasedPackages)
+        }
+
+    @Test
+    fun `GIVEN a restore checking the login WHEN starting the pro journey THEN ignores it until the restore ends`() =
+        runTest(testDispatcher) {
+            // Given
+            val pendingLoginCheck = CompletableDeferred<String?>()
+            var loginCheck: suspend () -> String? = { pendingLoginCheck.await() }
+            prepareScenario(authenticatedUserId = { loginCheck() })
+            viewModel.onEvent(PaywallUiEvent.OnRestorePurchases)
+            viewModel.onEvent(PaywallUiEvent.OnStartProJourneyClick)
+            loginCheck = { "user-1" }
+            pendingLoginCheck.complete("user-1")
+            assertTrue(purchasedPackages.isEmpty())
+
+            // When
+            viewModel.onEvent(PaywallUiEvent.OnStartProJourneyClick)
+
+            // Then
+            assertEquals(listOf(annualPackage), purchasedPackages)
+        }
+
+    @Test
     fun `GIVEN no package matching the selected plan WHEN starting the pro journey THEN does not purchase`() =
         runTest(testDispatcher) {
             // Given
@@ -472,6 +508,7 @@ internal class PaywallViewModelTest {
     private fun TestScope.prepareScenario(
         platform: Platform = Platform.Android,
         userId: String? = "user-1",
+        authenticatedUserId: suspend () -> String? = { userId },
         offerings: Result<List<StorePackage>> = Result.success(listOf(monthlyPackage, annualPackage)),
         purchaseResult: suspend () -> Result<Unit> = { Result.success(Unit) },
         restoreResult: Result<Unit> = Result.success(Unit),
@@ -492,7 +529,7 @@ internal class PaywallViewModelTest {
                 purchaseResult()
             },
             getRestorePurchaseResultUseCase = { restoreResult },
-            getAuthenticatedUserId = { userId },
+            getAuthenticatedUserId = { authenticatedUserId() },
             exceptionMapper = PaywallExceptionMapper(),
             analyticsReasonMapper = PaywallAnalyticsReasonMapper(),
             observeIsProUser = { isProUser },
