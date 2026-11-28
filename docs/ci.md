@@ -496,6 +496,10 @@ the typecheck, the Vitest tests and `vite build`. `web/package.json` depends on 
 folder (`file:`), so the Gradle build has to come first. Any Kotlin change can change the library or
 its TypeScript definitions, so it runs on changes to the shared modules and the build as well as
 `web/`, and skips Markdown-only ones. It is not a required check; `merge-when-green` waits for it.
+Its job keeps the default cache switch (it writes on `main`, reads on pull requests) rather than
+`GRADLE_CACHE_READ_ONLY`, which is for jobs that barely use Gradle: it compiles every module's js
+target, which no other job's entry holds, so its own entry on `main` is what spares pull requests a
+cold build.
 
 ## Adding a workflow
 

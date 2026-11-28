@@ -136,6 +136,12 @@ const tabs = useWatch(presenter, (p, onChange: (tabs: JsMainTab[]) => void) => p
 reuses a cleared ViewModel; `useWatch` mirrors a flow into React state (`null` until the first value) and cancels
 its watch on unmount. The hooks are tested with a fake presenter; the Kotlin side is exercised by the app.
 
-For now the app is a placeholder that lists the main screen's tabs; the screens come feature by feature. See
+User-facing strings live in `src/i18n/messages.ts`, typed so every locale (en, pt-BR, es) has each one, with the
+translations the other UIs already use. `useMessages()` reads them; the locale is the first of the browser's
+languages the app has, and sets `<html lang>`. `RootErrorBoundary` shows a translated error with a retry instead of
+a blank page when a presenter throws (Koin failing to build its ViewModel, say).
+
+For now the app is a placeholder that lists the main screen's tabs, as plain items until the web has navigation;
+the screens come feature by feature. See
 [getting started](../getting-started.md#build-and-run-the-react-web-app) to run it and [CI](../ci.md#react-web-app)
 for its checks.
