@@ -49,12 +49,16 @@ private const val VALUE_PANEL_WIDTH_FRACTION = 0.44f
 internal fun PaywallContent(
     uiState: PaywallUiState,
     snackbarHostState: SnackbarHostState,
+    failedAttempts: Int,
     onEvent: (PaywallUiEvent) -> Unit,
 ) {
     val isPurchasing = (uiState as? PaywallUiState.Success)?.isPurchasing == true
     // Why: the ViewModel pops the screen asynchronously, so a double tap on Back would also pop the screen below.
     val backGuard = rememberAlertDialogResolution()
-    val purchaseTapGuard = rememberPurchaseTapGuard(isPurchasing)
+    val purchaseTapGuard = rememberPurchaseTapGuard(
+        isPurchasing = isPurchasing,
+        failedAttempts = failedAttempts,
+    )
     val actions = PaywallActions(
         onBackClick = { backGuard.resolve { onEvent(PaywallUiEvent.OnBackClick) } },
         onPlanSelected = { planType -> onEvent(PaywallUiEvent.OnPlanSelected(planType)) },

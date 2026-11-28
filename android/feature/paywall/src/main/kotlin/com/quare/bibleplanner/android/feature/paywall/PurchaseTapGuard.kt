@@ -2,10 +2,7 @@ package com.quare.bibleplanner.android.feature.paywall
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
 /*
@@ -13,7 +10,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
  * between would start the billing flow twice or open the login warning twice.
  */
 internal class PurchaseTapGuard {
-    private var isPending by mutableStateOf(false)
+    private var isPending = false
 
     fun run(
         isPurchasing: Boolean,
@@ -31,10 +28,16 @@ internal class PurchaseTapGuard {
 }
 
 @Composable
-internal fun rememberPurchaseTapGuard(isPurchasing: Boolean): PurchaseTapGuard {
+internal fun rememberPurchaseTapGuard(
+    isPurchasing: Boolean,
+    failedAttempts: Int,
+): PurchaseTapGuard {
     val guard = remember { PurchaseTapGuard() }
-    // Why: a finished or failed purchase ends with isPurchasing going back to false.
-    LaunchedEffect(guard, isPurchasing) {
+    /*
+     * Why: a finished or failed purchase ends with isPurchasing going back to false, but one that fails within one
+     * frame goes false -> true -> false before true is drawn, so only the reported error tells it ended.
+     */
+    LaunchedEffect(guard, isPurchasing, failedAttempts) {
         if (!isPurchasing) guard.release()
     }
     /*
