@@ -118,6 +118,8 @@ include(":android:feature:delete_notes")
 include(":android:feature:login_warning")
 include(":android:feature:add_notes_free_warning")
 include(":android:feature:login_sync_nudge")
+include(":android:feature:delete_version")
+include(":android:feature:delete_progress")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

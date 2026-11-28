@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiEvent
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class DeleteVersionViewModel(
+class DeleteVersionViewModel internal constructor(
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
     private val navigator: Navigator,
     route: DeleteVersionNavRoute,
@@ -31,12 +32,16 @@ internal class DeleteVersionViewModel(
             DeleteVersionUiEvent.OnConfirmDelete -> {
                 viewModelScope.launch {
                     uiState.update { DeleteVersionUiState.Loading }
-                    bibleVersionDownloaderFacade.deleteDownload(versionId)
-                    trackEvent(
-                        name = AnalyticsEventNames.BIBLE_VERSION_DELETED,
-                        params = mapOf(AnalyticsParams.VERSION_ID to versionId),
-                    )
-                    dismiss()
+                    suspendRunCatching { bibleVersionDownloaderFacade.deleteDownload(versionId) }
+                        .onSuccess {
+                            trackEvent(
+                                name = AnalyticsEventNames.BIBLE_VERSION_DELETED,
+                                params = mapOf(AnalyticsParams.VERSION_ID to versionId),
+                            )
+                            dismiss()
+                        }.onFailure {
+                            uiState.update { DeleteVersionUiState.Idle }
+                        }
                 }
             }
 

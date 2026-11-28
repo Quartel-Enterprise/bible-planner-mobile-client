@@ -41,7 +41,7 @@ fun AppAlertDialog(
     onDismissRequest: () -> Unit = onDismiss,
     text: @Composable () -> Unit,
 ) {
-    val resolution = remember { AlertDialogResolution() }
+    val resolution = rememberAlertDialogResolution()
     AlertDialog(
         onDismissRequest = { resolution.resolve(onDismissRequest) },
         title = { Text(text = title) },
@@ -66,13 +66,19 @@ fun AppAlertDialog(
             }
         },
     )
+}
+
+@Composable
+fun rememberAlertDialogResolution(vararg keys: Any?): AlertDialogResolution {
+    val resolution = remember(*keys) { AlertDialogResolution() }
     DisposableEffect(resolution) {
         onDispose(resolution::close)
     }
+    return resolution
 }
 
 // Why: a double tap, or a tap while the dialog leaves, must not confirm or dismiss twice.
-private class AlertDialogResolution {
+class AlertDialogResolution internal constructor() {
     private var isOpen = true
 
     fun resolve(action: () -> Unit) {
@@ -82,7 +88,7 @@ private class AlertDialogResolution {
         }
     }
 
-    fun close() {
+    internal fun close() {
         isOpen = false
     }
 }
