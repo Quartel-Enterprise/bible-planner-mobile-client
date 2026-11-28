@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal class StudySuggestionViewModel(
+class StudySuggestionViewModel internal constructor(
     private val setStudySuggestionEnabled: SetStudySuggestionEnabled,
     private val setStudySuggestionMode: SetStudySuggestionMode,
     private val setStudySuggestionSyncEnabled: SetStudySuggestionSyncEnabled,
