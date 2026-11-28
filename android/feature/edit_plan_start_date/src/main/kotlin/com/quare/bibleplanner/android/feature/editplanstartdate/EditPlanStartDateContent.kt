@@ -7,7 +7,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.quare.bibleplanner.android.designsystem.dialog.HideSceneDialogScrimEffect
 import com.quare.bibleplanner.android.designsystem.dialog.rememberAlertDialogResolution
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
@@ -22,7 +21,6 @@ internal fun EditPlanStartDateContent(
     val resolution = rememberAlertDialogResolution()
     val dismiss = { resolution.resolve { onEvent(EditPlanStartDateUiEvent.OnDismissDialog) } }
     val selectedDateMillis = datePickerState.selectedDateMillis
-    HideSceneDialogScrimEffect()
     DatePickerDialog(
         onDismissRequest = dismiss,
         confirmButton = {
