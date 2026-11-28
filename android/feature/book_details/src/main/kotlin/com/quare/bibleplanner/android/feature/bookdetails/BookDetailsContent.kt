@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -121,7 +122,10 @@ private fun BookDetailsTopBar(
         },
         actions = {
             if (state is BookDetailsUiState.Success) {
-                IconButton(onClick = { onEvent(BookDetailsUiEvent.OnToggleFavorite) }) {
+                IconToggleButton(
+                    checked = state.isFavorite,
+                    onCheckedChange = { onEvent(BookDetailsUiEvent.OnToggleFavorite) },
+                ) {
                     Icon(
                         imageVector = if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = androidStringResource(R.string.book_details_favorite),

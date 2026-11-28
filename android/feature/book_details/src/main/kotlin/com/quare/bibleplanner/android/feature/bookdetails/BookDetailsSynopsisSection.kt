@@ -2,6 +2,7 @@ package com.quare.bibleplanner.android.feature.bookdetails
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 private const val COLLAPSED_MAX_LINES = 3
@@ -93,8 +95,30 @@ private fun SynopsisText(
 ) {
     val showMore = stringResource(R.string.book_details_show_more)
     val showLess = stringResource(R.string.book_details_show_less)
-    var lastVisibleCharIndex by remember(text) { mutableIntStateOf(0) }
-    var hasOverflow by remember(text) { mutableStateOf(false) }
+    BoxWithConstraints {
+        // Why: the cut point depends on the width, so a resize (foldable, multi window) measures it again.
+        CollapsibleSynopsisText(
+            text = text,
+            isExpanded = isExpanded,
+            onToggleExpanded = onToggleExpanded,
+            showMore = showMore,
+            showLess = showLess,
+            maxWidth = maxWidth,
+        )
+    }
+}
+
+@Composable
+private fun CollapsibleSynopsisText(
+    text: String,
+    isExpanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    showMore: String,
+    showLess: String,
+    maxWidth: Dp,
+) {
+    var lastVisibleCharIndex by remember(text, maxWidth) { mutableIntStateOf(0) }
+    var hasOverflow by remember(text, maxWidth) { mutableStateOf(false) }
     val toggleLink = LinkAnnotation.Clickable(
         tag = TOGGLE_TAG,
         styles = TextLinkStyles(

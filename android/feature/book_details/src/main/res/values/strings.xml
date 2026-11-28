@@ -10,4 +10,6 @@
     <string name="book_details_favorite">Favorite</string>
     <string name="book_details_show_more">Show more</string>
     <string name="book_details_show_less">Show less</string>
+    <string name="book_details_chapter_read">Read</string>
+    <string name="book_details_chapter_unread">Unread</string>
 </resources>

@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -114,13 +116,17 @@ private fun ChapterItem(
         },
         label = "chapterContentAnimation",
     )
+    val readStateDescription = stringResource(
+        if (chapter.isRead) R.string.book_details_chapter_read else R.string.book_details_chapter_unread,
+    )
     Box(
         modifier = Modifier
             .width(chapterItemWidth)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .semantics { stateDescription = readStateDescription },
         contentAlignment = Alignment.Center,
     ) {
         Text(
