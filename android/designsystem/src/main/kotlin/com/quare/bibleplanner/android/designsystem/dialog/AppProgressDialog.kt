@@ -24,6 +24,7 @@ private val progressSpacing = 18.dp
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppProgressDialog(message: String?) {
+    HideSceneDialogScrimEffect()
     AlertDialog(
         onDismissRequest = {},
         properties = DialogProperties(
