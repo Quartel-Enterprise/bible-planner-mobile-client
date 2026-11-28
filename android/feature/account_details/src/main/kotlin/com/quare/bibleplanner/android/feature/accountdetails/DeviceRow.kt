@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.date.relativeTimeLabel
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.DeviceUiModel
 

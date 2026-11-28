@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.subscriptiondetails
 
-import android.text.format.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,26 +17,17 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.date.rememberDateTimeLabel
 import com.quare.bibleplanner.android.designsystem.dialog.AppAlertDialog
 import com.quare.bibleplanner.android.designsystem.theme.success
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.model.SubscriptionDetailsUiState
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toJavaLocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-
-private const val TIME_SKELETON_24_HOURS = "Hm"
-private const val TIME_SKELETON_12_HOURS = "hm"
 
 @Composable
 internal fun SubscriptionDetailsContent(
@@ -70,7 +60,7 @@ internal fun SubscriptionDetailsContent(
                 DetailItem(
                     icon = Icons.Outlined.CalendarToday,
                     headline = stringResource(R.string.subscription_details_purchase_date),
-                    supporting = rememberFormattedDate(date),
+                    supporting = rememberDateTimeLabel(date),
                 )
             }
             state.expirationDate?.let { date ->
@@ -83,7 +73,7 @@ internal fun SubscriptionDetailsContent(
                             R.string.subscription_details_expires
                         },
                     ),
-                    supporting = rememberFormattedDate(date),
+                    supporting = rememberDateTimeLabel(date),
                 )
             }
             state.store?.let { store ->
@@ -116,22 +106,6 @@ private fun DetailItem(
         },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
-}
-
-@Composable
-private fun rememberFormattedDate(date: LocalDateTime): String {
-    // Why: the app language can differ from the system's, and the configuration carries the one the app shows.
-    val locale = LocalConfiguration.current.locales[0]
-    // Why: the locale alone picks 12 or 24 hours, while the user's clock setting must win.
-    val is24Hour = DateFormat.is24HourFormat(LocalContext.current)
-    return remember(date, locale, is24Hour) {
-        val javaDate = date.toJavaLocalDateTime()
-        val datePart = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(javaDate)
-        val timeSkeleton = if (is24Hour) TIME_SKELETON_24_HOURS else TIME_SKELETON_12_HOURS
-        val timePattern = DateFormat.getBestDateTimePattern(locale, timeSkeleton)
-        val timePart = DateTimeFormatter.ofPattern(timePattern, locale).format(javaDate)
-        "$datePart · $timePart"
-    }
 }
 
 @StringRes
