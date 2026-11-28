@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.applanguage
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -25,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.language.toNameRes
 import com.quare.bibleplanner.android.designsystem.sheet.AppModalBottomSheet
 import com.quare.bibleplanner.android.designsystem.sync.SyncAcrossDevicesRow
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -153,11 +153,4 @@ private fun Language.toCode(): String = when (this) {
     Language.ENGLISH -> "EN"
     Language.PORTUGUESE_BRAZIL -> "PT"
     Language.SPANISH -> "ES"
-}
-
-@StringRes
-private fun Language.toNameRes(): Int = when (this) {
-    Language.ENGLISH -> R.string.app_language_english
-    Language.PORTUGUESE_BRAZIL -> R.string.app_language_portuguese_brazil
-    Language.SPANISH -> R.string.app_language_spanish
 }

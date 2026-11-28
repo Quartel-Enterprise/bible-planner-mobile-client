@@ -3,4 +3,7 @@
     <string name="progress_dialog_loading">Carregando</string>
     <string name="sheet_close">Fechar</string>
     <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
+    <string name="language_name_english">Inglês</string>
+    <string name="language_name_portuguese_brazil">Português (Brasil)</string>
+    <string name="language_name_spanish">Espanhol</string>
 </resources>

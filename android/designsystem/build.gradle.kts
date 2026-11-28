@@ -5,4 +5,5 @@ plugins {
 dependencies {
     // Why: AppModalBottomSheet hands its content a SheetCloseGuard, so every screen using it needs that type.
     api(projects.ui.utils)
+    implementation(projects.core.utils)
 }

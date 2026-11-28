@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.android.feature.bibleversion
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.android.designsystem.language.toNameRes
 import com.quare.bibleplanner.android.designsystem.sheet.AppModalBottomSheet
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -122,11 +122,4 @@ private fun BibleVersionGroupsList(
             }
         }
     }
-}
-
-@StringRes
-private fun Language.toNameRes(): Int = when (this) {
-    Language.ENGLISH -> R.string.bible_version_language_english
-    Language.PORTUGUESE_BRAZIL -> R.string.bible_version_language_portuguese_brazil
-    Language.SPANISH -> R.string.bible_version_language_spanish
 }

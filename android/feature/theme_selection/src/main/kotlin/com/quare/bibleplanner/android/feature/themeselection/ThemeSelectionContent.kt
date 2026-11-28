@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -125,6 +127,8 @@ private fun DynamicColorsRow(
     onInfoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Why: the info button sits between the label and the Switch, so the row can't be one toggleable target.
+    val switchLabel = stringResource(R.string.theme_selection_dynamic_colors)
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -148,6 +152,7 @@ private fun DynamicColorsRow(
             Switch(
                 checked = isChecked,
                 onCheckedChange = onToggle,
+                modifier = Modifier.semantics { contentDescription = switchLabel },
             )
         }
     }

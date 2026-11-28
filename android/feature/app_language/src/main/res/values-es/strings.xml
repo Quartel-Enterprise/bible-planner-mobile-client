@@ -2,7 +2,4 @@
 <resources>
     <string name="app_language_title">Idioma de la Aplicación</string>
     <string name="app_language_sync_description">Mantén tu idioma igual en todos tus dispositivos</string>
-    <string name="app_language_english">Inglés</string>
-    <string name="app_language_portuguese_brazil">Portugués (Brasil)</string>
-    <string name="app_language_spanish">Español</string>
 </resources>

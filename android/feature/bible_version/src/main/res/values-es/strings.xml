@@ -2,9 +2,6 @@
 <resources>
     <string name="bible_version_title">Versión de la Biblia</string>
     <string name="bible_version_description">Descarga para leer sin conexión y elige tu versión predeterminada.</string>
-    <string name="bible_version_language_english">Inglés</string>
-    <string name="bible_version_language_portuguese_brazil">Portugués (Brasil)</string>
-    <string name="bible_version_language_spanish">Español</string>
     <string name="bible_version_download">Descargar</string>
     <string name="bible_version_pause">Pausar</string>
     <string name="bible_version_resume">Reanudar</string>

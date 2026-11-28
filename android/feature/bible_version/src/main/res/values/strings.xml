@@ -2,9 +2,6 @@
 <resources>
     <string name="bible_version_title">Bible Version</string>
     <string name="bible_version_description">Download to read offline and choose your default version.</string>
-    <string name="bible_version_language_english">English</string>
-    <string name="bible_version_language_portuguese_brazil">Portuguese (Brazil)</string>
-    <string name="bible_version_language_spanish">Spanish</string>
     <string name="bible_version_download">Download</string>
     <string name="bible_version_pause">Pause</string>
     <string name="bible_version_resume">Resume</string>
