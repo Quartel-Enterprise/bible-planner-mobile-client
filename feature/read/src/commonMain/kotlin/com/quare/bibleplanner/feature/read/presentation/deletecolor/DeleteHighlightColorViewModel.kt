@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
-internal class DeleteHighlightColorViewModel(
+class DeleteHighlightColorViewModel internal constructor(
     private val removeCustomHighlightColor: RemoveCustomHighlightColor,
     private val navigator: Navigator,
     route: DeleteHighlightColorNavRoute,

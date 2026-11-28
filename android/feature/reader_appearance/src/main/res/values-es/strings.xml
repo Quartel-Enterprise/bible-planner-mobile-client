@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reader_appearance_title">Apariencia de la lectura</string>
+    <string name="reader_appearance_text_size_sample">A</string>
+    <string name="reader_appearance_font_preview">Aa</string>
+    <string name="reader_appearance_text_size">Tamaño del texto</string>
+    <string name="reader_appearance_font">Fuente</string>
+    <string name="reader_appearance_note_icon">Icono de notas</string>
+    <string name="reader_appearance_note_icon_description">Marca los versículos con notas; tócalo para abrir la nota</string>
+    <string name="reader_appearance_ruler">Regla de lectura</string>
+    <string name="reader_appearance_ruler_description">Empieza en el título del capítulo; arrastra el asa para moverla</string>
+    <string name="reader_appearance_ruler_description_wide">La línea bajo el cursor queda en foco</string>
+    <string name="reader_appearance_ruler_height">Altura de la banda</string>
+    <plurals name="reader_appearance_ruler_lines">
+        <item quantity="one">%1$d línea</item>
+        <item quantity="other">%1$d líneas</item>
+    </plurals>
+    <string name="reader_appearance_focused_verse">Versículo en foco</string>
+    <string name="reader_appearance_focused_verse_description">Atenúa el resto del capítulo mientras lees un versículo</string>
+    <string name="reader_appearance_vertical_reading">Lectura vertical</string>
+    <string name="reader_appearance_vertical_reading_description">Sigue en el capítulo siguiente o en el anterior sin salir de la pantalla</string>
+    <string name="reader_appearance_font_lora">Lora</string>
+    <string name="reader_appearance_font_literata">Literata</string>
+    <string name="reader_appearance_font_garamond">Garamond</string>
+    <string name="reader_appearance_font_crimson">Crimson</string>
+    <string name="reader_appearance_font_bitter">Bitter</string>
+    <string name="reader_appearance_font_system">Sistema</string>
+    <string name="reader_appearance_font_nunito">Nunito</string>
+    <string name="reader_appearance_font_atkinson">Atkinson</string>
+    <string name="reader_appearance_font_dyslexic">Dislexia</string>
+</resources>

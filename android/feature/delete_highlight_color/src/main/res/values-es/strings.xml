@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_highlight_color_title">¿Eliminar este color?</string>
+    <string name="delete_highlight_color_message">Puedes quitar el color de la paleta y mantener los resaltados ya hechos con él, o eliminarlo todo.</string>
+    <string name="delete_highlight_color_keep_highlights">Eliminar color y mantener resaltados</string>
+    <string name="delete_highlight_color_and_highlights">Eliminar color y resaltados</string>
+    <string name="delete_highlight_color_cancel">Cancelar</string>
+    <string name="delete_highlight_color_removed_kept">Color quitado de la paleta. Resaltados mantenidos</string>
+    <string name="delete_highlight_color_removed">Color personalizado eliminado</string>
+</resources>
