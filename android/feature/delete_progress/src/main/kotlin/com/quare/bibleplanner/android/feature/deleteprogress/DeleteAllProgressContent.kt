@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceRow
 import com.quare.bibleplanner.android.designsystem.dialog.DialogConsequenceType
+import com.quare.bibleplanner.android.designsystem.dialog.rememberAlertDialogResolution
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 
@@ -36,8 +37,10 @@ internal fun DeleteAllProgressContent(
     onEvent: (DeleteAllProgressUiEvent) -> Unit,
 ) {
     val isIdle = uiState == DeleteAllProgressUiState.Idle
+    // Why: a failed reset returns to Idle, where the user may confirm again.
+    val resolution = rememberAlertDialogResolution(isIdle)
     AlertDialog(
-        onDismissRequest = { onEvent(DeleteAllProgressUiEvent.OnCancel) },
+        onDismissRequest = { resolution.resolve { onEvent(DeleteAllProgressUiEvent.OnCancel) } },
         properties = DialogProperties(
             dismissOnBackPress = isIdle,
             dismissOnClickOutside = isIdle,
@@ -72,7 +75,7 @@ internal fun DeleteAllProgressContent(
         },
         confirmButton = {
             if (isIdle) {
-                TextButton(onClick = { onEvent(DeleteAllProgressUiEvent.OnConfirmDelete) }) {
+                TextButton(onClick = { resolution.resolve { onEvent(DeleteAllProgressUiEvent.OnConfirmDelete) } }) {
                     Text(
                         text = stringResource(R.string.delete_all_progress_confirm),
                         color = MaterialTheme.colorScheme.error,
@@ -82,7 +85,7 @@ internal fun DeleteAllProgressContent(
         },
         dismissButton = {
             if (isIdle) {
-                TextButton(onClick = { onEvent(DeleteAllProgressUiEvent.OnCancel) }) {
+                TextButton(onClick = { resolution.resolve { onEvent(DeleteAllProgressUiEvent.OnCancel) } }) {
                     Text(text = stringResource(R.string.delete_all_progress_cancel))
                 }
             }

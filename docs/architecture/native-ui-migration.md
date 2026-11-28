@@ -39,8 +39,8 @@ platform after each one.
    - `android/feature/<name>` holds one feature's screen: a `<Name>Content` composable that takes the shared
      ViewModel's state and `onEvent`, its strings in Android `res/values*/strings.xml` (`R.string`), and a
      `<Route>.toNavEntry()` that builds the Navigation 3 entry with the shared ViewModel from Koin.
-   - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose, Koin, Navigation 3
-     and the design system. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
+   - Every module applies the `bibleplanner.android.compose` convention plugin, which adds Compose and the Material
+     icons, and to every feature module Koin, Navigation 3 and the design system. Material 3 comes from the androidx artifact, the only one whose Expressive APIs are
      public; Compose Multiplatform's Android build already depends on it, so both resolve to one library.
    - `:androidApp` binds a `NativeEntryProvider` (`:core:navigation`) that maps each migrated route to its native
      entry; `RootAppNavDisplay` asks it first and falls back to the shared entry, so screens move one pull request
