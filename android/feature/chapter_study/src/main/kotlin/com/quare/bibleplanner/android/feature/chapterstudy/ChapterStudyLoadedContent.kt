@@ -46,6 +46,7 @@ import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.CrossReferenceModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.KeyVerseModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.OutlineSectionModel
+import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
@@ -120,7 +121,8 @@ internal fun ChapterStudyLoadedContent(
                     ),
                 )
                 KeyVerseCard(
-                    state = state,
+                    bookId = state.bookId,
+                    chapterNumber = state.chapterNumber,
                     keyVerse = keyVerse,
                     text = content.keyVerseText,
                     onShareClick = { onEvent(ChapterStudyUiEvent.OnShareKeyVerseClick) },
@@ -262,14 +264,15 @@ private fun CrossReferenceChip(
 
 @Composable
 private fun KeyVerseCard(
-    state: ChapterStudyUiState,
+    bookId: BookId,
+    chapterNumber: Int,
     keyVerse: KeyVerseModel,
     text: String?,
     onShareClick: () -> Unit,
 ) {
     val reference = verseReferenceLabel(
-        bookId = state.bookId,
-        chapterNumber = state.chapterNumber,
+        bookId = bookId,
+        chapterNumber = chapterNumber,
         verseNumbers = (keyVerse.startVerse..keyVerse.endVerse).toList(),
     )
     Surface(

@@ -80,6 +80,7 @@ fun ExpandableText(
     val showLess = stringResource(R.string.study_show_less)
     var lastVisibleCharIndex by remember(text) { mutableIntStateOf(0) }
     var hasOverflow by remember(text) { mutableStateOf(false) }
+    var truncatedAtWidth by remember(text) { mutableIntStateOf(0) }
     val toggleLink = LinkAnnotation.Clickable(
         tag = TOGGLE_TAG,
         styles = TextLinkStyles(
@@ -117,12 +118,24 @@ fun ExpandableText(
             maxLines = if (isExpanded) Int.MAX_VALUE else COLLAPSED_MAX_LINES,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { result ->
-                if (!isExpanded && result.hasVisualOverflow) {
-                    hasOverflow = true
-                    lastVisibleCharIndex = result.getLineEnd(
-                        lineIndex = COLLAPSED_MAX_LINES - 1,
-                        visibleEnd = true,
-                    )
+                val layoutWidth = result.layoutInput.constraints.maxWidth
+                when {
+                    isExpanded -> Unit
+
+                    result.hasVisualOverflow -> {
+                        hasOverflow = true
+                        truncatedAtWidth = layoutWidth
+                        lastVisibleCharIndex = result.getLineEnd(
+                            lineIndex = COLLAPSED_MAX_LINES - 1,
+                            visibleEnd = true,
+                        )
+                    }
+
+                    // Why: the study panel resizes, and a cut made at a narrower width hides text that now fits.
+                    hasOverflow && layoutWidth != truncatedAtWidth -> {
+                        hasOverflow = false
+                        lastVisibleCharIndex = 0
+                    }
                 }
             },
             modifier = Modifier.animateContentSize(),

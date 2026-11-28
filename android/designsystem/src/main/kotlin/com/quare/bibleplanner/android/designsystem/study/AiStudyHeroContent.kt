@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -101,32 +102,25 @@ fun AiStudyErrorContent(
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AiStudyCenteredColumn(modifier = modifier) {
-        AiStudyHeroIcon(icon = Icons.Rounded.CloudOff)
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = stringResource(R.string.study_error_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AiStudyDescriptionText(
-            text = stringResource(if (isOffline) R.string.study_error_offline else R.string.study_error),
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = onRetryClick,
-            modifier = Modifier.height(heroButtonHeight),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Refresh,
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-            )
-            Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(R.string.study_retry))
-        }
+    AiStudyHeroContent(
+        icon = Icons.Rounded.CloudOff,
+        title = stringResource(R.string.study_error_title),
+        subtitle = stringResource(if (isOffline) R.string.study_error_offline else R.string.study_error),
+        buttonIcon = Icons.Rounded.Refresh,
+        buttonLabel = stringResource(R.string.study_retry),
+        isLoading = false,
+        onClick = onRetryClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun AiStudyLoadingContent(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
 

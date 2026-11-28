@@ -6,29 +6,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -40,6 +42,7 @@ import com.quare.bibleplanner.android.designsystem.study.AiStudyBadge
 import com.quare.bibleplanner.android.designsystem.study.AiStudyErrorContent
 import com.quare.bibleplanner.android.designsystem.study.AiStudyGeneratingContent
 import com.quare.bibleplanner.android.designsystem.study.AiStudyHeroContent
+import com.quare.bibleplanner.android.designsystem.study.AiStudyLoadingContent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError
@@ -47,6 +50,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
+import com.quare.bibleplanner.ui.utils.asStable
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
@@ -68,12 +72,16 @@ internal fun DayStudyContent(
                 showStudyHeader = true,
                 onEvent = onEvent,
             )
+            // Why: the app draws edge to edge, so without this the snackbar sits under the navigation bar.
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .windowInsetsPadding(WindowInsets.navigationBars.asStable()),
             )
         }
     } else {
+        // Why: CMP-10789 crashes on unattached insets when Nav3 moves a screen between scenes.
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
@@ -92,8 +100,10 @@ internal fun DayStudyContent(
                             )
                         }
                     },
+                    windowInsets = TopAppBarDefaults.windowInsets.asStable(),
                 )
             },
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
         ) { paddingValues ->
             DayStudyPane(
                 state = state,
@@ -145,31 +155,18 @@ private fun DayStudyPane(
                 onClick = { onEvent(DayStudyRouteUiEvent.OnCardClick) },
             )
 
-            else -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
+            else -> AiStudyLoadingContent()
         }
     }
 }
 
 @Composable
 private fun DayStudyGeneratingContent(generation: DayStudyGenerationUiModel) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        contentAlignment = Alignment.Center,
-    ) {
-        AiStudyGeneratingContent(
-            subtitle = stringResource(R.string.day_study_generating_subtitle),
-            phases = DayStudyGenerationPhase.entries.map { phase -> stringResource(phase.toTitleRes()) },
-            currentPhaseIndex = generation.currentPhaseIndex,
-            modifier = Modifier.padding(34.dp),
-        )
-    }
+    AiStudyGeneratingContent(
+        subtitle = stringResource(R.string.day_study_generating_subtitle),
+        phases = DayStudyGenerationPhase.entries.map { phase -> stringResource(phase.toTitleRes()) },
+        currentPhaseIndex = generation.currentPhaseIndex,
+    )
 }
 
 @StringRes

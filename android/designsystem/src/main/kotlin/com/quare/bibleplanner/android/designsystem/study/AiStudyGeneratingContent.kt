@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
@@ -39,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.R
 
+private val generatingContentPadding = 34.dp
 private const val TRACK_ALPHA = 0.12f
 private const val PULSE_MAX_SCALE = 1.09f
 private const val PULSE_MIN_ALPHA = 0.82f
@@ -51,45 +55,52 @@ fun AiStudyGeneratingContent(
     currentPhaseIndex: Int,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.Center,
     ) {
-        PulsingIcon()
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = stringResource(R.string.study_generating_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = subtitle,
-            modifier = Modifier.widthIn(max = 280.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        LinearProgressIndicator(
-            modifier = Modifier
-                .width(220.dp)
-                .height(4.dp),
-            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = TRACK_ALPHA),
-            strokeCap = StrokeCap.Round,
-        )
-        Spacer(modifier = Modifier.height(26.dp))
         Column(
-            modifier = Modifier
-                .widthIn(max = 300.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(generatingContentPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            phases.forEachIndexed { index, phase ->
-                PhaseRow(
-                    title = phase,
-                    isDone = index < currentPhaseIndex,
-                    isActive = index == currentPhaseIndex,
-                )
+            PulsingIcon()
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = stringResource(R.string.study_generating_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = subtitle,
+                modifier = Modifier.widthIn(max = 280.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(4.dp),
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = TRACK_ALPHA),
+                strokeCap = StrokeCap.Round,
+            )
+            Spacer(modifier = Modifier.height(26.dp))
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 300.dp)
+                    .fillMaxWidth(),
+            ) {
+                phases.forEachIndexed { index, phase ->
+                    PhaseRow(
+                        title = phase,
+                        isDone = index < currentPhaseIndex,
+                        isActive = index == currentPhaseIndex,
+                    )
+                }
             }
         }
     }

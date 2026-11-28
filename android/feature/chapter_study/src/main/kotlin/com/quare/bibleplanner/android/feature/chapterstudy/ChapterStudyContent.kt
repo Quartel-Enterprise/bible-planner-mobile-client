@@ -4,38 +4,37 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.study.AiStudyBadge
 import com.quare.bibleplanner.android.designsystem.study.AiStudyErrorContent
 import com.quare.bibleplanner.android.designsystem.study.AiStudyGeneratingContent
 import com.quare.bibleplanner.android.designsystem.study.AiStudyHeroContent
+import com.quare.bibleplanner.android.designsystem.study.AiStudyLoadingContent
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyHeroUiModel
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
+import com.quare.bibleplanner.ui.utils.asStable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +49,7 @@ internal fun ChapterStudyContent(
         chapterNumber = state.chapterNumber,
         verseNumbers = emptyList(),
     )
+    // Why: CMP-10789 crashes on unattached insets when Nav3 moves a screen between scenes.
     Scaffold(
         topBar = {
             // Why: beside the reader the chapter is already in sight and back leaves both panes.
@@ -77,6 +77,7 @@ internal fun ChapterStudyContent(
                             )
                         }
                     },
+                    windowInsets = TopAppBarDefaults.windowInsets.asStable(),
                 )
             }
         },
@@ -97,6 +98,7 @@ internal fun ChapterStudyContent(
                 )
             }
         },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -119,12 +121,7 @@ private fun ChapterStudyStateContent(
     onEvent: (ChapterStudyUiEvent) -> Unit,
 ) {
     when (val content = state.content) {
-        ChapterStudyContentUiState.Loading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator()
-        }
+        ChapterStudyContentUiState.Loading -> AiStudyLoadingContent()
 
         is ChapterStudyContentUiState.NotGenerated -> ChapterStudyHeroContent(
             hero = content.hero,
@@ -132,24 +129,16 @@ private fun ChapterStudyStateContent(
             onClick = { onEvent(ChapterStudyUiEvent.OnGenerateClick) },
         )
 
-        is ChapterStudyContentUiState.Generating -> Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            contentAlignment = Alignment.Center,
-        ) {
-            AiStudyGeneratingContent(
-                subtitle = stringResource(R.string.chapter_study_generating_subtitle, chapterLabel),
-                phases = listOf(
-                    stringResource(R.string.chapter_study_phase_reading, chapterLabel),
-                    stringResource(R.string.chapter_study_phase_summary),
-                    stringResource(R.string.chapter_study_phase_context),
-                    stringResource(R.string.chapter_study_phase_questions),
-                ),
-                currentPhaseIndex = content.currentPhaseIndex,
-                modifier = Modifier.padding(34.dp),
-            )
-        }
+        is ChapterStudyContentUiState.Generating -> AiStudyGeneratingContent(
+            subtitle = stringResource(R.string.chapter_study_generating_subtitle, chapterLabel),
+            phases = listOf(
+                stringResource(R.string.chapter_study_phase_reading, chapterLabel),
+                stringResource(R.string.chapter_study_phase_summary),
+                stringResource(R.string.chapter_study_phase_context),
+                stringResource(R.string.chapter_study_phase_questions),
+            ),
+            currentPhaseIndex = content.currentPhaseIndex,
+        )
 
         is ChapterStudyContentUiState.Failed -> AiStudyErrorContent(
             isOffline = content.isOffline,
