@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -34,7 +35,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.android.designsystem.R
 
-private const val COLLAPSED_MAX_LINES = 3
+private const val DEFAULT_COLLAPSED_MAX_LINES = 3
 private const val ELLIPSIS = "… "
 private const val TOGGLE_SEPARATOR = "  "
 private const val TOGGLE_TAG = "expandable_text_toggle"
@@ -68,19 +69,21 @@ fun AiDisclaimerText(modifier: Modifier = Modifier) {
     }
 }
 
-// Why: long AI texts start collapsed to three lines, with an inline "Show more" link at the end of the last one.
+// Why: long texts start collapsed (three lines by default), with an inline "Show more" link at the end of the last one.
 @Composable
 fun ExpandableText(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
+    color: Color = Color.Unspecified,
+    collapsedMaxLines: Int = DEFAULT_COLLAPSED_MAX_LINES,
 ) {
     var isExpanded by rememberSaveable(text) { mutableStateOf(false) }
     val showMore = stringResource(R.string.study_show_more)
     val showLess = stringResource(R.string.study_show_less)
-    var lastVisibleCharIndex by remember(text) { mutableIntStateOf(0) }
-    var hasOverflow by remember(text) { mutableStateOf(false) }
-    var truncatedAtWidth by remember(text) { mutableIntStateOf(0) }
+    var lastVisibleCharIndex by remember(text, collapsedMaxLines) { mutableIntStateOf(0) }
+    var hasOverflow by remember(text, collapsedMaxLines) { mutableStateOf(false) }
+    var truncatedAtWidth by remember(text, collapsedMaxLines) { mutableIntStateOf(0) }
     val toggleLink = LinkAnnotation.Clickable(
         tag = TOGGLE_TAG,
         styles = TextLinkStyles(
@@ -115,7 +118,8 @@ fun ExpandableText(
         Text(
             text = annotatedText,
             style = style,
-            maxLines = if (isExpanded) Int.MAX_VALUE else COLLAPSED_MAX_LINES,
+            color = color,
+            maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLines,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { result ->
                 val layoutWidth = result.layoutInput.constraints.maxWidth
@@ -126,7 +130,7 @@ fun ExpandableText(
                         hasOverflow = true
                         truncatedAtWidth = layoutWidth
                         lastVisibleCharIndex = result.getLineEnd(
-                            lineIndex = COLLAPSED_MAX_LINES - 1,
+                            lineIndex = collapsedMaxLines - 1,
                             visibleEnd = true,
                         )
                     }
